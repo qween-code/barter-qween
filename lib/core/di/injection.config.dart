@@ -21,6 +21,7 @@ import 'package:barter_qween/domain/usecases/auth/login_usecase.dart' as _i591;
 import 'package:barter_qween/domain/usecases/auth/logout_usecase.dart' as _i537;
 import 'package:barter_qween/domain/usecases/auth/register_usecase.dart'
     as _i265;
+import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:firebase_storage/firebase_storage.dart' as _i457;
@@ -71,6 +72,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i265.RegisterUseCase>(
       () => _i265.RegisterUseCase(gh<_i113.AuthRepository>()),
+    );
+    gh.factory<_i161.AuthBloc>(
+      () => _i161.AuthBloc(
+        loginUseCase: gh<_i591.LoginUseCase>(),
+        registerUseCase: gh<_i265.RegisterUseCase>(),
+        logoutUseCase: gh<_i537.LogoutUseCase>(),
+        getCurrentUserUseCase: gh<_i599.GetCurrentUserUseCase>(),
+      ),
     );
     return this;
   }
