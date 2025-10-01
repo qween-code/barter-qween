@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "229577295263",
+    "project_id": "bogazici-barter",
+    "storage_bucket": "bogazici-barter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229577295263:android:544e2e3c3c6a67760529aa",
+        "android_client_info": {
+          "package_name": "com.bogazici.barter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApru-QZt7nsdYv-u4xa6NXWmcsLtkEm6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
