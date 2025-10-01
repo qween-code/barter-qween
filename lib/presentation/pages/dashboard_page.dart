@@ -5,28 +5,49 @@ import '../../core/routes/route_names.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
+import 'profile/profile_page.dart';
 
-class DashboardPage extends StatefulWidget {
+class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthUnauthenticated) {
+            Navigator.of(context).pushReplacementNamed(RouteNames.login);
+          }
+        },
+        child: const DashboardView(),
+      ),
+    );
+  }
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-  int _currentIndex = 0;
+class DashboardView extends StatefulWidget {
+  const DashboardView({super.key});
 
-  final List<Widget> _tabs = [
-    const HomeTab(),
-    const ExploreTab(),
-    const MessagesTab(),
-    const ProfileTab(),
-  ];
+  @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<DashboardView> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _tabs[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [
+          HomeTab(),
+          ExploreTab(),
+          MessagesTab(),
+          ProfilePage(),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
@@ -142,63 +163,3 @@ class MessagesTab extends StatelessWidget {
   }
 }
 
-// PROFILE TAB
-class ProfileTab extends StatelessWidget {
-  const ProfileTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<AuthBloc>(),
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthUnauthenticated) {
-            Navigator.of(context).pushReplacementNamed(RouteNames.login);
-          }
-        },
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(floating: true, title: const Text('Profile')),
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          CircleAvatar(radius: 50, backgroundColor: Theme.of(context).colorScheme.primaryContainer, child: Icon(Icons.person, size: 50, color: Theme.of(context).colorScheme.onPrimaryContainer)),
-                          const SizedBox(height: 16),
-                          const Text('User Name', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
-                          Text('user@example.com', style: TextStyle(color: Colors.grey[600])),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Card(child: ListTile(leading: const Icon(Icons.swap_horiz), title: const Text('My Listings'), trailing: const Icon(Icons.chevron_right), onTap: () {})),
-                  Card(child: ListTile(leading: const Icon(Icons.favorite_outline), title: const Text('Favorites'), trailing: const Icon(Icons.chevron_right), onTap: () {})),
-                  Card(child: ListTile(leading: const Icon(Icons.settings), title: const Text('Settings'), trailing: const Icon(Icons.chevron_right), onTap: () {})),
-                  const SizedBox(height: 16),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      final isLoading = state is AuthLoading;
-                      return OutlinedButton.icon(
-                        onPressed: isLoading ? null : () => context.read<AuthBloc>().add(AuthLogoutRequested()),
-                        icon: const Icon(Icons.logout),
-                        label: isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Logout'),
-                        style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                      );
-                    },
-                  ),
-                ]),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

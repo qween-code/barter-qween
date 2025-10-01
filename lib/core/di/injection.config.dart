@@ -42,6 +42,8 @@ import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart
 import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
     as _i576;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
+import 'package:barter_qween/presentation/blocs/profile/profile_bloc.dart'
+    as _i527;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:firebase_storage/firebase_storage.dart' as _i457;
@@ -103,6 +105,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i576.UploadAvatarUseCase>(
       () => _i576.UploadAvatarUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i527.ProfileBloc>(
+      () => _i527.ProfileBloc(
+        getUserProfileUseCase: gh<_i680.GetUserProfileUseCase>(),
+        updateProfileUseCase: gh<_i303.UpdateProfileUseCase>(),
+        uploadAvatarUseCase: gh<_i576.UploadAvatarUseCase>(),
+      ),
     );
     gh.lazySingleton<_i599.GetCurrentUserUseCase>(
       () => _i599.GetCurrentUserUseCase(gh<_i113.AuthRepository>()),

@@ -8,6 +8,7 @@ import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
+import '../blocs/auth/auth_state.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/custom_text_field.dart';
 
