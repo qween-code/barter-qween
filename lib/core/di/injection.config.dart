@@ -12,9 +12,15 @@
 import 'package:barter_qween/core/di/injection.dart' as _i328;
 import 'package:barter_qween/data/datasources/auth_remote_datasource.dart'
     as _i381;
+import 'package:barter_qween/data/datasources/remote/profile_remote_datasource.dart'
+    as _i512;
 import 'package:barter_qween/data/repositories/auth_repository_impl.dart'
     as _i828;
+import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
+    as _i673;
 import 'package:barter_qween/domain/repositories/auth_repository.dart' as _i113;
+import 'package:barter_qween/domain/repositories/profile_repository.dart'
+    as _i1043;
 import 'package:barter_qween/domain/usecases/auth/get_current_user_usecase.dart'
     as _i599;
 import 'package:barter_qween/domain/usecases/auth/google_sign_in_usecase.dart'
@@ -29,6 +35,12 @@ import 'package:barter_qween/domain/usecases/auth/reset_password_usecase.dart'
     as _i668;
 import 'package:barter_qween/domain/usecases/auth/verify_otp_usecase.dart'
     as _i936;
+import 'package:barter_qween/domain/usecases/profile/get_user_profile_usecase.dart'
+    as _i680;
+import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart'
+    as _i303;
+import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
+    as _i576;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
@@ -62,6 +74,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i116.GoogleSignIn>(
       () => firebaseInjectableModule.googleSignIn,
     );
+    gh.lazySingleton<_i512.ProfileRemoteDataSource>(
+      () => _i512.ProfileRemoteDataSourceImpl(
+        firestore: gh<_i974.FirebaseFirestore>(),
+        storage: gh<_i457.FirebaseStorage>(),
+      ),
+    );
     gh.lazySingleton<_i381.AuthRemoteDataSource>(
       () => _i381.AuthRemoteDataSourceImpl(
         firebaseAuth: gh<_i59.FirebaseAuth>(),
@@ -69,10 +87,22 @@ extension GetItInjectableX on _i174.GetIt {
         googleSignIn: gh<_i116.GoogleSignIn>(),
       ),
     );
+    gh.lazySingleton<_i1043.ProfileRepository>(
+      () => _i673.ProfileRepositoryImpl(gh<_i512.ProfileRemoteDataSource>()),
+    );
     gh.lazySingleton<_i113.AuthRepository>(
       () => _i828.AuthRepositoryImpl(
         remoteDataSource: gh<_i381.AuthRemoteDataSource>(),
       ),
+    );
+    gh.factory<_i680.GetUserProfileUseCase>(
+      () => _i680.GetUserProfileUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i303.UpdateProfileUseCase>(
+      () => _i303.UpdateProfileUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i576.UploadAvatarUseCase>(
+      () => _i576.UploadAvatarUseCase(gh<_i1043.ProfileRepository>()),
     );
     gh.lazySingleton<_i599.GetCurrentUserUseCase>(
       () => _i599.GetCurrentUserUseCase(gh<_i113.AuthRepository>()),

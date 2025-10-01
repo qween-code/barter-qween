@@ -41,7 +41,7 @@ class NetworkFailure extends Failure {
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure() : super('Server error occurred');
+  const ServerFailure([String message = 'Server error occurred']) : super(message);
 }
 
 // Cache Failures

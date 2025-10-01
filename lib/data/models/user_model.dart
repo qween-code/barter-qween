@@ -11,6 +11,10 @@ class UserModel extends UserEntity {
     super.photoUrl,
     required super.createdAt,
     super.isEmailVerified,
+    super.bio,
+    super.address,
+    super.city,
+    super.updatedAt,
   });
 
   /// From Firebase User
@@ -23,6 +27,7 @@ class UserModel extends UserEntity {
       photoUrl: user.photoURL,
       createdAt: user.metadata.creationTime ?? DateTime.now(),
       isEmailVerified: user.emailVerified,
+      // Profile fields will be loaded from Firestore separately
     );
   }
 
@@ -37,6 +42,12 @@ class UserModel extends UserEntity {
       photoUrl: data['photoUrl'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       isEmailVerified: data['isEmailVerified'] ?? false,
+      bio: data['bio'],
+      address: data['address'],
+      city: data['city'],
+      updatedAt: data['updatedAt'] != null 
+          ? (data['updatedAt'] as Timestamp).toDate() 
+          : null,
     );
   }
 
@@ -49,6 +60,10 @@ class UserModel extends UserEntity {
       'photoUrl': photoUrl,
       'createdAt': Timestamp.fromDate(createdAt),
       'isEmailVerified': isEmailVerified,
+      'bio': bio,
+      'address': address,
+      'city': city,
+      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };
   }
 
@@ -62,6 +77,10 @@ class UserModel extends UserEntity {
       photoUrl: photoUrl,
       createdAt: createdAt,
       isEmailVerified: isEmailVerified,
+      bio: bio,
+      address: address,
+      city: city,
+      updatedAt: updatedAt,
     );
   }
 }

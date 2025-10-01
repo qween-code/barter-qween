@@ -38,7 +38,7 @@ class NetworkException extends AppException {
 }
 
 class ServerException extends AppException {
-  const ServerException() : super('Server error');
+  const ServerException([String message = 'Server error']) : super(message);
 }
 
 // Cache Exceptions
