@@ -12,13 +12,18 @@
 import 'package:barter_qween/core/di/injection.dart' as _i328;
 import 'package:barter_qween/data/datasources/auth_remote_datasource.dart'
     as _i381;
+import 'package:barter_qween/data/datasources/remote/item_remote_datasource.dart'
+    as _i72;
 import 'package:barter_qween/data/datasources/remote/profile_remote_datasource.dart'
     as _i512;
 import 'package:barter_qween/data/repositories/auth_repository_impl.dart'
     as _i828;
+import 'package:barter_qween/data/repositories/item_repository_impl.dart'
+    as _i703;
 import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
     as _i673;
 import 'package:barter_qween/domain/repositories/auth_repository.dart' as _i113;
+import 'package:barter_qween/domain/repositories/item_repository.dart' as _i754;
 import 'package:barter_qween/domain/repositories/profile_repository.dart'
     as _i1043;
 import 'package:barter_qween/domain/usecases/auth/get_current_user_usecase.dart'
@@ -35,6 +40,7 @@ import 'package:barter_qween/domain/usecases/auth/reset_password_usecase.dart'
     as _i668;
 import 'package:barter_qween/domain/usecases/auth/verify_otp_usecase.dart'
     as _i936;
+import 'package:barter_qween/domain/usecases/item/item_usecases.dart' as _i301;
 import 'package:barter_qween/domain/usecases/profile/get_user_profile_usecase.dart'
     as _i680;
 import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart'
@@ -42,6 +48,7 @@ import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart
 import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
     as _i576;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
+import 'package:barter_qween/presentation/blocs/item/item_bloc.dart' as _i1004;
 import 'package:barter_qween/presentation/blocs/profile/profile_bloc.dart'
     as _i527;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
@@ -76,6 +83,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i116.GoogleSignIn>(
       () => firebaseInjectableModule.googleSignIn,
     );
+    gh.lazySingleton<_i72.ItemRemoteDataSource>(
+      () => _i72.ItemRemoteDataSourceImpl(
+        firestore: gh<_i974.FirebaseFirestore>(),
+        storage: gh<_i457.FirebaseStorage>(),
+      ),
+    );
     gh.lazySingleton<_i512.ProfileRemoteDataSource>(
       () => _i512.ProfileRemoteDataSourceImpl(
         firestore: gh<_i974.FirebaseFirestore>(),
@@ -89,6 +102,11 @@ extension GetItInjectableX on _i174.GetIt {
         googleSignIn: gh<_i116.GoogleSignIn>(),
       ),
     );
+    gh.lazySingleton<_i754.ItemRepository>(
+      () => _i703.ItemRepositoryImpl(
+        remoteDataSource: gh<_i72.ItemRemoteDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i1043.ProfileRepository>(
       () => _i673.ProfileRepositoryImpl(gh<_i512.ProfileRemoteDataSource>()),
     );
@@ -96,6 +114,33 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i828.AuthRepositoryImpl(
         remoteDataSource: gh<_i381.AuthRemoteDataSource>(),
       ),
+    );
+    gh.factory<_i301.CreateItemUseCase>(
+      () => _i301.CreateItemUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.UpdateItemUseCase>(
+      () => _i301.UpdateItemUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.DeleteItemUseCase>(
+      () => _i301.DeleteItemUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.GetItemUseCase>(
+      () => _i301.GetItemUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.GetAllItemsUseCase>(
+      () => _i301.GetAllItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.GetUserItemsUseCase>(
+      () => _i301.GetUserItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.SearchItemsUseCase>(
+      () => _i301.SearchItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.GetFeaturedItemsUseCase>(
+      () => _i301.GetFeaturedItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.factory<_i301.UploadItemImagesUseCase>(
+      () => _i301.UploadItemImagesUseCase(gh<_i754.ItemRepository>()),
     );
     gh.factory<_i680.GetUserProfileUseCase>(
       () => _i680.GetUserProfileUseCase(gh<_i1043.ProfileRepository>()),
@@ -105,6 +150,18 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i576.UploadAvatarUseCase>(
       () => _i576.UploadAvatarUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i1004.ItemBloc>(
+      () => _i1004.ItemBloc(
+        getAllItemsUseCase: gh<_i301.GetAllItemsUseCase>(),
+        getUserItemsUseCase: gh<_i301.GetUserItemsUseCase>(),
+        getItemUseCase: gh<_i301.GetItemUseCase>(),
+        createItemUseCase: gh<_i301.CreateItemUseCase>(),
+        updateItemUseCase: gh<_i301.UpdateItemUseCase>(),
+        deleteItemUseCase: gh<_i301.DeleteItemUseCase>(),
+        searchItemsUseCase: gh<_i301.SearchItemsUseCase>(),
+        getFeaturedItemsUseCase: gh<_i301.GetFeaturedItemsUseCase>(),
+      ),
     );
     gh.factory<_i527.ProfileBloc>(
       () => _i527.ProfileBloc(
