@@ -1,4 +1,5 @@
-﻿import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,11 +64,26 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _checkAuthState() async {
-    await Future.delayed(const Duration(seconds: 1));
-    final prefs = getIt<SharedPreferences>();
-    final onboardingCompleted = prefs.getBool(PreferencesKeys.onboardingCompleted) ?? false;
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed(onboardingCompleted ? RouteNames.dashboard : RouteNames.login);
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    if (!mounted) return;
+    
+    // Check Firebase auth state
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    
+    if (firebaseUser != null) {
+      // User is logged in, go to dashboard
+      Navigator.of(context).pushReplacementNamed(RouteNames.dashboard);
+    } else {
+      // User is not logged in, check onboarding
+      final prefs = getIt<SharedPreferences>();
+      final onboardingCompleted = prefs.getBool(PreferencesKeys.onboardingCompleted) ?? false;
+      
+      if (onboardingCompleted) {
+        Navigator.of(context).pushReplacementNamed(RouteNames.login);
+      } else {
+        Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
+      }
     }
   }
 

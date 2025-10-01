@@ -101,6 +101,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signOut() async {
     try {
+      // Sign out from Google if signed in
+      final googleCurrentUser = await googleSignIn.isSignedIn();
+      if (googleCurrentUser) {
+        await googleSignIn.signOut();
+      }
+      // Sign out from Firebase
       await firebaseAuth.signOut();
     } catch (e) {
       throw AuthException(e.toString());
