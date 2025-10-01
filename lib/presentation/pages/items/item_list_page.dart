@@ -151,10 +151,11 @@ class _ItemListPageState extends State<ItemListPage> {
                       ));
                 },
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 56,
-                      height: 56,
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
                         color: isSelected
                             ? Theme.of(context).primaryColor
