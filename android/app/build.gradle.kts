@@ -21,7 +21,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.bogazicibarter.barter_qween"
+        applicationId = "com.bogazici.barter"
         minSdk = 21  // Required for Firebase
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
