@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import '../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
@@ -20,16 +21,23 @@ abstract class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser();
   Future<bool> isSignedIn();
   Future<void> sendEmailVerification();
+  
+  Future<UserModel> signInWithGoogle();
+  Future<String> signInWithPhone(String phoneNumber);
+  Future<UserModel> verifyOtp({required String verificationId, required String smsCode});
+  Future<void> resetPassword(String email);
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
+  final GoogleSignIn googleSignIn;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseAuth,
     required this.firestore,
+    required this.googleSignIn,
   });
 
   @override
@@ -125,6 +133,125 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final user = firebaseAuth.currentUser;
       if (user == null) throw const AuthException('No user signed in');
       await user.sendEmailVerification();
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw const AuthException('Google sign in aborted');
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential =
+          await firebaseAuth.signInWithCredential(credential);
+
+      if (userCredential.user == null) {
+        throw const AuthException('Failed to sign in with Google');
+      }
+
+      // Create or update user in Firestore
+      final userModel = UserModel.fromFirebaseUser(userCredential.user!);
+      await firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set(userModel.toFirestore(), SetOptions(merge: true));
+
+      return userModel;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<String> signInWithPhone(String phoneNumber) async {
+    try {
+      String verificationId = '';
+      await firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-verification (Android only)
+          await firebaseAuth.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          throw _handleFirebaseAuthException(e);
+        },
+        codeSent: (String verId, int? resendToken) {
+          verificationId = verId;
+        },
+        codeAutoRetrievalTimeout: (String verId) {
+          verificationId = verId;
+        },
+        timeout: const Duration(seconds: 60),
+      );
+
+      // Wait a bit to ensure codeSent callback is triggered
+      await Future.delayed(const Duration(seconds: 1));
+      
+      if (verificationId.isEmpty) {
+        throw const AuthException('Failed to send verification code');
+      }
+
+      return verificationId;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> verifyOtp({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+
+      final userCredential =
+          await firebaseAuth.signInWithCredential(credential);
+
+      if (userCredential.user == null) {
+        throw const AuthException('Failed to verify OTP');
+      }
+
+      // Create or update user in Firestore
+      final userModel = UserModel.fromFirebaseUser(userCredential.user!);
+      await firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set(userModel.toFirestore(), SetOptions(merge: true));
+
+      return userModel;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    } catch (e) {
+      throw AuthException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String email) async {
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
     } catch (e) {
       throw AuthException(e.toString());
     }

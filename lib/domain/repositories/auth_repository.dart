@@ -27,4 +27,19 @@ abstract class AuthRepository {
 
   /// Send email verification
   Future<Either<Failure, void>> sendEmailVerification();
+
+  /// Sign in with Google
+  Future<Either<Failure, UserEntity>> signInWithGoogle();
+
+  /// Sign in with Phone (returns verification ID)
+  Future<Either<Failure, String>> signInWithPhone(String phoneNumber);
+
+  /// Verify OTP code
+  Future<Either<Failure, UserEntity>> verifyOtp({
+    required String verificationId,
+    required String smsCode,
+  });
+
+  /// Reset password (send email)
+  Future<Either<Failure, void>> resetPassword(String email);
 }

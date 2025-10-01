@@ -17,15 +17,24 @@ import 'package:barter_qween/data/repositories/auth_repository_impl.dart'
 import 'package:barter_qween/domain/repositories/auth_repository.dart' as _i113;
 import 'package:barter_qween/domain/usecases/auth/get_current_user_usecase.dart'
     as _i599;
+import 'package:barter_qween/domain/usecases/auth/google_sign_in_usecase.dart'
+    as _i418;
 import 'package:barter_qween/domain/usecases/auth/login_usecase.dart' as _i591;
 import 'package:barter_qween/domain/usecases/auth/logout_usecase.dart' as _i537;
+import 'package:barter_qween/domain/usecases/auth/phone_sign_in_usecase.dart'
+    as _i971;
 import 'package:barter_qween/domain/usecases/auth/register_usecase.dart'
     as _i265;
+import 'package:barter_qween/domain/usecases/auth/reset_password_usecase.dart'
+    as _i668;
+import 'package:barter_qween/domain/usecases/auth/verify_otp_usecase.dart'
+    as _i936;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:firebase_storage/firebase_storage.dart' as _i457;
 import 'package:get_it/get_it.dart' as _i174;
+import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
@@ -50,10 +59,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i457.FirebaseStorage>(
       () => firebaseInjectableModule.storage,
     );
+    gh.lazySingleton<_i116.GoogleSignIn>(
+      () => firebaseInjectableModule.googleSignIn,
+    );
     gh.lazySingleton<_i381.AuthRemoteDataSource>(
       () => _i381.AuthRemoteDataSourceImpl(
         firebaseAuth: gh<_i59.FirebaseAuth>(),
         firestore: gh<_i974.FirebaseFirestore>(),
+        googleSignIn: gh<_i116.GoogleSignIn>(),
       ),
     );
     gh.lazySingleton<_i113.AuthRepository>(
@@ -72,6 +85,18 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i265.RegisterUseCase>(
       () => _i265.RegisterUseCase(gh<_i113.AuthRepository>()),
+    );
+    gh.factory<_i418.GoogleSignInUseCase>(
+      () => _i418.GoogleSignInUseCase(gh<_i113.AuthRepository>()),
+    );
+    gh.factory<_i971.PhoneSignInUseCase>(
+      () => _i971.PhoneSignInUseCase(gh<_i113.AuthRepository>()),
+    );
+    gh.factory<_i668.ResetPasswordUseCase>(
+      () => _i668.ResetPasswordUseCase(gh<_i113.AuthRepository>()),
+    );
+    gh.factory<_i936.VerifyOtpUseCase>(
+      () => _i936.VerifyOtpUseCase(gh<_i113.AuthRepository>()),
     );
     gh.factory<_i161.AuthBloc>(
       () => _i161.AuthBloc(

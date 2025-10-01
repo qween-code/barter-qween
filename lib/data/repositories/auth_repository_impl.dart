@@ -105,4 +105,58 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(AuthFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, UserEntity>> signInWithGoogle() async {
+    try {
+      final userModel = await remoteDataSource.signInWithGoogle();
+      return Right(userModel.toEntity());
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> signInWithPhone(String phoneNumber) async {
+    try {
+      final verificationId = await remoteDataSource.signInWithPhone(phoneNumber);
+      return Right(verificationId);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> verifyOtp({
+    required String verificationId,
+    required String smsCode,
+  }) async {
+    try {
+      final userModel = await remoteDataSource.verifyOtp(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      return Right(userModel.toEntity());
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetPassword(String email) async {
+    try {
+      await remoteDataSource.resetPassword(email);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(AuthFailure(e.message));
+    } catch (e) {
+      return Left(AuthFailure(e.toString()));
+    }
+  }
 }
