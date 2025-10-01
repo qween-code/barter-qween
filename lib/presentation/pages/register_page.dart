@@ -1,10 +1,18 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/di/injection.dart';
 import '../../core/routes/route_names.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimensions.dart';
+import '../../core/theme/app_shadows.dart';
+import '../../core/theme/app_text_styles.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
+import '../widgets/primary_button.dart';
+import '../widgets/custom_text_field.dart';
+import '../widgets/password_field.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -30,7 +38,7 @@ class _RegisterViewState extends State<RegisterView> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  bool _acceptedTerms = false;
 
   @override
   void dispose() {
@@ -42,6 +50,8 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -49,64 +59,212 @@ class _RegisterViewState extends State<RegisterView> {
             Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                ),
+              ),
             );
           }
         },
         builder: (context, state) {
           final isLoading = state is AuthLoading;
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
+          
+          return Container(
+            width: size.width,
+            height: size.height,
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppDimensions.spacing24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 40),
-                    Icon(Icons.swap_horiz_rounded, size: 80, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 16),
-                    Text('Create Account', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineLarge),
-                    const SizedBox(height: 8),
-                    Text('Join Barter Qween', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
-                    const SizedBox(height: 48),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Full Name', prefixIcon: Icon(Icons.person_outline), border: OutlineInputBorder()),
-                      validator: (v) => v == null || v.isEmpty ? 'Please enter your name' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email_outlined), border: OutlineInputBorder()),
-                      validator: (v) => v == null || v.isEmpty ? 'Please enter email' : !v.contains('@') ? 'Invalid email' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined), onPressed: () => setState(() => _obscurePassword = !_obscurePassword)),
-                        border: const OutlineInputBorder(),
+                    SizedBox(height: size.height * 0.05),
+                    
+                    // Logo
+                    _buildLogo(),
+                    SizedBox(height: size.height * 0.04),
+                    
+                    // Glass Card
+                    _buildGlassCard(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Create Account',
+                              style: AppTextStyles.displaySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppDimensions.spacing8),
+                            Text(
+                              'Join the trading community',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppDimensions.spacing32),
+                            
+                            // Name Field
+                            CustomTextField(
+                              controller: _nameController,
+                              labelText: 'Full Name',
+                              hintText: 'Enter your full name',
+                              prefixIcon: Icons.person_outline,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your name';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: AppDimensions.spacing16),
+                            
+                            // Email Field
+                            CustomTextField(
+                              controller: _emailController,
+                              labelText: 'Email',
+                              hintText: 'Enter your email',
+                              prefixIcon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: AppDimensions.spacing16),
+                            
+                            // Password Field
+                            PasswordField(
+                              controller: _passwordController,
+                              labelText: 'Password',
+                              hintText: 'Create a strong password',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                            ),
+                            
+                            const SizedBox(height: AppDimensions.spacing16),
+                            
+                            // Terms Checkbox
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Checkbox(
+                                    value: _acceptedTerms,
+                                    onChanged: (value) {
+                                      setState(() => _acceptedTerms = value ?? false);
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: AppDimensions.spacing8),
+                                Expanded(
+                                  child: Wrap(
+                                    children: [
+                                      Text(
+                                        'I agree to the ',
+                                        style: AppTextStyles.bodySmall,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          // TODO: Show Terms
+                                        },
+                                        child: Text(
+                                          'Terms of Service',
+                                          style: AppTextStyles.bodySmall.copyWith(
+                                            color: AppColors.accent,
+                                            fontWeight: FontWeight.w600,
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        ' and ',
+                                        style: AppTextStyles.bodySmall,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          // TODO: Show Privacy Policy
+                                        },
+                                        child: Text(
+                                          'Privacy Policy',
+                                          style: AppTextStyles.bodySmall.copyWith(
+                                            color: AppColors.accent,
+                                            fontWeight: FontWeight.w600,
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            
+                            const SizedBox(height: AppDimensions.spacing24),
+                            
+                            // Register Button
+                            PrimaryButton(
+                              text: 'Create Account',
+                              onPressed: (isLoading || !_acceptedTerms) ? null : _handleRegister,
+                              isLoading: isLoading,
+                            ),
+                            
+                            const SizedBox(height: AppDimensions.spacing24),
+                            
+                            // Login Link
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Already have an account? ',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          Navigator.of(context).pushReplacementNamed(
+                                            RouteNames.login,
+                                          );
+                                        },
+                                  child: Text(
+                                    'Sign In',
+                                    style: AppTextStyles.labelMedium.copyWith(
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      validator: (v) => v == null || v.isEmpty ? 'Please enter password' : v.length < 6 ? 'Minimum 6 characters' : null,
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      onPressed: isLoading ? null : _handleRegister,
-                      style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                      child: isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Register'),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Already have an account? '),
-                        TextButton(onPressed: isLoading ? null : () => Navigator.of(context).pushReplacementNamed(RouteNames.login), child: const Text('Login')),
-                      ],
                     ),
                   ],
                 ),
@@ -117,10 +275,81 @@ class _RegisterViewState extends State<RegisterView> {
       ),
     );
   }
+  
+  Widget _buildLogo() {
+    return Column(
+      children: [
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+            boxShadow: AppShadows.shadowLg,
+          ),
+          child: const Icon(
+            Icons.swap_horiz_rounded,
+            size: 48,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacing16),
+        Text(
+          'Barter Qween',
+          style: AppTextStyles.displayMedium.copyWith(
+            color: AppColors.surface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildGlassCard({required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppDimensions.radiusXLarge),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(AppDimensions.spacing24),
+          decoration: BoxDecoration(
+            gradient: AppColors.glassGradient,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusXLarge),
+            border: Border.all(
+              color: AppColors.surface.withOpacity(0.3),
+              width: 1.5,
+            ),
+            boxShadow: AppShadows.shadowXl,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
 
   void _handleRegister() {
+    if (!_acceptedTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please accept Terms and Privacy Policy'),
+          backgroundColor: AppColors.warning,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+          ),
+        ),
+      );
+      return;
+    }
+    
     if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(AuthRegisterRequested(email: _emailController.text.trim(), password: _passwordController.text, displayName: _nameController.text.trim()));
+      context.read<AuthBloc>().add(
+        AuthRegisterRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          displayName: _nameController.text.trim(),
+        ),
+      );
     }
   }
 }

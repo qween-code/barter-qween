@@ -11,6 +11,7 @@ import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
 import '../widgets/primary_button.dart';
+import '../widgets/secondary_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/password_field.dart';
 
@@ -150,7 +151,7 @@ class _LoginViewState extends State<LoginView> {
                               alignment: Alignment.centerRight,
                               child: TextButton(
                                 onPressed: () {
-                                  // TODO: Implement forgot password
+                                  Navigator.of(context).pushNamed(RouteNames.forgotPassword);
                                 },
                                 child: Text(
                                   'Forgot Password?',
@@ -168,6 +169,69 @@ class _LoginViewState extends State<LoginView> {
                               text: 'Sign In',
                               onPressed: isLoading ? null : _handleLogin,
                               isLoading: isLoading,
+                            ),
+                            
+                            const SizedBox(height: AppDimensions.spacing24),
+                            
+                            // Divider
+                            Row(
+                              children: [
+                                const Expanded(child: Divider()),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppDimensions.spacing12,
+                                  ),
+                                  child: Text(
+                                    'OR',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                                const Expanded(child: Divider()),
+                              ],
+                            ),
+                            
+                            const SizedBox(height: AppDimensions.spacing24),
+                            
+                            // Google Sign In
+                            SecondaryButton(
+                              text: 'Continue with Google',
+                              onPressed: () {
+                                // TODO: Implement Google Sign In
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Google Sign In - Coming Soon!'),
+                                  ),
+                                );
+                              },
+                              customIcon: Image.asset(
+                                'assets/images/google_logo.png',
+                                width: 20,
+                                height: 20,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.g_mobiledata,
+                                    size: 24,
+                                  );
+                                },
+                              ),
+                            ),
+                            
+                            const SizedBox(height: AppDimensions.spacing12),
+                            
+                            // Phone Sign In
+                            SecondaryButton(
+                              text: 'Continue with Phone',
+                              onPressed: () {
+                                // TODO: Navigate to phone auth
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Phone Sign In - Coming Soon!'),
+                                  ),
+                                );
+                              },
+                              icon: Icons.phone_android,
                             ),
                             
                             const SizedBox(height: AppDimensions.spacing24),

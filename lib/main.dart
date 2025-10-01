@@ -13,6 +13,7 @@ import 'presentation/pages/dashboard_page.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/onboarding_page.dart';
 import 'presentation/pages/register_page.dart';
+import 'presentation/pages/forgot_password_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,7 @@ class BarterQweenApp extends StatelessWidget {
           case RouteNames.splash: return MaterialPageRoute(builder: (_) => const SplashPage());
           case RouteNames.login: return MaterialPageRoute(builder: (_) => const LoginPage());
           case RouteNames.register: return MaterialPageRoute(builder: (_) => const RegisterPage());
+          case RouteNames.forgotPassword: return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
           case RouteNames.onboarding: return MaterialPageRoute(builder: (_) => const OnboardingPage());
           case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
           default: return MaterialPageRoute(builder: (_) => const LoginPage());
