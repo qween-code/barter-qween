@@ -5,6 +5,9 @@ import '../../core/routes/route_names.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
+import '../blocs/item/item_bloc.dart';
+import 'items/create_item_page.dart';
+import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -41,11 +44,14 @@ class _DashboardViewState extends State<DashboardView> {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          HomeTab(),
-          ExploreTab(),
-          MessagesTab(),
-          ProfilePage(),
+        children: [
+          BlocProvider(
+            create: (_) => getIt<ItemBloc>(),
+            child: const ItemListPage(),
+          ),
+          const ExploreTab(),
+          const MessagesTab(),
+          const ProfilePage(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -58,13 +64,7 @@ class _DashboardViewState extends State<DashboardView> {
           NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
-      floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton.extended(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Create Listing - Coming Soon!'))),
-              icon: const Icon(Icons.add),
-              label: const Text('New Listing'),
-            )
-          : null,
+      floatingActionButton: null, // FAB moved to ItemListPage
     );
   }
 }

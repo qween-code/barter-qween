@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:injectable/injectable.dart';
 import '../../../core/error/exceptions.dart';
@@ -23,10 +24,12 @@ abstract class ItemRemoteDataSource {
 class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
   final FirebaseFirestore firestore;
   final FirebaseStorage storage;
+  final FirebaseAuth auth;
 
   ItemRemoteDataSourceImpl({
     required this.firestore,
     required this.storage,
+    required this.auth,
   });
 
   @override
@@ -139,11 +142,18 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
   Future<List<String>> uploadImages(String itemId, List<File> images) async {
     try {
       final List<String> uploadedUrls = [];
+      
+      // Get current user ID from Firebase Auth
+      final userId = auth.currentUser?.uid;
+      if (userId == null) {
+        throw ServerException('User not authenticated');
+      }
 
       for (int i = 0; i < images.length; i++) {
         final file = images[i];
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final fileName = 'items/$itemId/image_${timestamp}_$i.jpg';
+        // Use userId in path to match storage rules
+        final fileName = 'items/$userId/${itemId}_${timestamp}_$i.jpg';
         final ref = storage.ref().child(fileName);
 
         await ref.putFile(file);

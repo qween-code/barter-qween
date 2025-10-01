@@ -83,16 +83,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i116.GoogleSignIn>(
       () => firebaseInjectableModule.googleSignIn,
     );
-    gh.lazySingleton<_i72.ItemRemoteDataSource>(
-      () => _i72.ItemRemoteDataSourceImpl(
-        firestore: gh<_i974.FirebaseFirestore>(),
-        storage: gh<_i457.FirebaseStorage>(),
-      ),
-    );
     gh.lazySingleton<_i512.ProfileRemoteDataSource>(
       () => _i512.ProfileRemoteDataSourceImpl(
         firestore: gh<_i974.FirebaseFirestore>(),
         storage: gh<_i457.FirebaseStorage>(),
+      ),
+    );
+    gh.lazySingleton<_i72.ItemRemoteDataSource>(
+      () => _i72.ItemRemoteDataSourceImpl(
+        firestore: gh<_i974.FirebaseFirestore>(),
+        storage: gh<_i457.FirebaseStorage>(),
+        auth: gh<_i59.FirebaseAuth>(),
       ),
     );
     gh.lazySingleton<_i381.AuthRemoteDataSource>(
