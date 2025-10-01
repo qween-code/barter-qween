@@ -1,8 +1,12 @@
 ﻿import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/di/injection.dart';
 import 'core/routes/route_names.dart';
+import 'core/theme/app_theme.dart';
+import 'core/theme/app_colors.dart';
+import 'core/theme/app_text_styles.dart';
 import 'core/utils/preferences_keys.dart';
 import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';
@@ -21,10 +25,13 @@ class BarterQweenApp extends StatelessWidget {
   const BarterQweenApp({super.key});
   @override
   Widget build(BuildContext context) {
+    // Set system UI overlay style
+    SystemChrome.setSystemUIOverlayStyle(AppTheme.darkStatusBar);
+    
     return MaterialApp(
       title: 'Barter Qween',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6750A4)), useMaterial3: true),
+      theme: AppTheme.lightTheme,
       initialRoute: RouteNames.splash,
       onGenerateRoute: (s) {
         switch (s.name) {
@@ -65,16 +72,49 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.swap_horiz_rounded, size: 100, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 24),
-            Text('Barter Qween', style: Theme.of(context).textTheme.headlineLarge),
-            const SizedBox(height: 48),
-            const CircularProgressIndicator(),
-          ],
+      backgroundColor: AppColors.background,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppColors.backgroundGradient,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Brand icon with subtle animation potential
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: const Icon(
+                  Icons.swap_horiz_rounded,
+                  size: 60,
+                  color: AppColors.textOnPrimary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Barter Qween',
+                style: AppTextStyles.displayMedium.copyWith(
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Trade with Confidence',
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 48),
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            ],
+          ),
         ),
       ),
     );
