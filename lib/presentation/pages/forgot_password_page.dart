@@ -1,24 +1,38 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/di/injection.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
 import '../../core/theme/app_shadows.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../blocs/auth/auth_bloc.dart';
+import '../blocs/auth/auth_event.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/custom_text_field.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
+class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<AuthBloc>(),
+      child: const ForgotPasswordView(),
+    );
+  }
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+class ForgotPasswordView extends StatefulWidget {
+  const ForgotPasswordView({super.key});
+
+  @override
+  State<ForgotPasswordView> createState() => _ForgotPasswordViewState();
+}
+
+class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  bool _isLoading = false;
-  bool _emailSent = false;
 
   @override
   void dispose() {
@@ -26,30 +40,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.dispose();
   }
 
-  Future<void> _handleResetPassword() async {
+  void _handleResetPassword() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
-      // TODO: Call resetPassword use case
-      await Future.delayed(const Duration(seconds: 2));
-      
-      setState(() {
-        _isLoading = false;
-        _emailSent = true;
-      });
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Password reset email sent to ${_emailController.text}'),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-            ),
-          ),
-        );
-      }
+      context.read<AuthBloc>().add(
+        AuthResetPasswordRequested(email: _emailController.text.trim()),
+      );
     }
   }
 
@@ -58,62 +53,92 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final size = MediaQuery.of(context).size;
     
     return Scaffold(
-      body: Container(
-        width: size.width,
-        height: size.height,
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppDimensions.spacing24),
-            child: Column(
-              children: [
-                // Back Button
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.surface,
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthInitial) {
+            // Success
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Password reset email sent to ${_emailController.text}'),
+                backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                ),
+              ),
+            );
+            Navigator.of(context).pop();
+          } else if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            final isLoading = state is AuthLoading;
+            return Container(
+              width: size.width,
+              height: size.height,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+              ),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppDimensions.spacing24),
+                  child: Column(
+                    children: [
+                      // Back Button
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: AppColors.surface,
+                          ),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                      
+                      SizedBox(height: size.height * 0.05),
+                      
+                      // Icon
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+                          boxShadow: AppShadows.shadowLg,
+                        ),
+                        child: const Icon(
+                          Icons.lock_reset,
+                          size: 40,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      
+                      SizedBox(height: size.height * 0.04),
+                      
+                      // Glass Card
+                      _buildGlassCard(
+                        child: _buildFormView(isLoading),
+                      ),
+                    ],
                   ),
                 ),
-                
-                SizedBox(height: size.height * 0.05),
-                
-                // Icon
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-                    boxShadow: AppShadows.shadowLg,
-                  ),
-                  child: const Icon(
-                    Icons.lock_reset,
-                    size: 40,
-                    color: AppColors.primary,
-                  ),
-                ),
-                
-                SizedBox(height: size.height * 0.04),
-                
-                // Glass Card
-                _buildGlassCard(
-                  child: _emailSent ? _buildSuccessView() : _buildFormView(),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildFormView() {
+  Widget _buildFormView(bool isLoading) {
     return Form(
       key: _formKey,
       child: Column(
@@ -157,8 +182,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           // Reset Button
           PrimaryButton(
             text: 'Send Reset Link',
-            onPressed: _isLoading ? null : _handleResetPassword,
-            isLoading: _isLoading,
+            onPressed: isLoading ? null : _handleResetPassword,
+            isLoading: isLoading,
           ),
           
           const SizedBox(height: AppDimensions.spacing16),
@@ -178,55 +203,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  Widget _buildSuccessView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Icon(
-          Icons.check_circle_outline,
-          size: 80,
-          color: AppColors.success,
-        ),
-        const SizedBox(height: AppDimensions.spacing24),
-        Text(
-          'Email Sent!',
-          style: AppTextStyles.headlineLarge,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppDimensions.spacing8),
-        Text(
-          'We\'ve sent password reset instructions to\n${_emailController.text}',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppDimensions.spacing32),
-        
-        PrimaryButton(
-          text: 'Back to Sign In',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        
-        const SizedBox(height: AppDimensions.spacing16),
-        
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _emailSent = false;
-              _emailController.clear();
-            });
-          },
-          child: Text(
-            'Try Another Email',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildGlassCard({required Widget child}) {
     return ClipRRect(

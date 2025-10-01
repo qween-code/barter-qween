@@ -197,13 +197,8 @@ class _LoginViewState extends State<LoginView> {
                             // Google Sign In
                             SecondaryButton(
                               text: 'Continue with Google',
-                              onPressed: () {
-                                // TODO: Implement Google Sign In
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Google Sign In - Coming Soon!'),
-                                  ),
-                                );
+                              onPressed: isLoading ? null : () {
+                                context.read<AuthBloc>().add(AuthGoogleSignInRequested());
                               },
                               customIcon: Image.asset(
                                 'assets/images/google_logo.png',

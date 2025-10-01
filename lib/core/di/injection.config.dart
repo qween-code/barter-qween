@@ -104,6 +104,8 @@ extension GetItInjectableX on _i174.GetIt {
         registerUseCase: gh<_i265.RegisterUseCase>(),
         logoutUseCase: gh<_i537.LogoutUseCase>(),
         getCurrentUserUseCase: gh<_i599.GetCurrentUserUseCase>(),
+        googleSignInUseCase: gh<_i418.GoogleSignInUseCase>(),
+        resetPasswordUseCase: gh<_i668.ResetPasswordUseCase>(),
       ),
     );
     return this;
