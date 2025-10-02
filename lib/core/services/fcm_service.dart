@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:io' show Platform;
+import 'package:barter_qween/core/routes/route_names.dart';
+import 'package:barter_qween/main.dart' show navigatorKey;
 
 /// Service for handling Firebase Cloud Messaging
 @lazySingleton
@@ -154,36 +156,43 @@ class FCMService {
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
     print('📲 Notification tapped: ${message.data}');
-    
     final data = message.data;
     final type = data['type'] as String?;
     final entityId = data['entityId'] as String?;
 
-    // Navigate based on notification type
-    // TODO: Implement navigation logic
+    // Minimal deep-link routing: send user to dashboard for now.
+    // Future: add specific named routes for trade/chat/item using entityId.
+    final nav = navigatorKey.currentState;
+    if (nav != null) {
+      nav.pushNamedAndRemoveUntil(RouteNames.dashboard, (route) => route.isFirst);
+    }
+
+    // Keep logs for future mapping refinement
     switch (type) {
       case 'new_trade_offer':
       case 'trade_accepted':
       case 'trade_rejected':
-        // Navigate to trade detail
-        print('Navigate to trade: $entityId');
+        print('Intended nav: trade detail $entityId');
         break;
       case 'new_message':
-        // Navigate to chat
-        print('Navigate to chat: $entityId');
+        print('Intended nav: chat $entityId');
         break;
       case 'item_liked':
       case 'item_sold':
-        // Navigate to item detail
-        print('Navigate to item: $entityId');
+        print('Intended nav: item detail $entityId');
         break;
+      default:
+        print('Intended nav: dashboard');
     }
   }
 
   /// Handle local notification tap
   void _onNotificationTap(NotificationResponse response) {
     print('📲 Local notification tapped: ${response.payload}');
-    // TODO: Parse payload and navigate
+    final nav = navigatorKey.currentState;
+    if (nav != null) {
+      nav.pushNamedAndRemoveUntil(RouteNames.dashboard, (route) => route.isFirst);
+    }
   }
 
   /// Subscribe to topic
