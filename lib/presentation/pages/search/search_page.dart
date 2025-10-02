@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/search/search_bloc.dart';
 import '../../blocs/search/search_event.dart';
 import '../../blocs/search/search_state.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_dimensions.dart';
-import '../../core/theme/app_text_styles.dart';
-import '../../widgets/item/item_card.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_dimensions.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../widgets/items/item_card_widget.dart';
 import '../items/item_detail_page.dart';
 
 /// Main search page
@@ -196,13 +196,13 @@ class _SearchPageState extends State<SearchPage> {
             itemCount: state.items.length,
             itemBuilder: (context, index) {
               final item = state.items[index];
-              return ItemCard(
+              return ItemCardWidget(
                 item: item,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ItemDetailPage(item: item),
+                      builder: (context) => ItemDetailPage(itemId: item.id),
                     ),
                   );
                 },

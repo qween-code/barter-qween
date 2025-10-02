@@ -39,10 +39,13 @@ class SearchRepositoryImpl implements SearchRepository {
           timestamp: DateTime.now(),
         );
         
+        // Convert ItemModel list to ItemEntity list
+        final itemEntities = items.map((model) => model.toEntity()).toList();
+        
         final result = SearchResultEntity(
-          items: items,
-          totalCount: items.length,
-          hasMore: items.length >= filters.limit,
+          items: itemEntities,
+          totalCount: itemEntities.length,
+          hasMore: itemEntities.length >= filters.limit,
           metadata: metadata,
         );
         

@@ -50,6 +50,36 @@ class ItemModel {
     this.tradePreference,
   });
 
+  // From JSON (for search results)
+  factory ItemModel.fromJson(Map<String, dynamic> data) {
+    return ItemModel(
+      id: data['id'] ?? '',
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      category: data['category'] ?? '',
+      subcategory: data['subcategory'],
+      images: List<String>.from(data['images'] ?? []),
+      condition: data['condition'],
+      price: data['price']?.toDouble(),
+      color: data['color'],
+      ownerId: data['ownerId'] ?? '',
+      ownerName: data['ownerName'] ?? '',
+      ownerPhotoUrl: data['ownerPhotoUrl'],
+      location: data['location'],
+      city: data['city'],
+      status: data['status'] ?? 'active',
+      createdAt: data['createdAt'] is Timestamp 
+          ? data['createdAt'] 
+          : Timestamp.now(),
+      updatedAt: data['updatedAt'] is Timestamp ? data['updatedAt'] : null,
+      viewCount: data['viewCount'] ?? 0,
+      favoriteCount: data['favoriteCount'] ?? 0,
+      tags: data['tags'] != null ? List<String>.from(data['tags']) : null,
+      isFeatured: data['isFeatured'] ?? false,
+      tradePreference: data['tradePreference'],
+    );
+  }
+
   // From Firestore Document
   factory ItemModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

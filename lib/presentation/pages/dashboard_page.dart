@@ -12,11 +12,13 @@ import '../blocs/profile/profile_bloc.dart';
 import '../blocs/trade/trade_bloc.dart';
 import '../blocs/trade/trade_event.dart';
 import '../blocs/trade/trade_state.dart';
+import '../blocs/search/search_bloc.dart';
 import 'chat/conversations_list_page.dart';
 import 'explore/explore_page.dart';
 import 'items/create_item_page.dart';
 import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
+import 'search/search_page.dart';
 import 'trades/trades_page.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -146,7 +148,23 @@ class HomeTab extends StatelessWidget {
         SliverAppBar(
           floating: true,
           title: const Text('Barter Qween'),
-          actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {}), IconButton(icon: const Icon(Icons.notifications_outlined), onPressed: () {})],
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (_) => getIt<SearchBloc>(),
+                      child: const SearchPage(),
+                    ),
+                  ),
+                );
+              },
+            ),
+            IconButton(icon: const Icon(Icons.notifications_outlined), onPressed: () {}),
+          ],
         ),
         SliverPadding(
           padding: const EdgeInsets.all(16),
