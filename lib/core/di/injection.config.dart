@@ -16,16 +16,21 @@ import 'package:barter_qween/data/datasources/remote/item_remote_datasource.dart
     as _i72;
 import 'package:barter_qween/data/datasources/remote/profile_remote_datasource.dart'
     as _i512;
+import 'package:barter_qween/data/datasources/remote/trade_remote_datasource.dart'
+    as _i411;
 import 'package:barter_qween/data/repositories/auth_repository_impl.dart'
     as _i828;
 import 'package:barter_qween/data/repositories/item_repository_impl.dart'
     as _i703;
 import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
     as _i673;
+import 'package:barter_qween/data/repositories/trade_repository_impl.dart'
+    as _i429;
 import 'package:barter_qween/domain/repositories/auth_repository.dart' as _i113;
 import 'package:barter_qween/domain/repositories/item_repository.dart' as _i754;
 import 'package:barter_qween/domain/repositories/profile_repository.dart'
     as _i1043;
+import 'package:barter_qween/domain/repositories/trade_repository.dart' as _i48;
 import 'package:barter_qween/domain/usecases/auth/get_current_user_usecase.dart'
     as _i599;
 import 'package:barter_qween/domain/usecases/auth/google_sign_in_usecase.dart'
@@ -53,10 +58,13 @@ import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart
     as _i303;
 import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
     as _i576;
+import 'package:barter_qween/domain/usecases/trade/trade_usecases.dart'
+    as _i773;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
 import 'package:barter_qween/presentation/blocs/item/item_bloc.dart' as _i1004;
 import 'package:barter_qween/presentation/blocs/profile/profile_bloc.dart'
     as _i527;
+import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart' as _i503;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:firebase_storage/firebase_storage.dart' as _i457;
@@ -116,6 +124,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1043.ProfileRepository>(
       () => _i673.ProfileRepositoryImpl(gh<_i512.ProfileRemoteDataSource>()),
+    );
+    gh.lazySingleton<_i411.TradeRemoteDataSource>(
+      () => _i411.TradeRemoteDataSourceImpl(
+        firestore: gh<_i974.FirebaseFirestore>(),
+      ),
     );
     gh.lazySingleton<_i113.AuthRepository>(
       () => _i828.AuthRepositoryImpl(
@@ -186,6 +199,11 @@ extension GetItInjectableX on _i174.GetIt {
         uploadAvatarUseCase: gh<_i576.UploadAvatarUseCase>(),
       ),
     );
+    gh.lazySingleton<_i48.TradeRepository>(
+      () => _i429.TradeRepositoryImpl(
+        remoteDataSource: gh<_i411.TradeRemoteDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i599.GetCurrentUserUseCase>(
       () => _i599.GetCurrentUserUseCase(gh<_i113.AuthRepository>()),
     );
@@ -218,6 +236,61 @@ extension GetItInjectableX on _i174.GetIt {
         getCurrentUserUseCase: gh<_i599.GetCurrentUserUseCase>(),
         googleSignInUseCase: gh<_i418.GoogleSignInUseCase>(),
         resetPasswordUseCase: gh<_i668.ResetPasswordUseCase>(),
+      ),
+    );
+    gh.factory<_i773.SendTradeOfferUseCase>(
+      () => _i773.SendTradeOfferUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.AcceptTradeOfferUseCase>(
+      () => _i773.AcceptTradeOfferUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.RejectTradeOfferUseCase>(
+      () => _i773.RejectTradeOfferUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.CancelTradeOfferUseCase>(
+      () => _i773.CancelTradeOfferUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.CompleteTradeUseCase>(
+      () => _i773.CompleteTradeUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetTradeOfferUseCase>(
+      () => _i773.GetTradeOfferUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetUserTradeOffersUseCase>(
+      () => _i773.GetUserTradeOffersUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetSentTradeOffersUseCase>(
+      () => _i773.GetSentTradeOffersUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetReceivedTradeOffersUseCase>(
+      () => _i773.GetReceivedTradeOffersUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetTradeOffersByStatusUseCase>(
+      () => _i773.GetTradeOffersByStatusUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetItemTradeHistoryUseCase>(
+      () => _i773.GetItemTradeHistoryUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i773.GetPendingReceivedCountUseCase>(
+      () => _i773.GetPendingReceivedCountUseCase(gh<_i48.TradeRepository>()),
+    );
+    gh.factory<_i503.TradeBloc>(
+      () => _i503.TradeBloc(
+        sendTradeOfferUseCase: gh<_i773.SendTradeOfferUseCase>(),
+        acceptTradeOfferUseCase: gh<_i773.AcceptTradeOfferUseCase>(),
+        rejectTradeOfferUseCase: gh<_i773.RejectTradeOfferUseCase>(),
+        cancelTradeOfferUseCase: gh<_i773.CancelTradeOfferUseCase>(),
+        completeTradeUseCase: gh<_i773.CompleteTradeUseCase>(),
+        getTradeOfferUseCase: gh<_i773.GetTradeOfferUseCase>(),
+        getUserTradeOffersUseCase: gh<_i773.GetUserTradeOffersUseCase>(),
+        getSentTradeOffersUseCase: gh<_i773.GetSentTradeOffersUseCase>(),
+        getReceivedTradeOffersUseCase:
+            gh<_i773.GetReceivedTradeOffersUseCase>(),
+        getTradeOffersByStatusUseCase:
+            gh<_i773.GetTradeOffersByStatusUseCase>(),
+        getItemTradeHistoryUseCase: gh<_i773.GetItemTradeHistoryUseCase>(),
+        getPendingReceivedCountUseCase:
+            gh<_i773.GetPendingReceivedCountUseCase>(),
       ),
     );
     return this;
