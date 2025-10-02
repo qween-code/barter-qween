@@ -9,7 +9,6 @@ import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../blocs/rating/rating_bloc.dart';
 import '../../blocs/rating/rating_event.dart';
-import '../../blocs/rating/rating_state.dart';
 import '../../widgets/rating_dialog.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/services/analytics_service.dart';

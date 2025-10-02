@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/services/analytics_service.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';

@@ -1,8 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/failures.dart';
-import '../../../domain/entities/notification_entity.dart';
-import '../../../domain/repositories/notification_repository.dart';
+import '../../../domain/usecases/notifications/get_notifications_usecase.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
