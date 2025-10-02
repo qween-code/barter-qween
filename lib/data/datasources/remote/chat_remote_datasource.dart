@@ -93,7 +93,6 @@ class ChatRemoteDataSource {
       throw ServerException('Failed to get or create conversation: $e');
     }
   }
-  }
 
   /// Get messages for a conversation as a stream (real-time updates)
   Stream<List<MessageModel>> getMessagesStream(
