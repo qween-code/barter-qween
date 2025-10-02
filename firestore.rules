@@ -31,11 +31,20 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == request.resource.data.senderId;
     }
     
-    // Trades - only participants can read/write
+    // Trades - only participants (from/to users) can read/write
     match /trades/{tradeId} {
-      allow read: if request.auth != null && (request.auth.uid == resource.data.initiatorId || request.auth.uid == resource.data.receiverId);
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.initiatorId;
-      allow update: if request.auth != null && (request.auth.uid == resource.data.initiatorId || request.auth.uid == resource.data.receiverId);
+      allow read: if request.auth != null && 
+                    (request.auth.uid == resource.data.fromUserId || 
+                     request.auth.uid == resource.data.toUserId);
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.fromUserId &&
+                      request.resource.data.status == 'pending';
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.fromUserId || 
+                       request.auth.uid == resource.data.toUserId) &&
+                      // Only allow status updates by appropriate user
+                      (request.auth.uid == resource.data.toUserId || 
+                       request.resource.data.status in ['cancelled', 'completed']);
     }
     
     // Reviews - anyone can read, only reviewers can write
