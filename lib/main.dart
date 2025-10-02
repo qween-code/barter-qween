@@ -12,10 +12,10 @@ import 'core/theme/app_text_styles.dart';
 import 'core/utils/preferences_keys.dart';
 import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';
-import 'presentation/pages/login_page.dart';
-import 'presentation/pages/onboarding_page.dart';
-import 'presentation/pages/register_page.dart';
-import 'presentation/pages/forgot_password_page.dart';
+import 'presentation/pages/auth/login_page.dart';
+import 'presentation/pages/onboarding/onboarding_page.dart';
+import 'presentation/pages/auth/register_page.dart';
+import 'presentation/pages/auth/forgot_password_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
