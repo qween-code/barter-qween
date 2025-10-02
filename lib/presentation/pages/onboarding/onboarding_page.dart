@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../auth/login_page.dart';
+import '../login_page.dart';
 
 /// Onboarding page with 3 slides introducing the app
 class OnboardingPage extends StatefulWidget {

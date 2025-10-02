@@ -49,6 +49,9 @@ class ItemEntity extends Equatable {
     this.tradePreference,
   });
 
+  /// Alias for price field (for compatibility)
+  double? get estimatedValue => price;
+
   ItemEntity copyWith({
     String? id,
     String? title,

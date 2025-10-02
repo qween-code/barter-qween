@@ -13,6 +13,13 @@ class AppColors {
   static const Color primaryDark = Color(0xFF004853);
   
   // ============================================
+  // SECONDARY COLORS - Purple (Premium)
+  // ============================================
+  static const Color secondary = Color(0xFF7950F2);
+  static const Color secondaryLight = Color(0xFF9775FA);
+  static const Color secondaryDark = Color(0xFF5F3DC4);
+  
+  // ============================================
   // ACCENT COLORS - Coral (Energy, Exchange)
   // ============================================
   static const Color accent = Color(0xFFFF6B6B);
