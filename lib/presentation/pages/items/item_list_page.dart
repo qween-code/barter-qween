@@ -20,6 +20,8 @@ class _ItemListPageState extends State<ItemListPage> {
   bool _isGridView = true;
   String? _selectedCategory;
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _ItemListPageState extends State<ItemListPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -41,6 +44,7 @@ class _ItemListPageState extends State<ItemListPage> {
         controller: _scrollController,
         slivers: [
           _buildAppBar(context),
+          _buildSearchBar(),
           _buildCategoryFilter(),
           _buildItemsList(),
         ],
@@ -197,6 +201,54 @@ class _ItemListPageState extends State<ItemListPage> {
     );
   }
 
+  Widget _buildSearchBar() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        child: TextField(
+          controller: _searchController,
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value.toLowerCase();
+            });
+          },
+          decoration: InputDecoration(
+            hintText: 'Search items...',
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                  )
+                : null,
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<ItemEntity> _filterItems(List<ItemEntity> items) {
+    if (_searchQuery.isEmpty) return items;
+    
+    return items.where((item) {
+      return item.title.toLowerCase().contains(_searchQuery) ||
+             item.description.toLowerCase().contains(_searchQuery) ||
+             item.category.toLowerCase().contains(_searchQuery);
+    }).toList();
+  }
+
   Widget _buildItemsList() {
     return BlocBuilder<ItemBloc, ItemState>(
       builder: (context, state) {
@@ -233,7 +285,9 @@ class _ItemListPageState extends State<ItemListPage> {
         }
 
         if (state is ItemsLoaded) {
-          if (state.items.isEmpty) {
+          final filteredItems = _filterItems(state.items);
+          
+          if (filteredItems.isEmpty) {
             return SliverFillRemaining(
               child: Center(
                 child: Column(
@@ -242,14 +296,14 @@ class _ItemListPageState extends State<ItemListPage> {
                     Icon(Icons.inventory_2_outlined,
                         size: 80, color: Colors.grey.shade300),
                     const SizedBox(height: 16),
-                    const Text(
-                      'No items found',
-                      style: TextStyle(fontSize: 18, color: Colors.black54),
+                    Text(
+                      _searchQuery.isNotEmpty ? 'No items match your search' : 'No items found',
+                      style: const TextStyle(fontSize: 18, color: Colors.black54),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Be the first to create an item!',
-                      style: TextStyle(fontSize: 14, color: Colors.black38),
+                    Text(
+                      _searchQuery.isNotEmpty ? 'Try different keywords' : 'Be the first to create an item!',
+                      style: const TextStyle(fontSize: 14, color: Colors.black38),
                     ),
                   ],
                 ),
@@ -258,8 +312,8 @@ class _ItemListPageState extends State<ItemListPage> {
           }
 
           return _isGridView
-              ? _buildGridView(state.items)
-              : _buildListView(state.items);
+              ? _buildGridView(filteredItems)
+              : _buildListView(filteredItems);
         }
 
         return const SliverFillRemaining(

@@ -7,6 +7,8 @@ import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/item/item_bloc.dart';
 import '../blocs/trade/trade_bloc.dart';
+import '../blocs/trade/trade_event.dart';
+import '../blocs/trade/trade_state.dart';
 import 'items/create_item_page.dart';
 import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
@@ -17,8 +19,11 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested())),
+        BlocProvider(create: (_) => getIt<TradeBloc>()),
+      ],
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthUnauthenticated) {
@@ -40,11 +45,33 @@ class DashboardView extends StatefulWidget {
 
 class _DashboardViewState extends State<DashboardView> {
   int _currentIndex = 0;
+  int _pendingTradeCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPendingTradeCount();
+  }
+
+  void _loadPendingTradeCount() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      context.read<TradeBloc>().add(LoadPendingReceivedCount(authState.user.uid));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
+    return BlocListener<TradeBloc, TradeState>(
+      listener: (context, state) {
+        if (state is PendingCountLoaded) {
+          setState(() {
+            _pendingTradeCount = state.count;
+          });
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(
         index: _currentIndex,
         children: [
           BlocProvider(
@@ -63,15 +90,30 @@ class _DashboardViewState extends State<DashboardView> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explore'),
-          NavigationDestination(icon: Icon(Icons.swap_horiz_outlined), selectedIcon: Icon(Icons.swap_horiz), label: 'Trades'),
-          NavigationDestination(icon: Icon(Icons.message_outlined), selectedIcon: Icon(Icons.message), label: 'Messages'),
-          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
+        destinations: [
+          const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          const NavigationDestination(icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explore'),
+          NavigationDestination(
+            icon: _pendingTradeCount > 0
+                ? Badge(
+                    label: Text('$_pendingTradeCount'),
+                    child: const Icon(Icons.swap_horiz_outlined),
+                  )
+                : const Icon(Icons.swap_horiz_outlined),
+            selectedIcon: _pendingTradeCount > 0
+                ? Badge(
+                    label: Text('$_pendingTradeCount'),
+                    child: const Icon(Icons.swap_horiz),
+                  )
+                : const Icon(Icons.swap_horiz),
+            label: 'Trades',
+          ),
+          const NavigationDestination(icon: Icon(Icons.message_outlined), selectedIcon: Icon(Icons.message), label: 'Messages'),
+          const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
       floatingActionButton: null, // FAB moved to ItemListPage
+      ),
     );
   }
 }
