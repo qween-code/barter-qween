@@ -154,8 +154,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (message) {
         print('✅ ChatBloc: Message sent successfully - ${message.id}');
         emit(MessageSent(message));
-        // Reload messages to show the new message
-        add(LoadMessages(event.conversationId));
+        // Don't reload - the stream will automatically emit new messages
       },
     );
   }

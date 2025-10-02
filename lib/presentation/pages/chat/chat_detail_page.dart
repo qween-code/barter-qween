@@ -34,6 +34,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   bool _isLoadingUserName = true;
   String? _listingTitle;
   String? _listingImage;
+  List<MessageEntity>? _lastLoadedMessages; // Cache last messages
 
   @override
   void initState() {
@@ -189,7 +190,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 }
               },
               builder: (context, state) {
-                if (state is ChatLoading) {
+                // Cache messages when loaded
+                if (state is MessagesLoaded) {
+                  _lastLoadedMessages = state.messages;
+                }
+                
+                // Show loading only if we don't have cached messages
+                if (state is ChatLoading && _lastLoadedMessages == null) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
@@ -222,48 +229,49 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   );
                 }
 
-                if (state is MessagesLoaded) {
-                  if (state.messages.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.chat_bubble_outline,
-                              size: 80, color: AppColors.textTertiary),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No messages yet',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: AppColors.textSecondary,
-                            ),
+                // Display messages (from current state or cache)
+                final messages = (state is MessagesLoaded) 
+                    ? state.messages 
+                    : _lastLoadedMessages;
+                    
+                if (messages == null || messages.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.chat_bubble_outline,
+                            size: 80, color: AppColors.textTertiary),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No messages yet',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: AppColors.textSecondary,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Say hello!',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textTertiary,
-                            ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Say hello!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textTertiary,
                           ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    controller: _scrollController,
-                    reverse: true,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: state.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = state.messages[index];
-                      return _buildMessageBubble(message);
-                    },
+                        ),
+                      ],
+                    ),
                   );
                 }
 
-                return const SizedBox.shrink();
+                return ListView.builder(
+                  controller: _scrollController,
+                  reverse: true,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    return _buildMessageBubble(message);
+                  },
+                );
               },
             ),
           ),
