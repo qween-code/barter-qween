@@ -55,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
+            Navigator.of(context).pushReplacementNamed(RouteNames.dashboard);
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

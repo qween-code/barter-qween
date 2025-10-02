@@ -58,7 +58,7 @@ class _RegisterViewState extends State<RegisterView> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
-            Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
+            Navigator.of(context).pushReplacementNamed(RouteNames.dashboard);
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
