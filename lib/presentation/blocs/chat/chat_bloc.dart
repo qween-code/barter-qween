@@ -97,15 +97,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       GetMessagesParams(conversationId: event.conversationId),
     ).listen(
       (result) async {
-        if (emit.isDone) return;
+        print('📥 ChatBloc: Stream update received. emit.isDone: ${emit.isDone}');
+        if (emit.isDone) {
+          print('⚠️ ChatBloc: Skipping emit because emit.isDone is true');
+          return;
+        }
         result.fold(
           (failure) {
             print('❌ ChatBloc: Failed to load messages - ${failure.message}');
             if (!emit.isDone) emit(ChatError(failure.message));
           },
           (messages) {
-            if (emit.isDone) return;
-            print('✅ ChatBloc: Loaded ${messages.length} messages');
+            if (emit.isDone) {
+              print('⚠️ ChatBloc: Skipping emit (messages) because emit.isDone is true');
+              return;
+            }
+            print('✅ ChatBloc: Loaded ${messages.length} messages, emitting MessagesLoaded state');
             // Sort messages by date (newest first)
             final sortedMessages = List.of(messages)
               ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -114,6 +121,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
               conversationId: event.conversationId,
               messages: sortedMessages,
             ));
+            print('✅ ChatBloc: MessagesLoaded state emitted with ${sortedMessages.length} messages');
           },
         );
       },
