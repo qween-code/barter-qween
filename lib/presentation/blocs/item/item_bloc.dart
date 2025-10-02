@@ -33,6 +33,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     on<DeleteItem>(_onDeleteItem);
     on<SearchItems>(_onSearchItems);
     on<LoadFeaturedItems>(_onLoadFeaturedItems);
+    on<FilterItems>(_onFilterItems);
   }
 
   Future<void> _onLoadAllItems(
@@ -131,6 +132,67 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     result.fold(
       (failure) => emit(ItemError(failure.message)),
       (items) => emit(ItemsLoaded(items)),
+    );
+  }
+
+  Future<void> _onFilterItems(
+    FilterItems event,
+    Emitter<ItemState> emit,
+  ) async {
+    emit(const ItemLoading());
+    
+    // Get all items first
+    final result = await getAllItemsUseCase();
+    
+    result.fold(
+      (failure) => emit(ItemError(failure.message)),
+      (items) {
+        var filteredItems = items;
+
+        // Apply category filter
+        if (event.categories != null && event.categories!.isNotEmpty) {
+          filteredItems = filteredItems.where((item) {
+            return event.categories!.contains(item.category);
+          }).toList();
+        }
+
+        // Apply condition filter
+        if (event.condition != null) {
+          filteredItems = filteredItems.where((item) {
+            return item.condition?.toLowerCase() == event.condition!.toLowerCase();
+          }).toList();
+        }
+
+        // Apply price range filter
+        if (event.minPrice != null || event.maxPrice != null) {
+          filteredItems = filteredItems.where((item) {
+            final itemPrice = item.estimatedValue ?? 0;
+            final min = event.minPrice ?? 0;
+            final max = event.maxPrice ?? double.infinity;
+            return itemPrice >= min && itemPrice <= max;
+          }).toList();
+        }
+
+        // Apply sorting
+        if (event.sortBy != null) {
+          switch (event.sortBy) {
+            case 'newest':
+              filteredItems.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+              break;
+            case 'oldest':
+              filteredItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+              break;
+            case 'popular':
+              filteredItems.sort((a, b) => (b.viewCount ?? 0).compareTo(a.viewCount ?? 0));
+              break;
+            case 'nearest':
+              // For nearest, we'd need user location - for now just keep order
+              break;
+          }
+        }
+
+        emit(ItemsLoaded(filteredItems));
+      },
     );
   }
 }

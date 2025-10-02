@@ -78,3 +78,28 @@ class SearchItems extends ItemEvent {
 class LoadFeaturedItems extends ItemEvent {
   const LoadFeaturedItems();
 }
+
+class FilterItems extends ItemEvent {
+  final List<String>? categories;
+  final String? condition;
+  final double? minPrice;
+  final double? maxPrice;
+  final String? sortBy;
+
+  const FilterItems({
+    this.categories,
+    this.condition,
+    this.minPrice,
+    this.maxPrice,
+    this.sortBy,
+  });
+
+  @override
+  List<Object?> get props => [
+        categories,
+        condition,
+        minPrice,
+        maxPrice,
+        sortBy,
+      ];
+}

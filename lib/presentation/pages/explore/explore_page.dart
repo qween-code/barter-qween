@@ -618,85 +618,438 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   String? _selectedCondition;
   RangeValues _priceRange = const RangeValues(0, 1000);
   String _sortBy = 'newest';
+  List<String> _selectedCategories = [];
+
+  final List<String> _allCategories = [
+    'Electronics',
+    'Fashion',
+    'Home',
+    'Books',
+    'Sports',
+    'Toys',
+    'Other',
+  ];
+
+  final List<String> _conditions = ['New', 'Like New', 'Good', 'Fair'];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Filters', style: AppTextStyles.titleLarge),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedCondition = null;
-                    _priceRange = const RangeValues(0, 1000);
-                    _sortBy = 'newest';
-                  });
-                },
-                child: const Text('Reset'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Text('Condition', style: AppTextStyles.titleSmall),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            children: ['New', 'Like New', 'Good', 'Fair'].map((condition) {
-              final isSelected = _selectedCondition == condition;
-              return FilterChip(
-                label: Text(condition),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    _selectedCondition = selected ? condition : null;
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
-          Text('Sort By', style: AppTextStyles.titleSmall),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            value: _sortBy,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          // Header with drag handle
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Filters',
+                        style: AppTextStyles.titleLarge.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          TextButton.icon(
+                            onPressed: _resetFilters,
+                            icon: const Icon(Icons.refresh, size: 18),
+                            label: const Text('Reset'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: const Icon(Icons.close),
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.grey[100],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            items: const [
-              DropdownMenuItem(value: 'newest', child: Text('Newest First')),
-              DropdownMenuItem(value: 'oldest', child: Text('Oldest First')),
-              DropdownMenuItem(value: 'popular', child: Text('Most Popular')),
-              DropdownMenuItem(value: 'nearest', child: Text('Nearest First')),
-            ],
-            onChanged: (value) {
-              setState(() {
-                _sortBy = value!;
-              });
-            },
           ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // Apply filters
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+          const Divider(height: 1),
+
+          // Scrollable content
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Categories Section
+                  _buildSectionTitle('Categories', Icons.category),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _allCategories.map((category) {
+                      final isSelected = _selectedCategories.contains(category);
+                      return _buildCategoryChip(category, isSelected);
+                    }).toList(),
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Condition Section
+                  _buildSectionTitle('Condition', Icons.star_outline),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _conditions.map((condition) {
+                      final isSelected = _selectedCondition == condition;
+                      return _buildConditionChip(condition, isSelected);
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Price Range Section
+                  _buildSectionTitle('Estimated Value', Icons.attach_money),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${_priceRange.start.toInt()} - \$${_priceRange.end.toInt()}',
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  RangeSlider(
+                    values: _priceRange,
+                    min: 0,
+                    max: 1000,
+                    divisions: 20,
+                    activeColor: AppColors.primary,
+                    inactiveColor: AppColors.primary.withOpacity(0.2),
+                    labels: RangeLabels(
+                      '\$${_priceRange.start.toInt()}',
+                      '\$${_priceRange.end.toInt()}',
+                    ),
+                    onChanged: (RangeValues values) {
+                      setState(() {
+                        _priceRange = values;
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Sort By Section
+                  _buildSectionTitle('Sort By', Icons.sort),
+                  const SizedBox(height: 12),
+                  _buildSortOptions(),
+
+                  const SizedBox(height: 16),
+                ],
               ),
-              child: const Text('Apply Filters'),
+            ),
+          ),
+
+          // Bottom action buttons
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  offset: const Offset(0, -2),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _applyFilters,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.check_circle_outline),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Apply Filters',
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: AppTextStyles.titleSmall.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryChip(String category, bool isSelected) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            if (isSelected) {
+              _selectedCategories.remove(category);
+            } else {
+              _selectedCategories.add(category);
+            }
+          });
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary : Colors.grey[100],
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? AppColors.primary : Colors.grey[300]!,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isSelected) const Icon(Icons.check, size: 16, color: Colors.white),
+              if (isSelected) const SizedBox(width: 6),
+              Text(
+                category,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConditionChip(String condition, bool isSelected) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _selectedCondition = isSelected ? null : condition;
+          });
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.secondary : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? AppColors.secondary : Colors.grey[300]!,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isSelected) const Icon(Icons.check_circle, size: 16, color: Colors.white),
+              if (isSelected) const SizedBox(width: 6),
+              Text(
+                condition,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSortOptions() {
+    final sortOptions = [
+      {'value': 'newest', 'label': 'Newest First', 'icon': Icons.access_time},
+      {'value': 'oldest', 'label': 'Oldest First', 'icon': Icons.history},
+      {'value': 'popular', 'label': 'Most Popular', 'icon': Icons.trending_up},
+      {'value': 'nearest', 'label': 'Nearest First', 'icon': Icons.location_on},
+    ];
+
+    return Column(
+      children: sortOptions.map((option) {
+        final isSelected = _sortBy == option['value'];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _sortBy = option['value'] as String;
+                });
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : Colors.grey[200]!,
+                    width: 2,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      option['icon'] as IconData,
+                      color: isSelected ? AppColors.primary : Colors.grey[600],
+                      size: 20,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        option['label'] as String,
+                        style: TextStyle(
+                          color: isSelected ? AppColors.primary : Colors.black87,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    if (isSelected)
+                      Icon(
+                        Icons.check_circle,
+                        color: AppColors.primary,
+                        size: 20,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  void _resetFilters() {
+    setState(() {
+      _selectedCondition = null;
+      _priceRange = const RangeValues(0, 1000);
+      _sortBy = 'newest';
+      _selectedCategories.clear();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.refresh, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Filters reset'),
+          ],
+        ),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.grey[800],
+      ),
+    );
+  }
+
+  void _applyFilters() {
+    Navigator.pop(context);
+
+    // Build filter message
+    final filterParts = <String>[];
+    if (_selectedCategories.isNotEmpty) {
+      filterParts.add('${_selectedCategories.length} categories');
+    }
+    if (_selectedCondition != null) {
+      filterParts.add(_selectedCondition!);
+    }
+    if (_priceRange.start > 0 || _priceRange.end < 1000) {
+      filterParts.add('\$${_priceRange.start.toInt()}-\$${_priceRange.end.toInt()}');
+    }
+
+    final filterMessage = filterParts.isEmpty
+        ? 'No filters applied'
+        : 'Filters: ${filterParts.join(', ')}';
+
+    // Apply to ItemBloc
+    context.read<ItemBloc>().add(FilterItems(
+      categories: _selectedCategories.isNotEmpty ? _selectedCategories : null,
+      condition: _selectedCondition,
+      minPrice: _priceRange.start,
+      maxPrice: _priceRange.end,
+      sortBy: _sortBy,
+    ));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.filter_list, color: Colors.white),
+            const SizedBox(width: 8),
+            Expanded(child: Text(filterMessage)),
+          ],
+        ),
+        duration: const Duration(seconds: 3),
+        backgroundColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
