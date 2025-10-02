@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/services/analytics_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
@@ -44,6 +45,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     if (authState is AuthAuthenticated) {
       _currentUserId = authState.user.uid;
     }
+    
+    // Log item view
+    try {
+      getIt<AnalyticsService>().logItemViewed(itemId: widget.itemId);
+    } catch (_) {}
   }
 
   @override
@@ -593,6 +599,11 @@ ${item.description}
       
       favoriteBloc.add(ToggleFavorite(authState.user.uid, itemId));
       
+      // Log analytics
+      try {
+        getIt<AnalyticsService>().logFavoriteToggled(itemId: itemId, added: !wasFavorited);
+      } catch (_) {}
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -607,6 +618,11 @@ ${item.description}
   }
 
   void _viewOwnerProfile(BuildContext context, String ownerId) {
+    // Log analytics
+    try {
+      getIt<AnalyticsService>().logProfileViewed(profileUserId: ownerId);
+    } catch (_) {}
+    
     Navigator.push(
       context,
       MaterialPageRoute(

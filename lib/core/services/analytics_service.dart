@@ -47,6 +47,68 @@ class AnalyticsService {
     await _analytics.logSearch(searchTerm: query);
   }
 
+  Future<void> logItemCreated({required String itemId, String? category}) async {
+    await _analytics.logEvent(name: 'item_created', parameters: {
+      'item_id': itemId,
+      if (category != null) 'category': category,
+    });
+  }
+
+  Future<void> logItemDeleted({required String itemId}) async {
+    await _analytics.logEvent(name: 'item_deleted', parameters: {
+      'item_id': itemId,
+    });
+  }
+
+  Future<void> logTradeAccepted({required String tradeId}) async {
+    await _analytics.logEvent(name: 'trade_accepted', parameters: {
+      'trade_id': tradeId,
+    });
+  }
+
+  Future<void> logTradeRejected({required String tradeId}) async {
+    await _analytics.logEvent(name: 'trade_rejected', parameters: {
+      'trade_id': tradeId,
+    });
+  }
+
+  Future<void> logTradeCompleted({required String tradeId}) async {
+    await _analytics.logEvent(name: 'trade_completed', parameters: {
+      'trade_id': tradeId,
+    });
+  }
+
+  Future<void> logUserRated({required String ratedUserId, required int rating}) async {
+    await _analytics.logEvent(name: 'user_rated', parameters: {
+      'rated_user_id': ratedUserId,
+      'rating': rating,
+    });
+  }
+
+  Future<void> logProfileViewed({required String profileUserId}) async {
+    await _analytics.logEvent(name: 'profile_viewed', parameters: {
+      'profile_user_id': profileUserId,
+    });
+  }
+
+  Future<void> logConversationStarted({required String conversationId, required String otherUserId}) async {
+    await _analytics.logEvent(name: 'conversation_started', parameters: {
+      'conversation_id': conversationId,
+      'other_user_id': otherUserId,
+    });
+  }
+
+  Future<void> logNotificationOpened({required String notificationType, String? entityId}) async {
+    await _analytics.logEvent(name: 'notification_opened', parameters: {
+      'notification_type': notificationType,
+      if (entityId != null) 'entity_id': entityId,
+    });
+  }
+
+  Future<void> logScreenView({required String screenName}) async {
+    await _analytics.logScreenView(screenName: screenName);
+  }
+
   Future<void> enableCollection(bool enabled) async {
     await _analytics.setAnalyticsCollectionEnabled(enabled);
   }

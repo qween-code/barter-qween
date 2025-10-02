@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import '../../../core/di/injection.dart';
+import '../../../core/services/analytics_service.dart';
 import '../../../domain/usecases/rating/create_rating_usecase.dart';
 import 'rating_event.dart';
 import 'rating_state.dart';
@@ -22,7 +24,17 @@ class RatingBloc extends Bloc<RatingEvent, RatingState> {
     );
     res.fold(
       (f) => emit(RatingError(f.message)),
-      (r) => emit(RatingSubmitted(r)),
+      (r) {
+        // Log analytics
+        try {
+          getIt<AnalyticsService>().logUserRated(
+            ratedUserId: e.toUserId,
+            rating: e.rating,
+          );
+        } catch (_) {}
+        
+        emit(RatingSubmitted(r));
+      },
     );
   }
 }

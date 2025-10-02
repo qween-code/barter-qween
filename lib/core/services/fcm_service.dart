@@ -5,6 +5,7 @@ import 'dart:io' show Platform;
 import 'package:barter_qween/core/routes/route_names.dart';
 import 'package:barter_qween/main.dart' show navigatorKey;
 import 'package:barter_qween/core/di/injection.dart';
+import 'package:barter_qween/core/services/analytics_service.dart';
 import 'package:flutter/material.dart';
 import 'package:barter_qween/presentation/pages/chat/conversations_list_page.dart';
 import 'package:barter_qween/presentation/pages/chat/chat_deeplink_page.dart';
@@ -171,6 +172,16 @@ class FCMService {
     final data = message.data;
     final type = data['type'] as String?;
     final entityId = data['entityId'] as String?;
+
+    // Log analytics for notification open
+    if (type != null) {
+      try {
+        getIt<AnalyticsService>().logNotificationOpened(
+          notificationType: type,
+          entityId: entityId,
+        );
+      } catch (_) {}
+    }
 
     final nav = navigatorKey.currentState;
     if (nav == null) return;

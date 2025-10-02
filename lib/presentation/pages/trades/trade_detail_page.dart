@@ -12,6 +12,7 @@ import '../../blocs/rating/rating_event.dart';
 import '../../blocs/rating/rating_state.dart';
 import '../../widgets/rating_dialog.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/services/analytics_service.dart';
 
 class TradeDetailPage extends StatelessWidget {
   final TradeOfferEntity offer;
@@ -570,6 +571,11 @@ class TradeDetailPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
+                // Log analytics
+                try {
+                  getIt<AnalyticsService>().logTradeAccepted(tradeId: offer.id);
+                } catch (_) {}
+                
                 context.read<TradeBloc>().add(AcceptTradeOffer(offer.id));
               },
               icon: const Icon(Icons.check),
@@ -677,6 +683,11 @@ class TradeDetailPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
+              // Log analytics
+              try {
+                getIt<AnalyticsService>().logTradeRejected(tradeId: offer.id);
+              } catch (_) {}
+              
               context.read<TradeBloc>().add(RejectTradeOffer(offer.id));
               Navigator.pop(dialogContext);
             },
