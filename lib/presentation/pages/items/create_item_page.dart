@@ -20,10 +20,7 @@ class CreateItemPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<ItemBloc>(),
-      child: const CreateItemView(),
-    );
+    return const CreateItemView();
   }
 }
 

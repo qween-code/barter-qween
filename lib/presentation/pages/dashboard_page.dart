@@ -74,8 +74,11 @@ class _DashboardViewState extends State<DashboardView> {
         body: IndexedStack(
         index: _currentIndex,
         children: [
-          BlocProvider(
-            create: (_) => getIt<ItemBloc>(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => getIt<ItemBloc>()),
+              BlocProvider.value(value: context.read<AuthBloc>()),
+            ],
             child: const ItemListPage(),
           ),
           const ExploreTab(),

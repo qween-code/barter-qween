@@ -55,8 +55,11 @@ class _ItemListPageState extends State<ItemListPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                create: (_) => getIt<ItemBloc>(),
+              builder: (_) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (_) => getIt<ItemBloc>()),
+                  BlocProvider.value(value: context.read<AuthBloc>()),
+                ],
                 child: const CreateItemPage(),
               ),
             ),
@@ -351,7 +354,7 @@ class _ItemListPageState extends State<ItemListPage> {
             builder: (_) => MultiBlocProvider(
               providers: [
                 BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<AuthBloc>()),
+                BlocProvider.value(value: context.read<AuthBloc>()),
               ],
               child: ItemDetailPage(itemId: item.id),
             ),
@@ -491,7 +494,7 @@ class _ItemListPageState extends State<ItemListPage> {
             builder: (_) => MultiBlocProvider(
               providers: [
                 BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<AuthBloc>()),
+                BlocProvider.value(value: context.read<AuthBloc>()),
               ],
               child: ItemDetailPage(itemId: item.id),
             ),
