@@ -259,6 +259,9 @@ class _FavoritesViewState extends State<FavoritesView> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<FavoriteBloc>().add(RemoveFromFavorites(authState.user.uid, itemId));
+      try {
+        getIt<AnalyticsService>().logFavoriteToggled(itemId: itemId, added: false);
+      } catch (_) {}
       _loadFavorites(); // Reload to update UI
     }
   }

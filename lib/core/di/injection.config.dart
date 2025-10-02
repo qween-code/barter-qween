@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:barter_qween/core/di/injection.dart' as _i328;
+import 'package:barter_qween/core/services/analytics_service.dart' as _i628;
 import 'package:barter_qween/core/services/fcm_service.dart' as _i1066;
 import 'package:barter_qween/data/datasources/auth_remote_datasource.dart'
     as _i381;
@@ -121,6 +122,7 @@ import 'package:barter_qween/presentation/blocs/search/search_bloc.dart'
     as _i742;
 import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart' as _i503;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
+import 'package:firebase_analytics/firebase_analytics.dart' as _i398;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:firebase_messaging/firebase_messaging.dart' as _i892;
 import 'package:firebase_storage/firebase_storage.dart' as _i457;
@@ -160,6 +162,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i163.FlutterLocalNotificationsPlugin>(
       () => firebaseInjectableModule.localNotifications,
+    );
+    gh.lazySingleton<_i398.FirebaseAnalytics>(
+      () => firebaseInjectableModule.analytics,
+    );
+    gh.lazySingleton<_i398.FirebaseAnalyticsObserver>(
+      () => firebaseInjectableModule.analyticsObserver,
     );
     gh.factory<_i493.SearchLocalDataSource>(
       () => _i493.SearchLocalDataSource(gh<_i460.SharedPreferences>()),
@@ -211,6 +219,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i754.ItemRepository>(
       () => _i703.ItemRepositoryImpl(
         remoteDataSource: gh<_i72.ItemRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i628.AnalyticsService>(
+      () => _i628.AnalyticsService(
+        gh<_i398.FirebaseAnalytics>(),
+        gh<_i398.FirebaseAnalyticsObserver>(),
       ),
     );
     gh.lazySingleton<_i1043.ProfileRepository>(

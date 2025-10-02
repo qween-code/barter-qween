@@ -135,6 +135,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           text: text,
         ));
 
+    // Analytics
+    try {
+      getIt<AnalyticsService>().logMessageSent(conversationId: widget.conversation.id);
+    } catch (_) {}
+
     _messageController.clear();
     _scrollToBottom();
   }

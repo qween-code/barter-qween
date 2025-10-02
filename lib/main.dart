@@ -14,6 +14,8 @@ import 'core/theme/app_colors.dart';
 import 'core/theme/app_text_styles.dart';
 import 'core/utils/preferences_keys.dart';
 import 'core/services/fcm_service.dart';
+import 'core/services/analytics_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';
 import 'presentation/pages/notifications/notifications_page.dart';
@@ -71,6 +73,7 @@ class BarterQweenApp extends StatelessWidget {
 return GlobalBlocProviders(
       child: MaterialApp(
         navigatorKey: navigatorKey,
+        navigatorObservers: [getIt<FirebaseAnalyticsObserver>()],
         title: 'Barter Qween',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,

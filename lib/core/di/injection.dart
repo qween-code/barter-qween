@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
@@ -37,6 +38,12 @@ abstract class FirebaseInjectableModule {
   @lazySingleton
   FlutterLocalNotificationsPlugin get localNotifications =>
       FlutterLocalNotificationsPlugin();
+
+  @lazySingleton
+  FirebaseAnalytics get analytics => FirebaseAnalytics.instance;
+
+  @lazySingleton
+  FirebaseAnalyticsObserver get analyticsObserver => FirebaseAnalyticsObserver(analytics: analytics);
 
   @preResolve
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
