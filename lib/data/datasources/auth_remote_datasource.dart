@@ -55,18 +55,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('User not found');
       }
 
-      // Try to load profile from Firestore, fallback to Firebase User
+      // Try to load profile from Firestore
       try {
         final doc = await firestore.collection('users').doc(userCredential.user!.uid).get();
         if (doc.exists) {
           return UserModel.fromFirestore(doc);
+        } else {
+          // Profile doesn't exist in Firestore, create it
+          print('📝 Creating Firestore profile for existing user: ${userCredential.user!.uid}');
+          final userModel = UserModel.fromFirebaseUser(userCredential.user!);
+          await firestore
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .set(userModel.toFirestore());
+          return userModel;
         }
       } catch (e) {
-        // If Firestore fetch fails, use Firebase Auth user
-        print('⚠️ Failed to load Firestore profile: $e');
+        // If Firestore operation fails, still return Firebase Auth user
+        print('⚠️ Failed to load/create Firestore profile: $e');
+        return UserModel.fromFirebaseUser(userCredential.user!);
       }
-
-      return UserModel.fromFirebaseUser(userCredential.user!);
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
     } catch (e) {
@@ -130,18 +138,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final user = firebaseAuth.currentUser;
       if (user == null) return null;
       
-      // Try to load profile from Firestore, fallback to Firebase User
+      // Try to load profile from Firestore
       try {
         final doc = await firestore.collection('users').doc(user.uid).get();
         if (doc.exists) {
           return UserModel.fromFirestore(doc);
+        } else {
+          // Profile doesn't exist in Firestore, create it
+          print('📝 Creating Firestore profile for current user: ${user.uid}');
+          final userModel = UserModel.fromFirebaseUser(user);
+          await firestore
+              .collection('users')
+              .doc(user.uid)
+              .set(userModel.toFirestore());
+          return userModel;
         }
       } catch (e) {
-        // If Firestore fetch fails, use Firebase Auth user
-        print('⚠️ Failed to load Firestore profile: $e');
+        // If Firestore operation fails, still return Firebase Auth user
+        print('⚠️ Failed to load/create Firestore profile: $e');
+        return UserModel.fromFirebaseUser(user);
       }
-      
-      return UserModel.fromFirebaseUser(user);
     } catch (e) {
       throw AuthException(e.toString());
     }

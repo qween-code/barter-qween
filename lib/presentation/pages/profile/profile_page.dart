@@ -32,16 +32,36 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
+  String? _currentUserId;
+
   @override
   void initState() {
     super.initState();
-    // Load profile immediately
-    Future.microtask(() => _loadProfile());
+    // Reset and load profile immediately
+    Future.microtask(() => _resetAndLoadProfile());
   }
 
-  void _loadProfile() {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if user changed
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
+      if (_currentUserId != authState.user.uid) {
+        print('👤 User changed from $_currentUserId to ${authState.user.uid}');
+        _currentUserId = authState.user.uid;
+        _resetAndLoadProfile();
+      }
+    }
+  }
+
+  void _resetAndLoadProfile() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      print('🔄 Resetting and loading profile for: ${authState.user.uid}');
+      // Reset profile state first
+      context.read<ProfileBloc>().add(ResetProfile());
+      // Then load new profile
       context.read<ProfileBloc>().add(LoadProfile(authState.user.uid));
       // Also load user stats
       context.read<ProfileBloc>().add(LoadUserStats(authState.user.uid));
@@ -374,7 +394,7 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
                 const SizedBox(height: AppDimensions.spacing16),
                 ElevatedButton(
-                  onPressed: _loadProfile,
+                  onPressed: _resetAndLoadProfile,
                   child: const Text('Retry'),
                 ),
               ],
@@ -556,7 +576,7 @@ class _ProfileViewState extends State<ProfileView> {
     );
     
     if (result == true) {
-      _loadProfile();
+      _resetAndLoadProfile();
     }
   }
 

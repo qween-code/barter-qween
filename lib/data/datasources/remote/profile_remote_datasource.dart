@@ -26,16 +26,21 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<UserModel> getUserProfile(String userId) async {
     try {
+      print('📖 Fetching profile from Firestore for user: $userId');
       final doc = await firestore.collection('users').doc(userId).get();
       
       if (!doc.exists) {
-        throw ServerException('User not found');
+        print('⚠️ User profile not found in Firestore: $userId');
+        throw ServerException('User profile not found in Firestore');
       }
       
+      print('✅ Profile found in Firestore');
       return UserModel.fromFirestore(doc);
     } on FirebaseException catch (e) {
+      print('❌ Firebase error getting profile: ${e.message}');
       throw ServerException(e.message ?? 'Failed to get user profile');
     } catch (e) {
+      print('❌ Error getting profile: $e');
       throw ServerException('Failed to get user profile: $e');
     }
   }
