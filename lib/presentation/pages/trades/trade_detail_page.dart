@@ -5,6 +5,13 @@ import '../../../domain/entities/trade_offer_entity.dart';
 import '../../blocs/trade/trade_bloc.dart';
 import '../../blocs/trade/trade_event.dart';
 import '../../blocs/trade/trade_state.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../blocs/rating/rating_bloc.dart';
+import '../../blocs/rating/rating_event.dart';
+import '../../blocs/rating/rating_state.dart';
+import '../../widgets/rating_dialog.dart';
+import '../../../core/di/injection.dart';
 
 class TradeDetailPage extends StatelessWidget {
   final TradeOfferEntity offer;
@@ -78,6 +85,10 @@ class TradeDetailPage extends StatelessWidget {
               _buildTimelineSection(context),
               const SizedBox(height: 24),
               if (offer.status.isPending) _buildActionButtons(context),
+              if (offer.status == TradeStatus.completed) ...[
+                const SizedBox(height: 16),
+                _buildRatingSection(context),
+              ],
               const SizedBox(height: 24),
             ],
           ),
@@ -442,6 +453,60 @@ class TradeDetailPage extends StatelessWidget {
       default:
         return Icons.help;
     }
+  }
+
+  Widget _buildRatingSection(BuildContext context) {
+    return BlocProvider(
+      create: (_) => getIt<RatingBloc>(),
+      child: Builder(
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final auth = context.read<AuthBloc>().state;
+                  String? fromUserId;
+                  String toUserId;
+                  if (auth is AuthAuthenticated) {
+                    fromUserId = auth.user.uid;
+                  }
+                  // Determine the other user
+                  toUserId = (fromUserId == offer.fromUserId) ? offer.toUserId : offer.fromUserId;
+
+                  await showDialog(
+                    context: context,
+                    builder: (_) => RatingDialog(
+                      userName: offer.toUserName,
+                      onSubmit: (rating, comment) {
+                        if (fromUserId != null) {
+                          context.read<RatingBloc>().add(SubmitRating(
+                                fromUserId: fromUserId,
+                                toUserId: toUserId,
+                                tradeId: offer.id,
+                                rating: rating,
+                                comment: comment,
+                              ));
+                        }
+                      },
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.star_rate_rounded),
+                label: const Text('Rate user'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: Colors.amber,
+                  foregroundColor: Colors.black87,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildTimelineItem({

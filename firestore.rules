@@ -60,10 +60,13 @@ service cloud.firestore {
                        request.resource.data.status in ['cancelled', 'completed']);
     }
     
-    // Ratings - anyone can read, only raters can create
+    // Ratings - anyone can read, only raters can create; ensure tradeId present
     match /ratings/{ratingId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.raterUserId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUserId &&
+                    request.resource.data.tradeId is string &&
+                    request.resource.data.toUserId is string &&
+                    request.resource.data.rating is int;
     }
     
     // Favorites - users can only manage their own favorites
