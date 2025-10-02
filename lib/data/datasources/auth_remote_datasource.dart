@@ -55,6 +55,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('User not found');
       }
 
+      // Try to load profile from Firestore, fallback to Firebase User
+      try {
+        final doc = await firestore.collection('users').doc(userCredential.user!.uid).get();
+        if (doc.exists) {
+          return UserModel.fromFirestore(doc);
+        }
+      } catch (e) {
+        // If Firestore fetch fails, use Firebase Auth user
+        print('⚠️ Failed to load Firestore profile: $e');
+      }
+
       return UserModel.fromFirebaseUser(userCredential.user!);
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
@@ -118,6 +129,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final user = firebaseAuth.currentUser;
       if (user == null) return null;
+      
+      // Try to load profile from Firestore, fallback to Firebase User
+      try {
+        final doc = await firestore.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          return UserModel.fromFirestore(doc);
+        }
+      } catch (e) {
+        // If Firestore fetch fails, use Firebase Auth user
+        print('⚠️ Failed to load Firestore profile: $e');
+      }
+      
       return UserModel.fromFirebaseUser(user);
     } catch (e) {
       throw AuthException(e.toString());
