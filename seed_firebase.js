@@ -59,6 +59,51 @@ const users = [
     phoneNumber: null,
     bio: 'Home decor enthusiast. Love trading furniture and home accessories.',
     location: 'Istanbul, Turkey'
+  },
+  {
+    email: 'frank.miller@example.com',
+    password: 'Test123!',
+    displayName: 'Frank Miller',
+    photoUrl: 'https://i.pravatar.cc/300?img=15',
+    phoneNumber: null,
+    bio: 'Vintage collector and antique dealer. Love finding treasures!',
+    location: 'Ankara, Turkey'
+  },
+  {
+    email: 'grace.lee@example.com',
+    password: 'Test123!',
+    displayName: 'Grace Lee',
+    photoUrl: 'https://i.pravatar.cc/300?img=20',
+    phoneNumber: null,
+    bio: 'Art lover and painter. Always looking for art supplies and books.',
+    location: 'Izmir, Turkey'
+  },
+  {
+    email: 'henry.wilson@example.com',
+    password: 'Test123!',
+    displayName: 'Henry Wilson',
+    photoUrl: 'https://i.pravatar.cc/300?img=33',
+    phoneNumber: null,
+    bio: 'Gaming enthusiast and console collector. Trade games all day!',
+    location: 'Bursa, Turkey'
+  },
+  {
+    email: 'isabel.garcia@example.com',
+    password: 'Test123!',
+    displayName: 'Isabel Garcia',
+    photoUrl: 'https://i.pravatar.cc/300?img=44',
+    phoneNumber: null,
+    bio: 'Music lover and vinyl collector. Always searching for rare records.',
+    location: 'Antalya, Turkey'
+  },
+  {
+    email: 'jack.taylor@example.com',
+    password: 'Test123!',
+    displayName: 'Jack Taylor',
+    photoUrl: 'https://i.pravatar.cc/300?img=51',
+    phoneNumber: null,
+    bio: 'Outdoor adventurer and camping gear enthusiast.',
+    location: 'Istanbul, Turkey'
   }
 ];
 
@@ -352,6 +397,83 @@ async function createTradeOffers(userIds, itemIds) {
   }
 }
 
+async function createRatings(userIds) {
+  console.log('\n⭐ Creating ratings...');
+  let ratingsCount = 0;
+
+  // Create some random ratings for users
+  const ratingsData = [
+    { ratedUserId: userIds[0].uid, rating: 5, comment: 'Great trader! Item was exactly as described.' },
+    { ratedUserId: userIds[0].uid, rating: 4, comment: 'Good communication, fast shipping.' },
+    { ratedUserId: userIds[1].uid, rating: 5, comment: 'Perfect condition! Highly recommended.' },
+    { ratedUserId: userIds[2].uid, rating: 4, comment: 'Nice person to trade with.' },
+    { ratedUserId: userIds[3].uid, rating: 5, comment: 'Amazing trade experience!' },
+    { ratedUserId: userIds[4].uid, rating: 4, comment: 'Item was great, very happy!' },
+  ];
+
+  for (let i = 0; i < ratingsData.length; i++) {
+    const rating = ratingsData[i];
+    const raterUserId = userIds[(i + 1) % userIds.length].uid;
+
+    try {
+      const ratingRef = db.collection('ratings').doc();
+      await ratingRef.set({
+        id: ratingRef.id,
+        ratedUserId: rating.ratedUserId,
+        raterUserId: raterUserId,
+        rating: rating.rating,
+        comment: rating.comment,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      ratingsCount++;
+    } catch (error) {
+      console.error('❌ Error creating rating:', error.message);
+    }
+  }
+
+  console.log(`✅ Created ${ratingsCount} ratings`);
+  return ratingsCount;
+}
+
+async function createFavorites(userIds, itemIds) {
+  console.log('\n❤️  Creating favorites...');
+  let favoritesCount = 0;
+
+  // Create some random favorites
+  const favorites = [
+    { userId: userIds[0].uid, itemIds: [1, 2, 3, 4] },
+    { userId: userIds[1].uid, itemIds: [0, 3, 5] },
+    { userId: userIds[2].uid, itemIds: [0, 1, 6] },
+    { userId: userIds[3].uid, itemIds: [2, 4, 7] },
+    { userId: userIds[4].uid, itemIds: [1, 3, 8] },
+  ];
+
+  for (const fav of favorites) {
+    for (const itemIndex of fav.itemIds) {
+      if (itemIndex < itemIds.length) {
+        try {
+          const favoriteRef = db.collection('favorites').doc();
+          await favoriteRef.set({
+            id: favoriteRef.id,
+            userId: fav.userId,
+            itemId: itemIds[itemIndex].id,
+            itemTitle: itemIds[itemIndex].title,
+            itemImages: itemIds[itemIndex].images,
+            itemOwnerId: itemIds[itemIndex].ownerId,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          favoritesCount++;
+        } catch (error) {
+          console.error('❌ Error creating favorite:', error.message);
+        }
+      }
+    }
+  }
+
+  console.log(`✅ Created ${favoritesCount} favorites`);
+  return favoritesCount;
+}
+
 async function main() {
   try {
     console.log('🚀 Starting Firebase seed script...\n');
@@ -359,12 +481,16 @@ async function main() {
     const userIds = await createUsers();
     const itemIds = await createItems(userIds);
     await createTradeOffers(userIds, itemIds);
+    const ratingsCount = await createRatings(userIds);
+    const favoritesCount = await createFavorites(userIds, itemIds);
     
     console.log('\n✅ ✅ ✅ All data created successfully!');
     console.log('\n📊 Summary:');
     console.log(`   Users: ${userIds.length}`);
     console.log(`   Items: ${itemIds.length}`);
     console.log(`   Trade Offers: 5`);
+    console.log(`   Ratings: ${ratingsCount}`);
+    console.log(`   Favorites: ${favoritesCount}`);
     console.log('\n🎉 You can now login with:');
     console.log('   Email: alice.johnson@example.com');
     console.log('   Password: Test123!');
