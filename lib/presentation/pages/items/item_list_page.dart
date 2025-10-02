@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
@@ -55,11 +54,8 @@ class _ItemListPageState extends State<ItemListPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => MultiBlocProvider(
-                providers: [
-                  BlocProvider(create: (_) => getIt<ItemBloc>()),
-                  BlocProvider.value(value: context.read<AuthBloc>()),
-                ],
+              builder: (_) => BlocProvider(
+                create: (_) => getIt<ItemBloc>(),
                 child: const CreateItemPage(),
               ),
             ),
@@ -351,11 +347,8 @@ class _ItemListPageState extends State<ItemListPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider.value(value: context.read<AuthBloc>()),
-              ],
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ItemBloc>(),
               child: ItemDetailPage(itemId: item.id),
             ),
           ),
@@ -491,11 +484,8 @@ class _ItemListPageState extends State<ItemListPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider.value(value: context.read<AuthBloc>()),
-              ],
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ItemBloc>(),
               child: ItemDetailPage(itemId: item.id),
             ),
           ),

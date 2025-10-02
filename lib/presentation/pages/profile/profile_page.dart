@@ -519,11 +519,8 @@ class _ProfileViewState extends State<ProfileView> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => MultiBlocProvider(
-          providers: [
-            BlocProvider.value(value: context.read<AuthBloc>()),
-            BlocProvider.value(value: context.read<ProfileBloc>()),
-          ],
+        builder: (_) => BlocProvider.value(
+          value: context.read<ProfileBloc>(),
           child: const EditProfilePage(),
         ),
       ),

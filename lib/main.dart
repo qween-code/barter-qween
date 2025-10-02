@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/di/injection.dart';
+import 'core/providers/global_bloc_providers.dart';
 import 'core/routes/route_names.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
@@ -30,12 +31,13 @@ class BarterQweenApp extends StatelessWidget {
     // Set system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(AppTheme.darkStatusBar);
     
-    return MaterialApp(
-      title: 'Barter Qween',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      initialRoute: RouteNames.splash,
-      onGenerateRoute: (s) {
+    return GlobalBlocProviders(
+      child: MaterialApp(
+        title: 'Barter Qween',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        initialRoute: RouteNames.splash,
+        onGenerateRoute: (s) {
         switch (s.name) {
           case RouteNames.splash: return MaterialPageRoute(builder: (_) => const SplashPage());
           case RouteNames.login: return MaterialPageRoute(builder: (_) => const LoginPage());
@@ -45,7 +47,8 @@ class BarterQweenApp extends StatelessWidget {
           case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
           default: return MaterialPageRoute(builder: (_) => const LoginPage());
         }
-      },
+      ),
+      ),
     );
   }
 }

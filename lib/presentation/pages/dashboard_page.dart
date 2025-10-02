@@ -20,11 +20,8 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested())),
-        BlocProvider(create: (_) => getIt<TradeBloc>()),
-      ],
+    return BlocProvider(
+      create: (_) => getIt<TradeBloc>(),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthUnauthenticated) {
@@ -75,27 +72,18 @@ class _DashboardViewState extends State<DashboardView> {
         body: IndexedStack(
         index: _currentIndex,
         children: [
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => getIt<ItemBloc>()),
-              BlocProvider.value(value: context.read<AuthBloc>()),
-            ],
+          BlocProvider(
+            create: (_) => getIt<ItemBloc>(),
             child: const ItemListPage(),
           ),
           const ExploreTab(),
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => getIt<TradeBloc>()),
-              BlocProvider.value(value: context.read<AuthBloc>()),
-            ],
+          BlocProvider(
+            create: (_) => getIt<TradeBloc>(),
             child: const TradesPage(),
           ),
           const MessagesTab(),
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => getIt<ProfileBloc>()),
-              BlocProvider.value(value: context.read<AuthBloc>()),
-            ],
+          BlocProvider(
+            create: (_) => getIt<ProfileBloc>(),
             child: const ProfilePage(),
           ),
         ],
