@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
+import '../../blocs/chat/chat_bloc.dart';
+import '../../blocs/chat/chat_event.dart';
+import '../../blocs/chat/chat_state.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/favorite/favorite_event.dart';
 import '../../blocs/favorite/favorite_state.dart';
@@ -13,6 +17,7 @@ import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../blocs/trade/trade_bloc.dart';
+import '../chat/chat_detail_page.dart';
 import '../profile/user_profile_page.dart';
 import '../trades/send_trade_offer_page.dart';
 import 'edit_item_page.dart';
@@ -381,9 +386,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       ),
                       const SizedBox(width: 12),
                       OutlinedButton(
-                        onPressed: () {
-                          // Chat with owner
-                        },
+                        onPressed: () => _startConversation(context, item),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
@@ -610,5 +613,112 @@ ${item.description}
         builder: (_) => UserProfilePage(userId: ownerId),
       ),
     );
+  }
+
+  void _startConversation(BuildContext context, ItemEntity item) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please login to send messages'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final currentUserId = authState.user.uid;
+    final targetUserId = item.ownerId;
+
+    // Don't allow messaging yourself
+    if (currentUserId == targetUserId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You cannot message yourself'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    print('💬 Starting conversation about item: ${item.title}');
+    
+    // Create ChatBloc and get or create conversation
+    final chatBloc = getIt<ChatBloc>();
+    
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => WillPopScope(
+        onWillPop: () async => false,
+        child: const Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Starting conversation...'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Listen to ChatBloc stream
+    chatBloc.stream.listen((state) {
+      print('💬 Chat state: ${state.runtimeType}');
+      
+      if (state is ConversationRetrieved) {
+        // Close loading dialog
+        Navigator.of(context, rootNavigator: true).pop();
+        
+        // Create initial message with item info
+        final initialMessage = """👋 Hi! I'm interested in your item:
+
+📍 "${item.title}"
+🏷️ Category: ${item.category}
+📍 Location: ${item.city ?? 'Unknown'}
+
+Can you tell me more about it?""";
+        
+        // Navigate to chat with initial message
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: chatBloc,
+              child: ChatDetailPage(
+                conversation: state.conversation,
+                initialMessage: initialMessage,
+              ),
+            ),
+          ),
+        );
+      } else if (state is ChatError) {
+        // Close loading dialog
+        Navigator.of(context, rootNavigator: true).pop();
+        
+        // Show error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to start conversation: ${state.message}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
+
+    // Trigger event after setting up listener
+    chatBloc.add(GetOrCreateConversation(
+      userId: currentUserId,
+      otherUserId: targetUserId,
+      listingId: item.id,
+    ));
   }
 }
