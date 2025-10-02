@@ -93,24 +93,38 @@ class ChatRemoteDataSource {
       throw ServerException('Failed to get or create conversation: $e');
     }
   }
+  }
 
   /// Get messages for a conversation as a stream (real-time updates)
   Stream<List<MessageModel>> getMessagesStream(
     String conversationId, {
     int limit = 50,
   }) {
+    print('📥 Firestore: Creating messages stream for conversation: $conversationId');
     try {
+      // Temporarily remove orderBy to test if that's causing the issue
       return _messagesRef
           .where('conversationId', isEqualTo: conversationId)
-          .orderBy('createdAt', descending: true)
           .limit(limit)
           .snapshots()
           .map((snapshot) {
+        print('📥 Firestore: Received ${snapshot.docs.length} messages from stream');
         return snapshot.docs
-            .map((doc) => MessageModel.fromFirestore(doc))
+            .map((doc) {
+              try {
+                return MessageModel.fromFirestore(doc);
+              } catch (e) {
+                print('❌ Firestore: Error parsing message ${doc.id}: $e');
+                rethrow;
+              }
+            })
             .toList();
+      }).handleError((error) {
+        print('❌ Firestore: Stream error - $error');
+        throw ServerException('Failed to get messages: $error');
       });
     } catch (e) {
+      print('❌ Firestore: Exception creating stream - $e');
       throw ServerException('Failed to get messages: $e');
     }
   }
