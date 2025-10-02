@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
 import '../../../domain/entities/item_entity.dart';
+import 'edit_item_page.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
@@ -18,11 +22,16 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   final PageController _pageController = PageController();
   int _currentImageIndex = 0;
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
     context.read<ItemBloc>().add(LoadItem(widget.itemId));
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      _currentUserId = authState.user.uid;
+    }
   }
 
   @override
@@ -111,9 +120,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             ),
             child: const Icon(Icons.share, color: Colors.white, size: 20),
           ),
-          onPressed: () {
-            // Share functionality
-          },
+          onPressed: () => _shareItem(item),
         ),
         IconButton(
           icon: Container(
@@ -125,9 +132,24 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             child: const Icon(Icons.favorite_border, color: Colors.white, size: 20),
           ),
           onPressed: () {
-            // Favorite functionality
+            // TODO: Implement favorite functionality
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Favorites feature coming soon!')),
+            );
           },
         ),
+        if (_currentUserId != null && _currentUserId == item.ownerId)
+          IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.edit, color: Colors.white, size: 20),
+            ),
+            onPressed: () => _editItem(context, item),
+          ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: images.isEmpty
@@ -483,6 +505,40 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         ),
       ],
     );
+  }
+
+  void _shareItem(ItemEntity item) {
+    final String shareText = '''
+🎁 Check out this item on Barter Qween!
+
+${item.title}
+
+📦 Category: ${item.category}
+📍 Location: ${item.city ?? 'Unknown'}
+💫 Condition: ${item.condition ?? 'Good'}
+
+${item.description}
+
+🔗 View more details in the app!
+''';
+    Share.share(shareText);
+  }
+
+  Future<void> _editItem(BuildContext context, ItemEntity item) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+          value: context.read<ItemBloc>(),
+          child: EditItemPage(item: item),
+        ),
+      ),
+    );
+
+    if (result != null) {
+      // Reload item after edit
+      context.read<ItemBloc>().add(LoadItem(item.id));
+    }
   }
 
   String _formatDate(DateTime date) {

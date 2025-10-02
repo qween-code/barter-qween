@@ -49,11 +49,12 @@ class CreateItem extends ItemEvent {
 
 class UpdateItem extends ItemEvent {
   final ItemEntity item;
+  final List<File>? newImages;
 
-  const UpdateItem(this.item);
+  const UpdateItem(this.item, [this.newImages]);
 
   @override
-  List<Object?> get props => [item];
+  List<Object?> get props => [item, newImages];
 }
 
 class DeleteItem extends ItemEvent {

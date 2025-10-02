@@ -91,7 +91,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     Emitter<ItemState> emit,
   ) async {
     emit(const ItemLoading());
-    final result = await updateItemUseCase(event.item);
+    final result = await updateItemUseCase(event.item, event.newImages);
     result.fold(
       (failure) => emit(ItemError(failure.message)),
       (item) => emit(ItemUpdated(item)),

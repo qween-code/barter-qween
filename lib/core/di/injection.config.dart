@@ -41,6 +41,12 @@ import 'package:barter_qween/domain/usecases/auth/reset_password_usecase.dart'
 import 'package:barter_qween/domain/usecases/auth/verify_otp_usecase.dart'
     as _i936;
 import 'package:barter_qween/domain/usecases/item/item_usecases.dart' as _i301;
+import 'package:barter_qween/domain/usecases/items/delete_item_usecase.dart'
+    as _i529;
+import 'package:barter_qween/domain/usecases/items/get_user_items_usecase.dart'
+    as _i217;
+import 'package:barter_qween/domain/usecases/items/update_item_usecase.dart'
+    as _i768;
 import 'package:barter_qween/domain/usecases/profile/get_user_profile_usecase.dart'
     as _i680;
 import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart'
@@ -115,6 +121,15 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i828.AuthRepositoryImpl(
         remoteDataSource: gh<_i381.AuthRemoteDataSource>(),
       ),
+    );
+    gh.lazySingleton<_i529.DeleteItemUseCase>(
+      () => _i529.DeleteItemUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.lazySingleton<_i217.GetUserItemsUseCase>(
+      () => _i217.GetUserItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.lazySingleton<_i768.UpdateItemUseCase>(
+      () => _i768.UpdateItemUseCase(gh<_i754.ItemRepository>()),
     );
     gh.factory<_i301.CreateItemUseCase>(
       () => _i301.CreateItemUseCase(gh<_i754.ItemRepository>()),

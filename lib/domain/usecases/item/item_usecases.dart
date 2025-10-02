@@ -39,7 +39,23 @@ class UpdateItemUseCase {
 
   UpdateItemUseCase(this.repository);
 
-  Future<Either<Failure, ItemEntity>> call(ItemEntity item) async {
+  Future<Either<Failure, ItemEntity>> call(ItemEntity item, [List<File>? newImages]) async {
+    // First upload new images if provided
+    if (newImages != null && newImages.isNotEmpty) {
+      final uploadResult = await repository.uploadItemImages(item.id, newImages);
+      
+      return uploadResult.fold(
+        (failure) => Left(failure),
+        (newImageUrls) async {
+          // Combine existing images with new uploaded image URLs
+          final allImages = [...item.images, ...newImageUrls];
+          final itemWithImages = item.copyWith(images: allImages);
+          return await repository.updateItem(itemWithImages);
+        },
+      );
+    }
+    
+    // Update item without new images
     return await repository.updateItem(item);
   }
 }
