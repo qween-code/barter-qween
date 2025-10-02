@@ -10,6 +10,7 @@ abstract class ProfileRemoteDataSource {
   Future<UserModel> updateProfile(UserModel user);
   Future<String> uploadAvatar(String userId, File imageFile);
   Future<void> deleteAvatar(String userId);
+  Future<Map<String, dynamic>> getUserStats(String userId);
 }
 
 @LazySingleton(as: ProfileRemoteDataSource)
@@ -129,6 +130,62 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       throw ServerException(e.message ?? 'Failed to delete avatar');
     } catch (e) {
       throw ServerException('Failed to delete avatar: $e');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUserStats(String userId) async {
+    try {
+      // Get item count
+      final itemsSnapshot = await firestore
+          .collection('items')
+          .where('ownerId', isEqualTo: userId)
+          .where('status', isEqualTo: 'active')
+          .get();
+      final itemCount = itemsSnapshot.docs.length;
+
+      // Get trade count (completed trades)
+      final sentTradesSnapshot = await firestore
+          .collection('tradeOffers')
+          .where('fromUserId', isEqualTo: userId)
+          .where('status', isEqualTo: 'completed')
+          .get();
+      
+      final receivedTradesSnapshot = await firestore
+          .collection('tradeOffers')
+          .where('toUserId', isEqualTo: userId)
+          .where('status', isEqualTo: 'completed')
+          .get();
+      
+      final tradeCount = sentTradesSnapshot.docs.length + receivedTradesSnapshot.docs.length;
+
+      // Get ratings
+      final ratingsSnapshot = await firestore
+          .collection('ratings')
+          .where('ratedUserId', isEqualTo: userId)
+          .get();
+      
+      double averageRating = 0.0;
+      int ratingCount = ratingsSnapshot.docs.length;
+      
+      if (ratingCount > 0) {
+        int totalRating = 0;
+        for (final doc in ratingsSnapshot.docs) {
+          totalRating += (doc.data()['rating'] as int?) ?? 0;
+        }
+        averageRating = totalRating / ratingCount;
+      }
+
+      return {
+        'itemCount': itemCount,
+        'tradeCount': tradeCount,
+        'averageRating': averageRating,
+        'ratingCount': ratingCount,
+      };
+    } on FirebaseException catch (e) {
+      throw ServerException(e.message ?? 'Failed to get user stats');
+    } catch (e) {
+      throw ServerException('Failed to get user stats: $e');
     }
   }
 }

@@ -133,22 +133,27 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<List<TradeOfferModel>> getUserTradeOffers(String userId) async {
     try {
-      // Get offers where user is either sender or receiver
+      print('💻 Fetching trade offers for user: $userId');
+      
+      // Get offers where user is sender (without orderBy to avoid index)
       final sentSnapshot = await firestore
           .collection('tradeOffers')
           .where('fromUserId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
 
+      print('📤 Sent offers: ${sentSnapshot.docs.length}');
+
+      // Get offers where user is receiver (without orderBy to avoid index)
       final receivedSnapshot = await firestore
           .collection('tradeOffers')
           .where('toUserId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
+
+      print('📥 Received offers: ${receivedSnapshot.docs.length}');
 
       final allDocs = [...sentSnapshot.docs, ...receivedSnapshot.docs];
       
-      // Remove duplicates and sort by createdAt
+      // Remove duplicates and sort by createdAt in memory
       final uniqueDocs = <String, DocumentSnapshot>{};
       for (final doc in allDocs) {
         uniqueDocs[doc.id] = doc;
@@ -158,10 +163,14 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
           .map((doc) => TradeOfferModel.fromFirestore(doc))
           .toList();
       
+      // Sort in memory instead of Firestore
       offers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      print('✅ Total unique offers: ${offers.length}');
       
       return offers;
     } catch (e) {
+      print('❌ Failed to get user trade offers: $e');
       throw ServerException('Failed to get user trade offers: ${e.toString()}');
     }
   }
@@ -172,12 +181,16 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
       final snapshot = await firestore
           .collection('tradeOffers')
           .where('fromUserId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
+          .get(); // Removed orderBy to avoid index requirement
 
-      return snapshot.docs
+      final offers = snapshot.docs
           .map((doc) => TradeOfferModel.fromFirestore(doc))
           .toList();
+      
+      // Sort in memory
+      offers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      return offers;
     } catch (e) {
       throw ServerException('Failed to get sent trade offers: ${e.toString()}');
     }
@@ -189,12 +202,16 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
       final snapshot = await firestore
           .collection('tradeOffers')
           .where('toUserId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
+          .get(); // Removed orderBy to avoid index requirement
 
-      return snapshot.docs
+      final offers = snapshot.docs
           .map((doc) => TradeOfferModel.fromFirestore(doc))
           .toList();
+      
+      // Sort in memory
+      offers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      return offers;
     } catch (e) {
       throw ServerException('Failed to get received trade offers: ${e.toString()}');
     }
@@ -286,16 +303,21 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
     String requestedItemId,
   ) async {
     try {
+      // Query all offers from this user for these items
       final snapshot = await firestore
           .collection('tradeOffers')
           .where('fromUserId', isEqualTo: fromUserId)
           .where('offeredItemId', isEqualTo: offeredItemId)
           .where('requestedItemId', isEqualTo: requestedItemId)
-          .where('status', whereIn: ['pending', 'accepted'])
-          .limit(1)
           .get();
 
-      return snapshot.docs.isNotEmpty;
+      // Filter in memory for pending or accepted status
+      final existingOffers = snapshot.docs.where((doc) {
+        final status = doc.data()['status'] as String?;
+        return status == 'pending' || status == 'accepted';
+      }).toList();
+
+      return existingOffers.isNotEmpty;
     } catch (e) {
       throw ServerException('Failed to check existing offer: ${e.toString()}');
     }

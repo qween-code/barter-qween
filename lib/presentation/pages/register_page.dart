@@ -13,6 +13,8 @@ import '../blocs/auth/auth_state.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/password_field.dart';
+import 'legal/terms_of_service_page.dart';
+import 'legal/privacy_policy_page.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -190,7 +192,12 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          // TODO: Show Terms
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const TermsOfServicePage(),
+                                            ),
+                                          );
                                         },
                                         child: Text(
                                           'Terms of Service',
@@ -207,7 +214,12 @@ class _RegisterViewState extends State<RegisterView> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          // TODO: Show Privacy Policy
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const PrivacyPolicyPage(),
+                                            ),
+                                          );
                                         },
                                         child: Text(
                                           'Privacy Policy',

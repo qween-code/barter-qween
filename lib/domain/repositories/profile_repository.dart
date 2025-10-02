@@ -15,4 +15,7 @@ abstract class ProfileRepository {
   
   /// Delete avatar
   Future<Either<Failure, void>> deleteAvatar(String userId);
+  
+  /// Get user statistics (item count, trade count, average rating)
+  Future<Either<Failure, Map<String, dynamic>>> getUserStats(String userId);
 }

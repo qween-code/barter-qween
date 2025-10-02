@@ -12,6 +12,10 @@
 import 'package:barter_qween/core/di/injection.dart' as _i328;
 import 'package:barter_qween/data/datasources/auth_remote_datasource.dart'
     as _i381;
+import 'package:barter_qween/data/datasources/remote/chat_remote_datasource.dart'
+    as _i1020;
+import 'package:barter_qween/data/datasources/remote/favorite_remote_datasource.dart'
+    as _i548;
 import 'package:barter_qween/data/datasources/remote/item_remote_datasource.dart'
     as _i72;
 import 'package:barter_qween/data/datasources/remote/profile_remote_datasource.dart'
@@ -20,6 +24,10 @@ import 'package:barter_qween/data/datasources/remote/trade_remote_datasource.dar
     as _i411;
 import 'package:barter_qween/data/repositories/auth_repository_impl.dart'
     as _i828;
+import 'package:barter_qween/data/repositories/chat_repository_impl.dart'
+    as _i66;
+import 'package:barter_qween/data/repositories/favorite_repository_impl.dart'
+    as _i451;
 import 'package:barter_qween/data/repositories/item_repository_impl.dart'
     as _i703;
 import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
@@ -27,6 +35,9 @@ import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
 import 'package:barter_qween/data/repositories/trade_repository_impl.dart'
     as _i429;
 import 'package:barter_qween/domain/repositories/auth_repository.dart' as _i113;
+import 'package:barter_qween/domain/repositories/chat_repository.dart' as _i920;
+import 'package:barter_qween/domain/repositories/favorite_repository.dart'
+    as _i933;
 import 'package:barter_qween/domain/repositories/item_repository.dart' as _i754;
 import 'package:barter_qween/domain/repositories/profile_repository.dart'
     as _i1043;
@@ -45,6 +56,22 @@ import 'package:barter_qween/domain/usecases/auth/reset_password_usecase.dart'
     as _i668;
 import 'package:barter_qween/domain/usecases/auth/verify_otp_usecase.dart'
     as _i936;
+import 'package:barter_qween/domain/usecases/chat/get_conversations_usecase.dart'
+    as _i610;
+import 'package:barter_qween/domain/usecases/chat/get_messages_usecase.dart'
+    as _i982;
+import 'package:barter_qween/domain/usecases/chat/get_or_create_conversation_usecase.dart'
+    as _i232;
+import 'package:barter_qween/domain/usecases/chat/mark_as_read_usecase.dart'
+    as _i1052;
+import 'package:barter_qween/domain/usecases/chat/send_message_usecase.dart'
+    as _i116;
+import 'package:barter_qween/domain/usecases/favorites/add_favorite_usecase.dart'
+    as _i191;
+import 'package:barter_qween/domain/usecases/favorites/get_favorite_items_usecase.dart'
+    as _i2;
+import 'package:barter_qween/domain/usecases/favorites/remove_favorite_usecase.dart'
+    as _i469;
 import 'package:barter_qween/domain/usecases/item/item_usecases.dart' as _i301;
 import 'package:barter_qween/domain/usecases/items/delete_item_usecase.dart'
     as _i529;
@@ -54,6 +81,8 @@ import 'package:barter_qween/domain/usecases/items/update_item_usecase.dart'
     as _i768;
 import 'package:barter_qween/domain/usecases/profile/get_user_profile_usecase.dart'
     as _i680;
+import 'package:barter_qween/domain/usecases/profile/get_user_stats_usecase.dart'
+    as _i566;
 import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart'
     as _i303;
 import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
@@ -61,6 +90,9 @@ import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
 import 'package:barter_qween/domain/usecases/trade/trade_usecases.dart'
     as _i773;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
+import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart' as _i241;
+import 'package:barter_qween/presentation/blocs/favorite/favorite_bloc.dart'
+    as _i935;
 import 'package:barter_qween/presentation/blocs/item/item_bloc.dart' as _i1004;
 import 'package:barter_qween/presentation/blocs/profile/profile_bloc.dart'
     as _i527;
@@ -97,11 +129,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i116.GoogleSignIn>(
       () => firebaseInjectableModule.googleSignIn,
     );
+    gh.lazySingleton<_i548.FavoriteRemoteDataSource>(
+      () => _i548.FavoriteRemoteDataSourceImpl(gh<_i974.FirebaseFirestore>()),
+    );
     gh.lazySingleton<_i512.ProfileRemoteDataSource>(
       () => _i512.ProfileRemoteDataSourceImpl(
         firestore: gh<_i974.FirebaseFirestore>(),
         storage: gh<_i457.FirebaseStorage>(),
       ),
+    );
+    gh.lazySingleton<_i933.FavoriteRepository>(
+      () => _i451.FavoriteRepositoryImpl(gh<_i548.FavoriteRemoteDataSource>()),
     );
     gh.lazySingleton<_i72.ItemRemoteDataSource>(
       () => _i72.ItemRemoteDataSourceImpl(
@@ -116,6 +154,9 @@ extension GetItInjectableX on _i174.GetIt {
         firestore: gh<_i974.FirebaseFirestore>(),
         googleSignIn: gh<_i116.GoogleSignIn>(),
       ),
+    );
+    gh.lazySingleton<_i1020.ChatRemoteDataSource>(
+      () => _i1020.ChatRemoteDataSource(gh<_i974.FirebaseFirestore>()),
     );
     gh.lazySingleton<_i754.ItemRepository>(
       () => _i703.ItemRepositoryImpl(
@@ -134,6 +175,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i828.AuthRepositoryImpl(
         remoteDataSource: gh<_i381.AuthRemoteDataSource>(),
       ),
+    );
+    gh.lazySingleton<_i920.ChatRepository>(
+      () => _i66.ChatRepositoryImpl(gh<_i1020.ChatRemoteDataSource>()),
+    );
+    gh.factory<_i191.AddFavoriteUseCase>(
+      () => _i191.AddFavoriteUseCase(gh<_i933.FavoriteRepository>()),
+    );
+    gh.factory<_i2.GetFavoriteItemsUseCase>(
+      () => _i2.GetFavoriteItemsUseCase(gh<_i933.FavoriteRepository>()),
+    );
+    gh.factory<_i469.RemoveFavoriteUseCase>(
+      () => _i469.RemoveFavoriteUseCase(gh<_i933.FavoriteRepository>()),
     );
     gh.lazySingleton<_i529.DeleteItemUseCase>(
       () => _i529.DeleteItemUseCase(gh<_i754.ItemRepository>()),
@@ -171,14 +224,50 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i301.UploadItemImagesUseCase>(
       () => _i301.UploadItemImagesUseCase(gh<_i754.ItemRepository>()),
     );
+    gh.lazySingleton<_i610.GetConversationsUseCase>(
+      () => _i610.GetConversationsUseCase(gh<_i920.ChatRepository>()),
+    );
+    gh.lazySingleton<_i982.GetMessagesUseCase>(
+      () => _i982.GetMessagesUseCase(gh<_i920.ChatRepository>()),
+    );
+    gh.lazySingleton<_i232.GetOrCreateConversationUseCase>(
+      () => _i232.GetOrCreateConversationUseCase(gh<_i920.ChatRepository>()),
+    );
+    gh.lazySingleton<_i1052.MarkAsReadUseCase>(
+      () => _i1052.MarkAsReadUseCase(gh<_i920.ChatRepository>()),
+    );
+    gh.lazySingleton<_i116.SendMessageUseCase>(
+      () => _i116.SendMessageUseCase(gh<_i920.ChatRepository>()),
+    );
     gh.factory<_i680.GetUserProfileUseCase>(
       () => _i680.GetUserProfileUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i566.GetUserStatsUseCase>(
+      () => _i566.GetUserStatsUseCase(gh<_i1043.ProfileRepository>()),
     );
     gh.factory<_i303.UpdateProfileUseCase>(
       () => _i303.UpdateProfileUseCase(gh<_i1043.ProfileRepository>()),
     );
     gh.factory<_i576.UploadAvatarUseCase>(
       () => _i576.UploadAvatarUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i241.ChatBloc>(
+      () => _i241.ChatBloc(
+        getConversationsUseCase: gh<_i610.GetConversationsUseCase>(),
+        getMessagesUseCase: gh<_i982.GetMessagesUseCase>(),
+        sendMessageUseCase: gh<_i116.SendMessageUseCase>(),
+        markAsReadUseCase: gh<_i1052.MarkAsReadUseCase>(),
+        getOrCreateConversationUseCase:
+            gh<_i232.GetOrCreateConversationUseCase>(),
+        chatRepository: gh<_i920.ChatRepository>(),
+      ),
+    );
+    gh.factory<_i935.FavoriteBloc>(
+      () => _i935.FavoriteBloc(
+        addFavoriteUseCase: gh<_i191.AddFavoriteUseCase>(),
+        removeFavoriteUseCase: gh<_i469.RemoveFavoriteUseCase>(),
+        getFavoriteItemsUseCase: gh<_i2.GetFavoriteItemsUseCase>(),
+      ),
     );
     gh.factory<_i1004.ItemBloc>(
       () => _i1004.ItemBloc(
@@ -195,6 +284,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i527.ProfileBloc>(
       () => _i527.ProfileBloc(
         getUserProfileUseCase: gh<_i680.GetUserProfileUseCase>(),
+        getUserStatsUseCase: gh<_i566.GetUserStatsUseCase>(),
         updateProfileUseCase: gh<_i303.UpdateProfileUseCase>(),
         uploadAvatarUseCase: gh<_i576.UploadAvatarUseCase>(),
       ),

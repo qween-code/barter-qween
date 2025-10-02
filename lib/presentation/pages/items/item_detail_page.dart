@@ -1,15 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../core/di/injection.dart';
+import '../../../domain/entities/item_entity.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../blocs/favorite/favorite_bloc.dart';
+import '../../blocs/favorite/favorite_event.dart';
+import '../../blocs/favorite/favorite_state.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/auth/auth_state.dart';
-import '../../../domain/entities/item_entity.dart';
-import '../../../core/di/injection.dart';
 import '../../blocs/trade/trade_bloc.dart';
+import '../profile/user_profile_page.dart';
 import '../trades/send_trade_offer_page.dart';
 import 'edit_item_page.dart';
 
@@ -125,19 +129,25 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
           ),
           onPressed: () => _shareItem(item),
         ),
-        IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.favorite_border, color: Colors.white, size: 20),
-          ),
-          onPressed: () {
-            // TODO: Implement favorite functionality
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Favorites feature coming soon!')),
+        BlocBuilder<FavoriteBloc, FavoriteState>(
+          builder: (context, favoriteState) {
+            final favoriteBloc = context.read<FavoriteBloc>();
+            final isFavorited = favoriteBloc.isFavorited(item.id);
+            
+            return IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorited ? Colors.red : Colors.white,
+                  size: 20,
+                ),
+              ),
+              onPressed: () => _toggleFavorite(context, item.id),
             );
           },
         ),
@@ -411,9 +421,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Owner',
-                                style: TextStyle(
+                              Text(
+                                item.ownerName,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
@@ -430,9 +440,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                           ),
                         ),
                         OutlinedButton(
-                          onPressed: () {
-                            // View owner profile
-                          },
+                          onPressed: () => _viewOwnerProfile(context, item.ownerId),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
@@ -539,11 +547,12 @@ ${item.description}
   }
 
   Future<void> _editItem(BuildContext context, ItemEntity item) async {
+    final itemBloc = context.read<ItemBloc>();
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BlocProvider.value(
-          value: context.read<ItemBloc>(),
+        builder: (_) => BlocProvider.value(
+          value: itemBloc,
           child: EditItemPage(item: item),
         ),
       ),
@@ -551,7 +560,7 @@ ${item.description}
 
     if (result != null) {
       // Reload item after edit
-      context.read<ItemBloc>().add(LoadItem(item.id));
+      itemBloc.add(LoadItem(item.id));
     }
   }
 
@@ -571,5 +580,35 @@ ${item.description}
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+
+  void _toggleFavorite(BuildContext context, String itemId) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      final favoriteBloc = context.read<FavoriteBloc>();
+      final wasFavorited = favoriteBloc.isFavorited(itemId);
+      
+      favoriteBloc.add(ToggleFavorite(authState.user.uid, itemId));
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            wasFavorited
+                ? 'Removed from favorites'
+                : 'Added to favorites',
+          ),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
+  void _viewOwnerProfile(BuildContext context, String ownerId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => UserProfilePage(userId: ownerId),
+      ),
+    );
   }
 }

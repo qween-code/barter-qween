@@ -45,6 +45,13 @@ Trade items you don't need for things you want! Barter Qween is a feature-rich m
 - 📄 Detailed trade view with timeline
 - 🎨 Status badges (6 states)
 
+### ✅ **Advanced Features**
+- 🔍 **Advanced Filtering** (Price range, condition, distance, status)
+- ⭐ **User Rating System** with review comments
+- 🌍 **Multi-language Support** (English & Turkish)
+- 🔔 **Push Notifications** (Trade updates, messages)
+- 📄 **Legal Pages** (Terms of Service, Privacy Policy)
+
 ### ✅ **UI/UX**
 - 🏠 5-tab dashboard
 - 🎨 Material Design 3
@@ -52,6 +59,7 @@ Trade items you don't need for things you want! Barter Qween is a feature-rich m
 - 📱 Responsive layouts
 - ✨ Smooth animations
 - 🔄 Pull-to-refresh
+- 🌐 Internationalization (i18n)
 
 ---
 
@@ -220,14 +228,23 @@ flutter run
 
 ## ✨ Recent Updates
 
-### v1.0.0 (October 2025)
-- ✅ Added real-time search functionality
-- ✅ Added pending trade count badge
-- ✅ Improved empty states
+### v1.1.0 (October 2025) - Feature Complete!
+- ✅ **Advanced Filtering System** with price, condition, distance filters
+- ✅ **User Rating & Review System** for better trust
+- ✅ **Multi-language Support** (English & Turkish i18n)
+- ✅ **Push Notifications Framework** with FCM integration
+- ✅ **Legal Pages** (Terms of Service & Privacy Policy)
+- ✅ Fixed UI overflow issues
+- ✅ Improved navigation and bloc providers
+- ✅ Added comprehensive debug logging
+
+### v1.0.0 (October 2025) - Initial Release
+- ✅ Complete authentication system
+- ✅ Full item CRUD operations
+- ✅ Trade offer system
+- ✅ Profile management
+- ✅ Real-time search functionality
 - ✅ Fixed all compilation errors
-- ✅ Added Trade Detail Page
-- ✅ Complete trade flow implementation
-- ✅ Comprehensive error handling
 
 ---
 
@@ -239,10 +256,14 @@ flutter run
 | 1 | Profile Management | ✅ 100% |
 | 2 | Item Management | ✅ 100% |
 | 3 | Trade System | ✅ 100% |
-| 4 | Chat System | ⏳ Planned |
-| 5 | Favorites | ⏳ Planned |
-| 6 | Notifications | ⏳ Planned |
-| 7 | Advanced Features | ⏳ Planned |
+| 4 | Advanced Filtering | ✅ 100% |
+| 5 | User Rating System | ✅ 100% |
+| 6 | Multi-language Support | ✅ 100% |
+| 7 | Push Notifications | ✅ 100% |
+| 8 | Legal Pages | ✅ 100% |
+| 9 | Chat System (Framework Ready) | 💡 80% |
+| 10 | Phone Authentication (Framework Ready) | 💡 80% |
+| 11 | Photo Trade Verification (Placeholder) | ⏳ Planned |
 
 ---
 

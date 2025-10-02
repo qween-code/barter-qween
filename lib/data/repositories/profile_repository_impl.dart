@@ -79,4 +79,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ServerFailure('Unexpected error: $e'));
     }
   }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getUserStats(String userId) async {
+    try {
+      final stats = await remoteDataSource.getUserStats(userId);
+      return Right(stats);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('Unexpected error: $e'));
+    }
+  }
 }

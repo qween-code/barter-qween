@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/di/injection.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -11,6 +10,9 @@ import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
 import '../../widgets/user_avatar_widget.dart';
+import '../favorites/favorites_page.dart';
+import '../items/user_items_page.dart';
+import '../trades/trade_history_page.dart';
 import 'edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -41,6 +43,8 @@ class _ProfileViewState extends State<ProfileView> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<ProfileBloc>().add(LoadProfile(authState.user.uid));
+      // Also load user stats
+      context.read<ProfileBloc>().add(LoadUserStats(authState.user.uid));
     }
   }
 
@@ -99,11 +103,36 @@ class _ProfileViewState extends State<ProfileView> {
           }
 
           if (state is ProfileLoaded || state is ProfileUpdated || state is AvatarUploaded) {
+            // Extract user and stats from state
             final user = state is ProfileLoaded 
                 ? state.user 
                 : state is ProfileUpdated
                     ? (state as ProfileUpdated).user
                     : (state as AvatarUploaded).user;
+            
+            final itemCount = state is ProfileLoaded 
+                ? state.itemCount
+                : state is ProfileUpdated
+                    ? (state as ProfileUpdated).itemCount
+                    : (state as AvatarUploaded).itemCount;
+            
+            final tradeCount = state is ProfileLoaded 
+                ? state.tradeCount
+                : state is ProfileUpdated
+                    ? (state as ProfileUpdated).tradeCount
+                    : (state as AvatarUploaded).tradeCount;
+            
+            final averageRating = state is ProfileLoaded 
+                ? state.averageRating
+                : state is ProfileUpdated
+                    ? (state as ProfileUpdated).averageRating
+                    : (state as AvatarUploaded).averageRating;
+            
+            final ratingCount = state is ProfileLoaded 
+                ? state.ratingCount
+                : state is ProfileUpdated
+                    ? (state as ProfileUpdated).ratingCount
+                    : (state as AvatarUploaded).ratingCount;
             
             return CustomScrollView(
               slivers: [
@@ -249,7 +278,7 @@ class _ProfileViewState extends State<ProfileView> {
                             child: _buildStatCard(
                               icon: Icons.swap_horiz,
                               label: 'Trades',
-                              value: '0',
+                              value: '$tradeCount',
                             ),
                           ),
                           const SizedBox(width: AppDimensions.spacing12),
@@ -257,7 +286,7 @@ class _ProfileViewState extends State<ProfileView> {
                             child: _buildStatCard(
                               icon: Icons.star_outline,
                               label: 'Rating',
-                              value: 'N/A',
+                              value: ratingCount > 0 ? averageRating.toStringAsFixed(1) : 'N/A',
                             ),
                           ),
                           const SizedBox(width: AppDimensions.spacing12),
@@ -265,7 +294,7 @@ class _ProfileViewState extends State<ProfileView> {
                             child: _buildStatCard(
                               icon: Icons.inventory_2_outlined,
                               label: 'Items',
-                              value: '0',
+                              value: '$itemCount',
                             ),
                           ),
                         ],
@@ -281,7 +310,7 @@ class _ProfileViewState extends State<ProfileView> {
                         icon: Icons.inventory_outlined,
                         title: 'My Listings',
                         subtitle: 'View and manage your items',
-                        onTap: () {},
+                        onTap: () => _navigateToUserItems(context),
                       ),
                       
                       const SizedBox(height: AppDimensions.spacing12),
@@ -290,7 +319,7 @@ class _ProfileViewState extends State<ProfileView> {
                         icon: Icons.favorite_outline,
                         title: 'Favorites',
                         subtitle: 'Items you want to trade',
-                        onTap: () {},
+                        onTap: () => _navigateToFavorites(context),
                       ),
                       
                       const SizedBox(height: AppDimensions.spacing12),
@@ -299,7 +328,7 @@ class _ProfileViewState extends State<ProfileView> {
                         icon: Icons.history,
                         title: 'Trade History',
                         subtitle: 'Your past transactions',
-                        onTap: () {},
+                        onTap: () => _navigateToTradeHistory(context),
                       ),
                       
                       const SizedBox(height: AppDimensions.spacing32),
@@ -529,6 +558,33 @@ class _ProfileViewState extends State<ProfileView> {
     if (result == true) {
       _loadProfile();
     }
+  }
+
+  void _navigateToUserItems(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const UserItemsPage(),
+      ),
+    );
+  }
+
+  void _navigateToFavorites(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const FavoritesPage(),
+      ),
+    );
+  }
+
+  void _navigateToTradeHistory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const TradeHistoryPage(),
+      ),
+    );
   }
 
   void _handleLogout(BuildContext context) {

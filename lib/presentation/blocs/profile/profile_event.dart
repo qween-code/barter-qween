@@ -57,3 +57,13 @@ class DeleteAvatar extends ProfileEvent {
 class ResetProfile extends ProfileEvent {
   const ResetProfile();
 }
+
+/// Load user statistics
+class LoadUserStats extends ProfileEvent {
+  final String userId;
+
+  const LoadUserStats(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}

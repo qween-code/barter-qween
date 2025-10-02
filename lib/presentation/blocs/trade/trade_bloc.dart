@@ -125,10 +125,18 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     Emitter<TradeState> emit,
   ) async {
     emit(const TradeLoading());
+    print('🔄 Loading trade offers for user: ${event.userId}');
+    
     final result = await getUserTradeOffersUseCase(event.userId);
     result.fold(
-      (failure) => emit(TradeError(failure.message)),
-      (offers) => emit(TradeOffersLoaded(offers)),
+      (failure) {
+        print('❌ Trade offers load failed: ${failure.message}');
+        emit(TradeError(failure.message));
+      },
+      (offers) {
+        print('✅ Trade offers loaded: ${offers.length} offers');
+        emit(TradeOffersLoaded(offers));
+      },
     );
   }
 

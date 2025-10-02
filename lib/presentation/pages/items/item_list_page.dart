@@ -1,11 +1,17 @@
+import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/di/injection.dart';
+import '../../../domain/entities/item_entity.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../blocs/favorite/favorite_bloc.dart';
+import '../../blocs/favorite/favorite_event.dart';
+import '../../blocs/favorite/favorite_state.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
-import '../../../core/di/injection.dart';
-import '../../../domain/entities/item_entity.dart';
 import 'create_item_page.dart';
 import 'item_detail_page.dart';
 
@@ -22,6 +28,13 @@ class _ItemListPageState extends State<ItemListPage> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   String _searchQuery = '';
+  Timer? _debounce;
+  
+  // Filter states
+  String? _selectedCondition;
+  RangeValues _priceRange = const RangeValues(0, 10000);
+  double _maxDistance = 50.0;
+  bool _showOnlyActive = true;
 
   @override
   void initState() {
@@ -31,6 +44,7 @@ class _ItemListPageState extends State<ItemListPage> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -156,6 +170,7 @@ class _ItemListPageState extends State<ItemListPage> {
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                       width: 48,
@@ -176,19 +191,23 @@ class _ItemListPageState extends State<ItemListPage> {
                       child: Icon(
                         category['icon'] as IconData,
                         color: isSelected ? Colors.white : Colors.black54,
-                        size: 28,
+                        size: 24,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      category['name'] as String,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.normal,
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.black54,
+                    const SizedBox(height: 2),
+                    Flexible(
+                      child: Text(
+                        category['name'] as String,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.normal,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.black54,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ],
@@ -208,12 +227,29 @@ class _ItemListPageState extends State<ItemListPage> {
         child: TextField(
           controller: _searchController,
           onChanged: (value) {
+            // Cancel previous timer
+            if (_debounce?.isActive ?? false) _debounce!.cancel();
+            
             setState(() {
               _searchQuery = value.toLowerCase();
             });
+            
+            // Start new timer for debouncing
+            _debounce = Timer(const Duration(milliseconds: 500), () {
+              // Only search if query is not empty and has at least 2 characters
+              if (value.trim().isNotEmpty && value.trim().length >= 2) {
+                print('🔍 Performing search: ${value.trim()}');
+                context.read<ItemBloc>().add(SearchItems(value.trim()));
+              } else if (value.trim().isEmpty) {
+                // Reload all items if search is cleared
+                context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
+              }
+            });
           },
           decoration: InputDecoration(
-            hintText: 'Search items...',
+            hintText: 'Search items (min 2 characters)...',
+            helperText: 'Type at least 2 characters to search',
+            helperStyle: const TextStyle(fontSize: 11),
             prefixIcon: const Icon(Icons.search),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
@@ -223,6 +259,8 @@ class _ItemListPageState extends State<ItemListPage> {
                       setState(() {
                         _searchQuery = '';
                       });
+                      // Reload all items when search is cleared
+                      context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
                     },
                   )
                 : null,
@@ -239,14 +277,10 @@ class _ItemListPageState extends State<ItemListPage> {
     );
   }
 
+  // Remove client-side filtering since we now use server-side search
   List<ItemEntity> _filterItems(List<ItemEntity> items) {
-    if (_searchQuery.isEmpty) return items;
-    
-    return items.where((item) {
-      return item.title.toLowerCase().contains(_searchQuery) ||
-             item.description.toLowerCase().contains(_searchQuery) ||
-             item.category.toLowerCase().contains(_searchQuery);
-    }).toList();
+    // Simply return all items - filtering is done server-side via SearchItems event
+    return items;
   }
 
   Widget _buildItemsList() {
@@ -347,8 +381,11 @@ class _ItemListPageState extends State<ItemListPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => getIt<ItemBloc>(),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<ItemBloc>()),
+                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+              ],
               child: ItemDetailPage(itemId: item.id),
             ),
           ),
@@ -369,34 +406,91 @@ class _ItemListPageState extends State<ItemListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
+            // Image with buttons overlay
             Expanded(
               flex: 3,
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                child: item.images.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: item.images.first,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: item.images.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: item.images.first,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey.shade200,
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey.shade200,
+                              child: Icon(Icons.image_not_supported,
+                                  size: 40, color: Colors.grey.shade400),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.grey.shade200,
+                            child: Icon(Icons.inventory_2_outlined,
+                                size: 40, color: Colors.grey.shade400),
                           ),
+                  ),
+                  // Favorite button
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: BlocBuilder<FavoriteBloc, FavoriteState>(
+                      builder: (context, state) {
+                        final isFavorited = context.read<FavoriteBloc>().isFavorited(item.id);
+                        return GestureDetector(
+                          onTap: () => _toggleFavorite(item.id),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              isFavorited ? Icons.favorite : Icons.favorite_border,
+                              color: isFavorited ? Colors.red : Colors.grey.shade700,
+                              size: 18,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Quick look button
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () => _showQuickLook(item),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey.shade200,
-                          child: Icon(Icons.image_not_supported,
-                              size: 40, color: Colors.grey.shade400),
+                        child: const Icon(
+                          Icons.visibility_outlined,
+                          color: Colors.white,
+                          size: 18,
                         ),
-                      )
-                    : Container(
-                        color: Colors.grey.shade200,
-                        child: Icon(Icons.inventory_2_outlined,
-                            size: 40, color: Colors.grey.shade400),
                       ),
+                    ),
+                  ),
+                ],
               ),
             ),
             // Details
@@ -484,8 +578,11 @@ class _ItemListPageState extends State<ItemListPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => getIt<ItemBloc>(),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<ItemBloc>()),
+                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+              ],
               child: ItemDetailPage(itemId: item.id),
             ),
           ),
@@ -612,41 +709,317 @@ class _ItemListPageState extends State<ItemListPage> {
     );
   }
 
-  void _showFilterBottomSheet() {
+  void _toggleFavorite(String itemId) {
+    final authBloc = context.read<AuthBloc>();
+    if (authBloc.state is AuthAuthenticated) {
+      final authState = authBloc.state as AuthAuthenticated;
+      context.read<FavoriteBloc>().add(
+        ToggleFavorite(authState.user.uid, itemId),
+      );
+    }
+  }
+
+  void _showQuickLook(ItemEntity item) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Filter Options',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            const Text('More filters coming soon...'),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-                child: const Text('Apply Filters'),
-              ),
+                // Image
+                if (item.images.isNotEmpty)
+                  CachedNetworkImage(
+                    imageUrl: item.images.first,
+                    height: 250,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              item.category,
+                              style: TextStyle(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                          const SizedBox(width: 4),
+                          Text(
+                            item.city ?? 'Unknown',
+                            style: TextStyle(color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        item.description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade700,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider(create: (_) => getIt<ItemBloc>()),
+                                    BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+                                  ],
+                                  child: ItemDetailPage(itemId: item.id),
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('View Full Details'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: const EdgeInsets.all(24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Filter Options',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setModalState(() {
+                          _selectedCondition = null;
+                          _priceRange = const RangeValues(0, 10000);
+                          _maxDistance = 50.0;
+                          _showOnlyActive = true;
+                        });
+                      },
+                      child: const Text('Reset'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                
+                // Condition Filter
+                const Text(
+                  'Condition',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  children: ['New', 'Like New', 'Good', 'Fair', 'Poor'].map((condition) {
+                    final isSelected = _selectedCondition == condition;
+                    return FilterChip(
+                      label: Text(condition),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setModalState(() {
+                          _selectedCondition = selected ? condition : null;
+                        });
+                      },
+                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                      checkmarkColor: Theme.of(context).primaryColor,
+                    );
+                  }).toList(),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Price Range Filter
+                const Text(
+                  'Price Range (Estimated Value)',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                RangeSlider(
+                  values: _priceRange,
+                  min: 0,
+                  max: 10000,
+                  divisions: 100,
+                  labels: RangeLabels(
+                    '₺${_priceRange.start.round()}',
+                    '₺${_priceRange.end.round()}',
+                  ),
+                  onChanged: (values) {
+                    setModalState(() {
+                      _priceRange = values;
+                    });
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('₺${_priceRange.start.round()}'),
+                    Text('₺${_priceRange.end.round()}'),
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Distance Filter
+                const Text(
+                  'Maximum Distance',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Slider(
+                  value: _maxDistance,
+                  min: 5,
+                  max: 100,
+                  divisions: 19,
+                  label: '${_maxDistance.round()} km',
+                  onChanged: (value) {
+                    setModalState(() {
+                      _maxDistance = value;
+                    });
+                  },
+                ),
+                Text(
+                  '${_maxDistance.round()} km',
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Show only active items
+                SwitchListTile(
+                  title: const Text('Show only active items'),
+                  subtitle: Text(
+                    'Hide traded or inactive items',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                  value: _showOnlyActive,
+                  onChanged: (value) {
+                    setModalState(() {
+                      _showOnlyActive = value;
+                    });
+                  },
+                  contentPadding: EdgeInsets.zero,
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Apply button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        // Apply filters
+                      });
+                      Navigator.pop(context);
+                      _applyFilters();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Apply Filters'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  void _applyFilters() {
+    // Reload items with filters applied
+    context.read<ItemBloc>().add(LoadAllItems(
+      category: _selectedCategory,
+    ));
+    // Additional filtering logic can be added in the bloc
   }
 }

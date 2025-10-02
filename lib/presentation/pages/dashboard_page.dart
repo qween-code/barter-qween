@@ -5,11 +5,13 @@ import '../../core/routes/route_names.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
+import '../blocs/favorite/favorite_bloc.dart';
 import '../blocs/item/item_bloc.dart';
 import '../blocs/profile/profile_bloc.dart';
 import '../blocs/trade/trade_bloc.dart';
 import '../blocs/trade/trade_event.dart';
 import '../blocs/trade/trade_state.dart';
+import 'explore/explore_page.dart';
 import 'items/create_item_page.dart';
 import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
@@ -72,11 +74,20 @@ class _DashboardViewState extends State<DashboardView> {
         body: IndexedStack(
         index: _currentIndex,
         children: [
-          BlocProvider(
-            create: (_) => getIt<ItemBloc>(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => getIt<ItemBloc>()),
+              BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+            ],
             child: const ItemListPage(),
           ),
-          const ExploreTab(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => getIt<ItemBloc>()),
+              BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+            ],
+            child: const ExplorePage(),
+          ),
           BlocProvider(
             create: (_) => getIt<TradeBloc>(),
             child: const TradesPage(),
@@ -180,16 +191,122 @@ class ExploreTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categories = [
+      {'name': 'Electronics', 'icon': Icons.devices, 'color': Colors.blue},
+      {'name': 'Fashion', 'icon': Icons.checkroom, 'color': Colors.pink},
+      {'name': 'Home & Garden', 'icon': Icons.home, 'color': Colors.green},
+      {'name': 'Books', 'icon': Icons.book, 'color': Colors.orange},
+      {'name': 'Sports', 'icon': Icons.sports_soccer, 'color': Colors.red},
+      {'name': 'Toys & Games', 'icon': Icons.toys, 'color': Colors.purple},
+      {'name': 'Music', 'icon': Icons.music_note, 'color': Colors.indigo},
+      {'name': 'Art & Crafts', 'icon': Icons.palette, 'color': Colors.teal},
+    ];
+
     return CustomScrollView(
       slivers: [
-        SliverAppBar(floating: true, title: const Text('Explore')),
+        SliverAppBar(
+          floating: true,
+          expandedHeight: 120,
+          flexibleSpace: FlexibleSpaceBar(
+            title: const Text(
+              'Explore Categories',
+              style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            background: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.1),
+                    Theme.of(context).primaryColor.withOpacity(0.05),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          backgroundColor: Colors.white,
+        ),
         SliverPadding(
           padding: const EdgeInsets.all(16),
           sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.8, crossAxisSpacing: 12, mainAxisSpacing: 12),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
             delegate: SliverChildBuilderDelegate(
-              (context, index) => Card(child: InkWell(onTap: () {}, child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.category, size: 48, color: Theme.of(context).colorScheme.primary), const SizedBox(height: 8), Text('Category ${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold))]))),
-              childCount: 10,
+              (context, index) {
+                final category = categories[index];
+                return Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      // Navigate to category items
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Browsing ${category['name']}')),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            (category['color'] as Color).withOpacity(0.1),
+                            (category['color'] as Color).withOpacity(0.05),
+                          ],
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              category['icon'] as IconData,
+                              size: 32,
+                              color: category['color'] as Color,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            category['name'] as String,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+              childCount: categories.length,
             ),
           ),
         ),

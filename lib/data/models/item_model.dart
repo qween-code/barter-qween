@@ -6,8 +6,11 @@ class ItemModel {
   final String title;
   final String description;
   final String category;
+  final String? subcategory;
   final List<String> images;
   final String? condition;
+  final double? price;
+  final String? color;
   final String ownerId;
   final String ownerName;
   final String? ownerPhotoUrl;
@@ -27,8 +30,11 @@ class ItemModel {
     required this.title,
     required this.description,
     required this.category,
+    this.subcategory,
     required this.images,
     this.condition,
+    this.price,
+    this.color,
     required this.ownerId,
     required this.ownerName,
     this.ownerPhotoUrl,
@@ -52,8 +58,11 @@ class ItemModel {
       title: data['title'] ?? '',
       description: data['description'] ?? '',
       category: data['category'] ?? '',
+      subcategory: data['subcategory'],
       images: List<String>.from(data['images'] ?? []),
       condition: data['condition'],
+      price: data['price']?.toDouble(),
+      color: data['color'],
       ownerId: data['ownerId'] ?? '',
       ownerName: data['ownerName'] ?? '',
       ownerPhotoUrl: data['ownerPhotoUrl'],
@@ -76,8 +85,11 @@ class ItemModel {
       'title': title,
       'description': description,
       'category': category,
+      'subcategory': subcategory,
       'images': images,
       'condition': condition,
+      'price': price,
+      'color': color,
       'ownerId': ownerId,
       'ownerName': ownerName,
       'ownerPhotoUrl': ownerPhotoUrl,
@@ -101,8 +113,11 @@ class ItemModel {
       title: entity.title,
       description: entity.description,
       category: entity.category,
+      subcategory: entity.subcategory,
       images: entity.images,
       condition: entity.condition,
+      price: entity.price,
+      color: entity.color,
       ownerId: entity.ownerId,
       ownerName: entity.ownerName,
       ownerPhotoUrl: entity.ownerPhotoUrl,
@@ -128,8 +143,11 @@ class ItemModel {
       title: title,
       description: description,
       category: category,
+      subcategory: subcategory,
       images: images,
       condition: condition,
+      price: price,
+      color: color,
       ownerId: ownerId,
       ownerName: ownerName,
       ownerPhotoUrl: ownerPhotoUrl,
