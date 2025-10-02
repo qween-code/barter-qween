@@ -9,14 +9,26 @@ import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import 'trade_detail_page.dart';
 
-class TradesPage extends StatefulWidget {
+class TradesPage extends StatelessWidget {
   const TradesPage({super.key});
 
   @override
-  State<TradesPage> createState() => _TradesPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => getIt<TradeBloc>(),
+      child: const TradesPageView(),
+    );
+  }
 }
 
-class _TradesPageState extends State<TradesPage> with SingleTickerProviderStateMixin {
+class TradesPageView extends StatefulWidget {
+  const TradesPageView({super.key});
+
+  @override
+  State<TradesPageView> createState() => _TradesPageViewState();
+}
+
+class _TradesPageViewState extends State<TradesPageView> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
