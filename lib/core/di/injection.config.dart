@@ -10,6 +10,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:barter_qween/core/di/injection.dart' as _i328;
+import 'package:barter_qween/core/services/fcm_service.dart' as _i1066;
 import 'package:barter_qween/data/datasources/auth_remote_datasource.dart'
     as _i381;
 import 'package:barter_qween/data/datasources/remote/chat_remote_datasource.dart'
@@ -113,7 +114,10 @@ import 'package:barter_qween/presentation/blocs/search/search_bloc.dart'
 import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart' as _i503;
 import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
+import 'package:firebase_messaging/firebase_messaging.dart' as _i892;
 import 'package:firebase_storage/firebase_storage.dart' as _i457;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as _i163;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
@@ -143,6 +147,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i116.GoogleSignIn>(
       () => firebaseInjectableModule.googleSignIn,
     );
+    gh.lazySingleton<_i892.FirebaseMessaging>(
+      () => firebaseInjectableModule.messaging,
+    );
+    gh.lazySingleton<_i163.FlutterLocalNotificationsPlugin>(
+      () => firebaseInjectableModule.localNotifications,
+    );
     gh.factory<_i493.SearchLocalDataSource>(
       () => _i493.SearchLocalDataSource(gh<_i460.SharedPreferences>()),
     );
@@ -160,6 +170,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i933.FavoriteRepository>(
       () => _i451.FavoriteRepositoryImpl(gh<_i548.FavoriteRemoteDataSource>()),
+    );
+    gh.lazySingleton<_i1066.FCMService>(
+      () => _i1066.FCMService(
+        gh<_i892.FirebaseMessaging>(),
+        gh<_i163.FlutterLocalNotificationsPlugin>(),
+      ),
     );
     gh.lazySingleton<_i72.ItemRemoteDataSource>(
       () => _i72.ItemRemoteDataSourceImpl(
