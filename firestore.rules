@@ -27,9 +27,17 @@ service cloud.firestore {
     
     // Messages - conversation participants can read, only senders can create
     match /messages/{messageId} {
+      // Allow authenticated users to read and query messages
       allow read, list: if request.auth != null;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.senderId;
-      allow update: if request.auth != null;
+      // Allow users to create messages where they are the sender
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.senderId &&
+                      request.resource.data.conversationId != null;
+      // Allow marking messages as read
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.senderId || 
+                       request.resource.data.keys().hasOnly(['isRead']) &&
+                       request.resource.data.isRead == true);
     }
     
     // Trade Offers - authenticated users can query to check for existing offers

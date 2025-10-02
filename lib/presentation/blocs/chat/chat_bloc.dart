@@ -125,6 +125,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     SendMessage event,
     Emitter<ChatState> emit,
   ) async {
+    print('💬 ChatBloc: Sending message - Conv: ${event.conversationId}, Sender: ${event.senderId}');
+    
     // Show optimistic update
     emit(SendingMessage(
       conversationId: event.conversationId,
@@ -141,8 +143,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
 
     result.fold(
-      (failure) => emit(ChatError(failure.message)),
+      (failure) {
+        print('❌ ChatBloc: Failed to send message - ${failure.message}');
+        emit(ChatError(failure.message));
+      },
       (message) {
+        print('✅ ChatBloc: Message sent successfully - ${message.id}');
         emit(MessageSent(message));
         // Reload messages to show the new message
         add(LoadMessages(event.conversationId));
