@@ -86,6 +86,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadMessages event,
     Emitter<ChatState> emit,
   ) async {
+    print('📥 ChatBloc: Loading messages for conversation: ${event.conversationId}');
     emit(const ChatLoading());
 
     // Cancel previous subscription if exists
@@ -99,10 +100,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         if (emit.isDone) return;
         result.fold(
           (failure) {
+            print('❌ ChatBloc: Failed to load messages - ${failure.message}');
             if (!emit.isDone) emit(ChatError(failure.message));
           },
           (messages) {
             if (emit.isDone) return;
+            print('✅ ChatBloc: Loaded ${messages.length} messages');
             // Sort messages by date (newest first)
             final sortedMessages = List.of(messages)
               ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -115,6 +118,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
       },
       onError: (error) {
+        print('❌ ChatBloc: Stream error - $error');
         if (!emit.isDone) emit(ChatError('Failed to load messages: $error'));
       },
     );
