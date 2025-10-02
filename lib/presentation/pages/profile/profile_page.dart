@@ -70,30 +70,41 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, authState) {
-        if (authState is! AuthAuthenticated) {
-          return Scaffold(
-            backgroundColor: AppColors.background,
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: AppDimensions.spacing16),
-                  Text(
-                    'Loading...',
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, authState) {
+        // When auth state changes, reload profile
+        if (authState is AuthAuthenticated) {
+          if (_currentUserId != authState.user.uid) {
+            print('🔄 Auth state changed, reloading profile: ${authState.user.uid}');
+            _currentUserId = authState.user.uid;
+            _resetAndLoadProfile();
+          }
         }
+      },
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, authState) {
+          if (authState is! AuthAuthenticated) {
+            return Scaffold(
+              backgroundColor: AppColors.background,
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: AppDimensions.spacing16),
+                    Text(
+                      'Loading...',
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
 
-        return Scaffold(
+          return Scaffold(
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text('Profile', style: AppTextStyles.titleLarge),
@@ -401,9 +412,10 @@ class _ProfileViewState extends State<ProfileView> {
             ),
           );
         },
-          ),
-        );
-      },
+      ),
+          );
+        },
+      ),
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/di/injection.dart';
 import 'core/providers/global_bloc_providers.dart';
@@ -16,6 +17,11 @@ import 'presentation/pages/login_page.dart';
 import 'presentation/pages/onboarding/onboarding_page.dart';
 import 'presentation/pages/register_page.dart';
 import 'presentation/pages/forgot_password_page.dart';
+import 'presentation/pages/items/create_item_page.dart';
+import 'presentation/pages/items/edit_item_page.dart';
+import 'presentation/blocs/item/item_bloc.dart';
+import 'presentation/blocs/item/item_event.dart';
+import 'presentation/blocs/item/item_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,6 +51,39 @@ class BarterQweenApp extends StatelessWidget {
           case RouteNames.forgotPassword: return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
           case RouteNames.onboarding: return MaterialPageRoute(builder: (_) => const OnboardingPage());
           case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
+          case RouteNames.createItem: 
+            return MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                create: (_) => getIt<ItemBloc>(),
+                child: const CreateItemPage(),
+              ),
+            );
+          case RouteNames.editItem:
+            if (s.arguments is String) {
+              final itemId = s.arguments as String;
+              return MaterialPageRoute(
+                builder: (context) {
+                  final itemBloc = getIt<ItemBloc>();
+                  itemBloc.add(LoadItem(itemId));
+                  
+                  return BlocProvider.value(
+                    value: itemBloc,
+                    child: BlocBuilder<ItemBloc, ItemState>(
+                      builder: (context, state) {
+                        if (state is ItemLoaded) {
+                          return EditItemPage(item: state.item);
+                        }
+                        return Scaffold(
+                          appBar: AppBar(title: const Text('Loading...')),
+                          body: const Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
+            }
+            return MaterialPageRoute(builder: (_) => const LoginPage());
           default: return MaterialPageRoute(builder: (_) => const LoginPage());
         }
       },

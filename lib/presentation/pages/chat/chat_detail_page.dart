@@ -13,10 +13,12 @@ import '../../blocs/auth/auth_state.dart' show AuthState, AuthAuthenticated;
 /// Chat detail page - real-time messaging interface
 class ChatDetailPage extends StatefulWidget {
   final ConversationEntity conversation;
+  final String? initialMessage;
 
   const ChatDetailPage({
     super.key,
     required this.conversation,
+    this.initialMessage,
   });
 
   @override
@@ -41,6 +43,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _loadListingInfo();
     _loadMessages();
     _markAsRead();
+    
+    // Set initial message if provided
+    if (widget.initialMessage != null) {
+      _messageController.text = widget.initialMessage!;
+    }
   }
 
   void _loadUserInfo() {

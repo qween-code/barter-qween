@@ -185,69 +185,79 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
-  void _startConversation(BuildContext context, String targetUserId, String currentUserId) {
+  void _startConversation(BuildContext context, String targetUserId, String currentUserId, {String? listingId}) {
+    print('🗨️ Starting conversation with user: $targetUserId, listing: $listingId');
+    
     // Create ChatBloc and get or create conversation
     final chatBloc = getIt<ChatBloc>();
     
-    chatBloc.add(GetOrCreateConversation(
-      userId: currentUserId,
-      otherUserId: targetUserId,
-      listingId: null, // No specific listing
-    ));
-
-    // Show loading dialog
+    // Show loading dialog first
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => BlocProvider.value(
-        value: chatBloc,
-        child: BlocListener<ChatBloc, ChatState>(
-          listener: (context, state) {
-            if (state is ConversationRetrieved) {
-              // Close loading dialog
-              Navigator.pop(dialogContext);
-              
-              // Navigate to chat
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: chatBloc,
-                    child: ChatDetailPage(conversation: state.conversation),
-                  ),
-                ),
-              );
-            } else if (state is ChatError) {
-              // Close loading dialog
-              Navigator.pop(dialogContext);
-              
-              // Show error
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Failed to start conversation: ${state.message}'),
-                  backgroundColor: AppColors.error,
-                ),
-              );
-            }
-          },
-          child: const Center(
-            child: Card(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Starting conversation...'),
-                  ],
-                ),
+      builder: (dialogContext) => WillPopScope(
+        onWillPop: () async => false,
+        child: Center(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Starting conversation...'),
+                ],
               ),
             ),
           ),
         ),
       ),
     );
+
+    // Listen to ChatBloc stream
+    chatBloc.stream.listen((state) {
+      print('💬 Chat state: ${state.runtimeType}');
+      
+      if (state is ConversationRetrieved) {
+        // Close loading dialog
+        Navigator.of(context, rootNavigator: true).pop();
+        
+        // Navigate to chat with initial message if from listing
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: chatBloc,
+              child: ChatDetailPage(
+                conversation: state.conversation,
+                initialMessage: listingId != null 
+                    ? 'Hi! I\'m interested in your item.'
+                    : null,
+              ),
+            ),
+          ),
+        );
+      } else if (state is ChatError) {
+        // Close loading dialog
+        Navigator.of(context, rootNavigator: true).pop();
+        
+        // Show error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to start conversation: ${state.message}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    });
+
+    // Trigger event after setting up listener
+    chatBloc.add(GetOrCreateConversation(
+      userId: currentUserId,
+      otherUserId: targetUserId,
+      listingId: listingId,
+    ));
   }
 
   Widget _buildStatsSection(BuildContext context) {

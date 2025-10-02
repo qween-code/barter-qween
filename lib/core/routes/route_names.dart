@@ -8,4 +8,6 @@ class RouteNames {
   static const String onboarding = '/onboarding';
   static const String dashboard = '/dashboard';
   static const String home = '/home';
+  static const String createItem = '/create-item';
+  static const String editItem = '/edit-item';
 }
