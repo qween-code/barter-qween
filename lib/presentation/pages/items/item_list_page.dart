@@ -63,7 +63,7 @@ class _ItemListPageState extends State<ItemListPage> {
           _buildItemsList(),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -75,9 +75,8 @@ class _ItemListPageState extends State<ItemListPage> {
             ),
           );
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Create Item'),
-        backgroundColor: Theme.of(context).primaryColor,
+        tooltip: 'Create Item',
+        child: const Icon(Icons.add),
       ),
     );
   }

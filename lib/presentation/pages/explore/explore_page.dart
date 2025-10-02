@@ -163,7 +163,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
             _selectedCategory = category['name'] == 'All' ? null : category['name'] as String;
           });
           context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
-          _tabController.animateTo(1); // Switch to trending tab
+          // Don't auto-switch tabs - stay on current tab
         },
         borderRadius: BorderRadius.circular(20),
         child: Container(
