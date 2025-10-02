@@ -1,0 +1,12 @@
+{
+  "name": "barter-qween-seed",
+  "version": "1.0.0",
+  "description": "Firebase seed script for Barter Qween",
+  "main": "seed_firebase.js",
+  "scripts": {
+    "seed": "node seed_firebase.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
