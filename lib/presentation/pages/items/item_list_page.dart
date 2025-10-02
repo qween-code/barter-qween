@@ -83,18 +83,35 @@ class _ItemListPageState extends State<ItemListPage> {
 
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 120,
-      floating: true,
+      expandedHeight: 180,
+      floating: false,
       pinned: true,
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
       flexibleSpace: FlexibleSpaceBar(
-        title: const Text(
-          'Discover Items',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
+        titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
+        title: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Discover Items',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 2),
+            Text(
+              'Find your next treasure',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
         ),
         background: Container(
           decoration: BoxDecoration(
@@ -102,18 +119,48 @@ class _ItemListPageState extends State<ItemListPage> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Theme.of(context).primaryColor.withOpacity(0.1),
-                Theme.of(context).primaryColor.withOpacity(0.05),
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor.withOpacity(0.8),
               ],
             ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -20,
+                top: -20,
+                child: Icon(
+                  Icons.swap_horiz_rounded,
+                  size: 120,
+                  color: Colors.white.withOpacity(0.1),
+                ),
+              ),
+              Positioned(
+                left: -30,
+                bottom: -30,
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 100,
+                  color: Colors.white.withOpacity(0.1),
+                ),
+              ),
+            ],
           ),
         ),
       ),
       actions: [
         IconButton(
-          icon: Icon(
-            _isGridView ? Icons.view_list : Icons.grid_view,
-            color: Colors.black87,
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              _isGridView ? Icons.view_list : Icons.grid_view,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
           onPressed: () {
             setState(() {
@@ -122,7 +169,18 @@ class _ItemListPageState extends State<ItemListPage> {
           },
         ),
         IconButton(
-          icon: const Icon(Icons.filter_list, color: Colors.black87),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+              Icons.filter_list,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
           onPressed: _showFilterBottomSheet,
         ),
         const SizedBox(width: 8),
@@ -143,77 +201,91 @@ class _ItemListPageState extends State<ItemListPage> {
 
     return SliverToBoxAdapter(
       child: Container(
-        height: 80,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final isSelected = _selectedCategory == category['name'] ||
-                (_selectedCategory == null && category['name'] == 'All');
-
-            return Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedCategory = category['name'] == 'All'
-                        ? null
-                        : category['name'] as String;
-                  });
-                  context.read<ItemBloc>().add(LoadAllItems(
-                        category: _selectedCategory,
-                      ));
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        category['icon'] as IconData,
-                        color: isSelected ? Colors.white : Colors.black54,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Flexible(
-                      child: Text(
-                        category['name'] as String,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.normal,
-                          color: isSelected
-                              ? Theme.of(context).primaryColor
-                              : Colors.black54,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Categories',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
-            );
-          },
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  final isSelected = _selectedCategory == category['name'] ||
+                      (_selectedCategory == null && category['name'] == 'All');
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = category['name'] == 'All'
+                              ? null
+                              : category['name'] as String;
+                        });
+                        context.read<ItemBloc>().add(LoadAllItems(
+                              category: _selectedCategory,
+                            ));
+                      },
+                      child: Container(
+                        width: 80,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              category['icon'] as IconData,
+                              color: isSelected ? Colors.white : Theme.of(context).primaryColor,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              category['name'] as String,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                color: isSelected ? Colors.white : Colors.black87,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
