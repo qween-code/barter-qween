@@ -10,7 +10,6 @@ import '../../blocs/auth/auth_state.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/favorite/favorite_event.dart';
 import '../../blocs/favorite/favorite_state.dart';
-import '../../../core/di/injection.dart';
 import '../../../core/services/analytics_service.dart';
 
 class FavoritesPage extends StatelessWidget {

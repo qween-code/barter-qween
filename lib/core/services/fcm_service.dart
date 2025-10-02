@@ -4,6 +4,16 @@ import 'package:injectable/injectable.dart';
 import 'dart:io' show Platform;
 import 'package:barter_qween/core/routes/route_names.dart';
 import 'package:barter_qween/main.dart' show navigatorKey;
+import 'package:barter_qween/core/di/injection.dart';
+import 'package:flutter/material.dart';
+import 'package:barter_qween/presentation/pages/chat/conversations_list_page.dart';
+import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:barter_qween/presentation/pages/trades/trades_page.dart';
+import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart';
+import 'package:barter_qween/presentation/pages/items/item_detail_page.dart';
+import 'package:barter_qween/presentation/blocs/item/item_bloc.dart';
+import 'package:barter_qween/presentation/blocs/favorite/favorite_bloc.dart';
 
 /// Service for handling Firebase Cloud Messaging
 @lazySingleton
@@ -160,29 +170,48 @@ class FCMService {
     final type = data['type'] as String?;
     final entityId = data['entityId'] as String?;
 
-    // Minimal deep-link routing: send user to dashboard for now.
-    // Future: add specific named routes for trade/chat/item using entityId.
     final nav = navigatorKey.currentState;
-    if (nav != null) {
-      nav.pushNamedAndRemoveUntil(RouteNames.dashboard, (route) => route.isFirst);
-    }
+    if (nav == null) return;
 
-    // Keep logs for future mapping refinement
+    // Route based on type
     switch (type) {
+      case 'new_message':
+        nav.push(MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => getIt<ChatBloc>(),
+            child: const ConversationsListPage(),
+          ),
+        ));
+        break;
       case 'new_trade_offer':
       case 'trade_accepted':
       case 'trade_rejected':
-        print('Intended nav: trade detail $entityId');
-        break;
-      case 'new_message':
-        print('Intended nav: chat $entityId');
+      case 'trade_completed':
+        nav.push(MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => getIt<TradeBloc>(),
+            child: const TradesPage(),
+          ),
+        ));
         break;
       case 'item_liked':
       case 'item_sold':
-        print('Intended nav: item detail $entityId');
+        if (entityId != null && entityId.isNotEmpty) {
+          nav.push(MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<ItemBloc>()),
+                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+              ],
+              child: ItemDetailPage(itemId: entityId),
+            ),
+          ));
+        } else {
+          nav.pushNamed(RouteNames.dashboard);
+        }
         break;
       default:
-        print('Intended nav: dashboard');
+        nav.pushNamed(RouteNames.dashboard);
     }
   }
 
