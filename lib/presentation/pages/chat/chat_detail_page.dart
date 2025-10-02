@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../domain/entities/conversation_entity.dart';
 import '../../../domain/entities/message_entity.dart';
@@ -27,11 +28,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final ScrollController _scrollController = ScrollController();
   String? _currentUserId;
   String? _currentUserName;
+  String? _otherUserName;
+  bool _isLoadingUserName = true;
+  String? _listingTitle;
+  String? _listingImage;
 
   @override
   void initState() {
     super.initState();
     _loadUserInfo();
+    _loadOtherUserInfo();
+    _loadListingInfo();
     _loadMessages();
     _markAsRead();
   }
@@ -41,6 +48,56 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     if (authState is AuthAuthenticated) {
       _currentUserId = authState.user.uid;
       _currentUserName = authState.user.displayName ?? 'User';
+    }
+  }
+
+  Future<void> _loadOtherUserInfo() async {
+    if (_currentUserId == null) return;
+    
+    final otherUserId = widget.conversation.getOtherParticipantId(_currentUserId!);
+    
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(otherUserId)
+          .get();
+      
+      if (userDoc.exists && mounted) {
+        setState(() {
+          _otherUserName = userDoc.data()?['displayName'] as String? ?? 'User';
+          _isLoadingUserName = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _otherUserName = 'User';
+          _isLoadingUserName = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadListingInfo() async {
+    if (widget.conversation.listingId == null) return;
+    
+    try {
+      final itemDoc = await FirebaseFirestore.instance
+          .collection('items')
+          .doc(widget.conversation.listingId)
+          .get();
+      
+      if (itemDoc.exists && mounted) {
+        final data = itemDoc.data();
+        setState(() {
+          _listingTitle = data?['title'] as String?;
+          _listingImage = (data?['images'] as List?)?.isNotEmpty == true 
+              ? data!['images'][0] as String? 
+              : null;
+        });
+      }
+    } catch (e) {
+      // Silent fail
     }
   }
 
@@ -96,9 +153,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          'User ${widget.conversation.getOtherParticipantId(_currentUserId ?? '').substring(0, 8)}',
-        ),
+        title: _isLoadingUserName
+            ? const Text('Loading...')
+            : Text(_otherUserName ?? 'User'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnPrimary,
         elevation: 0,
@@ -113,6 +170,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       ),
       body: Column(
         children: [
+          // Listing info banner (if conversation is about an item)
+          if (_listingTitle != null) _buildListingBanner(),
+          
           // Messages list
           Expanded(
             child: BlocConsumer<ChatBloc, ChatState>(
@@ -384,5 +444,79 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     } else {
       return 'Just now';
     }
+  }
+
+  Widget _buildListingBanner() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.primaryLight.withOpacity(0.1),
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.borderDefault,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Item image
+          if (_listingImage != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                _listingImage!,
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 60,
+                  height: 60,
+                  color: AppColors.surfaceVariant,
+                  child: Icon(
+                    Icons.image_outlined,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ),
+            ),
+          if (_listingImage != null) const SizedBox(width: 12),
+          
+          // Item info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'About this item:',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _listingTitle!,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          
+          // View button
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: AppColors.textSecondary,
+          ),
+        ],
+      ),
+    );
   }
 }
