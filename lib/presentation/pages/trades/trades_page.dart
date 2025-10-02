@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/trade_offer_entity.dart';
+import '../../../core/di/injection.dart';
 import '../../blocs/trade/trade_bloc.dart';
 import '../../blocs/trade/trade_event.dart';
 import '../../blocs/trade/trade_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
+import 'trade_detail_page.dart';
 
 class TradesPage extends StatefulWidget {
   const TradesPage({super.key});
@@ -32,7 +34,7 @@ class _TradesPageState extends State<TradesPage> with SingleTickerProviderStateM
 
   void _loadTrades() {
     final authState = context.read<AuthBloc>().state;
-    if (authState is Authenticated) {
+    if (authState is AuthAuthenticated) {
       context.read<TradeBloc>().add(LoadUserTradeOffers(authState.user.uid));
     }
   }
@@ -102,7 +104,9 @@ class _TradesPageState extends State<TradesPage> with SingleTickerProviderStateM
             }
 
             final authState = context.read<AuthBloc>().state;
-            final currentUserId = authState is Authenticated ? authState.user.uid : '';
+            final currentUserId = authState is AuthAuthenticated 
+                ? authState.user.uid 
+                : '';
 
             final receivedOffers = offers.where((o) => o.toUserId == currentUserId).toList();
             final sentOffers = offers.where((o) => o.fromUserId == currentUserId).toList();
@@ -158,8 +162,21 @@ class _TradesPageState extends State<TradesPage> with SingleTickerProviderStateM
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider.value(
+                value: context.read<TradeBloc>(),
+                child: TradeDetailPage(offer: offer),
+              ),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -271,6 +288,7 @@ class _TradesPageState extends State<TradesPage> with SingleTickerProviderStateM
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -333,9 +351,9 @@ class _TradesPageState extends State<TradesPage> with SingleTickerProviderStateM
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
         text,

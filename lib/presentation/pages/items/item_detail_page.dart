@@ -32,7 +32,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     super.initState();
     context.read<ItemBloc>().add(LoadItem(widget.itemId));
     final authState = context.read<AuthBloc>().state;
-    if (authState is Authenticated) {
+    if (authState is AuthAuthenticated) {
       _currentUserId = authState.user.uid;
     }
   }

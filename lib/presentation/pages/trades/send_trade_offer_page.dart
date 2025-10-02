@@ -41,7 +41,7 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
 
   void _loadUserItems() {
     final authState = context.read<AuthBloc>().state;
-    if (authState is Authenticated) {
+    if (authState is AuthAuthenticated) {
       context.read<ItemBloc>().add(LoadUserItems(authState.user.uid));
     }
   }
@@ -58,7 +58,7 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
     }
 
     final authState = context.read<AuthBloc>().state;
-    if (authState is! Authenticated) {
+    if (authState is! AuthAuthenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('You must be logged in to send offers'),
@@ -76,14 +76,13 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
       toUserName: 'Unknown', // Will be fetched on backend
       offeredItemId: _selectedItem!.id,
       offeredItemTitle: _selectedItem!.title,
-      offeredItemImages: _selectedItem!.imageUrls,
+      offeredItemImages: _selectedItem!.images,
       requestedItemId: widget.requestedItem.id,
       requestedItemTitle: widget.requestedItem.title,
-      requestedItemImages: widget.requestedItem.imageUrls,
+      requestedItemImages: widget.requestedItem.images,
       message: _messageController.text.trim().isEmpty ? null : _messageController.text.trim(),
       status: TradeStatus.pending,
       createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
     );
 
     context.read<TradeBloc>().add(SendTradeOffer(offer));
@@ -263,9 +262,9 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
                 width: 80,
                 height: 80,
                 color: Colors.grey.shade200,
-                child: item.imageUrls.isNotEmpty
+                child: item.images.isNotEmpty
                     ? Image.network(
-                        item.imageUrls.first,
+                        item.images.first,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
                             Icon(Icons.inventory_2_outlined, color: Colors.grey.shade400),
@@ -300,7 +299,7 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isRequested ? Colors.blue.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+                      color: (isRequested ? Colors.blue : Colors.green).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -425,7 +424,7 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
                     final availableItems = state.items
                         .where((item) => 
                             item.id != widget.requestedItem.id && 
-                            item.status == ItemStatus.available)
+                            item.status == ItemStatus.active)
                         .toList();
 
                     if (availableItems.isEmpty) {
@@ -470,9 +469,9 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
                                       width: 60,
                                       height: 60,
                                       color: Colors.grey.shade200,
-                                      child: item.imageUrls.isNotEmpty
+                                      child: item.images.isNotEmpty
                                           ? Image.network(
-                                              item.imageUrls.first,
+                                              item.images.first,
                                               fit: BoxFit.cover,
                                               errorBuilder: (context, error, stackTrace) =>
                                                   Icon(Icons.inventory_2_outlined,
