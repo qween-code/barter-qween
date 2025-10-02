@@ -358,18 +358,21 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
   }
 
   void _showItemSelectionSheet() {
+    final itemBloc = context.read<ItemBloc>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => Column(
+      builder: (modalContext) => BlocProvider.value(
+        value: itemBloc,
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.5,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) => Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
@@ -522,6 +525,7 @@ class _SendTradeOfferPageState extends State<SendTradeOfferPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
