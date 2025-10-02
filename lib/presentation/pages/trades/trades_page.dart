@@ -14,9 +14,10 @@ class TradesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use the TradeBloc from the parent (Dashboard)
-    // Don't create a new instance
-    return const TradesPageView();
+    return BlocProvider(
+      create: (context) => getIt<TradeBloc>(),
+      child: const TradesPageView(),
+    );
   }
 }
 

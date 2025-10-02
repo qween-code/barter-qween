@@ -54,138 +54,144 @@ class _ItemListPageState extends State<ItemListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.grey[50],
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          _buildAppBar(context),
+          _buildModernAppBar(context),
           _buildSearchBar(),
           _buildCategoryFilter(),
           _buildItemsList(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BlocProvider(
-                create: (_) => getIt<ItemBloc>(),
-                child: const CreateItemPage(),
-              ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
-          );
-        },
-        tooltip: 'Create Item',
-        child: const Icon(Icons.add),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) => getIt<ItemBloc>(),
+                  child: const CreateItemPage(),
+                ),
+              ),
+            );
+          },
+          tooltip: 'Create Item',
+          elevation: 0,
+          child: const Icon(Icons.add, size: 28),
+        ),
       ),
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildModernAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 180,
+      expandedHeight: 160,
       floating: false,
       pinned: true,
       elevation: 0,
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Colors.white,
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
-        title: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Discover Items',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              'Find your next treasure',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
         background: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withOpacity(0.8),
-              ],
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -20,
-                top: -20,
-                child: Icon(
-                  Icons.swap_horiz_rounded,
-                  size: 120,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-              ),
-              Positioned(
-                left: -30,
-                bottom: -30,
-                child: Icon(
-                  Icons.shopping_bag_outlined,
-                  size: 100,
-                  color: Colors.white.withOpacity(0.1),
-                ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.swap_horiz, color: Theme.of(context).primaryColor),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Barter Qween',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          _buildIconButton(Icons.filter_list, onTap: _showFilterBottomSheet),
+                          const SizedBox(width: 8),
+                          _buildIconButton(
+                            _isGridView ? Icons.view_list : Icons.grid_view,
+                            onTap: () => setState(() => _isGridView = !_isGridView),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey[200]!),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.local_fire_department, color: Colors.orange),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Discover great items to trade today!',
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
-      actions: [
-        IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              _isGridView ? Icons.view_list : Icons.grid_view,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          onPressed: () {
-            setState(() {
-              _isGridView = !_isGridView;
-            });
-          },
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, {required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[200]!),
         ),
-        IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.filter_list,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          onPressed: _showFilterBottomSheet,
-        ),
-        const SizedBox(width: 8),
-      ],
+        child: Icon(icon, color: Colors.black87, size: 20),
+      ),
     );
   }
 
