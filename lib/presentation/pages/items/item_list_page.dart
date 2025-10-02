@@ -35,6 +35,7 @@ class _ItemListPageState extends State<ItemListPage> {
   RangeValues _priceRange = const RangeValues(0, 10000);
   double _maxDistance = 50.0;
   bool _showOnlyActive = true;
+  String _sortBy = 'newest';
 
   @override
   void initState() {
@@ -949,6 +950,7 @@ class _ItemListPageState extends State<ItemListPage> {
                           _priceRange = const RangeValues(0, 10000);
                           _maxDistance = 50.0;
                           _showOnlyActive = true;
+                          _sortBy = 'newest';
                         });
                       },
                       child: const Text('Reset'),
@@ -1039,6 +1041,16 @@ class _ItemListPageState extends State<ItemListPage> {
                 
                 const SizedBox(height: 24),
                 
+                // Sort By Section
+                const Text(
+                  'Sort By',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                ..._buildSortByOptions(setModalState),
+                
+                const SizedBox(height: 24),
+                
                 // Show only active items
                 SwitchListTile(
                   title: const Text('Show only active items'),
@@ -1086,11 +1098,87 @@ class _ItemListPageState extends State<ItemListPage> {
     );
   }
   
+  List<Widget> _buildSortByOptions(StateSetter setModalState) {
+    final sortOptions = [
+      {'value': 'newest', 'label': 'Newest First', 'icon': Icons.access_time},
+      {'value': 'oldest', 'label': 'Oldest First', 'icon': Icons.history},
+      {'value': 'popular', 'label': 'Most Popular', 'icon': Icons.trending_up},
+      {'value': 'nearest', 'label': 'Nearest First', 'icon': Icons.location_on},
+    ];
+
+    return sortOptions.map((option) {
+      final isSelected = _sortBy == option['value'];
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: InkWell(
+          onTap: () {
+            setModalState(() {
+              _sortBy = option['value'] as String;
+            });
+            setState(() {
+              _sortBy = option['value'] as String;
+            });
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isSelected 
+                  ? Theme.of(context).primaryColor.withOpacity(0.1) 
+                  : Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected 
+                    ? Theme.of(context).primaryColor 
+                    : Colors.grey[200]!,
+                width: 2,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  option['icon'] as IconData,
+                  color: isSelected 
+                      ? Theme.of(context).primaryColor 
+                      : Colors.grey[600],
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    option['label'] as String,
+                    style: TextStyle(
+                      color: isSelected 
+                          ? Theme.of(context).primaryColor 
+                          : Colors.black87,
+                      fontWeight: isSelected 
+                          ? FontWeight.bold 
+                          : FontWeight.w500,
+                    ),
+                  ),
+                ),
+                if (isSelected)
+                  Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).primaryColor,
+                    size: 20,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }).toList();
+  }
+  
   void _applyFilters() {
-    // Reload items with filters applied
-    context.read<ItemBloc>().add(LoadAllItems(
-      category: _selectedCategory,
+    // Apply all filters using FilterItems event
+    context.read<ItemBloc>().add(FilterItems(
+      categories: _selectedCategory != null ? [_selectedCategory!] : null,
+      condition: _selectedCondition,
+      minPrice: _priceRange.start,
+      maxPrice: _priceRange.end,
+      sortBy: _sortBy,
     ));
-    // Additional filtering logic can be added in the bloc
   }
 }
