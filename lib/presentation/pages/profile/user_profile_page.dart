@@ -9,7 +9,11 @@ import '../../blocs/auth/auth_state.dart';
 import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart' show AuthAuthenticated;
 import '../../blocs/favorite/favorite_bloc.dart';
+import '../../blocs/favorite/favorite_event.dart';
+import '../../blocs/favorite/favorite_state.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
@@ -37,6 +41,9 @@ class UserProfilePage extends StatelessWidget {
         BlocProvider(
           create: (context) => getIt<ItemBloc>()
             ..add(LoadUserItems(userId)),
+        ),
+        BlocProvider(
+          create: (context) => getIt<FavoriteBloc>(),
         ),
       ],
       child: const UserProfileView(),
@@ -412,24 +419,77 @@ class UserProfileView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(12),
-                              ),
-                              child: item.images.isNotEmpty
-                                  ? Image.network(
-                                      item.images.first,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    )
-                                  : Container(
-                                      color: AppColors.surfaceVariant,
-                                      child: const Icon(
-                                        Icons.image_outlined,
-                                        size: 48,
-                                        color: AppColors.textTertiary,
-                                      ),
-                                    ),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(12),
+                                  ),
+                                  child: item.images.isNotEmpty
+                                      ? Image.network(
+                                          item.images.first,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                        )
+                                      : Container(
+                                          color: AppColors.surfaceVariant,
+                                          child: const Icon(
+                                            Icons.image_outlined,
+                                            size: 48,
+                                            color: AppColors.textTertiary,
+                                          ),
+                                        ),
+                                ),
+                                // Favorite button overlay
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: BlocBuilder<FavoriteBloc, FavoriteState>(
+                                    builder: (context, favState) {
+                                      final favoriteBloc = context.read<FavoriteBloc>();
+                                      final isFavorited = favoriteBloc.isFavorited(item.id);
+                                      
+                                      return Material(
+                                        color: Colors.white.withOpacity(0.9),
+                                        shape: const CircleBorder(),
+                                        child: InkWell(
+                                          onTap: () {
+                                            final authState = context.read<AuthBloc>().state;
+                                            if (authState is AuthAuthenticated) {
+                                              favoriteBloc.add(
+                                                ToggleFavorite(authState.user.uid, item.id),
+                                              );
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    isFavorited
+                                                        ? 'Removed from favorites'
+                                                        : 'Added to favorites',
+                                                  ),
+                                                  duration: const Duration(seconds: 1),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          customBorder: const CircleBorder(),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Icon(
+                                              isFavorited
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: isFavorited
+                                                  ? Colors.red
+                                                  : AppColors.textSecondary,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Padding(

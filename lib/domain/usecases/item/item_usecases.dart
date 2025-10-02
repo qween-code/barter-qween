@@ -80,8 +80,13 @@ class GetItemUseCase {
   GetItemUseCase(this.repository);
 
   Future<Either<Failure, ItemEntity>> call(String itemId) async {
-    // Increment view count when getting item
-    await repository.incrementViewCount(itemId);
+    // TODO: View count should be handled by Cloud Functions to avoid permission issues
+    // Increment view count when getting item (silently fail if permission denied)
+    try {
+      await repository.incrementViewCount(itemId);
+    } catch (e) {
+      // Ignore permission errors - view count is not critical
+    }
     return await repository.getItem(itemId);
   }
 }
