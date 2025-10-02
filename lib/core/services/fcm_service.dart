@@ -7,9 +7,11 @@ import 'package:barter_qween/main.dart' show navigatorKey;
 import 'package:barter_qween/core/di/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:barter_qween/presentation/pages/chat/conversations_list_page.dart';
+import 'package:barter_qween/presentation/pages/chat/chat_deeplink_page.dart';
 import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:barter_qween/presentation/pages/trades/trades_page.dart';
+import 'package:barter_qween/presentation/pages/trades/trade_deeplink_page.dart';
 import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart';
 import 'package:barter_qween/presentation/pages/items/item_detail_page.dart';
 import 'package:barter_qween/presentation/blocs/item/item_bloc.dart';
@@ -176,23 +178,41 @@ class FCMService {
     // Route based on type
     switch (type) {
       case 'new_message':
-        nav.push(MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => getIt<ChatBloc>(),
-            child: const ConversationsListPage(),
-          ),
-        ));
+      case 'new_chat_message':
+        // Navigate to specific conversation if entityId (conversationId) is provided
+        if (entityId != null && entityId.isNotEmpty) {
+          nav.push(MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ChatBloc>(),
+              child: ChatDeepLinkPage(conversationId: entityId),
+            ),
+          ));
+        } else {
+          // Fallback to conversations list
+          nav.push(MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ChatBloc>(),
+              child: const ConversationsListPage(),
+            ),
+          ));
+        }
         break;
       case 'new_trade_offer':
       case 'trade_accepted':
       case 'trade_rejected':
       case 'trade_completed':
-        nav.push(MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => getIt<TradeBloc>(),
-            child: const TradesPage(),
-          ),
-        ));
+        if (entityId != null && entityId.isNotEmpty) {
+          nav.push(MaterialPageRoute(
+            builder: (_) => TradeDeepLinkPage(tradeId: entityId),
+          ));
+        } else {
+          nav.push(MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<TradeBloc>(),
+              child: const TradesPage(),
+            ),
+          ));
+        }
         break;
       case 'item_liked':
       case 'item_sold':

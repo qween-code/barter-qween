@@ -15,6 +15,23 @@ async function sendMulticast(tokens: string[], notification: admin.messaging.Not
   const payload: admin.messaging.MulticastMessage = { tokens, notification, data };
   const res = await admin.messaging().sendMulticast(payload);
   functions.logger.info('Push sent', { successCount: res.successCount, failureCount: res.failureCount });
+
+  // Clean up invalid tokens
+  if (res.failureCount > 0) {
+    const failedTokens: string[] = [];
+    res.responses.forEach((resp, idx) => {
+      if (!resp.success && resp.error) {
+        const errorCode = resp.error.code;
+        if (errorCode === 'messaging/invalid-registration-token' || errorCode === 'messaging/registration-token-not-registered') {
+          failedTokens.push(tokens[idx]);
+        }
+      }
+    });
+    // TODO: Remove invalid tokens from Firestore
+    if (failedTokens.length > 0) {
+      functions.logger.info('Invalid tokens detected', { count: failedTokens.length });
+    }
+  }
 }
 
 // Trigger: when a new message is created, notify other participants
@@ -82,7 +99,7 @@ export const onTradeOfferUpdated = functions.firestore
     let type = `trade_${afterStatus}`;
 
     // If toUser changed status (accept/reject/cancel), notify fromUser; otherwise notify toUser
-    // This is a heuristic; adjust as needed according to your app’s logic
+    // This is a heuristic; adjust as needed according to your app's logic
     notifyUser = fromUserId ?? toUserId;
 
     if (afterStatus === 'accepted') { title = 'Trade accepted'; body = 'Your offer was accepted'; }
@@ -93,5 +110,28 @@ export const onTradeOfferUpdated = functions.firestore
     if (!notifyUser) return null;
     const tokens = await getUserTokens(notifyUser);
     await sendMulticast(tokens, { title, body }, { type, entityId: context.params.tradeId });
+    return null;
+  });
+
+// Trigger: when a notification document is created in user's subcollection, send push
+export const onNotificationCreated = functions.firestore
+  .document('users/{userId}/notifications/{notificationId}')
+  .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data) return null;
+
+    const userId = context.params.userId;
+    const title = data.title as string | 'Notification';
+    const body = data.body as string | '';
+    const type = data.type as string | undefined;
+    const entityId = data.entityId as string | undefined;
+
+    // Build push data payload
+    const pushData: { [key: string]: string } = {};
+    if (type) pushData.type = type;
+    if (entityId) pushData.entityId = entityId;
+
+    const tokens = await getUserTokens(userId);
+    await sendMulticast(tokens, { title, body }, pushData);
     return null;
   });

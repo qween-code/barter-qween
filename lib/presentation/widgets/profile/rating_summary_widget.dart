@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:injectable/injectable.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/usecases/rating/get_user_rating_stats_usecase.dart';
 import '../../../domain/entities/rating_entity.dart';

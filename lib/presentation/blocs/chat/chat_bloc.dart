@@ -38,12 +38,34 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }) : super(const ChatInitial()) {
     // Register event handlers
     on<LoadConversations>(_onLoadConversations);
+    on<LoadConversation>(_onLoadConversation);
     on<LoadMessages>(_onLoadMessages);
     on<SendMessage>(_onSendMessage);
     on<MarkMessagesAsRead>(_onMarkMessagesAsRead);
     on<GetOrCreateConversation>(_onGetOrCreateConversation);
     on<DeleteConversation>(_onDeleteConversation);
     on<GetUnreadCount>(_onGetUnreadCount);
+  }
+
+  /// Load a specific conversation by ID
+  Future<void> _onLoadConversation(
+    LoadConversation event,
+    Emitter<ChatState> emit,
+  ) async {
+    print('💬 ChatBloc: LoadConversation event received for ID: ${event.conversationId}');
+    emit(const ChatLoading());
+
+    final result = await chatRepository.getConversation(event.conversationId);
+    result.fold(
+      (failure) {
+        print('❌ ChatBloc: Failed to load conversation - ${failure.message}');
+        emit(ChatError(failure.message));
+      },
+      (conversation) {
+        print('✅ ChatBloc: Conversation loaded successfully');
+        emit(ConversationLoaded(conversation));
+      },
+    );
   }
 
   /// Load all conversations with real-time updates

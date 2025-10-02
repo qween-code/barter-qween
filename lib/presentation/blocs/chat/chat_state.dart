@@ -34,6 +34,16 @@ class ConversationsLoaded extends ChatState {
   List<Object?> get props => [conversations, totalUnreadCount];
 }
 
+/// Single conversation loaded successfully
+class ConversationLoaded extends ChatState {
+  final ConversationEntity conversation;
+
+  const ConversationLoaded(this.conversation);
+
+  @override
+  List<Object?> get props => [conversation];
+}
+
 /// Messages loaded for a conversation
 class MessagesLoaded extends ChatState {
   final String conversationId;

@@ -18,6 +18,16 @@ class LoadConversations extends ChatEvent {
   List<Object?> get props => [userId];
 }
 
+/// Load a specific conversation by ID
+class LoadConversation extends ChatEvent {
+  final String conversationId;
+
+  const LoadConversation(this.conversationId);
+
+  @override
+  List<Object?> get props => [conversationId];
+}
+
 /// Load messages for a specific conversation
 class LoadMessages extends ChatEvent {
   final String conversationId;
