@@ -47,7 +47,7 @@ class BarterQweenApp extends StatelessWidget {
           case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
           default: return MaterialPageRoute(builder: (_) => const LoginPage());
         }
-      ),
+      },
       ),
     );
   }
