@@ -95,10 +95,7 @@ class _DashboardViewState extends State<DashboardView> {
             ],
             child: const ExplorePage(),
           ),
-          BlocProvider(
-            create: (_) => getIt<TradeBloc>(),
-            child: const TradesPage(),
-          ),
+          const TradesPage(), // Uses TradeBloc from Dashboard level
           const ConversationsListPage(),
           BlocProvider(
             create: (_) => getIt<ProfileBloc>(),
