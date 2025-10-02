@@ -10,6 +10,7 @@ import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
+import '../../widgets/items/item_card_widget.dart';
 import '../items/item_detail_page.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -240,7 +241,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
                 mainAxisSpacing: 16,
               ),
               itemCount: state.items.length,
-              itemBuilder: (context, index) => _buildItemCard(state.items[index]),
+              itemBuilder: (context, index) => ItemCardWidget(item: state.items[index]),
             ),
           );
         }
@@ -277,104 +278,6 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildItemCard(ItemEntity item) {
-    return GestureDetector(
-      onTap: () => _navigateToDetail(item.id),
-      child: Card(
-        elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
-                    ),
-                    child: item.images.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: item.images.first,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            placeholder: (_, __) => Container(
-                              color: AppColors.surfaceVariant,
-                              child: const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            ),
-                          )
-                        : Container(
-                            color: AppColors.surfaceVariant,
-                            child: const Center(
-                              child: Icon(Icons.image_outlined, size: 48),
-                            ),
-                          ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.favorite_border, size: 18),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.title,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 12, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          item.city ?? 'Unknown',
-                          style: AppTextStyles.labelSmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildListItemCard(ItemEntity item) {
     return Card(
