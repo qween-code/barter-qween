@@ -351,7 +351,7 @@ class _ItemListPageState extends State<ItemListPage> {
             builder: (_) => MultiBlocProvider(
               providers: [
                 BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider.value(value: context.read<AuthBloc>()),
+                BlocProvider(create: (_) => getIt<AuthBloc>()),
               ],
               child: ItemDetailPage(itemId: item.id),
             ),
@@ -491,7 +491,7 @@ class _ItemListPageState extends State<ItemListPage> {
             builder: (_) => MultiBlocProvider(
               providers: [
                 BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider.value(value: context.read<AuthBloc>()),
+                BlocProvider(create: (_) => getIt<AuthBloc>()),
               ],
               child: ItemDetailPage(itemId: item.id),
             ),

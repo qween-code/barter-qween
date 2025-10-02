@@ -349,9 +349,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                               MaterialPageRoute(
                                 builder: (context) => MultiBlocProvider(
                                   providers: [
-                                    BlocProvider.value(value: context.read<AuthBloc>()),
+                                    BlocProvider(create: (_) => getIt<AuthBloc>()),
                                     BlocProvider(create: (_) => getIt<TradeBloc>()),
-                                    BlocProvider.value(value: context.read<ItemBloc>()),
+                                    BlocProvider(create: (_) => getIt<ItemBloc>()),
                                   ],
                                   child: SendTradeOfferPage(requestedItem: item),
                                 ),
