@@ -6,7 +6,7 @@ import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/auth/auth_state.dart';
+import '../../blocs/auth/auth_state.dart' show AuthState, AuthAuthenticated;
 import 'chat_detail_page.dart';
 
 /// Conversations list page - displays all user conversations
@@ -26,7 +26,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
 
   void _loadConversations() {
     final authState = context.read<AuthBloc>().state;
-    if (authState is Authenticated) {
+    if (authState is AuthAuthenticated) {
       context.read<ChatBloc>().add(LoadConversations(authState.user.uid));
     }
   }
@@ -146,7 +146,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   ) {
     final authState = context.read<AuthBloc>().state;
     final currentUserId =
-        authState is Authenticated ? authState.user.uid : '';
+        authState is AuthAuthenticated ? authState.user.uid : '';
     final unreadCount = conversation.getUnreadCountForUser(currentUserId);
     final hasUnread = unreadCount > 0;
 

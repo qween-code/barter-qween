@@ -5,12 +5,14 @@ import '../../core/routes/route_names.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
+import '../blocs/chat/chat_bloc.dart';
 import '../blocs/favorite/favorite_bloc.dart';
 import '../blocs/item/item_bloc.dart';
 import '../blocs/profile/profile_bloc.dart';
 import '../blocs/trade/trade_bloc.dart';
 import '../blocs/trade/trade_event.dart';
 import '../blocs/trade/trade_state.dart';
+import 'chat/conversations_list_page.dart';
 import 'explore/explore_page.dart';
 import 'items/create_item_page.dart';
 import 'items/item_list_page.dart';
@@ -92,7 +94,10 @@ class _DashboardViewState extends State<DashboardView> {
             create: (_) => getIt<TradeBloc>(),
             child: const TradesPage(),
           ),
-          const MessagesTab(),
+          BlocProvider(
+            create: (_) => getIt<ChatBloc>(),
+            child: const ConversationsListPage(),
+          ),
           BlocProvider(
             create: (_) => getIt<ProfileBloc>(),
             child: const ProfilePage(),

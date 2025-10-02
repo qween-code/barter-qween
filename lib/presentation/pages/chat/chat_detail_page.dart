@@ -7,7 +7,7 @@ import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/auth/auth_state.dart';
+import '../../blocs/auth/auth_state.dart' show AuthState, AuthAuthenticated;
 
 /// Chat detail page - real-time messaging interface
 class ChatDetailPage extends StatefulWidget {
@@ -38,7 +38,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   void _loadUserInfo() {
     final authState = context.read<AuthBloc>().state;
-    if (authState is Authenticated) {
+    if (authState is AuthAuthenticated) {
       _currentUserId = authState.user.uid;
       _currentUserName = authState.user.displayName ?? 'User';
     }
