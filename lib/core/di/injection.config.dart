@@ -24,6 +24,8 @@ import 'package:barter_qween/data/datasources/remote/notification_remote_datasou
     as _i73;
 import 'package:barter_qween/data/datasources/remote/profile_remote_datasource.dart'
     as _i512;
+import 'package:barter_qween/data/datasources/remote/rating_remote_datasource.dart'
+    as _i579;
 import 'package:barter_qween/data/datasources/remote/trade_remote_datasource.dart'
     as _i411;
 import 'package:barter_qween/data/datasources/search_local_data_source.dart'
@@ -42,6 +44,8 @@ import 'package:barter_qween/data/repositories/notification_repository_impl.dart
     as _i931;
 import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
     as _i673;
+import 'package:barter_qween/data/repositories/rating_repository_impl.dart'
+    as _i761;
 import 'package:barter_qween/data/repositories/search_repository_impl.dart'
     as _i290;
 import 'package:barter_qween/data/repositories/trade_repository_impl.dart'
@@ -55,6 +59,8 @@ import 'package:barter_qween/domain/repositories/notification_repository.dart'
     as _i772;
 import 'package:barter_qween/domain/repositories/profile_repository.dart'
     as _i1043;
+import 'package:barter_qween/domain/repositories/rating_repository.dart'
+    as _i374;
 import 'package:barter_qween/domain/repositories/search_repository.dart'
     as _i948;
 import 'package:barter_qween/domain/repositories/trade_repository.dart' as _i48;
@@ -103,6 +109,12 @@ import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart
     as _i303;
 import 'package:barter_qween/domain/usecases/profile/upload_avatar_usecase.dart'
     as _i576;
+import 'package:barter_qween/domain/usecases/rating/create_rating_usecase.dart'
+    as _i787;
+import 'package:barter_qween/domain/usecases/rating/get_user_rating_stats_usecase.dart'
+    as _i121;
+import 'package:barter_qween/domain/usecases/rating/get_user_ratings_usecase.dart'
+    as _i494;
 import 'package:barter_qween/domain/usecases/search/get_search_suggestions_usecase.dart'
     as _i803;
 import 'package:barter_qween/domain/usecases/search/search_items_usecase.dart'
@@ -118,6 +130,8 @@ import 'package:barter_qween/presentation/blocs/notification/notification_bloc.d
     as _i622;
 import 'package:barter_qween/presentation/blocs/profile/profile_bloc.dart'
     as _i527;
+import 'package:barter_qween/presentation/blocs/rating/rating_bloc.dart'
+    as _i260;
 import 'package:barter_qween/presentation/blocs/search/search_bloc.dart'
     as _i742;
 import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart' as _i503;
@@ -244,6 +258,9 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i73.NotificationRemoteDataSourceImpl(gh<_i974.FirebaseFirestore>()),
     );
+    gh.lazySingleton<_i579.RatingRemoteDataSource>(
+      () => _i579.RatingRemoteDataSourceImpl(gh<_i974.FirebaseFirestore>()),
+    );
     gh.lazySingleton<_i920.ChatRepository>(
       () => _i66.ChatRepositoryImpl(gh<_i1020.ChatRemoteDataSource>()),
     );
@@ -327,6 +344,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i116.SendMessageUseCase>(
       () => _i116.SendMessageUseCase(gh<_i920.ChatRepository>()),
+    );
+    gh.lazySingleton<_i374.RatingRepository>(
+      () => _i761.RatingRepositoryImpl(gh<_i579.RatingRemoteDataSource>()),
     );
     gh.factory<_i680.GetUserProfileUseCase>(
       () => _i680.GetUserProfileUseCase(gh<_i1043.ProfileRepository>()),
@@ -418,6 +438,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i936.VerifyOtpUseCase>(
       () => _i936.VerifyOtpUseCase(gh<_i113.AuthRepository>()),
     );
+    gh.factory<_i787.CreateRatingUseCase>(
+      () => _i787.CreateRatingUseCase(gh<_i374.RatingRepository>()),
+    );
+    gh.factory<_i494.GetUserRatingsUseCase>(
+      () => _i494.GetUserRatingsUseCase(gh<_i374.RatingRepository>()),
+    );
+    gh.factory<_i121.GetUserRatingStatsUseCase>(
+      () => _i121.GetUserRatingStatsUseCase(gh<_i374.RatingRepository>()),
+    );
     gh.factory<_i622.NotificationBloc>(
       () => _i622.NotificationBloc(gh<_i772.NotificationRepository>()),
     );
@@ -430,6 +459,9 @@ extension GetItInjectableX on _i174.GetIt {
         googleSignInUseCase: gh<_i418.GoogleSignInUseCase>(),
         resetPasswordUseCase: gh<_i668.ResetPasswordUseCase>(),
       ),
+    );
+    gh.factory<_i260.RatingBloc>(
+      () => _i260.RatingBloc(gh<_i787.CreateRatingUseCase>()),
     );
     gh.factory<_i773.SendTradeOfferUseCase>(
       () => _i773.SendTradeOfferUseCase(gh<_i48.TradeRepository>()),

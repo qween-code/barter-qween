@@ -14,7 +14,6 @@ import 'core/theme/app_colors.dart';
 import 'core/theme/app_text_styles.dart';
 import 'core/utils/preferences_keys.dart';
 import 'core/services/fcm_service.dart';
-import 'core/services/analytics_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';

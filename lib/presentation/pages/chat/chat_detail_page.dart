@@ -9,6 +9,8 @@ import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart' show AuthState, AuthAuthenticated;
+import '../../../core/di/injection.dart';
+import '../../../core/services/analytics_service.dart';
 
 /// Chat detail page - real-time messaging interface
 class ChatDetailPage extends StatefulWidget {

@@ -111,7 +111,7 @@ class ErrorHandler {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning_outline, color: Colors.white),
+            const Icon(Icons.warning_outlined, color: Colors.white),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
