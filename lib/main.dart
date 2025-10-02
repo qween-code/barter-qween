@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io' show Platform;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/di/injection.dart';
 import 'core/providers/global_bloc_providers.dart';
@@ -11,8 +13,10 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
 import 'core/theme/app_text_styles.dart';
 import 'core/utils/preferences_keys.dart';
+import 'core/services/fcm_service.dart';
 import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';
+import 'presentation/pages/notifications/notifications_page.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/onboarding/onboarding_page.dart';
 import 'presentation/pages/register_page.dart';
@@ -27,8 +31,35 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await configureDependencies();
+
+  // Initialize Firebase Cloud Messaging and local notifications
+  try {
+    final fcm = getIt<FCMService>();
+    await fcm.initialize();
+
+    // Save FCM token for logged-in user (if any)
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null && fcm.fcmToken != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('fcmTokens')
+          .doc(fcm.fcmToken)
+          .set({
+        'token': fcm.fcmToken,
+'platform': Platform.operatingSystem,
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    }
+  } catch (e) {
+    // Fail silently if FCM init fails; app should still start
+    debugPrint('FCM init error: $e');
+  }
+
   runApp(const BarterQweenApp());
 }
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class BarterQweenApp extends StatelessWidget {
   const BarterQweenApp({super.key});
@@ -37,8 +68,9 @@ class BarterQweenApp extends StatelessWidget {
     // Set system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(AppTheme.darkStatusBar);
     
-    return GlobalBlocProviders(
+return GlobalBlocProviders(
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Barter Qween',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
@@ -50,7 +82,8 @@ class BarterQweenApp extends StatelessWidget {
           case RouteNames.register: return MaterialPageRoute(builder: (_) => const RegisterPage());
           case RouteNames.forgotPassword: return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
           case RouteNames.onboarding: return MaterialPageRoute(builder: (_) => const OnboardingPage());
-          case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
+case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
+          case RouteNames.notifications: return MaterialPageRoute(builder: (_) => const NotificationsPage());
           case RouteNames.createItem: 
             return MaterialPageRoute(
               builder: (context) => BlocProvider(

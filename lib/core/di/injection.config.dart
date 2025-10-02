@@ -19,6 +19,8 @@ import 'package:barter_qween/data/datasources/remote/favorite_remote_datasource.
     as _i548;
 import 'package:barter_qween/data/datasources/remote/item_remote_datasource.dart'
     as _i72;
+import 'package:barter_qween/data/datasources/remote/notification_remote_datasource.dart'
+    as _i73;
 import 'package:barter_qween/data/datasources/remote/profile_remote_datasource.dart'
     as _i512;
 import 'package:barter_qween/data/datasources/remote/trade_remote_datasource.dart'
@@ -35,6 +37,8 @@ import 'package:barter_qween/data/repositories/favorite_repository_impl.dart'
     as _i451;
 import 'package:barter_qween/data/repositories/item_repository_impl.dart'
     as _i703;
+import 'package:barter_qween/data/repositories/notification_repository_impl.dart'
+    as _i931;
 import 'package:barter_qween/data/repositories/profile_repository_impl.dart'
     as _i673;
 import 'package:barter_qween/data/repositories/search_repository_impl.dart'
@@ -46,6 +50,8 @@ import 'package:barter_qween/domain/repositories/chat_repository.dart' as _i920;
 import 'package:barter_qween/domain/repositories/favorite_repository.dart'
     as _i933;
 import 'package:barter_qween/domain/repositories/item_repository.dart' as _i754;
+import 'package:barter_qween/domain/repositories/notification_repository.dart'
+    as _i772;
 import 'package:barter_qween/domain/repositories/profile_repository.dart'
     as _i1043;
 import 'package:barter_qween/domain/repositories/search_repository.dart'
@@ -107,6 +113,8 @@ import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart' as _i241;
 import 'package:barter_qween/presentation/blocs/favorite/favorite_bloc.dart'
     as _i935;
 import 'package:barter_qween/presentation/blocs/item/item_bloc.dart' as _i1004;
+import 'package:barter_qween/presentation/blocs/notification/notification_bloc.dart'
+    as _i622;
 import 'package:barter_qween/presentation/blocs/profile/profile_bloc.dart'
     as _i527;
 import 'package:barter_qween/presentation/blocs/search/search_bloc.dart'
@@ -218,6 +226,10 @@ extension GetItInjectableX on _i174.GetIt {
         remoteDataSource: gh<_i381.AuthRemoteDataSource>(),
       ),
     );
+    gh.lazySingleton<_i73.NotificationRemoteDataSource>(
+      () =>
+          _i73.NotificationRemoteDataSourceImpl(gh<_i974.FirebaseFirestore>()),
+    );
     gh.lazySingleton<_i920.ChatRepository>(
       () => _i66.ChatRepositoryImpl(gh<_i1020.ChatRemoteDataSource>()),
     );
@@ -320,6 +332,11 @@ extension GetItInjectableX on _i174.GetIt {
         getSuggestionsUseCase: gh<_i803.GetSearchSuggestionsUseCase>(),
       ),
     );
+    gh.lazySingleton<_i772.NotificationRepository>(
+      () => _i931.NotificationRepositoryImpl(
+        gh<_i73.NotificationRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i241.ChatBloc>(
       () => _i241.ChatBloc(
         getConversationsUseCase: gh<_i610.GetConversationsUseCase>(),
@@ -386,6 +403,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i936.VerifyOtpUseCase>(
       () => _i936.VerifyOtpUseCase(gh<_i113.AuthRepository>()),
+    );
+    gh.factory<_i622.NotificationBloc>(
+      () => _i622.NotificationBloc(gh<_i772.NotificationRepository>()),
     );
     gh.factory<_i161.AuthBloc>(
       () => _i161.AuthBloc(

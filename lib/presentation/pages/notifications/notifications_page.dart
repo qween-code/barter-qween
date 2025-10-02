@@ -3,6 +3,13 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/notification_entity.dart';
+import '../../blocs/notification/notification_bloc.dart';
+import '../../blocs/notification/notification_event.dart';
+import '../../blocs/notification/notification_state.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/di/injection.dart';
 
 /// Notifications page displaying user notifications
 class NotificationsPage extends StatefulWidget {
@@ -13,48 +20,62 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  // Mock notifications for now (will be replaced with BLoC)
-  final List<NotificationEntity> _notifications = [];
+  final List<NotificationEntity> _notifications = []; // local cache for optimistic UI
 
-  @override
+@override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        actions: [
-          if (_notifications.isNotEmpty)
-            TextButton(
-              onPressed: _markAllAsRead,
-              child: Text(
-                'Mark all read',
-                style: TextStyle(color: AppColors.primary),
+    return BlocProvider(
+      create: (_) => getIt<NotificationBloc>()..add(_initialEvent(context)),
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: AppBar(
+          title: const Text('Notifications'),
+          actions: [
+            if (_notifications.isNotEmpty)
+              TextButton(
+                onPressed: _markAllAsRead,
+                child: Text(
+                  'Mark all read',
+                  style: TextStyle(color: AppColors.primary),
+                ),
               ),
-            ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'delete_all') {
-                _deleteAll();
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'delete_all',
-                child: Text('Delete all'),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: _notifications.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: _notifications.length,
-              itemBuilder: (context, index) {
-                return _buildNotificationCard(_notifications[index]);
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete_all') {
+                  _deleteAll();
+                }
               },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: 'delete_all',
+                  child: Text('Delete all'),
+                ),
+              ],
             ),
+          ],
+        ),
+        body: BlocBuilder<NotificationBloc, NotificationState>(
+          builder: (context, state) {
+            final notifications = state is NotificationsLoaded
+                ? state.notifications
+                : state is NotificationsStreaming
+                    ? state.notifications
+                    : _notifications; // fallback
+
+            if (notifications.isEmpty) {
+              return _buildEmptyState();
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                return _buildNotificationCard(notifications[index]);
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -257,6 +278,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   void _markAllAsRead() {
+    final auth = context.read<AuthBloc>().state;
+    if (auth is AuthAuthenticated) {
+      context.read<NotificationBloc>().add(MarkAllNotificationsAsRead(auth.user.uid));
+    }
     setState(() {
       _notifications.replaceRange(
         0,
@@ -277,6 +302,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   void _deleteAll() {
+    final auth = context.read<AuthBloc>().state;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -289,6 +315,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
           TextButton(
             onPressed: () {
+              if (auth is AuthAuthenticated) {
+                context.read<NotificationBloc>().add(DeleteAllNotifications(auth.user.uid));
+              }
               setState(() {
                 _notifications.clear();
               });
@@ -305,5 +334,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ],
       ),
     );
+  }
+
+  NotificationEvent _initialEvent(BuildContext context) {
+    final auth = context.read<AuthBloc>().state;
+    if (auth is AuthAuthenticated) {
+      return WatchNotifications(auth.user.uid);
+    }
+    return const LoadNotifications('');
   }
 }

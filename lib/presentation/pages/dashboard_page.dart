@@ -160,7 +160,12 @@ class HomeTab extends StatelessWidget {
                 );
               },
             ),
-            IconButton(icon: const Icon(Icons.notifications_outlined), onPressed: () {}),
+IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: () {
+                Navigator.of(context).pushNamed(RouteNames.notifications);
+              },
+            ),
           ],
         ),
         SliverPadding(

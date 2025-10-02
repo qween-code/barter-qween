@@ -80,6 +80,19 @@ service cloud.firestore {
     }
     
     // Notifications - users can only read/write their own notifications
+    // New (subcollection under user):
+    match /users/{userId}/notifications/{notificationId} {
+      allow read, list: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // FCM tokens - per user device tokens
+    match /users/{userId}/fcmTokens/{tokenId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Legacy top-level notifications (if still used)
     match /notifications/{notificationId} {
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
       allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
