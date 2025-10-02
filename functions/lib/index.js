@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = void 0;
+exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
@@ -50,6 +50,22 @@ async function sendMulticast(tokens, notification, data) {
     const payload = { tokens, notification, data };
     const res = await admin.messaging().sendMulticast(payload);
     functions.logger.info('Push sent', { successCount: res.successCount, failureCount: res.failureCount });
+    // Clean up invalid tokens
+    if (res.failureCount > 0) {
+        const failedTokens = [];
+        res.responses.forEach((resp, idx) => {
+            if (!resp.success && resp.error) {
+                const errorCode = resp.error.code;
+                if (errorCode === 'messaging/invalid-registration-token' || errorCode === 'messaging/registration-token-not-registered') {
+                    failedTokens.push(tokens[idx]);
+                }
+            }
+        });
+        // TODO: Remove invalid tokens from Firestore
+        if (failedTokens.length > 0) {
+            functions.logger.info('Invalid tokens detected', { count: failedTokens.length });
+        }
+    }
 }
 // Trigger: when a new message is created, notify other participants
 exports.onMessageCreated = functions.firestore
@@ -110,7 +126,7 @@ exports.onTradeOfferUpdated = functions.firestore
     let body = `Status: ${afterStatus}`;
     let type = `trade_${afterStatus}`;
     // If toUser changed status (accept/reject/cancel), notify fromUser; otherwise notify toUser
-    // This is a heuristic; adjust as needed according to your app’s logic
+    // This is a heuristic; adjust as needed according to your app's logic
     notifyUser = fromUserId ?? toUserId;
     if (afterStatus === 'accepted') {
         title = 'Trade accepted';
@@ -132,6 +148,28 @@ exports.onTradeOfferUpdated = functions.firestore
         return null;
     const tokens = await getUserTokens(notifyUser);
     await sendMulticast(tokens, { title, body }, { type, entityId: context.params.tradeId });
+    return null;
+});
+// Trigger: when a notification document is created in user's subcollection, send push
+exports.onNotificationCreated = functions.firestore
+    .document('users/{userId}/notifications/{notificationId}')
+    .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data)
+        return null;
+    const userId = context.params.userId;
+    const title = data.title;
+    const body = data.body;
+    const type = data.type;
+    const entityId = data.entityId;
+    // Build push data payload
+    const pushData = {};
+    if (type)
+        pushData.type = type;
+    if (entityId)
+        pushData.entityId = entityId;
+    const tokens = await getUserTokens(userId);
+    await sendMulticast(tokens, { title, body }, pushData);
     return null;
 });
 //# sourceMappingURL=index.js.map
