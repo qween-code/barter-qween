@@ -54,10 +54,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     // Subscribe to conversations stream
     _conversationsSubscription = getConversationsUseCase(event.userId).listen(
-      (result) {
+      (result) async {
+        if (emit.isDone) return;
         result.fold(
-          (failure) => emit(ChatError(failure.message)),
+          (failure) {
+            if (!emit.isDone) emit(ChatError(failure.message));
+          },
           (conversations) {
+            if (emit.isDone) return;
             // Calculate total unread count
             int totalUnread = 0;
             for (final conv in conversations) {
@@ -72,7 +76,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
       },
       onError: (error) {
-        emit(ChatError('Failed to load conversations: $error'));
+        if (!emit.isDone) emit(ChatError('Failed to load conversations: $error'));
       },
     );
   }
@@ -91,10 +95,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     _messagesSubscription = getMessagesUseCase(
       GetMessagesParams(conversationId: event.conversationId),
     ).listen(
-      (result) {
+      (result) async {
+        if (emit.isDone) return;
         result.fold(
-          (failure) => emit(ChatError(failure.message)),
+          (failure) {
+            if (!emit.isDone) emit(ChatError(failure.message));
+          },
           (messages) {
+            if (emit.isDone) return;
             // Sort messages by date (newest first)
             final sortedMessages = List.of(messages)
               ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -107,7 +115,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
       },
       onError: (error) {
-        emit(ChatError('Failed to load messages: $error'));
+        if (!emit.isDone) emit(ChatError('Failed to load messages: $error'));
       },
     );
   }
