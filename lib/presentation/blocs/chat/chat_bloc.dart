@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import '../../../core/error/failures.dart';
+import '../../../domain/entities/conversation_entity.dart';
+import '../../../domain/entities/message_entity.dart';
 import '../../../domain/usecases/chat/get_conversations_usecase.dart';
 import '../../../domain/usecases/chat/get_messages_usecase.dart';
 import '../../../domain/usecases/chat/send_message_usecase.dart';
@@ -47,36 +51,38 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadConversations event,
     Emitter<ChatState> emit,
   ) async {
-    emit(const ChatLoading());
-
+    print('💬 ChatBloc: LoadConversations event received for user: ${event.userId}');
     // Cancel previous subscription if exists
     await _conversationsSubscription?.cancel();
 
-    // Subscribe to conversations stream
-    _conversationsSubscription = getConversationsUseCase(event.userId).listen(
-      (result) async {
-        if (emit.isDone) return;
-        result.fold(
+    // Use emit.forEach to properly handle the stream
+    await emit.forEach<Either<Failure, List<ConversationEntity>>>(
+      getConversationsUseCase(event.userId),
+      onData: (result) {
+        print('💬 ChatBloc: Conversations stream update received');
+        return result.fold(
           (failure) {
-            if (!emit.isDone) emit(ChatError(failure.message));
+            print('❌ ChatBloc: Failed to load conversations - ${failure.message}');
+            return ChatError(failure.message);
           },
           (conversations) {
-            if (emit.isDone) return;
+            print('✅ ChatBloc: Loaded ${conversations.length} conversations');
             // Calculate total unread count
             int totalUnread = 0;
             for (final conv in conversations) {
               totalUnread += conv.getUnreadCountForUser(event.userId);
             }
 
-            emit(ConversationsLoaded(
+            return ConversationsLoaded(
               conversations: conversations,
               totalUnreadCount: totalUnread,
-            ));
+            );
           },
         );
       },
-      onError: (error) {
-        if (!emit.isDone) emit(ChatError('Failed to load conversations: $error'));
+      onError: (error, stackTrace) {
+        print('❌ ChatBloc: Conversations stream error - $error');
+        return ChatError('Failed to load conversations: $error');
       },
     );
   }
@@ -87,47 +93,37 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     Emitter<ChatState> emit,
   ) async {
     print('📥 ChatBloc: Loading messages for conversation: ${event.conversationId}');
-    emit(const ChatLoading());
-
+    
     // Cancel previous subscription if exists
     await _messagesSubscription?.cancel();
 
-    // Subscribe to messages stream
-    _messagesSubscription = getMessagesUseCase(
-      GetMessagesParams(conversationId: event.conversationId),
-    ).listen(
-      (result) async {
-        print('📥 ChatBloc: Stream update received. emit.isDone: ${emit.isDone}');
-        if (emit.isDone) {
-          print('⚠️ ChatBloc: Skipping emit because emit.isDone is true');
-          return;
-        }
-        result.fold(
+    // Use emit.forEach to properly handle the stream
+    await emit.forEach<Either<Failure, List<MessageEntity>>>(
+      getMessagesUseCase(
+        GetMessagesParams(conversationId: event.conversationId),
+      ),
+      onData: (result) {
+        return result.fold(
           (failure) {
             print('❌ ChatBloc: Failed to load messages - ${failure.message}');
-            if (!emit.isDone) emit(ChatError(failure.message));
+            return ChatError(failure.message);
           },
           (messages) {
-            if (emit.isDone) {
-              print('⚠️ ChatBloc: Skipping emit (messages) because emit.isDone is true');
-              return;
-            }
-            print('✅ ChatBloc: Loaded ${messages.length} messages, emitting MessagesLoaded state');
+            print('✅ ChatBloc: Loaded ${messages.length} messages from stream');
             // Sort messages by date (newest first)
             final sortedMessages = List.of(messages)
               ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-            emit(MessagesLoaded(
+            return MessagesLoaded(
               conversationId: event.conversationId,
               messages: sortedMessages,
-            ));
-            print('✅ ChatBloc: MessagesLoaded state emitted with ${sortedMessages.length} messages');
+            );
           },
         );
       },
-      onError: (error) {
+      onError: (error, stackTrace) {
         print('❌ ChatBloc: Stream error - $error');
-        if (!emit.isDone) emit(ChatError('Failed to load messages: $error'));
+        return ChatError('Failed to load messages: $error');
       },
     );
   }

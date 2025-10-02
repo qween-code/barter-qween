@@ -21,19 +21,32 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   @override
   void initState() {
     super.initState();
+    print('💬 ConversationsListPage: initState called');
     _loadConversations();
   }
 
   void _loadConversations() {
+    print('💬 ConversationsListPage: _loadConversations called');
     final authState = context.read<AuthBloc>().state;
+    print('💬 ConversationsListPage: authState = ${authState.runtimeType}');
     if (authState is AuthAuthenticated) {
+      print('💬 ConversationsListPage: Loading conversations for user: ${authState.user.uid}');
       context.read<ChatBloc>().add(LoadConversations(authState.user.uid));
+    } else {
+      print('❌ ConversationsListPage: User not authenticated!');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          print('✅ ConversationsListPage: Auth state changed to authenticated, loading conversations');
+          _loadConversations();
+        }
+      },
+      child: Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Messages'),
@@ -106,6 +119,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
 
           return _buildEmptyState();
         },
+      ),
       ),
     );
   }
