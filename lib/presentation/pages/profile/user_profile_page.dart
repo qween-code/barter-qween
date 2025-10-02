@@ -4,6 +4,11 @@ import '../../../core/di/injection.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../blocs/chat/chat_bloc.dart';
+import '../../blocs/chat/chat_event.dart';
+import '../../blocs/chat/chat_state.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
@@ -12,6 +17,7 @@ import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
 import '../../widgets/user_avatar_widget.dart';
+import '../chat/chat_detail_page.dart';
 import '../items/item_detail_page.dart';
 
 class UserProfilePage extends StatelessWidget {
@@ -120,10 +126,119 @@ class UserProfileView extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 16),
+          _buildActionButtons(context),
+          const SizedBox(height: 16),
           _buildStatsSection(context),
           const SizedBox(height: 24),
           _buildUserItems(context),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        if (state is! ProfileLoaded) {
+          return const SizedBox.shrink();
+        }
+
+        final targetUserId = state.user.uid;
+        final authState = context.read<AuthBloc>().state;
+        final currentUserId = authState is AuthAuthenticated ? authState.user.uid : '';
+
+        // Don't show message button for own profile
+        if (targetUserId == currentUserId) {
+          return const SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _startConversation(context, targetUserId, currentUserId),
+                  icon: const Icon(Icons.message),
+                  label: const Text('Send Message'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.textOnPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _startConversation(BuildContext context, String targetUserId, String currentUserId) {
+    // Create ChatBloc and get or create conversation
+    final chatBloc = getIt<ChatBloc>();
+    
+    chatBloc.add(GetOrCreateConversation(
+      userId: currentUserId,
+      otherUserId: targetUserId,
+      listingId: null, // No specific listing
+    ));
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocProvider.value(
+        value: chatBloc,
+        child: BlocListener<ChatBloc, ChatState>(
+          listener: (context, state) {
+            if (state is ConversationRetrieved) {
+              // Close loading dialog
+              Navigator.pop(dialogContext);
+              
+              // Navigate to chat
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: chatBloc,
+                    child: ChatDetailPage(conversation: state.conversation),
+                  ),
+                ),
+              );
+            } else if (state is ChatError) {
+              // Close loading dialog
+              Navigator.pop(dialogContext);
+              
+              // Show error
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to start conversation: ${state.message}'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+          child: const Center(
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Starting conversation...'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
