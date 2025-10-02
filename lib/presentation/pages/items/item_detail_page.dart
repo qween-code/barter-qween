@@ -8,6 +8,9 @@ import '../../blocs/item/item_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../../domain/entities/item_entity.dart';
+import '../../../core/di/injection.dart';
+import '../../blocs/trade/trade_bloc.dart';
+import '../trades/send_trade_offer_page.dart';
 import 'edit_item_page.dart';
 
 class ItemDetailPage extends StatefulWidget {
@@ -341,7 +344,19 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            // Send trade offer
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider.value(value: context.read<AuthBloc>()),
+                                    BlocProvider(create: (_) => getIt<TradeBloc>()),
+                                    BlocProvider.value(value: context.read<ItemBloc>()),
+                                  ],
+                                  child: SendTradeOfferPage(requestedItem: item),
+                                ),
+                              ),
+                            );
                           },
                           icon: const Icon(Icons.swap_horiz),
                           label: const Text('Trade Offer'),

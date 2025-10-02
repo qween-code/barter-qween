@@ -6,9 +6,11 @@ import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/item/item_bloc.dart';
+import '../blocs/trade/trade_bloc.dart';
 import 'items/create_item_page.dart';
 import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
+import 'trades/trades_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -50,6 +52,10 @@ class _DashboardViewState extends State<DashboardView> {
             child: const ItemListPage(),
           ),
           const ExploreTab(),
+          BlocProvider(
+            create: (_) => getIt<TradeBloc>(),
+            child: const TradesPage(),
+          ),
           const MessagesTab(),
           const ProfilePage(),
         ],
@@ -60,6 +66,7 @@ class _DashboardViewState extends State<DashboardView> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explore'),
+          NavigationDestination(icon: Icon(Icons.swap_horiz_outlined), selectedIcon: Icon(Icons.swap_horiz), label: 'Trades'),
           NavigationDestination(icon: Icon(Icons.message_outlined), selectedIcon: Icon(Icons.message), label: 'Messages'),
           NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
         ],
