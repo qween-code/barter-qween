@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import '../../../core/error/exceptions.dart';
 import '../../../domain/entities/trade_offer_entity.dart';
@@ -29,7 +29,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<TradeOfferModel> sendTradeOffer(TradeOfferModel offer) async {
     try {
-      final docRef = await firestore.collection('trades').add(offer.toFirestore());
+      final docRef = await firestore.collection('tradeOffers').add(offer.toFirestore());
       final doc = await docRef.get();
       return TradeOfferModel.fromFirestore(doc);
     } catch (e) {
@@ -40,7 +40,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<TradeOfferModel> acceptTradeOffer(String offerId, String? responseMessage) async {
     try {
-      final docRef = firestore.collection('trades').doc(offerId);
+      final docRef = firestore.collection('tradeOffers').doc(offerId);
       
       await docRef.update({
         'status': 'accepted',
@@ -62,7 +62,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<TradeOfferModel> rejectTradeOffer(String offerId, String? rejectionReason) async {
     try {
-      final docRef = firestore.collection('trades').doc(offerId);
+      final docRef = firestore.collection('tradeOffers').doc(offerId);
       
       await docRef.update({
         'status': 'rejected',
@@ -84,7 +84,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<void> cancelTradeOffer(String offerId) async {
     try {
-      await firestore.collection('trades').doc(offerId).update({
+      await firestore.collection('tradeOffers').doc(offerId).update({
         'status': 'cancelled',
         'respondedAt': FieldValue.serverTimestamp(),
       });
@@ -96,7 +96,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<TradeOfferModel> completeTrade(String offerId) async {
     try {
-      final docRef = firestore.collection('trades').doc(offerId);
+      final docRef = firestore.collection('tradeOffers').doc(offerId);
       
       await docRef.update({
         'status': 'completed',
@@ -117,7 +117,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<TradeOfferModel> getTradeOffer(String offerId) async {
     try {
-      final doc = await firestore.collection('trades').doc(offerId).get();
+      final doc = await firestore.collection('tradeOffers').doc(offerId).get();
       
       if (!doc.exists) {
         throw NotFoundException('Trade offer not found');
@@ -135,13 +135,13 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
     try {
       // Get offers where user is either sender or receiver
       final sentSnapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('fromUserId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
 
       final receivedSnapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('toUserId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
@@ -170,7 +170,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   Future<List<TradeOfferModel>> getSentTradeOffers(String userId) async {
     try {
       final snapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('fromUserId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
@@ -187,7 +187,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   Future<List<TradeOfferModel>> getReceivedTradeOffers(String userId) async {
     try {
       final snapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('toUserId', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
@@ -210,14 +210,14 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
       
       // Get offers where user is either sender or receiver with specific status
       final sentSnapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('fromUserId', isEqualTo: userId)
           .where('status', isEqualTo: statusString)
           .orderBy('createdAt', descending: true)
           .get();
 
       final receivedSnapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('toUserId', isEqualTo: userId)
           .where('status', isEqualTo: statusString)
           .orderBy('createdAt', descending: true)
@@ -248,13 +248,13 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
     try {
       // Get all trades involving this item
       final offeredSnapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('offeredItemId', isEqualTo: itemId)
           .orderBy('createdAt', descending: true)
           .get();
 
       final requestedSnapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('requestedItemId', isEqualTo: itemId)
           .orderBy('createdAt', descending: true)
           .get();
@@ -287,7 +287,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   ) async {
     try {
       final snapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('fromUserId', isEqualTo: fromUserId)
           .where('offeredItemId', isEqualTo: offeredItemId)
           .where('requestedItemId', isEqualTo: requestedItemId)
@@ -305,7 +305,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   Future<int> getPendingReceivedCount(String userId) async {
     try {
       final snapshot = await firestore
-          .collection('trades')
+          .collection('tradeOffers')
           .where('toUserId', isEqualTo: userId)
           .where('status', isEqualTo: 'pending')
           .get();
