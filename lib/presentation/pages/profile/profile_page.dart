@@ -10,6 +10,10 @@ import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
 import '../../widgets/user_avatar_widget.dart';
+import '../../widgets/profile/rating_summary_widget.dart';
+import '../../../core/di/injection.dart';
+import '../../../core/services/analytics_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../favorites/favorites_page.dart';
 import '../items/user_items_page.dart';
 import '../trades/trade_history_page.dart';
@@ -233,6 +237,9 @@ class _ProfileViewState extends State<ProfileView> {
                             textAlign: TextAlign.center,
                           ),
                           
+const SizedBox(height: AppDimensions.spacing8),
+                          // Ratings summary
+                          RatingSummaryWidget(userId: user.uid),
                           const SizedBox(height: AppDimensions.spacing24),
                         ],
                       ),
@@ -240,11 +247,14 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
                 
-                // Content
+// Content
                 SliverPadding(
                   padding: const EdgeInsets.all(AppDimensions.spacing24),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
+                      // Preferences Section
+                      _buildPreferencesCard(),
+                      const SizedBox(height: AppDimensions.spacing24),
                       // Account Info Section
                       _buildSectionTitle('Account Information'),
                       const SizedBox(height: AppDimensions.spacing16),
@@ -416,6 +426,31 @@ class _ProfileViewState extends State<ProfileView> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildPreferencesCard() {
+    return FutureBuilder<SharedPreferences>(
+      future: Future.value(getIt<SharedPreferences>()),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        final prefs = snapshot.data!;
+        final enabled = prefs.getBool('analytics_enabled') ?? true;
+        return Card(
+          child: SwitchListTile(
+            title: const Text('Enable analytics'),
+            subtitle: const Text('Help improve the app by sharing anonymous usage data'),
+            value: enabled,
+            onChanged: (val) async {
+              await prefs.setBool('analytics_enabled', val);
+              try {
+                await getIt<AnalyticsService>().enableCollection(val);
+              } catch (_) {}
+              setState(() {});
+            },
+          ),
+        );
+      },
     );
   }
 
