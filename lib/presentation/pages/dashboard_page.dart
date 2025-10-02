@@ -6,6 +6,7 @@ import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/item/item_bloc.dart';
+import '../blocs/profile/profile_bloc.dart';
 import '../blocs/trade/trade_bloc.dart';
 import '../blocs/trade/trade_event.dart';
 import '../blocs/trade/trade_state.dart';
@@ -82,12 +83,21 @@ class _DashboardViewState extends State<DashboardView> {
             child: const ItemListPage(),
           ),
           const ExploreTab(),
-          BlocProvider(
-            create: (_) => getIt<TradeBloc>(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => getIt<TradeBloc>()),
+              BlocProvider.value(value: context.read<AuthBloc>()),
+            ],
             child: const TradesPage(),
           ),
           const MessagesTab(),
-          const ProfilePage(),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => getIt<ProfileBloc>()),
+              BlocProvider.value(value: context.read<AuthBloc>()),
+            ],
+            child: const ProfilePage(),
+          ),
         ],
       ),
       bottomNavigationBar: NavigationBar(

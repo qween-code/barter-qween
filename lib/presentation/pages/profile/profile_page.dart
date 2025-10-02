@@ -18,10 +18,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<ProfileBloc>(),
-      child: const ProfileView(),
-    );
+    return const ProfileView();
   }
 }
 
