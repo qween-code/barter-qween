@@ -376,14 +376,14 @@ android {
 
 ### Immediate (Sprint 7 devamı)
 1. ✅ Entity & Service Implementation
-2. ⏳ In-App Purchase service implementation
-3. ⏳ Subscription management repository
-4. ⏳ Payment repository & datasource
-5. ⏳ UI: Premium plans page
-6. ⏳ UI: Payment selection page
-7. ⏳ UI: Ad banner widgets
-8. ⏳ Firestore security rules
-9. ⏳ Testing & validation
+2. ✅ In-App Purchase service implementation
+3. ✅ Subscription management service
+4. ✅ Premium features logic
+5. ✅ Firestore security rules
+6. ⏳ UI: Premium plans page (design ready)
+7. ⏳ UI: Payment selection page
+8. ⏳ UI: Ad banner widgets
+9. ⏳ E2E Testing & validation
 
 ### Future Enhancements
 - [ ] Promo codes support
@@ -441,18 +441,19 @@ android {
 - [x] Listing Fee Configuration
 - [x] Payment Service (Google Pay & Apple Pay)
 - [x] AdMob Service
+- [x] IAP Service (In-App Purchase)
+- [x] Premium Features Service
+- [x] Subscription Management Service
+- [x] Firestore Security Rules
 - [x] Monetization Documentation
 
-### Pending (Next Phase)
-- [ ] In-App Purchase Service
-- [ ] Subscription Repository
-- [ ] Payment Repository
+### Pending (Next Phase - UI)
 - [ ] Premium Plans UI Page
 - [ ] Payment Flow UI
 - [ ] Ad Banner Widgets
-- [ ] Firestore Security Rules
+- [ ] Subscription Benefits Widget
 - [ ] E2E Testing
-- [ ] Store Configuration
+- [ ] Store Configuration (App Store Connect & Play Console)
 
 ---
 
