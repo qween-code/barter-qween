@@ -29,6 +29,9 @@ class SearchFilterEntity extends Equatable {
   // Tags
   final List<String>? tags;
 
+  // Specifications (Sprint 4)
+  final Map<String, dynamic>? specifications;
+
   // Sort
   final SortOption sortBy;
   final SortDirection sortDirection;
@@ -51,6 +54,7 @@ class SearchFilterEntity extends Equatable {
     this.startDate,
     this.endDate,
     this.tags,
+    this.specifications,
     this.sortBy = SortOption.createdAt,
     this.sortDirection = SortDirection.descending,
     this.limit = 20,
@@ -69,7 +73,8 @@ class SearchFilterEntity extends Equatable {
         cities != null ||
         startDate != null ||
         endDate != null ||
-        tags != null;
+        tags != null ||
+        specifications != null;
   }
 
   /// Count of active filters
@@ -84,6 +89,7 @@ class SearchFilterEntity extends Equatable {
     if (cities != null && cities!.isNotEmpty) count++;
     if (startDate != null || endDate != null) count++;
     if (tags != null && tags!.isNotEmpty) count++;
+    if (specifications != null && specifications!.isNotEmpty) count++;
     return count;
   }
 
@@ -101,6 +107,7 @@ class SearchFilterEntity extends Equatable {
     DateTime? startDate,
     DateTime? endDate,
     List<String>? tags,
+    Map<String, dynamic>? specifications,
     SortOption? sortBy,
     SortDirection? sortDirection,
     int? limit,
@@ -120,6 +127,7 @@ class SearchFilterEntity extends Equatable {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       tags: tags ?? this.tags,
+      specifications: specifications ?? this.specifications,
       sortBy: sortBy ?? this.sortBy,
       sortDirection: sortDirection ?? this.sortDirection,
       limit: limit ?? this.limit,
@@ -147,6 +155,7 @@ class SearchFilterEntity extends Equatable {
         startDate,
         endDate,
         tags,
+        specifications,
         sortBy,
         sortDirection,
         limit,
