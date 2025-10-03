@@ -25,6 +25,12 @@ class TradeOfferModel extends TradeOfferEntity {
     super.respondedAt,
     super.completedAt,
     super.rejectionReason,
+    super.cashDifferential,
+    super.paymentDirection,
+    super.conditionNotes,
+    super.meetsBarterCondition,
+    super.offeredItemValue,
+    super.requestedItemValue,
   });
 
   /// Create from Entity

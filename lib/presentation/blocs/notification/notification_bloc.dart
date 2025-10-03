@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../domain/usecases/notifications/get_notifications_usecase.dart';
+import '../../../domain/repositories/notification_repository.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
 
