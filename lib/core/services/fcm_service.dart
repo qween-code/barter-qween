@@ -241,6 +241,36 @@ class FCMService {
           nav.pushNamed(RouteNames.dashboard);
         }
         break;
+      case 'new_match':
+      case 'price_drop_match':
+        // Navigate to barter matches page if source item ID is provided
+        final sourceItemId = data['sourceItemId'] as String?;
+        if (sourceItemId != null && sourceItemId.isNotEmpty) {
+          // Load source item and navigate to matches
+          nav.push(MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<ItemBloc>()),
+                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+              ],
+              child: ItemDetailPage(itemId: sourceItemId),
+            ),
+          ));
+        } else if (entityId != null && entityId.isNotEmpty) {
+          // Navigate to matched item
+          nav.push(MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<ItemBloc>()),
+                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
+              ],
+              child: ItemDetailPage(itemId: entityId),
+            ),
+          ));
+        } else {
+          nav.pushNamed(RouteNames.dashboard);
+        }
+        break;
       default:
         nav.pushNamed(RouteNames.dashboard);
     }

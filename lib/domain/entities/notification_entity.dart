@@ -11,6 +11,8 @@ enum NotificationType {
   itemSold,          // Your item was marked as sold
   itemLiked,         // Someone liked your item
   followReceived,    // Someone followed you
+  newMatch,          // New barter match found (Sprint 3)
+  priceDropMatch,    // Price dropped on potential match (Sprint 3)
   system,            // System notification
 }
 
@@ -36,6 +38,10 @@ extension NotificationTypeExtension on NotificationType {
         return 'item_liked';
       case NotificationType.followReceived:
         return 'follow_received';
+      case NotificationType.newMatch:
+        return 'new_match';
+      case NotificationType.priceDropMatch:
+        return 'price_drop_match';
       case NotificationType.system:
         return 'system';
     }
@@ -61,6 +67,10 @@ extension NotificationTypeExtension on NotificationType {
         return NotificationType.itemLiked;
       case 'follow_received':
         return NotificationType.followReceived;
+      case 'new_match':
+        return NotificationType.newMatch;
+      case 'price_drop_match':
+        return NotificationType.priceDropMatch;
       case 'system':
       default:
         return NotificationType.system;
@@ -87,6 +97,10 @@ extension NotificationTypeExtension on NotificationType {
         return 'Item Liked';
       case NotificationType.followReceived:
         return 'New Follower';
+      case NotificationType.newMatch:
+        return 'Yeni Eşleşme';
+      case NotificationType.priceDropMatch:
+        return 'Fiyat Düştü';
       case NotificationType.system:
         return 'System Notification';
     }

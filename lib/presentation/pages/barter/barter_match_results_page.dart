@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/di/injection.dart';
 import '../../../domain/entities/item_entity.dart';
+import '../../../domain/usecases/barter/calculate_compatibility_score_usecase.dart';
 import '../../blocs/barter/barter_bloc.dart';
 import '../../blocs/barter/barter_event.dart';
 import '../../blocs/barter/barter_state.dart';
@@ -27,10 +29,13 @@ class BarterMatchResultsPage extends StatefulWidget {
 class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
   String _sortBy = 'best_match'; // best_match, newest, value
   String? _filterCategory;
+  late final CalculateCompatibilityScoreUseCase _calculateScoreUseCase;
 
   @override
   void initState() {
     super.initState();
+    _calculateScoreUseCase = getIt<CalculateCompatibilityScoreUseCase>();
+    
     // Trigger GetMatchingItems use case
     if (widget.sourceItem.barterCondition != null) {
       context.read<BarterBloc>().add(
@@ -169,7 +174,10 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
                   ),
                 ),
                 BarterCompatibilityBadge(
-                  score: 75.0, // TODO: Calculate actual compatibility score
+                  score: _calculateScoreUseCase(
+                    sourceItem: widget.sourceItem,
+                    matchItem: item,
+                  ),
                   size: 'small',
                   showLabel: true,
                 ),
@@ -267,9 +275,18 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
   void _sortMatches(List<ItemEntity> items) {
     switch (_sortBy) {
       case 'best_match':
-        // TODO: Implement actual compatibility score calculation
-        items.sort((a, b) => (b.monetaryValue ?? 0)
-            .compareTo(a.monetaryValue ?? 0));
+        // Sort by real compatibility score (highest first)
+        items.sort((a, b) {
+          final scoreA = _calculateScoreUseCase(
+            sourceItem: widget.sourceItem,
+            matchItem: a,
+          );
+          final scoreB = _calculateScoreUseCase(
+            sourceItem: widget.sourceItem,
+            matchItem: b,
+          );
+          return scoreB.compareTo(scoreA);
+        });
         break;
       case 'newest':
         items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
