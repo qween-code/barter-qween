@@ -13,6 +13,8 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../widgets/barter/barter_condition_selector.dart';
+import '../../../domain/entities/barter_condition_entity.dart';
 
 class CreateItemPage extends StatelessWidget {
   const CreateItemPage({super.key});
@@ -41,6 +43,13 @@ class _CreateItemViewState extends State<CreateItemView> {
   String? _selectedCategory;
   String? _selectedCondition;
   bool _isLoading = false;
+  
+  // Barter fields
+  ItemTier _selectedTier = ItemTier.medium;
+  double? _estimatedValue;
+  BarterConditionType _barterConditionType = BarterConditionType.flexible;
+  double? _cashAmount;
+  List<String> _acceptedCategories = [];
 
   @override
   void dispose() {
@@ -65,13 +74,15 @@ class _CreateItemViewState extends State<CreateItemView> {
   }
 
   void _removeImage(int index) {
-    setState(() {
-      _selectedImages.removeAt(index);
-    });
+    if (index < _selectedImages.length) {
+      setState(() {
+        _selectedImages.removeAt(index);
+      });
+    }
   }
 
   void _handleCreate() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_formKey.currentState?.validate() != true) return;
     if (_selectedImages.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -86,6 +97,19 @@ class _CreateItemViewState extends State<CreateItemView> {
     if (authState is! AuthAuthenticated) return;
 
     setState(() => _isLoading = true);
+
+    final barterCondition = BarterConditionEntity(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      type: _barterConditionType,
+      cashDifferential: _cashAmount,
+      paymentDirection: _barterConditionType == BarterConditionType.cashPlus
+          ? CashPaymentDirection.fromMe
+          : _barterConditionType == BarterConditionType.cashMinus
+              ? CashPaymentDirection.toMe
+              : null,
+      acceptedCategories: _acceptedCategories.isNotEmpty ? _acceptedCategories : null,
+      createdAt: DateTime.now(),
+    );
 
     final item = ItemEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -103,6 +127,12 @@ class _CreateItemViewState extends State<CreateItemView> {
       tradePreference: _tradePreferenceController.text.trim().isEmpty
           ? null
           : _tradePreferenceController.text.trim(),
+      // New barter fields
+      tier: _selectedTier,
+      price: _estimatedValue, // Using price field as estimatedValue
+      monetaryValue: _estimatedValue,
+      barterCondition: barterCondition,
+      moderationStatus: ModerationStatus.pending,
     );
 
     context.read<ItemBloc>().add(CreateItem(item, images: _selectedImages));
@@ -240,6 +270,48 @@ class _CreateItemViewState extends State<CreateItemView> {
                   maxLines: 2,
                 ),
 
+                const SizedBox(height: AppDimensions.spacing24),
+
+                // Item Tier Section
+                Text(
+                  'Ürün Boyutu',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: AppDimensions.spacing12),
+                _buildTierSelector(),
+
+                const SizedBox(height: AppDimensions.spacing24),
+
+                // Estimated Value
+                Text(
+                  'Tahmini Değer',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: AppDimensions.spacing12),
+                _buildMonetaryValueInput(),
+
+                const SizedBox(height: AppDimensions.spacing24),
+
+                // Barter Conditions
+                BarterConditionSelector(
+                  selectedType: _barterConditionType,
+                  onTypeChanged: (type) {
+                    setState(() => _barterConditionType = type);
+                  },
+                  cashAmount: _cashAmount,
+                  onCashAmountChanged: (amount) {
+                    setState(() => _cashAmount = amount);
+                  },
+                  selectedCategories: _acceptedCategories,
+                  onCategoriesChanged: (categories) {
+                    setState(() => _acceptedCategories = categories);
+                  },
+                ),
+
                 const SizedBox(height: AppDimensions.spacing32),
 
                 // Create Button
@@ -363,6 +435,119 @@ class _CreateItemViewState extends State<CreateItemView> {
               ],
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMonetaryValueInput() {
+    return TextFormField(
+      initialValue: _estimatedValue?.toStringAsFixed(0),
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: 'Ürününüzün tahmini değeri (TL)',
+        hintText: '0',
+        prefixText: '₺ ',
+        suffixText: 'TL',
+        prefixIcon: const Icon(Icons.attach_money),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+        ),
+      ),
+      onChanged: (value) {
+        final amount = double.tryParse(value);
+        setState(() => _estimatedValue = amount);
+      },
+    );
+  }
+
+  Widget _buildTierSelector() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.borderDefault),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+      ),
+      padding: const EdgeInsets.all(AppDimensions.spacing16),
+      child: Row(
+        children: ItemTier.values.map((tier) {
+          final isSelected = _selectedTier == tier;
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: InkWell(
+                onTap: () => setState(() => _selectedTier = tier),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppDimensions.spacing12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primary.withValues(alpha: 0.1)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.borderLight,
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildTierIcon(tier, isSelected),
+                      const SizedBox(height: 4),
+                      Text(
+                        tier.displayName,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildTierIcon(ItemTier tier, bool isSelected) {
+    IconData icon;
+    Color color;
+
+    switch (tier) {
+      case ItemTier.small:
+        icon = Icons.shopping_bag_outlined;
+        color = Colors.green;
+        break;
+      case ItemTier.medium:
+        icon = Icons.shopping_basket_outlined;
+        color = Colors.orange;
+        break;
+      case ItemTier.large:
+        icon = Icons.shopping_cart_outlined;
+        color = Colors.red;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        size: 32,
+        color: isSelected ? color : AppColors.textSecondary,
       ),
     );
   }
