@@ -152,18 +152,24 @@ class CalculateCompatibilityScoreUseCase {
     BarterConditionType type1,
     BarterConditionType type2,
   ) {
-    // Direct trade is most compatible with direct trade
-    if (type1 == BarterConditionType.directTrade &&
-        type2 == BarterConditionType.directTrade) {
+    // Direct swap is most compatible with direct swap
+    if (type1 == BarterConditionType.directSwap &&
+        type2 == BarterConditionType.directSwap) {
       return 1.0;
     }
 
     // Cash-involved trades are compatible
-    if ((type1 == BarterConditionType.tradeWithCash ||
-            type1 == BarterConditionType.tradeForCash) &&
-        (type2 == BarterConditionType.tradeWithCash ||
-            type2 == BarterConditionType.tradeForCash)) {
+    if ((type1 == BarterConditionType.cashPlus ||
+            type1 == BarterConditionType.cashMinus) &&
+        (type2 == BarterConditionType.cashPlus ||
+            type2 == BarterConditionType.cashMinus)) {
       return 0.8;
+    }
+
+    // Flexible is compatible with everything
+    if (type1 == BarterConditionType.flexible ||
+        type2 == BarterConditionType.flexible) {
+      return 0.9;
     }
 
     // Mixed compatibility

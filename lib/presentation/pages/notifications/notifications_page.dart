@@ -230,6 +230,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return Icons.favorite;
       case NotificationType.followReceived:
         return Icons.person_add;
+      case NotificationType.newMatch:
+        return Icons.handshake;
+      case NotificationType.priceDropMatch:
+        return Icons.trending_down;
       case NotificationType.system:
         return Icons.info;
     }
@@ -252,6 +256,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return AppColors.accent;
       case NotificationType.followReceived:
         return Colors.purple;
+      case NotificationType.newMatch:
+        return const Color(0xFF4CAF50); // Green
+      case NotificationType.priceDropMatch:
+        return const Color(0xFFFF9800); // Orange
       case NotificationType.system:
         return Colors.grey;
     }
