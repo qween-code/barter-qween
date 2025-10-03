@@ -1,4 +1,6 @@
 rules_version = '2';
+// BarterQween Firestore Security Rules
+// World-class security with premium features validation
 service cloud.firestore {
   match /databases/{database}/documents {
     
