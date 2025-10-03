@@ -19,8 +19,8 @@ import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';
 import 'presentation/pages/notifications/notifications_page.dart';
 import 'presentation/pages/login_page.dart';
-import 'presentation/pages/monetization/premium_plans_page.dart';
-import 'presentation/pages/monetization/payment_selection_page.dart';
+import 'presentation/pages/subscription/premium_plans_page.dart';
+import 'presentation/pages/payment/payment_selection_page.dart';
 import 'presentation/pages/onboarding/onboarding_page.dart';
 import 'presentation/pages/register_page.dart';
 import 'presentation/pages/forgot_password_page.dart';
@@ -28,6 +28,8 @@ import 'presentation/pages/items/create_item_page.dart';
 import 'presentation/pages/items/edit_item_page.dart';
 import 'presentation/pages/barter/barter_match_results_page.dart';
 import 'domain/entities/item_entity.dart';
+import 'domain/entities/payment_entity.dart';
+import 'domain/entities/subscription_entity.dart';
 import 'presentation/blocs/item/item_bloc.dart';
 import 'presentation/blocs/item/item_event.dart';
 import 'presentation/blocs/item/item_state.dart';
@@ -97,9 +99,11 @@ return GlobalBlocProviders(
             final args = s.arguments as Map<String, dynamic>?;
             return MaterialPageRoute(
               builder: (_) => PaymentSelectionPage(
-                planId: args?['planId'] as String? ?? 'monthly',
-                planName: args?['planName'] as String? ?? 'Premium',
-                price: args?['price'] as double? ?? 9.99,
+                amount: args?['amount'] as double? ?? 9.99,
+                description: args?['description'] as String?,
+                paymentType: args?['paymentType'] as PaymentType? ?? PaymentType.subscription,
+                subscriptionPlan: args?['subscriptionPlan'] as SubscriptionFeatures?,
+                isYearly: args?['isYearly'] as bool?,
               ),
             );
           case RouteNames.createItem:
