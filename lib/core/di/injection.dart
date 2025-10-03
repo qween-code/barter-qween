@@ -30,6 +30,8 @@ abstract class FirebaseInjectableModule {
   @lazySingleton
   GoogleSignIn get googleSignIn => GoogleSignIn(
     scopes: ['email', 'profile'],
+    // Web client ID from google-services.json for server-side authentication
+    serverClientId: '229577295263-jmk1pspkjong8olrdet0e1tkhhinfral.apps.googleusercontent.com',
   );
 
   @lazySingleton

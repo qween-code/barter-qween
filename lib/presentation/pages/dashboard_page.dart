@@ -14,6 +14,8 @@ import '../blocs/trade/trade_state.dart';
 import '../blocs/search/search_bloc.dart';
 import 'chat/conversations_list_page.dart';
 import 'explore/explore_page.dart';
+import 'explore/explore_page_v2.dart';
+import 'home/home_page_v2.dart';
 import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
 import 'search/search_page.dart';
@@ -79,19 +81,21 @@ class _DashboardViewState extends State<DashboardView> {
         body: IndexedStack(
         index: _currentIndex,
         children: [
+          // NEW Modern Home Page V2
           MultiBlocProvider(
             providers: [
               BlocProvider(create: (_) => getIt<ItemBloc>()),
               BlocProvider(create: (_) => getIt<FavoriteBloc>()),
             ],
-            child: const ItemListPage(),
+            child: const HomePageV2(),
           ),
+          // NEW Modern Explore Page V2
           MultiBlocProvider(
             providers: [
               BlocProvider(create: (_) => getIt<ItemBloc>()),
               BlocProvider(create: (_) => getIt<FavoriteBloc>()),
             ],
-            child: const ExplorePage(),
+            child: const ExplorePageV2(),
           ),
           const TradesPage(),
           const ConversationsListPage(),

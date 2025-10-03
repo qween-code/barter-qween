@@ -19,6 +19,8 @@ import 'firebase_options.dart';
 import 'presentation/pages/dashboard_page.dart';
 import 'presentation/pages/notifications/notifications_page.dart';
 import 'presentation/pages/login_page.dart';
+import 'presentation/pages/monetization/premium_plans_page.dart';
+import 'presentation/pages/monetization/payment_selection_page.dart';
 import 'presentation/pages/onboarding/onboarding_page.dart';
 import 'presentation/pages/register_page.dart';
 import 'presentation/pages/forgot_password_page.dart';
@@ -87,9 +89,20 @@ return GlobalBlocProviders(
           case RouteNames.register: return MaterialPageRoute(builder: (_) => const RegisterPage());
           case RouteNames.forgotPassword: return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
           case RouteNames.onboarding: return MaterialPageRoute(builder: (_) => const OnboardingPage());
-case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
+          case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const DashboardPage());
           case RouteNames.notifications: return MaterialPageRoute(builder: (_) => const NotificationsPage());
-          case RouteNames.createItem: 
+          // Sprint 7: Monetization routes
+          case RouteNames.premiumPlans: return MaterialPageRoute(builder: (_) => const PremiumPlansPage());
+          case RouteNames.paymentSelection:
+            final args = s.arguments as Map<String, dynamic>?;
+            return MaterialPageRoute(
+              builder: (_) => PaymentSelectionPage(
+                planId: args?['planId'] as String? ?? 'monthly',
+                planName: args?['planName'] as String? ?? 'Premium',
+                price: args?['price'] as double? ?? 9.99,
+              ),
+            );
+          case RouteNames.createItem:
             return MaterialPageRoute(
               builder: (context) => BlocProvider(
                 create: (_) => getIt<ItemBloc>(),
