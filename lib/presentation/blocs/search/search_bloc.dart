@@ -118,10 +118,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     Emitter<SearchState> emit,
   ) async {
     _currentFilters = event.filters;
-    
-    if (_currentQuery.isNotEmpty) {
-      add(SearchStarted(query: _currentQuery, filters: event.filters));
-    }
+    add(SearchStarted(query: _currentQuery, filters: event.filters));
   }
 
   /// Change sort option
@@ -143,10 +140,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     Emitter<SearchState> emit,
   ) async {
     _currentFilters = const SearchFilterEntity();
-    
-    if (_currentQuery.isNotEmpty) {
-      add(SearchStarted(query: _currentQuery, filters: _currentFilters));
-    }
+    add(SearchStarted(query: _currentQuery, filters: _currentFilters));
   }
 
   /// Clear search
