@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'barter_condition_entity.dart';
 
 class ItemEntity extends Equatable {
   final String id;
@@ -24,6 +25,29 @@ class ItemEntity extends Equatable {
   final bool isFeatured;
   final String? tradePreference; // What user wants in exchange
 
+  // Barter & Monetization (NEW)
+  final double? monetaryValue; // TL cinsinden değer
+  final BarterConditionEntity? barterCondition; // Barter şartları
+  final ItemTier? tier; // Küçük/Orta/Büyük
+
+  // Moderation (NEW)
+  final ModerationStatus moderationStatus; // Onay durumu
+  final String? adminNotes; // Admin notları
+  final DateTime? approvedAt; // Onay zamanı
+  final String? approvedBy; // Onaylayan admin ID
+
+  // Media (NEW)
+  final List<String>? videoUrls; // Video URL'leri
+
+  // Delivery (NEW)
+  final bool requiresDelivery; // Teslimat gerekli mi
+  final String? deliveryInfo; // Teslimat bilgisi
+
+  // Location (NEW - harita için)
+  final double? latitude;
+  final double? longitude;
+  final String? fullAddress;
+
   const ItemEntity({
     required this.id,
     required this.title,
@@ -47,6 +71,20 @@ class ItemEntity extends Equatable {
     this.tags,
     this.isFeatured = false,
     this.tradePreference,
+    // New fields
+    this.monetaryValue,
+    this.barterCondition,
+    this.tier,
+    this.moderationStatus = ModerationStatus.pending,
+    this.adminNotes,
+    this.approvedAt,
+    this.approvedBy,
+    this.videoUrls,
+    this.requiresDelivery = false,
+    this.deliveryInfo,
+    this.latitude,
+    this.longitude,
+    this.fullAddress,
   });
 
   /// Alias for price field (for compatibility)
@@ -75,6 +113,19 @@ class ItemEntity extends Equatable {
     List<String>? tags,
     bool? isFeatured,
     String? tradePreference,
+    double? monetaryValue,
+    BarterConditionEntity? barterCondition,
+    ItemTier? tier,
+    ModerationStatus? moderationStatus,
+    String? adminNotes,
+    DateTime? approvedAt,
+    String? approvedBy,
+    List<String>? videoUrls,
+    bool? requiresDelivery,
+    String? deliveryInfo,
+    double? latitude,
+    double? longitude,
+    String? fullAddress,
   }) {
     return ItemEntity(
       id: id ?? this.id,
@@ -99,6 +150,19 @@ class ItemEntity extends Equatable {
       tags: tags ?? this.tags,
       isFeatured: isFeatured ?? this.isFeatured,
       tradePreference: tradePreference ?? this.tradePreference,
+      monetaryValue: monetaryValue ?? this.monetaryValue,
+      barterCondition: barterCondition ?? this.barterCondition,
+      tier: tier ?? this.tier,
+      moderationStatus: moderationStatus ?? this.moderationStatus,
+      adminNotes: adminNotes ?? this.adminNotes,
+      approvedAt: approvedAt ?? this.approvedAt,
+      approvedBy: approvedBy ?? this.approvedBy,
+      videoUrls: videoUrls ?? this.videoUrls,
+      requiresDelivery: requiresDelivery ?? this.requiresDelivery,
+      deliveryInfo: deliveryInfo ?? this.deliveryInfo,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      fullAddress: fullAddress ?? this.fullAddress,
     );
   }
 
@@ -126,6 +190,19 @@ class ItemEntity extends Equatable {
         tags,
         isFeatured,
         tradePreference,
+        monetaryValue,
+        barterCondition,
+        tier,
+        moderationStatus,
+        adminNotes,
+        approvedAt,
+        approvedBy,
+        videoUrls,
+        requiresDelivery,
+        deliveryInfo,
+        latitude,
+        longitude,
+        fullAddress,
       ];
 }
 
@@ -417,4 +494,61 @@ class ItemColor {
     multicolor: '#RAINBOW',
     other: '#CCCCCC',
   };
+}
+
+/// İlan büyüklük seviyeleri (NEW)
+enum ItemTier {
+  small, // 0-500 TL
+  medium, // 500-2000 TL
+  large, // 2000+ TL
+}
+
+extension ItemTierExtension on ItemTier {
+  String get displayName {
+    switch (this) {
+      case ItemTier.small:
+        return 'Küçük';
+      case ItemTier.medium:
+        return 'Orta';
+      case ItemTier.large:
+        return 'Büyük';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case ItemTier.small:
+        return '0-500 TL arası değer';
+      case ItemTier.medium:
+        return '500-2000 TL arası değer';
+      case ItemTier.large:
+        return '2000+ TL değer';
+    }
+  }
+}
+
+/// Moderasyon durumu (NEW)
+enum ModerationStatus {
+  pending, // Onay bekliyor
+  approved, // Onaylandı
+  rejected, // Reddedildi
+  flagged, // İşaretlendi (tekrar inceleme)
+  autoApproved, // Otomatik onaylandı
+}
+
+extension ModerationStatusExtension on ModerationStatus {
+  String get displayName {
+    switch (this) {
+      case ModerationStatus.pending:
+        return 'İnceleniyor';
+      case ModerationStatus.approved:
+        return 'Onaylandı';
+      case ModerationStatus.rejected:
+        return 'Reddedildi';
+      case ModerationStatus.flagged:
+        return 'İşaretlendi';
+      case ModerationStatus.autoApproved:
+        return 'Otomatik Onaylandı';
+    }
+  }
 }

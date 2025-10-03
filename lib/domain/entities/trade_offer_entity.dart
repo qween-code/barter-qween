@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'barter_condition_entity.dart';
 
 /// Trade Offer Entity representing a barter trade between two users
 class TradeOfferEntity extends Equatable {
@@ -23,6 +24,14 @@ class TradeOfferEntity extends Equatable {
   final DateTime? completedAt;
   final String? rejectionReason;
 
+  // Barter Conditions (NEW)
+  final double? cashDifferential; // Para farkı
+  final CashPaymentDirection? paymentDirection; // Kim ödeyecek
+  final String? conditionNotes; // Şart notları
+  final bool meetsBarterCondition; // Şartları karşılıyor mu
+  final double? offeredItemValue; // Teklif edilen ürün değeri
+  final double? requestedItemValue; // İstenen ürün değeri
+
   const TradeOfferEntity({
     required this.id,
     required this.fromUserId,
@@ -44,6 +53,13 @@ class TradeOfferEntity extends Equatable {
     this.respondedAt,
     this.completedAt,
     this.rejectionReason,
+    // New fields
+    this.cashDifferential,
+    this.paymentDirection,
+    this.conditionNotes,
+    this.meetsBarterCondition = false,
+    this.offeredItemValue,
+    this.requestedItemValue,
   });
 
   /// Create a copy with modified fields
@@ -68,6 +84,12 @@ class TradeOfferEntity extends Equatable {
     DateTime? respondedAt,
     DateTime? completedAt,
     String? rejectionReason,
+    double? cashDifferential,
+    CashPaymentDirection? paymentDirection,
+    String? conditionNotes,
+    bool? meetsBarterCondition,
+    double? offeredItemValue,
+    double? requestedItemValue,
   }) {
     return TradeOfferEntity(
       id: id ?? this.id,
@@ -90,6 +112,13 @@ class TradeOfferEntity extends Equatable {
       respondedAt: respondedAt ?? this.respondedAt,
       completedAt: completedAt ?? this.completedAt,
       rejectionReason: rejectionReason ?? this.rejectionReason,
+      cashDifferential: cashDifferential ?? this.cashDifferential,
+      paymentDirection: paymentDirection ?? this.paymentDirection,
+      conditionNotes: conditionNotes ?? this.conditionNotes,
+      meetsBarterCondition:
+          meetsBarterCondition ?? this.meetsBarterCondition,
+      offeredItemValue: offeredItemValue ?? this.offeredItemValue,
+      requestedItemValue: requestedItemValue ?? this.requestedItemValue,
     );
   }
 
@@ -136,6 +165,12 @@ class TradeOfferEntity extends Equatable {
         respondedAt,
         completedAt,
         rejectionReason,
+        cashDifferential,
+        paymentDirection,
+        conditionNotes,
+        meetsBarterCondition,
+        offeredItemValue,
+        requestedItemValue,
       ];
 }
 
