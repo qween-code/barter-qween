@@ -203,6 +203,7 @@ class TradeOfferModel extends TradeOfferEntity {
   }
 
   /// Copy with method
+  @override
   TradeOfferModel copyWith({
     String? id,
     String? fromUserId,
@@ -224,6 +225,12 @@ class TradeOfferModel extends TradeOfferEntity {
     DateTime? respondedAt,
     DateTime? completedAt,
     String? rejectionReason,
+    double? cashDifferential,
+    CashPaymentDirection? paymentDirection,
+    String? conditionNotes,
+    bool? meetsBarterCondition,
+    double? offeredItemValue,
+    double? requestedItemValue,
   }) {
     return TradeOfferModel(
       id: id ?? this.id,
@@ -246,6 +253,12 @@ class TradeOfferModel extends TradeOfferEntity {
       respondedAt: respondedAt ?? this.respondedAt,
       completedAt: completedAt ?? this.completedAt,
       rejectionReason: rejectionReason ?? this.rejectionReason,
+      cashDifferential: cashDifferential ?? this.cashDifferential,
+      paymentDirection: paymentDirection ?? this.paymentDirection,
+      conditionNotes: conditionNotes ?? this.conditionNotes,
+      meetsBarterCondition: meetsBarterCondition ?? this.meetsBarterCondition,
+      offeredItemValue: offeredItemValue ?? this.offeredItemValue,
+      requestedItemValue: requestedItemValue ?? this.requestedItemValue,
     );
   }
 }
