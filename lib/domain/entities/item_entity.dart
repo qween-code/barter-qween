@@ -48,6 +48,9 @@ class ItemEntity extends Equatable {
   final double? longitude;
   final String? fullAddress;
 
+  // Specifications (NEW - category-specific attributes)
+  final Map<String, dynamic>? specifications;
+
   const ItemEntity({
     required this.id,
     required this.title,
@@ -85,6 +88,7 @@ class ItemEntity extends Equatable {
     this.latitude,
     this.longitude,
     this.fullAddress,
+    this.specifications,
   });
 
   /// Alias for price field (for compatibility)
@@ -126,6 +130,7 @@ class ItemEntity extends Equatable {
     double? latitude,
     double? longitude,
     String? fullAddress,
+    Map<String, dynamic>? specifications,
   }) {
     return ItemEntity(
       id: id ?? this.id,
@@ -163,6 +168,7 @@ class ItemEntity extends Equatable {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       fullAddress: fullAddress ?? this.fullAddress,
+      specifications: specifications ?? this.specifications,
     );
   }
 
@@ -203,6 +209,7 @@ class ItemEntity extends Equatable {
         latitude,
         longitude,
         fullAddress,
+        specifications,
       ];
 }
 
