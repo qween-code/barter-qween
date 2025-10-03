@@ -6,9 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../domain/entities/item_entity.dart';
+import '../../../domain/entities/barter_condition_entity.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
+import '../../widgets/barter/barter_condition_selector.dart';
 
 class EditItemPage extends StatefulWidget {
   final ItemEntity item;
@@ -31,6 +33,13 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
   final List<String> _networkImages = [];
   final List<File> _newImages = [];
   final List<String> _imagesToDelete = [];
+  
+  // Barter fields
+  late ItemTier _selectedTier;
+  double? _estimatedValue;
+  late BarterConditionType _barterConditionType;
+  double? _cashAmount;
+  List<String> _acceptedCategories = [];
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -45,6 +54,13 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
     _selectedCategory = widget.item.category;
     _selectedCondition = widget.item.condition;
     _networkImages.addAll(widget.item.images);
+    
+    // Initialize barter fields
+    _selectedTier = widget.item.tier ?? ItemTier.medium;
+    _estimatedValue = widget.item.monetaryValue ?? widget.item.price;
+    _barterConditionType = widget.item.barterCondition?.type ?? BarterConditionType.flexible;
+    _cashAmount = widget.item.barterCondition?.cashDifferential;
+    _acceptedCategories = widget.item.barterCondition?.acceptedCategories ?? [];
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -110,6 +126,19 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
         return;
       }
 
+      final barterCondition = BarterConditionEntity(
+        id: widget.item.barterCondition?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        type: _barterConditionType,
+        cashDifferential: _cashAmount,
+        paymentDirection: _barterConditionType == BarterConditionType.cashPlus
+            ? CashPaymentDirection.fromMe
+            : _barterConditionType == BarterConditionType.cashMinus
+                ? CashPaymentDirection.toMe
+                : null,
+        acceptedCategories: _acceptedCategories.isNotEmpty ? _acceptedCategories : null,
+        createdAt: widget.item.barterCondition?.createdAt ?? DateTime.now(),
+      );
+
       final updatedItem = widget.item.copyWith(
         title: _titleController.text,
         description: _descriptionController.text,
@@ -118,6 +147,10 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
         location: _locationController.text.isEmpty ? null : _locationController.text,
         tradePreference: _tradePrefController.text.isEmpty ? null : _tradePrefController.text,
         images: _networkImages,
+        tier: _selectedTier,
+        price: _estimatedValue,
+        monetaryValue: _estimatedValue,
+        barterCondition: barterCondition,
         updatedAt: DateTime.now(),
       );
 
@@ -187,6 +220,8 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                           _buildBasicInfoSection(),
                           const SizedBox(height: 24),
                           _buildDetailsSection(),
+                          const SizedBox(height: 24),
+                          _buildBarterSection(),
                           const SizedBox(height: 24),
                           _buildAdditionalInfoSection(),
                           const SizedBox(height: 32),
@@ -511,6 +546,107 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                 hintText: 'e.g., Smartphone, Book collection, etc.',
               ),
               maxLines: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBarterSection() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Barter Şartları',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            // Tier selector
+            const Text('Ürün Boyutu', style: TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Row(
+              children: ItemTier.values.map((tier) {
+                final isSelected = _selectedTier == tier;
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: InkWell(
+                      onTap: () => setState(() => _selectedTier = tier),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.blue.withValues(alpha: 0.1) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isSelected ? Colors.blue : Colors.grey[300]!,
+                            width: isSelected ? 2 : 1,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              tier == ItemTier.small
+                                  ? Icons.shopping_bag_outlined
+                                  : tier == ItemTier.medium
+                                      ? Icons.shopping_basket_outlined
+                                      : Icons.shopping_cart_outlined,
+                              size: 32,
+                              color: isSelected ? Colors.blue : Colors.grey,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              tier.displayName,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                                color: isSelected ? Colors.blue : Colors.grey[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+            // Estimated value
+            TextFormField(
+              initialValue: _estimatedValue?.toStringAsFixed(0),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Tahmini Değer (TL)',
+                prefixIcon: const Icon(Icons.attach_money),
+                prefixText: '₺ ',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onChanged: (value) {
+                final amount = double.tryParse(value);
+                setState(() => _estimatedValue = amount);
+              },
+            ),
+            const SizedBox(height: 16),
+            // Barter conditions
+            BarterConditionSelector(
+              selectedType: _barterConditionType,
+              onTypeChanged: (type) {
+                setState(() => _barterConditionType = type);
+              },
+              cashAmount: _cashAmount,
+              onCashAmountChanged: (amount) {
+                setState(() => _cashAmount = amount);
+              },
+              selectedCategories: _acceptedCategories,
+              onCategoriesChanged: (categories) {
+                setState(() => _acceptedCategories = categories);
+              },
             ),
           ],
         ),
