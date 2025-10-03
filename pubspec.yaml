@@ -66,6 +66,11 @@ dependencies:
   # Media
   image_picker: ^1.2.0
   
+  # Maps & Location (Sprint 5)
+  google_maps_flutter: ^2.9.0
+  geolocator: ^13.0.0
+  geocoding: ^3.0.0
+  
   # Utils
   url_launcher: ^6.2.4
   cached_network_image: ^3.4.0
