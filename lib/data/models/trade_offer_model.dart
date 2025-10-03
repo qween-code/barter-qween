@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/trade_offer_entity.dart';
+import '../../domain/entities/barter_condition_entity.dart';
 
 /// Trade Offer Model for data layer
 class TradeOfferModel extends TradeOfferEntity {
