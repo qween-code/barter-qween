@@ -5,7 +5,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../../domain/entities/barter_condition_entity.dart';
 import 'barter_condition_badge.dart';
-import 'tier_badge.dart';
+import '../items/tier_badge.dart';
 
 /// Barter Condition Summary Card
 /// Comprehensive display of all barter information

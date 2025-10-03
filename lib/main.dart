@@ -25,6 +25,7 @@ import 'presentation/pages/forgot_password_page.dart';
 import 'presentation/pages/items/create_item_page.dart';
 import 'presentation/pages/items/edit_item_page.dart';
 import 'presentation/pages/barter/barter_match_results_page.dart';
+import 'domain/entities/item_entity.dart';
 import 'presentation/blocs/item/item_bloc.dart';
 import 'presentation/blocs/item/item_event.dart';
 import 'presentation/blocs/item/item_state.dart';
@@ -123,7 +124,8 @@ case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const Dashbo
             return MaterialPageRoute(builder: (_) => const LoginPage());
           case RouteNames.barterMatches:
             if (s.arguments is Map<String, dynamic>) {
-              final itemEntity = s.arguments['item'];
+              final args = s.arguments as Map<String, dynamic>;
+              final itemEntity = args['item'] as ItemEntity;
               return MaterialPageRoute(
                 builder: (context) => BlocProvider(
                   create: (_) => getIt<BarterBloc>(),

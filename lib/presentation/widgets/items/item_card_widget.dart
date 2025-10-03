@@ -11,7 +11,7 @@ import '../../blocs/favorite/favorite_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../pages/items/item_detail_page.dart';
-import '../barter/tier_badge.dart';
+import 'tier_badge.dart';
 import '../barter/barter_condition_badge.dart';
 
 /// Standardized item card widget with favorites and quick preview

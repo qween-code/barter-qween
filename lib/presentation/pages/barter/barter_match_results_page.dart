@@ -32,9 +32,14 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
   void initState() {
     super.initState();
     // Trigger GetMatchingItems use case
-    context.read<BarterBloc>().add(
-          GetMatchingItemsEvent(widget.sourceItem.id),
-        );
+    if (widget.sourceItem.barterCondition != null) {
+      context.read<BarterBloc>().add(
+            GetMatchingItems(
+              condition: widget.sourceItem.barterCondition!,
+              currentItemId: widget.sourceItem.id,
+            ),
+          );
+    }
   }
 
   @override
@@ -67,16 +72,16 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
           }
 
           if (state is MatchingItemsLoaded) {
-            if (state.matches.isEmpty) {
+            if (state.items.isEmpty) {
               return _buildEmptyState();
             }
 
-            var matches = List.from(state.matches);
+            var matches = List<ItemEntity>.from(state.items);
 
             // Apply filter
             if (_filterCategory != null) {
               matches = matches
-                  .where((m) => m.item.category == _filterCategory)
+                  .where((item) => item.category == _filterCategory)
                   .toList();
             }
 
@@ -85,7 +90,7 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
 
             return Column(
               children: [
-                _buildResultsHeader(matches.length, state.matches.length),
+                _buildResultsHeader(matches.length, state.items.length),
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(AppDimensions.spacing16),
@@ -137,7 +142,7 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
     );
   }
 
-  Widget _buildMatchCard(dynamic match) {
+  Widget _buildMatchCard(ItemEntity item) {
     return Card(
       margin: const EdgeInsets.only(bottom: AppDimensions.spacing12),
       shape: RoundedRectangleBorder(
@@ -145,7 +150,7 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
       ),
       child: Column(
         children: [
-          // Compatibility score header
+          // Compatibility score header (simplified for now)
           Container(
             padding: const EdgeInsets.all(AppDimensions.spacing12),
             decoration: BoxDecoration(
@@ -164,7 +169,7 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
                   ),
                 ),
                 BarterCompatibilityBadge(
-                  score: match.compatibilityScore ?? 75.0,
+                  score: 75.0, // TODO: Calculate actual compatibility score
                   size: 'small',
                   showLabel: true,
                 ),
@@ -174,7 +179,7 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
           // Item card
           SizedBox(
             height: 200,
-            child: ItemCardWidget(item: match.item),
+            child: ItemCardWidget(item: item),
           ),
         ],
       ),
@@ -242,9 +247,14 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
             const SizedBox(height: AppDimensions.spacing24),
             ElevatedButton(
               onPressed: () {
-                context.read<BarterBloc>().add(
-                      GetMatchingItemsEvent(widget.sourceItem.id),
-                    );
+                if (widget.sourceItem.barterCondition != null) {
+                  context.read<BarterBloc>().add(
+                        GetMatchingItems(
+                          condition: widget.sourceItem.barterCondition!,
+                          currentItemId: widget.sourceItem.id,
+                        ),
+                      );
+                }
               },
               child: const Text('Tekrar Dene'),
             ),
@@ -254,18 +264,19 @@ class _BarterMatchResultsPageState extends State<BarterMatchResultsPage> {
     );
   }
 
-  void _sortMatches(List matches) {
+  void _sortMatches(List<ItemEntity> items) {
     switch (_sortBy) {
       case 'best_match':
-        matches.sort((a, b) => (b.compatibilityScore ?? 0)
-            .compareTo(a.compatibilityScore ?? 0));
+        // TODO: Implement actual compatibility score calculation
+        items.sort((a, b) => (b.monetaryValue ?? 0)
+            .compareTo(a.monetaryValue ?? 0));
         break;
       case 'newest':
-        matches.sort((a, b) => b.item.createdAt.compareTo(a.item.createdAt));
+        items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         break;
       case 'value':
-        matches.sort((a, b) => (b.item.monetaryValue ?? 0)
-            .compareTo(a.item.monetaryValue ?? 0));
+        items.sort((a, b) => (b.monetaryValue ?? 0)
+            .compareTo(a.monetaryValue ?? 0));
         break;
     }
   }
