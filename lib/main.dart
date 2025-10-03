@@ -24,9 +24,11 @@ import 'presentation/pages/register_page.dart';
 import 'presentation/pages/forgot_password_page.dart';
 import 'presentation/pages/items/create_item_page.dart';
 import 'presentation/pages/items/edit_item_page.dart';
+import 'presentation/pages/barter/barter_match_results_page.dart';
 import 'presentation/blocs/item/item_bloc.dart';
 import 'presentation/blocs/item/item_event.dart';
 import 'presentation/blocs/item/item_state.dart';
+import 'presentation/blocs/barter/barter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -116,6 +118,17 @@ case RouteNames.dashboard: return MaterialPageRoute(builder: (_) => const Dashbo
                     ),
                   );
                 },
+              );
+            }
+            return MaterialPageRoute(builder: (_) => const LoginPage());
+          case RouteNames.barterMatches:
+            if (s.arguments is Map<String, dynamic>) {
+              final itemEntity = s.arguments['item'];
+              return MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (_) => getIt<BarterBloc>(),
+                  child: BarterMatchResultsPage(sourceItem: itemEntity),
+                ),
               );
             }
             return MaterialPageRoute(builder: (_) => const LoginPage());

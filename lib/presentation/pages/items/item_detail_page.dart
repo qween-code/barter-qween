@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/routes/route_names.dart';
 import '../../../core/services/analytics_service.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
@@ -21,6 +22,7 @@ import '../chat/chat_detail_page.dart';
 import '../profile/user_profile_page.dart';
 import '../trades/send_trade_offer_page.dart';
 import 'edit_item_page.dart';
+import '../../widgets/barter/barter_condition_summary_card.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
@@ -104,7 +106,16 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       slivers: [
         _buildImageCarousel(item),
         _buildItemInfo(item),
-      ],
+        SliverTo  }
+
+  void _findMatches(BuildContext context, ItemEntity item) {
+    // Navigate to barter match results page with item as argument
+    Navigator.pushNamed(
+      context,
+      RouteNames.barterMatches,
+      arguments: {
+        'item': item,
+      },
     );
   }
 

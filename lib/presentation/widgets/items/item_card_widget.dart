@@ -11,6 +11,8 @@ import '../../blocs/favorite/favorite_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../pages/items/item_detail_page.dart';
+import '../barter/tier_badge.dart';
+import '../barter/barter_condition_badge.dart';
 
 /// Standardized item card widget with favorites and quick preview
 class ItemCardWidget extends StatelessWidget {
@@ -74,6 +76,25 @@ class ItemCardWidget extends StatelessWidget {
                             ),
                           ),
                   ),
+                  // Tier Badge (top-left)
+                  if (item.tier != null)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: TierBadge(tier: item.tier!, size: 20),
+                    ),
+                  
+                  // Barter Condition Badge (bottom-left)
+                  if (item.barterCondition != null)
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      child: BarterConditionBadge(
+                        type: item.barterCondition!.type,
+                        compact: true,
+                      ),
+                    ),
+                  
                   // Favorite button
                   if (showFavoriteButton)
                     Positioned(

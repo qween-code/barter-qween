@@ -11,4 +11,5 @@ class RouteNames {
   static const String createItem = '/create-item';
   static const String editItem = '/edit-item';
   static const String notifications = '/notifications';
+  static const String barterMatches = '/barter-matches';
 }
