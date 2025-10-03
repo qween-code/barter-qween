@@ -7,6 +7,22 @@
     "seed": "node seed_firebase.js"
   },
   "dependencies": {
-    "firebase-admin": "^12.0.0"
-  }
+    "firebase-admin": "^12.7.0"
+  },
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qween-code/barter-qween.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qween-code/barter-qween/issues"
+  },
+  "homepage": "https://github.com/qween-code/barter-qween#readme"
 }
