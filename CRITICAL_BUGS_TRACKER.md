@@ -43,31 +43,102 @@
 
 ### 2. Favorites Not Working 🔴
 
-**Status:** 🔴 **NOT STARTED**  
+**Status:** 🟡 **ANALYZED - Ready to Fix**  
 **Priority:** HIGH  
 **Impact:** Core feature unavailable
 
-#### Todo
-- [ ] Locate FavoritesPage and FavoriteBloc
-- [ ] Check Firestore queries
-- [ ] Verify FavoriteBloc integration
-- [ ] Test add/remove favorite
-- [ ] Check state management
+#### Analysis (05:55)
+✅ **Code Structure:** FavoriteBloc implementation looks GOOD
+- BLoC pattern properly implemented
+- Uses Either<Failure, Success> pattern
+- Has caching with `_favoriteIds` Set
+- All CRUD operations present
+
+✅ **FavoritesPage:** Implementation looks GOOD
+- Proper BlocProvider setup
+- Error handling with BlocConsumer
+- Empty state handling
+- Pull-to-refresh
+
+⚠️ **Potential Issues:**
+1. BlocProvider creates new instance: `create: (context) => getIt<FavoriteBloc>()`
+   - Each page visit creates NEW bloc = loses state
+2. No global FavoriteBloc provider
+3. Toggle favorite might not refresh list
+
+#### Files Checked
+- ✅ `lib/presentation/blocs/favorite/favorite_bloc.dart` - Good
+- ✅ `lib/presentation/pages/favorites/favorites_page.dart` - Good structure
+
+#### Root Cause
+- **Missing global BLoC provider** - Should be in app-level providers
+- **State not persisting** between page visits
+- **No real-time updates** from Firestore
+
+#### Fix Required
+- [ ] Add FavoriteBloc to global BLoC providers (main.dart)
+- [ ] Change from `create` to `value` in FavoritesPage
+- [ ] Test add/remove functionality
+- [ ] Add real-time Firestore listener
 
 ---
 
 ### 3. Search Functionality Broken 🔴
 
-**Status:** 🔴 **NOT STARTED**  
+**Status:** 🔴 **ROOT CAUSE FOUND - Critical Bug**  
 **Priority:** CRITICAL  
-**Impact:** Users cannot find items
+**Impact:** Users cannot find items - Search does NOTHING
 
-#### Todo
-- [ ] Check Home page search
-- [ ] Check Explorer page search
-- [ ] Verify search query implementation
-- [ ] Test filtering logic
-- [ ] Check Firestore indexes
+#### Analysis (05:55)
+✅ **SearchBloc:** Implementation is EXCELLENT
+- Debouncing (500ms) implemented
+- Proper error handling
+- Real-time search with streams
+- Filter support
+- Suggestions support
+
+❌ **HOME PAGE - CRITICAL BUG FOUND:**
+```dart
+// Line 646-657 in home_page_v2.dart
+Widget _buildCinematicSearchOverlay() {
+  return Positioned(
+    child: NeumorphismSearchBarCollection.heroSearchBar(
+      controller: TextEditingController(),
+      onSearch: (query) {},  // ❌ EMPTY! Does nothing!
+      hintText: 'Ne arıyorsunuz?',
+    ),
+  );
+}
+```
+
+**THE PROBLEM:**
+- `onSearch: (query) {}` is EMPTY - no implementation!
+- SearchBloc exists but NOT USED in home page
+- No BlocProvider for SearchBloc
+- TextEditingController not connected to anything
+
+#### Root Cause
+**100% CONFIRMED:**
+1. Search UI exists but NOT connected to SearchBloc
+2. onSearch callback is empty
+3. No BlocProvider<SearchBloc> in home page
+4. Search results never displayed
+
+#### Fix Required
+1. [ ] Add SearchBloc BlocProvider to home_page_v2.dart
+2. [ ] Implement onSearch callback:
+   ```dart
+   onSearch: (query) {
+     context.read<SearchBloc>().add(SearchQueryChanged(query));
+   }
+   ```
+3. [ ] Add BlocBuilder to show search results
+4. [ ] Add search results overlay/modal
+5. [ ] Test search functionality
+
+#### Files to Fix
+- `lib/presentation/pages/home/home_page_v2.dart` - Add SearchBloc integration
+- `lib/presentation/pages/explore/explore_page.dart` - Check if same issue
 
 ---
 
@@ -91,16 +162,67 @@
 | Bug | Status | Progress | ETA |
 |-----|--------|----------|-----|
 | Profile Crash | 🟢 Investigating | 20% | 2 hours |
-| Favorites | 🔴 Pending | 0% | 3 hours |
-| Search | 🔴 Pending | 0% | 4 hours |
+| Favorites | 🟡 Analyzed | 40% | 2 hours |
+| Search | 🔴 **ROOT CAUSE FOUND** | 60% | 1-2 hours |
 | Permissions | 🟡 Pending | 0% | 2 hours |
 
-**Total:** 5% complete  
-**Estimated Time:** 11 hours
+**Total:** 30% complete (analysis phase)  
+**Estimated Time:** 7-8 hours to fix all
 
 ---
 
 ## 🔍 Investigation Notes
+
+### Search Analysis (05:55) ⚠️ CRITICAL
+
+**MAJOR BUG DISCOVERED:**
+
+```dart
+// home_page_v2.dart Line 646-657
+Widget _buildCinematicSearchOverlay() {
+  return Positioned(
+    child: NeumorphismSearchBarCollection.heroSearchBar(
+      controller: TextEditingController(),
+      onSearch: (query) {},  // ❌ COMPLETELY EMPTY!
+      hintText: 'Ne arıyorsunuz?',
+    ),
+  );
+}
+```
+
+**The Issue:**
+- Beautiful search UI ✅
+- Perfect SearchBloc implementation ✅
+- **BUT: UI and BLoC NOT CONNECTED** ❌
+- Search literally does NOTHING
+
+**Impact:** CRITICAL - Search is a core feature, completely broken
+
+**Fix:** Simple - just wire up the SearchBloc
+- Add BlocProvider
+- Implement onSearch callback
+- Add results display
+
+---
+
+### Favorites Analysis (05:55)
+
+**Good News:** Code structure is solid!
+- FavoriteBloc: Well implemented
+- FavoritesPage: Proper error handling
+- UI: Beautiful empty states
+
+**Issue:** State management problem
+- New BLoC instance on each page visit
+- Should be app-level singleton
+- Missing from global providers
+
+**Fix:** Medium complexity
+- Move to app-level BLoC providers
+- Change from `create` to `value`
+- Test persistence
+
+---
 
 ### Profile Page Analysis (05:50)
 
