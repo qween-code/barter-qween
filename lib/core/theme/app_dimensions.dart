@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Ultra Advanced Neumorphism Dimensions & Grid System
 /// Pinterest seviyesi nöromorfik tasarım için gelişmiş spacing ve grid sistemi
 
@@ -473,6 +475,23 @@ class AppDimensions {
   static const double badgeSizeCinematic = 32.0;
   static const double fabSizeCinematic = 80.0;
   static const double snackbarHeightCinematic = 64.0;
+
+  // ============================================
+  // LEGACY COMPATIBILITY GETTERS
+  // ============================================
+  
+  /// Legacy compatibility getters for older code
+  static double get radiusSmall => radius8;
+  static double get radiusMedium => radius16;
+  static double get radiusLarge => radius24;
+  static double get radiusXLarge => radius32;
+  static double get paddingSmall => spacing8;
+  static double get paddingMedium => spacing16;
+  static double get paddingLarge => spacing24;
+  static double get iconSmall => icon16;
+  static double get iconMedium => icon24;
+  static double get iconLarge => icon32;
+  static double get appBarElevation => appBarElevation4;
 
   // ============================================
   // UTILITY METHODS

@@ -391,10 +391,17 @@ class ShadowAnimator {
 /// Neuromorphic Presets
 /// Pre-configured shadow combinations for common use cases
 class NeuromorphicPresets {
-  /// Button presets
-  static class ButtonPresets {
+  static final ButtonPresets = _ButtonPresets();
+  static final CardPresets = _CardPresets();
+  static final InputPresets = _InputPresets();
+  static final NavigationPresets = _NavigationPresets();
+  static final IconPresets = _IconPresets();
+}
+
+/// Button presets
+class _ButtonPresets {
     /// Primary button - 12 layer ultra-deep
-    static List<BoxShadow> primary({
+    List<BoxShadow> primary({
       bool isPressed = false,
       bool isHovered = false,
     }) {
@@ -406,7 +413,7 @@ class NeuromorphicPresets {
     }
 
     /// Secondary button - 8 layer medium
-    static List<BoxShadow> secondary({
+    List<BoxShadow> secondary({
       bool isPressed = false,
       bool isHovered = false,
     }) {
@@ -418,7 +425,7 @@ class NeuromorphicPresets {
     }
 
     /// Icon button - 6 layer soft
-    static List<BoxShadow> icon({
+    List<BoxShadow> icon({
       bool isPressed = false,
       bool isHovered = false,
     }) {
@@ -430,7 +437,7 @@ class NeuromorphicPresets {
     }
 
     /// Floating action button - 16 layer floating
-    static List<BoxShadow> fab({bool isPressed = false}) {
+    List<BoxShadow> fab({bool isPressed = false}) {
       return [
         ...NeuromorphicEffects.depth.createDepthAwareShadows(
           depth: isPressed ? 3.0 : 4.5,
@@ -444,11 +451,12 @@ class NeuromorphicPresets {
       ];
     }
   }
+}
 
-  /// Card presets
-  static class CardPresets {
+/// Card presets
+class _CardPresets {
     /// Standard card - 12 layer
-    static List<BoxShadow> standard({bool isHovered = false}) {
+    List<BoxShadow> standard({bool isHovered = false}) {
       return NeuromorphicEffects.depth.createDepthAwareShadows(
         depth: isHovered ? 3.5 : 3.0,
         isHovered: isHovered,
@@ -456,7 +464,7 @@ class NeuromorphicPresets {
     }
 
     /// Hero card - 16 layer cinematic
-    static List<BoxShadow> hero({bool isHovered = false}) {
+    List<BoxShadow> hero({bool isHovered = false}) {
       return NeuromorphicEffects.depth.createDepthAwareShadows(
         depth: isHovered ? 5.5 : 5.0,
         isHovered: isHovered,
@@ -464,7 +472,7 @@ class NeuromorphicPresets {
     }
 
     /// Product card - 14 layer premium
-    static List<BoxShadow> product({bool isHovered = false}) {
+    List<BoxShadow> product({bool isHovered = false}) {
       return NeuromorphicEffects.depth.createDepthAwareShadows(
         depth: isHovered ? 4.0 : 3.5,
         isHovered: isHovered,
@@ -472,7 +480,7 @@ class NeuromorphicPresets {
     }
 
     /// Floating card - 10 layer elevated
-    static List<BoxShadow> floating() {
+    List<BoxShadow> floating() {
       return [
         ...NeuromorphicEffects.depth.createDepthAwareShadows(depth: 2.5),
         BoxShadow(
@@ -484,11 +492,12 @@ class NeuromorphicPresets {
       ];
     }
   }
+}
 
-  /// Input presets
-  static class InputPresets {
+/// Input presets
+class _InputPresets {
     /// Text field - 8 layer inset
-    static List<BoxShadow> textField({bool isFocused = false}) {
+    List<BoxShadow> textField({bool isFocused = false}) {
       return [
         BoxShadow(
           color: Colors.black.withOpacity(isFocused ? 0.15 : 0.1),
@@ -524,9 +533,9 @@ class NeuromorphicPresets {
     }
 
     /// Search bar - 10 layer embedded
-    static List<BoxShadow> searchBar({bool isFocused = false}) {
+    List<BoxShadow> searchBar({bool isFocused = false}) {
       return [
-        ...InputPresets.textField(isFocused: isFocused),
+        ...textField(isFocused: isFocused),
         BoxShadow(
           color: Colors.black.withOpacity(0.05),
           offset: const Offset(6, 6),
@@ -536,11 +545,12 @@ class NeuromorphicPresets {
       ];
     }
   }
+}
 
-  /// Navigation presets
-  static class NavigationPresets {
+/// Navigation presets
+class _NavigationPresets {
     /// Bottom navigation - 16 layer floating
-    static List<BoxShadow> bottomNav() {
+    List<BoxShadow> bottomNav() {
       return [
         ...NeuromorphicEffects.depth.createDepthAwareShadows(depth: 4.0),
         BoxShadow(
@@ -553,7 +563,7 @@ class NeuromorphicPresets {
     }
 
     /// App bar - 12 layer elevated
-    static List<BoxShadow> appBar() {
+    List<BoxShadow> appBar() {
       return [
         ...NeuromorphicEffects.depth.createDepthAwareShadows(depth: 3.0),
         BoxShadow(
@@ -566,15 +576,16 @@ class NeuromorphicPresets {
     }
 
     /// Tab bar - 8 layer subtle
-    static List<BoxShadow> tabBar() {
+    List<BoxShadow> tabBar() {
       return NeuromorphicEffects.depth.createDepthAwareShadows(depth: 2.0);
     }
   }
+}
 
-  /// Icon presets
-  static class IconPresets {
+/// Icon presets
+class _IconPresets {
     /// Standard icon - 4 layer
-    static List<BoxShadow> standard({bool isActive = false}) {
+    List<BoxShadow> standard({bool isActive = false}) {
       return NeuromorphicEffects.depth.createDepthAwareShadows(
         depth: isActive ? 1.8 : 1.2,
         isHovered: isActive,
@@ -582,7 +593,7 @@ class NeuromorphicPresets {
     }
 
     /// Circular icon - 6 layer with glow
-    static List<BoxShadow> circular({
+    List<BoxShadow> circular({
       bool isActive = false,
       Color? glowColor,
     }) {

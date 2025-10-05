@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
@@ -255,6 +256,9 @@ class AppTextStyles {
     height: 1.4,
     color: AppColors.textPrimary,
   );
+  
+  /// Legacy h6 style for backward compatibility
+  static const TextStyle h6 = titleSmall;
 
   // ============================================
   // ULTRA NEUROMORPHISM TITLE STYLES

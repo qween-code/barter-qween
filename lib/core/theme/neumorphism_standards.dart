@@ -87,6 +87,12 @@ class NeumorphismStandards {
     ),
   ];
 
+  /// Sinematik ultra derin gölge (Alias for ultra deep)
+  static List<BoxShadow> get neumorphismCinematicShadow => neumorphismUltraDeepShadow;
+  
+  /// Ultra gölge (Alias for ultra outset)
+  static List<BoxShadow> get neumorphismUltraShadow => neumorphismUltraOutsetShadow;
+
   /// Ultra derinlikli nöromorfik gölge (Pinterest seviyesi)
   static List<BoxShadow> get neumorphismUltraOutsetShadow => [
     BoxShadow(

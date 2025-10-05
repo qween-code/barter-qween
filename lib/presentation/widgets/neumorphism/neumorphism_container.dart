@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/neumorphism_standards.dart';
@@ -260,8 +261,8 @@ class _NeumorphismContainerState extends State<NeumorphismContainer>
         onExit: _onHoverExit,
         onHover: _onHover,
         child: Focus(
-        onFocusChange: _onFocusChange,
-        child: GestureDetector(
+          onFocusChange: _onFocusChange,
+          child: GestureDetector(
           onTapDown: _onTapDown,
           onTapUp: _onTapUp,
           onTapCancel: _onTapCancel,
@@ -293,6 +294,7 @@ class _NeumorphismContainerState extends State<NeumorphismContainer>
             ),
           ),
         ),
+      ),
       ),
     );
   }

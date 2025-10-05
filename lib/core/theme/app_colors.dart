@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 /// Barter Qween Ultra Neumorphism Color Palette
@@ -90,6 +91,7 @@ class AppColors {
   static const Color borderUltraLight = Color(0xFFF8F9FA);
   static const Color borderUltraDark = Color(0xFFADB5BD);
   static const Color borderNeumorphism = Color(0xFFD4E0C5); // Nöromorfik kenarlık
+  static const Color border = borderDefault; // Legacy compatibility
   
   // ============================================
   // OVERLAY COLORS
