@@ -23,6 +23,8 @@ import '../profile/user_profile_page.dart';
 import '../trades/send_trade_offer_page.dart';
 import 'edit_item_page.dart';
 import '../../widgets/barter/barter_condition_summary_card.dart';
+import '../../widgets/media/advanced_image_gallery.dart';
+import '../../widgets/loading/skeleton_loading.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
@@ -66,7 +68,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       body: BlocBuilder<ItemBloc, ItemState>(
         builder: (context, state) {
           if (state is ItemLoading) {
-            return const Center(child: CircularProgressIndicator());
+            // ✨ NEW: Professional skeleton loading instead of spinner
+            return SkeletonLoading.itemDetail(context);
           }
 
           if (state is ItemError) {
@@ -95,7 +98,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             return _buildItemDetail(context, state.item);
           }
 
-          return const Center(child: Text('Loading...'));
+          return SkeletonLoading.itemDetail(context);
         },
       ),
     );
@@ -209,35 +212,55 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               )
             : Stack(
                 children: [
-                  PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
-                    itemCount: images.length,
-                    itemBuilder: (context, index) {
-                      return CachedNetworkImage(
-                        imageUrl: images[index],
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey.shade200,
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 60,
-                            color: Colors.grey.shade400,
+                  // ✨ NEW: Hero-animated image carousel with tap-to-fullscreen
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AdvancedImageGallery(
+                            imageUrls: images.cast<String>(),
+                            initialIndex: _currentImageIndex,
+                            heroTag: 'item_${item.id}',
+                            onShare: () => _shareItem(item),
                           ),
                         ),
                       );
                     },
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentImageIndex = index;
+                        });
+                      },
+                      itemCount: images.length,
+                      itemBuilder: (context, index) {
+                        return Hero(
+                          tag: 'item_${item.id}_$index',
+                          child: CachedNetworkImage(
+                            imageUrl: images[index],
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey.shade200,
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey.shade200,
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 60,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
+                  // ✨ NEW: Modern animated indicator dots
                   if (images.length > 1)
                     Positioned(
                       bottom: 20,
@@ -247,17 +270,63 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
                           images.length,
-                          (index) => Container(
+                          (index) => AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
                             margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: 8,
+                            width: _currentImageIndex == index ? 24 : 8,
                             height: 8,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
+                              borderRadius: BorderRadius.circular(4),
                               color: _currentImageIndex == index
                                   ? Colors.white
                                   : Colors.white.withOpacity(0.4),
+                              boxShadow: _currentImageIndex == index
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                  // ✨ NEW: Tap to expand hint
+                  if (images.isNotEmpty)
+                    Positioned(
+                      bottom: 60,
+                      right: 20,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.zoom_out_map,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Tap to expand',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
