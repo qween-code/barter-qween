@@ -1864,16 +1864,10 @@ docs/phase3/
 - [ ] ML data collection preparation
 - [ ] Advanced filtering system
 - [ ] Integration with existing services
-- [ ] 3.3 Safety Features
-  - [ ] Report button
-  - [ ] Block functionality
-  - [ ] Content moderation
-
-**Deliverables:** Complete trust and safety framework
 
 ---
 
-#### **PHASE 4: CONVENIENCE & ENGAGEMENT** (Week 4)
+#### **PHASE 4: FUTURE ENHANCEMENTS** (Planned)
 - [ ] 4.1 Quick Actions
   - [ ] QR code generation
   - [ ] Save as draft
