@@ -17,10 +17,9 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<FavoriteBloc>(),
-      child: const FavoritesView(),
-    );
+    // Use global FavoriteBloc from GlobalBlocProviders
+    // No need to create new instance - preserves state across visits
+    return const FavoritesView();
   }
 }
 
