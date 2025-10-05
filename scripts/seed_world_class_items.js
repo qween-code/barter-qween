@@ -10,11 +10,18 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// Turkish cities
+// Turkish cities with real coordinates
 const CITIES = [
-  'İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya',
-  'Adana', 'Konya', 'Gaziantep', 'Kayseri', 'Eskişehir',
-  'Mersin', 'Diyarbakır', 'Samsun', 'Denizli', 'Trabzon'
+  { name: 'İstanbul', lat: 41.0082, lon: 28.9784, districts: ['Kadıköy', 'Beşiktaş', 'Şişli', 'Üsküdar'] },
+  { name: 'Ankara', lat: 39.9334, lon: 32.8597, districts: ['Çankaya', 'Kızılay', 'Ulus', 'Keçiören'] },
+  { name: 'İzmir', lat: 38.4237, lon: 27.1428, districts: ['Konak', 'Bornova', 'Karşıyaka', 'Alsancak'] },
+  { name: 'Bursa', lat: 40.1826, lon: 29.0665, districts: ['Osmangazi', 'Nilüfer', 'Yıldırım'] },
+  { name: 'Antalya', lat: 36.8969, lon: 30.7133, districts: ['Muratpaşa', 'Kepez', 'Konyaaltı'] },
+  { name: 'Adana', lat: 37.0, lon: 35.3213, districts: ['Seyhan', 'Çukurova', 'Yüreğir'] },
+  { name: 'Konya', lat: 37.8746, lon: 32.4932, districts: ['Selçuklu', 'Meram', 'Karatay'] },
+  { name: 'Gaziantep', lat: 37.0662, lon: 37.3833, districts: ['Şahinbey', 'Şehitkamil'] },
+  { name: 'Kayseri', lat: 38.7312, lon: 35.4787, districts: ['Melikgazi', 'Kocasinan'] },
+  { name: 'Eskişehir', lat: 39.7767, lon: 30.5206, districts: ['Odunpazarı', 'Tepebaşı'] },
 ];
 
 // Test user
@@ -516,8 +523,254 @@ const WORLD_CLASS_ITEMS = [
     tradePreference: 'Gym equipment, sports gear',
   },
 
-  // Add more items to reach 50...
-  // (For brevity, showing representative samples)
+  // ===== MORE FASHION ITEMS =====
+  {
+    title: 'Adidas Ultraboost 22 Running Shoes - EU 43',
+    description: 'Yüksek performans koşu ayakkabısı. Az kullanılmış, mükemmel durumda.',
+    category: 'Shoes',
+    subcategory: "Men's Sneakers",
+    brand: 'Adidas',
+    styleName: 'Ultraboost 22',
+    size: '43',
+    sizeSystem: 'EU',
+    gender: 'Men',
+    measurements: { insoleLength: '29cm' },
+    material: 'Primeknit textile',
+    condition: 'Like New',
+    conditionDescription: 'Az kullanılmış, temiz durumda',
+    conditionRating: 9,
+    wearLevel: 'Lightly used',
+    originalPrice: 4000,
+    price: 2800,
+    discountPercentage: 30,
+    freeShipping: true,
+    itemWeight: 0.8,
+    packageSize: 'Medium',
+    shippingAvailable: true,
+    estimatedShippingDays: 3,
+    features: ['Boost cushioning', 'Primeknit upper', 'Continental rubber outsole'],
+    season: 'All Season',
+    occasion: 'Sport',
+    style: 'Athletic',
+    petFreeHome: true,
+    smokeFreeHome: true,
+    returnsAccepted: true,
+    returnWindowDays: 7,
+    tags: ['adidas', 'ultraboost', 'running', 'sneakers'],
+    seoKeywords: ['adidas ultraboost', 'running shoes'],
+    hashtags: ['#adidas', '#ultraboost'],
+    isSecondHand: true,
+    images: [
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
+      'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa'
+    ],
+    tradePreference: 'Other running shoes, sports equipment',
+  },
+
+  {
+    title: 'H&M Kadın Elbise - Çiçek Desenli - S',
+    description: 'Yaz elbisesi, çiçek desenli, hafif kumaş. Sadece birkaç kez giyildi.',
+    category: "Women's Fashion",
+    subcategory: 'Summer Dresses',
+    brand: 'H&M',
+    size: 'S',
+    sizeSystem: 'EU',
+    gender: 'Women',
+    fitType: 'Regular',
+    measurements: { chest: '88cm', length: '95cm', waist: '72cm' },
+    material: '100% Viscose',
+    careInstructions: 'Machine wash cold',
+    condition: 'Like New',
+    conditionRating: 9,
+    wearLevel: 'Worn few times',
+    originalPrice: 450,
+    price: 250,
+    discountPercentage: 44,
+    firmPrice: false,
+    lowestAcceptedOffer: 200,
+    shippingAvailable: true,
+    freeShipping: false,
+    shippingCost: 30,
+    estimatedShippingDays: 4,
+    season: 'Spring/Summer',
+    occasion: 'Casual',
+    style: 'Bohemian',
+    petFreeHome: true,
+    smokeFreeHome: true,
+    returnsAccepted: true,
+    returnWindowDays: 3,
+    tags: ['hm', 'summer dress', 'floral', 'casual'],
+    isSecondHand: true,
+    images: [
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8',
+      'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1'
+    ],
+    tradePreference: 'Summer clothing, accessories',
+  },
+
+  // ===== MORE ELECTRONICS =====
+  {
+    title: 'Samsung Galaxy Tab S8+ 128GB Wi-Fi',
+    description: 'Premium Android tablet, az kullanılmış. S Pen dahil, tüm aksesuarlar mevcut.',
+    category: 'Electronics',
+    subcategory: 'Tablets',
+    brand: 'Samsung',
+    styleName: 'Galaxy Tab S8+',
+    modelNumber: 'SM-X800',
+    condition: 'Like New',
+    conditionDescription: 'Mükemmel durumda, ekran koruyucu ile kullanıldı',
+    conditionRating: 9,
+    wearLevel: 'Lightly used',
+    originalPrice: 18000,
+    price: 15000,
+    discountPercentage: 17,
+    firmPrice: false,
+    freeShipping: true,
+    itemWeight: 0.6,
+    packageSize: 'Medium',
+    shippingAvailable: true,
+    estimatedShippingDays: 3,
+    features: ['12.4" AMOLED screen', 'S Pen included', '8GB RAM'],
+    accessories: ['S Pen', 'Original charger', 'USB-C cable', 'Box'],
+    warranty: '6 months warranty remaining',
+    batteryHealth: '98%',
+    functionalStatus: 'Perfect condition',
+    specifications: {
+      storage: '128GB',
+      ram: '8GB',
+      screenSize: '12.4 inch',
+      connectivity: 'Wi-Fi'
+    },
+    petFreeHome: true,
+    smokeFreeHome: true,
+    returnsAccepted: true,
+    returnWindowDays: 5,
+    tags: ['samsung', 'tablet', 'galaxy tab', 's8+'],
+    seoKeywords: ['samsung galaxy tab s8+', 'android tablet'],
+    hashtags: ['#samsung', '#tablet'],
+    isSecondHand: true,
+    images: [
+      'https://images.unsplash.com/photo-1585790050230-5dd28404f805',
+      'https://images.unsplash.com/photo-1561154464-82e9adf32764'
+    ],
+    tradePreference: 'iPad, laptop, electronics',
+  },
+
+  {
+    title: 'Apple Watch Series 8 45mm GPS - Midnight',
+    description: 'Apple Watch Series 8, az kullanılmış. Batarya sağlığı mükemmel.',
+    category: 'Electronics',
+    subcategory: 'Smartwatches',
+    brand: 'Apple',
+    styleName: 'Apple Watch Series 8',
+    modelNumber: 'A2771',
+    condition: 'Like New',
+    conditionDescription: 'Hafif kullanım izleri, ekran kusursuz',
+    conditionRating: 9,
+    wearLevel: 'Used for 4 months',
+    originalPrice: 12000,
+    price: 9500,
+    discountPercentage: 21,
+    freeShipping: true,
+    itemWeight: 0.2,
+    packageSize: 'Small',
+    shippingAvailable: true,
+    estimatedShippingDays: 2,
+    features: ['Always-On Retina', 'ECG', 'Blood oxygen', 'Crash detection'],
+    accessories: ['Magnetic charger', 'Sport band', 'Box'],
+    warranty: 'AppleCare until 2024',
+    batteryHealth: '100%',
+    functionalStatus: 'Perfect condition',
+    specifications: {
+      size: '45mm',
+      connectivity: 'GPS',
+      color: 'Midnight'
+    },
+    petFreeHome: true,
+    smokeFreeHome: true,
+    returnsAccepted: true,
+    returnWindowDays: 3,
+    tags: ['apple watch', 'smartwatch', 'series 8', 'fitness'],
+    isSecondHand: true,
+    images: [
+      'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9',
+      'https://images.unsplash.com/photo-1579586337278-3befd40fd17a'
+    ],
+    tradePreference: 'iPad, AirPods Pro, tech accessories',
+  },
+
+  // ===== HOME ITEMS =====
+  {
+    title: 'L-Shaped Gaming Desk - Siyah - 150x120cm',
+    description: 'Modern gaming masası, L-şekilli tasarım. Çok az kullanıldı, mükemmel durumda.',
+    category: 'Home & Living',
+    subcategory: 'Desks',
+    brand: 'Generic',
+    condition: 'Good',
+    conditionDescription: 'Hafif kullanım izleri, sağlam ve fonksiyonel',
+    conditionRating: 8,
+    originalPrice: 5500,
+    price: 4200,
+    discountPercentage: 24,
+    shippingAvailable: false,
+    localPickupOnly: true,
+    meetupLocation: 'Kadıköy - need transport',
+    itemWeight: 35,
+    measurements: { length: '150cm', width: '120cm', height: '75cm' },
+    material: 'MDF with carbon fiber texture',
+    features: ['Cable management', 'Large surface area', 'Sturdy legs'],
+    season: 'All Season',
+    occasion: 'Everyday',
+    petFreeHome: true,
+    smokeFreeHome: true,
+    tags: ['gaming desk', 'l-shaped', 'furniture', 'office'],
+    isSecondHand: true,
+    images: [
+      'https://images.unsplash.com/photo-1593062096033-9a26b09da705',
+      'https://images.unsplash.com/photo-1551836022-deb4988cc6c0'
+    ],
+    tradePreference: 'Gaming chair, monitor, PC parts',
+  },
+
+  // ===== BOOKS & ENTERTAINMENT =====
+  {
+    title: 'Haruki Murakami Kitap Seti - 10 Kitap',
+    description: 'Haruki Murakami\'nin en popüler romanlarından oluşan set. Tüm kitaplar okunmuş ama çok iyi durumda.',
+    category: 'Books, Movies & Music',
+    subcategory: 'Fiction',
+    brand: 'Various Publishers',
+    condition: 'Good',
+    conditionDescription: 'Okunmuş ancak temiz ve bakımlı',
+    conditionRating: 8,
+    wearLevel: 'Read once',
+    originalPrice: 1200,
+    price: 800,
+    discountPercentage: 33,
+    firmPrice: false,
+    lowestAcceptedOffer: 700,
+    freeShipping: false,
+    shippingCost: 40,
+    itemWeight: 3,
+    packageSize: 'Medium',
+    shippingAvailable: true,
+    estimatedShippingDays: 4,
+    features: ['10 books', 'Turkish translations', 'Complete set'],
+    petFreeHome: true,
+    smokeFreeHome: true,
+    allergenFreeHome: true,
+    returnsAccepted: true,
+    returnWindowDays: 7,
+    tags: ['haruki murakami', 'books', 'fiction', 'literature', 'set'],
+    seoKeywords: ['murakami kitapları', 'roman seti'],
+    isSecondHand: true,
+    images: [
+      'https://images.unsplash.com/photo-1512820790803-83ca734da794',
+      'https://images.unsplash.com/photo-1497633762265-9d179a990aa6'
+    ],
+    tradePreference: 'Other book sets, literature',
+  },
+
+  // Continue with more items to reach 50...
 ];
 
 // ========================================
@@ -536,6 +789,16 @@ async function seedWorldClassItems() {
       // Generate item ID
       const itemRef = db.collection('items').doc();
       
+      // Random city with coordinates
+      const cityData = CITIES[Math.floor(Math.random() * CITIES.length)];
+      const district = cityData.districts[Math.floor(Math.random() * cityData.districts.length)];
+      
+      // Add small random offset to coordinates (±0.01 degrees, ~1km)
+      const latOffset = (Math.random() - 0.5) * 0.02;
+      const lonOffset = (Math.random() - 0.5) * 0.02;
+      const latitude = cityData.lat + latOffset;
+      const longitude = cityData.lon + lonOffset;
+      
       // Prepare complete item data
       const completeItem = {
         ...itemData,
@@ -551,9 +814,13 @@ async function seedWorldClassItems() {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         
-        // Random city
-        city: CITIES[Math.floor(Math.random() * CITIES.length)],
-        location: CITIES[Math.floor(Math.random() * CITIES.length)],
+        // Location with real coordinates
+        city: cityData.name,
+        district: district,
+        location: cityData.name,
+        latitude: latitude,
+        longitude: longitude,
+        fullAddress: `${district}, ${cityData.name}, Türkiye`,
         
         // Seller info
         sellerResponseTime: 'Usually responds within 1 hour',
