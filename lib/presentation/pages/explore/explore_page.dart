@@ -12,6 +12,9 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../widgets/items/item_card_widget.dart';
 import '../items/item_detail_page.dart';
+import '../../blocs/search/search_bloc.dart';
+import '../../blocs/search/search_event.dart';
+import '../../blocs/search/search_state.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -22,7 +25,9 @@ class ExplorePage extends StatefulWidget {
 
 class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final TextEditingController _searchController = TextEditingController();
   String? _selectedCategory;
+  bool _showSearchResults = false;
   
   final List<Map<String, dynamic>> _categories = [
     {'name': 'All', 'icon': Icons.apps, 'color': Colors.purple},
@@ -45,14 +50,19 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: NestedScrollView(
+    return BlocProvider(
+      create: (_) => getIt<SearchBloc>(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             _buildAppBar(),
@@ -65,6 +75,11 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
             _buildCategoriesTab(),
             _buildTrendingTab(),
             _buildNearbyTab(),
+          ],
+        ),
+      ),
+            // Search results overlay
+            if (_showSearchResults) _buildSearchResultsOverlay(),
           ],
         ),
       ),
@@ -95,7 +110,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
       actions: [
         IconButton(
           icon: const Icon(Icons.search, color: Colors.black87),
-          onPressed: _showSearchDialog,
+          onPressed: () => _showSearchDialog(),
         ),
         IconButton(
           icon: const Icon(Icons.filter_list, color: Colors.black87),
@@ -421,13 +436,12 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
   }
 
   void _showSearchDialog() {
-    final searchController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Search Items'),
         content: TextField(
-          controller: searchController,
+          controller: _searchController,
           autofocus: true,
           decoration: const InputDecoration(
             hintText: 'Search for items...',
@@ -448,8 +462,8 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              if (searchController.text.trim().isNotEmpty) {
-                _performSearch(searchController.text.trim());
+              if (_searchController.text.trim().isNotEmpty) {
+                _performSearch(_searchController.text.trim());
               }
             },
             child: const Text('Search'),
@@ -461,16 +475,200 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
 
   void _performSearch(String query) {
     print('🔍 Searching for: $query');
-    // Switch to trending tab to show results
-    _tabController.animateTo(1);
-    // Trigger search with actual query
-    context.read<ItemBloc>().add(SearchItems(query));
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Searching for "$query"...'),
-        duration: const Duration(seconds: 2),
-        backgroundColor: AppColors.primary,
+    setState(() => _showSearchResults = true);
+    context.read<SearchBloc>().add(SearchQueryChanged(query));
+  }
+
+  Widget _buildSearchResultsOverlay() {
+    return Positioned.fill(
+      child: GestureDetector(
+        onTap: () => setState(() => _showSearchResults = false),
+        child: Container(
+          color: Colors.black.withOpacity(0.5),
+          child: GestureDetector(
+            onTap: () {},
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+                child: BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchLoading) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(40),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    if (state is SearchError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                              const SizedBox(height: 16),
+                              Text(state.message, style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state is SearchEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.search_off, size: 48, color: AppColors.textSecondary),
+                              const SizedBox(height: 16),
+                              Text('Sonuç bulunamadı', style: AppTextStyles.titleMedium),
+                              const SizedBox(height: 8),
+                              Text('"${state.query}" için ürün bulunamadı', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary), textAlign: TextAlign.center),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state is SearchLoaded) {
+                      return Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceVariant,
+                              border: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text('${state.totalCount} sonuç bulundu', style: AppTextStyles.titleSmall),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    setState(() => _showSearchResults = false);
+                                    _searchController.clear();
+                                    context.read<SearchBloc>().add(const SearchCleared());
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: state.items.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final item = state.items[index];
+                                return _buildSearchResultItem(item);
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchResultItem(ItemEntity item) {
+    return GestureDetector(
+      onTap: () {
+        setState(() => _showSearchResults = false);
+        Navigator.pushNamed(context, '/item-detail', arguments: {'itemId': item.id});
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(AppDimensions.radiusMedium),
+                bottomLeft: Radius.circular(AppDimensions.radiusMedium),
+              ),
+              child: item.images.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: item.images.first,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(
+                        color: AppColors.surfaceVariant,
+                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                      errorWidget: (_, __, ___) => Container(
+                        color: AppColors.surfaceVariant,
+                        child: const Icon(Icons.image_not_supported),
+                      ),
+                    )
+                  : Container(
+                      width: 80,
+                      height: 80,
+                      color: AppColors.surfaceVariant,
+                      child: const Icon(Icons.image),
+                    ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(item.title, style: AppTextStyles.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    Text(item.description, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(item.category, style: AppTextStyles.bodySmall.copyWith(color: AppColors.primary, fontSize: 11)),
+                        ),
+                        const Spacer(),
+                        Icon(Icons.chevron_right, size: 20, color: AppColors.textSecondary),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
