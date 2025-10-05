@@ -14,6 +14,7 @@ class SecondaryButton extends StatefulWidget {
   final bool isLoading;
   final bool isFullWidth;
   final IconData? icon;
+  final Widget? customIcon;
   final double? width;
   final double? height;
   final bool enableUltraEffects;
@@ -25,6 +26,7 @@ class SecondaryButton extends StatefulWidget {
     this.isLoading = false,
     this.isFullWidth = true,
     this.icon,
+    this.customIcon,
     this.width,
     this.height,
     this.enableUltraEffects = true,
@@ -161,7 +163,14 @@ class _SecondaryButtonState extends State<SecondaryButton>
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                if (widget.icon != null) ...[
+                                if (widget.customIcon != null) ...[
+                                  SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: widget.customIcon,
+                                  ),
+                                  const SizedBox(width: 8),
+                                ] else if (widget.icon != null) ...[
                                   Icon(
                                     widget.icon,
                                     size: 20,
