@@ -86,7 +86,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
               ),
               infoWindow: InfoWindow(
                 title: item.title,
-                snippet: '${item.price.toStringAsFixed(0)} ₺',
+                snippet: '${item.price?.toStringAsFixed(0) ?? '0'} ₺',
               ),
               onTap: () {
                 setState(() => _selectedItem = item);
@@ -284,7 +284,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_selectedItem!.price.toStringAsFixed(0)} ₺',
+                              '${_selectedItem!.price?.toStringAsFixed(0) ?? '0'} ₺',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

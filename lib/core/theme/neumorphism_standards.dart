@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 /// Nöromorfik tasarım standartları ve sabitleri
 /// Pinterest seviyesi ultra derin nöromorfik efektler için gelişmiş sistem
@@ -725,13 +726,13 @@ class NeumorphismStandards {
 
     for (int i = 0; i < holographicColors.length; i++) {
       final double phase = (time + i * 0.2) % 1.0;
-      final double intensity = (sin(phase * 2 * pi) + 1) * 0.5;
+      final double intensity = (math.sin(phase * 2 * math.pi) + 1) * 0.5;
 
       holographic.add(BoxShadow(
         color: holographicColors[i].withOpacity(0.3 * intensity),
         offset: Offset(
-          cos(phase * 2 * pi) * 10,
-          sin(phase * 2 * pi) * 10,
+          math.cos(phase * 2 * math.pi) * 10,
+          math.sin(phase * 2 * math.pi) * 10,
         ),
         blurRadius: 15 + intensity * 10,
         spreadRadius: -5,
@@ -775,7 +776,7 @@ class NeumorphismStandards {
     final List<BoxShadow> fire = [];
 
     for (int i = 0; i < colors.length; i++) {
-      final double flicker = (sin(DateTime.now().millisecondsSinceEpoch * 0.01 + i) + 1) * 0.5;
+      final double flicker = (math.sin(DateTime.now().millisecondsSinceEpoch * 0.01 + i) + 1) * 0.5;
       final double intensity = flickerIntensity * flicker;
 
       fire.add(BoxShadow(
@@ -885,14 +886,14 @@ class NeumorphismStandards {
 
     // Kozmik enerji katmanları
     for (int i = 0; i < colors.length; i++) {
-      final double energy = cosmicEnergy * (sin(DateTime.now().millisecondsSinceEpoch * 0.002 + i * 0.5) + 1) * 0.5;
-      final double angle = (i * 2 * pi) / colors.length;
+      final double energy = cosmicEnergy * (math.sin(DateTime.now().millisecondsSinceEpoch * 0.002 + i * 0.5) + 1) * 0.5;
+      final double angle = (i * 2 * math.pi) / colors.length;
 
       cosmic.add(BoxShadow(
         color: colors[i].withOpacity(0.4 * energy),
         offset: Offset(
-          cos(angle) * 15 * energy,
-          sin(angle) * 15 * energy,
+          math.cos(angle) * 15 * energy,
+          math.sin(angle) * 15 * energy,
         ),
         blurRadius: 20 + energy * 10,
         spreadRadius: -5,
@@ -918,14 +919,14 @@ class NeumorphismStandards {
 
     // Rüya katmanları
     for (int i = 0; i < colors.length; i++) {
-      final double wave = sin(DateTime.now().millisecondsSinceEpoch * 0.001 + i * 0.8) * dreaminess;
+      final double wave = math.sin(DateTime.now().millisecondsSinceEpoch * 0.001 + i * 0.8) * dreaminess;
       dream.add(BoxShadow(
         color: colors[i].withOpacity(0.2 * dreaminess),
         offset: Offset(
           wave * 10,
-          cos(i * 0.5) * wave * 8,
+          math.cos(i * 0.5) * wave * 8,
         ),
-        blurRadius: 15 + abs(wave) * 10,
+        blurRadius: 15 + wave.abs() * 10,
         spreadRadius: -3,
       ));
     }
@@ -949,14 +950,14 @@ class NeumorphismStandards {
 
     // Aurora dalga katmanları
     for (int i = 0; i < colors.length; i++) {
-      final double wave = sin(DateTime.now().millisecondsSinceEpoch * 0.0005 + i * 0.3) * auroraIntensity;
+      final double wave = math.sin(DateTime.now().millisecondsSinceEpoch * 0.0005 + i * 0.3) * auroraIntensity;
       aurora.add(BoxShadow(
         color: colors[i].withOpacity(0.3 * auroraIntensity),
         offset: Offset(
           wave * 20,
-          sin(i * 0.7) * wave * 15,
+          math.sin(i * 0.7) * wave * 15,
         ),
-        blurRadius: 25 + abs(wave) * 15,
+        blurRadius: 25 + wave.abs() * 15,
         spreadRadius: -5,
       ));
     }
@@ -975,13 +976,13 @@ class NeumorphismStandards {
     // Kristal yüzey katmanları
     for (int i = 0; i < 12; i++) {
       final double facet = clarity * (1 - i * 0.08);
-      final double angle = (i * 2 * pi) / 12;
+      final double angle = (i * 2 * math.pi) / 12;
 
       crystal.add(BoxShadow(
         color: cc.withOpacity(0.4 * facet),
         offset: Offset(
-          cos(angle) * i * 2,
-          sin(angle) * i * 2,
+          math.cos(angle) * i * 2,
+          math.sin(angle) * i * 2,
         ),
         blurRadius: 3 + i,
         spreadRadius: -1,
@@ -1030,7 +1031,7 @@ class NeumorphismStandards {
 
     // Plazma enerji katmanları
     for (int i = 0; i < colors.length; i++) {
-      final double energy = plasmaEnergy * (sin(DateTime.now().millisecondsSinceEpoch * 0.01 + i * 2) + 1) * 0.5;
+      final double energy = plasmaEnergy * (math.sin(DateTime.now().millisecondsSinceEpoch * 0.01 + i * 2) + 1) * 0.5;
       plasma.add(BoxShadow(
         color: colors[i].withOpacity(0.5 * energy),
         offset: Offset(
@@ -1055,7 +1056,7 @@ class NeumorphismStandards {
 
     // Kuantum durum katmanları
     for (int i = 0; i < 8; i++) {
-      final double probability = quantumState * (sin(DateTime.now().millisecondsSinceEpoch * 0.02 + i * pi / 4) + 1) * 0.5;
+      final double probability = quantumState * (math.sin(DateTime.now().millisecondsSinceEpoch * 0.02 + i * math.pi / 4) + 1) * 0.5;
       quantum.add(BoxShadow(
         color: qc.withOpacity(0.3 * probability),
         offset: Offset(
@@ -1116,12 +1117,12 @@ class NeumorphismStandards {
 
     // Boyutlar arası katmanlar
     for (int i = 0; i < colors.length; i++) {
-      final double shift = dimensionalShift * (sin(DateTime.now().millisecondsSinceEpoch * 0.003 + i * pi / 2) + 1) * 0.5;
+      final double shift = dimensionalShift * (math.sin(DateTime.now().millisecondsSinceEpoch * 0.003 + i * math.pi / 2) + 1) * 0.5;
       interdimensional.add(BoxShadow(
         color: colors[i].withOpacity(0.4 * shift),
         offset: Offset(
           (i - colors.length / 2) * 12 * shift,
-          cos(i * pi / 3) * 10 * shift,
+          math.cos(i * math.pi / 3) * 10 * shift,
         ),
         blurRadius: 20 + shift * 15,
         spreadRadius: -5,
