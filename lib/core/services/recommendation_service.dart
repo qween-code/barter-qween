@@ -1,3 +1,4 @@
+import 'dart:math' show cos, pi;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/entities/item_entity.dart';
@@ -391,6 +392,3 @@ class RecommendationService {
     }
   }
 }
-
-// Missing import for cos function
-import 'dart:math' show cos, pi;

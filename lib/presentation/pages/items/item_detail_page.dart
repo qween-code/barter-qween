@@ -26,6 +26,8 @@ import '../../widgets/barter/barter_condition_summary_card.dart';
 import '../../widgets/media/advanced_image_gallery.dart';
 import '../../widgets/loading/skeleton_loading.dart';
 import '../../widgets/map/item_map_view.dart';
+import '../../widgets/recommendations/similar_items_carousel.dart';
+import '../../widgets/recommendations/more_from_seller_widget.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
@@ -573,6 +575,22 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                         ),
                       ],
                     ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // More from Seller
+                  MoreFromSellerWidget(
+                    sellerId: item.ownerId,
+                    sellerName: item.ownerName,
+                    excludeItemId: item.id,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Similar Items
+                  SimilarItemsCarousel(
+                    sourceItem: item,
                   ),
 
                   const SizedBox(height: 32),
