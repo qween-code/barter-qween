@@ -15,6 +15,10 @@ import '../items/item_detail_page.dart';
 import '../../blocs/search/search_bloc.dart';
 import '../../blocs/search/search_event.dart';
 import '../../blocs/search/search_state.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_state.dart';
+import '../../widgets/recommendations/trending_items_widget.dart';
+import '../../widgets/recommendations/recently_viewed_widget.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -232,6 +236,10 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
   }
 
   Widget _buildTrendingTab() {
+    // Get current user ID for recently viewed
+    final authState = context.read<AuthBloc>().state;
+    final userId = authState is AuthAuthenticated ? authState.user.uid : null;
+
     return BlocBuilder<ItemBloc, ItemState>(
       builder: (context, state) {
         if (state is ItemLoading) {
@@ -247,16 +255,58 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
             onRefresh: () async {
               context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
             },
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  
+                  // Trending Items Widget
+                  const TrendingItemsWidget(
+                    maxItems: 10,
+                    daysBack: 7,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Recently Viewed (if user is authenticated)
+                  if (userId != null) ...[
+                    RecentlyViewedWidget(
+                      userId: userId,
+                      maxItems: 10,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // All Items Grid
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'All Items',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: state.items.length,
+                      itemBuilder: (context, index) => ItemCardWidget(item: state.items[index]),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
-              itemCount: state.items.length,
-              itemBuilder: (context, index) => ItemCardWidget(item: state.items[index]),
             ),
           );
         }
