@@ -51,6 +51,43 @@ Firebase Firestore:
     └── 8 other users: 1 item each
 ```
 
+---
+
+## 🚀 **PHASE 2 - AI & ANALYTICS** 🔄 (IN PROGRESS)
+
+**Status:** Started Jan 16, 2025  
+**Target:** 8 weeks (8 major features)  
+**Documentation:** PHASE_2_AI_ANALYTICS_PLAN.md
+
+### **Tier 1 - Critical Features** (Weeks 1-5):
+1. ⏳ **AI Search Optimization** - Typo tolerance, location ranking, instant search
+2. ⏳ **Smart Price Recommendations** - ML-based pricing suggestions
+3. ⏳ **Similar Items Recommendations** - Visual + category + location matching
+4. ⏳ **Engagement Analytics** - Heatmaps, funnels, cohorts, A/B testing
+
+### **Tier 2 - Important Features** (Weeks 5-8):
+5. ⏳ **Personalized Feed** - "For You" algorithm (Depop style)
+6. ⏳ **Auto-Listing Assistant** - Photo → Title + Description (Mercari style)
+7. ⏳ **Smart Notifications** - Price drops, new items, re-engagement
+
+### **Competitor Analysis Completed:**
+- ✅ Depop (For You algorithm, two-tower model)
+- ✅ OfferUp (Smart pricing, location-based)
+- ✅ Vinted (Vespa search, <100ms recommendations)
+- ✅ Poshmark (Smart List AI, Posh Lens)
+- ✅ Mercari (15-second listings, neural pricing)
+- ✅ Facebook Marketplace (location-first ranking)
+- ✅ Algolia vs Elasticsearch (search optimization)
+- ✅ Analytics tools (UXCam, Mixpanel, Firebase)
+
+### **Technical Stack:**
+```
+Search: Firestore → Algolia (upgrade planned)
+ML/AI: TensorFlow Lite + Vertex AI
+Analytics: Firebase Analytics + Mixpanel
+Notifications: FCM (existing)
+```
+
 ---  
 **Reference Documents:**
 - Boğaziçi Barter Brief (C:\Users\qw\Desktop\barter_qween\docs\Bogaziçi Barter Mobil Uygulama Brief Dosyası.pdf)
