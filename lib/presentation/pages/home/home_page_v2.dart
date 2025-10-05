@@ -14,6 +14,10 @@ import '../../../core/theme/neumorphism_standards.dart';
 import '../../../core/theme/neumorphism_animations.dart';
 import '../../../core/theme/neuromorphic_effects.dart';
 import '../../widgets/neumorphism/neuromorphic_icon.dart';
+import '../../blocs/search/search_bloc.dart';
+import '../../blocs/search/search_event.dart';
+import '../../blocs/search/search_state.dart';
+import '../../../core/di/injection.dart';
 
 /// Ultra Advanced Neumorphism Home Page
 /// Pinterest seviyesi yüzen nöromorfik navigasyon ve sinematik geçişler
@@ -29,8 +33,10 @@ class _HomePageV2State extends State<HomePageV2>
     with TickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'all';
   bool _showSearchBar = false;
+  bool _showSearchResults = false;
 
   // Ultra nöromorfik animasyon controller'ları
   late AnimationController _floatingNavController;
@@ -51,6 +57,7 @@ class _HomePageV2State extends State<HomePageV2>
   void dispose() {
     _tabController.dispose();
     _scrollController.dispose();
+    _searchController.dispose();
     _disposeNeumorphismAnimations();
     super.dispose();
   }
@@ -94,9 +101,11 @@ class _HomePageV2State extends State<HomePageV2>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
+    return BlocProvider(
+      create: (_) => getIt<SearchBloc>(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
         children: [
           // Ana içerik
           CustomScrollView(
@@ -130,7 +139,11 @@ class _HomePageV2State extends State<HomePageV2>
 
           // Sinematik search overlay
           if (_showSearchBar) _buildCinematicSearchOverlay(),
+
+          // Search results overlay
+          if (_showSearchResults) _buildSearchResultsOverlay(),
         ],
+      ),
       ),
     );
   }
@@ -651,9 +664,282 @@ class _HomePageV2State extends State<HomePageV2>
         opacity: _showSearchBar ? 1.0 : 0.0,
         duration: AppDimensions.animation6,
         child: NeumorphismSearchBarCollection.heroSearchBar(
-          controller: TextEditingController(),
-          onSearch: (query) {},
+          controller: _searchController,
+          onSearch: _handleSearch,
           hintText: 'Ne arıyorsunuz?',
+        ),
+      ),
+    );
+  }
+
+  /// Handle search query
+  void _handleSearch(String query) {
+    if (query.trim().isEmpty) {
+      setState(() => _showSearchResults = false);
+      context.read<SearchBloc>().add(const SearchCleared());
+      return;
+    }
+
+    setState(() => _showSearchResults = true);
+    context.read<SearchBloc>().add(SearchQueryChanged(query));
+  }
+
+  /// Search results overlay
+  Widget _buildSearchResultsOverlay() {
+    return Positioned.fill(
+      top: 200,
+      child: GestureDetector(
+        onTap: () => setState(() => _showSearchResults = false),
+        child: Container(
+          color: Colors.black.withOpacity(0.5),
+          child: GestureDetector(
+            onTap: () {}, // Prevent close when tapping results
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+                child: BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchLoading) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(40),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    if (state is SearchError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                size: 48,
+                                color: AppColors.error,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                state.message,
+                                style: AppTextStyles.bodyMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state is SearchEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(40),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.search_off,
+                                size: 48,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Sonuç bulunamadı',
+                                style: AppTextStyles.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '"${state.query}" için ürün bulunamadı',
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state is SearchLoaded) {
+                      return Column(
+                        children: [
+                          // Header
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceVariant,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: AppColors.border,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '${state.totalCount} sonuç bulundu',
+                                    style: AppTextStyles.titleSmall,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    setState(() => _showSearchResults = false);
+                                    _searchController.clear();
+                                    context.read<SearchBloc>().add(const SearchCleared());
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Results list
+                          Expanded(
+                            child: ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: state.items.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final item = state.items[index];
+                                return _buildSearchResultItem(item);
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build search result item card
+  Widget _buildSearchResultItem(ItemEntity item) {
+    return GestureDetector(
+      onTap: () {
+        setState(() => _showSearchResults = false);
+        Navigator.pushNamed(
+          context,
+          '/item-detail',
+          arguments: {'itemId': item.id},
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            // Item image
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(AppDimensions.radiusMedium),
+                bottomLeft: Radius.circular(AppDimensions.radiusMedium),
+              ),
+              child: item.images.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: item.images.first,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(
+                        color: AppColors.surfaceVariant,
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (_, __, ___) => Container(
+                        color: AppColors.surfaceVariant,
+                        child: const Icon(Icons.image_not_supported),
+                      ),
+                    )
+                  : Container(
+                      width: 80,
+                      height: 80,
+                      color: AppColors.surfaceVariant,
+                      child: const Icon(Icons.image),
+                    ),
+            ),
+            // Item details
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: AppTextStyles.titleSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      item.description,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            item.category,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.primary,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
