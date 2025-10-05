@@ -8,8 +8,14 @@ const db = admin.firestore();
 import { calculateBarterMatch, getMatchingItemsForCondition } from './barter/matchingAlgorithm';
 import { onItemCreated, onItemUpdated } from './barter/itemTriggers';
 
+// Import negotiation functions
+import { onCounterOfferCreated, onNegotiationUpdated } from './negotiation/negotiationTriggers';
+
 // Export barter functions
 export { calculateBarterMatch, getMatchingItemsForCondition, onItemCreated, onItemUpdated };
+
+// Export negotiation functions
+export { onCounterOfferCreated, onNegotiationUpdated };
 
 async function getUserTokens(userId: string): Promise<string[]> {
   const tokensSnap = await db.collection('users').doc(userId).collection('fcmTokens').get();

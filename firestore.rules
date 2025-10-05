@@ -100,6 +100,32 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.reviewerId;
     }
+
+    // Negotiations - participants can read/write
+    match /negotiations/{negotiationId} {
+      allow read: if request.auth != null && 
+                    (request.auth.uid == resource.data.initiatorId || 
+                     request.auth.uid == resource.data.receiverId);
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.initiatorId;
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.initiatorId || 
+                       request.auth.uid == resource.data.receiverId);
+      allow delete: if false; // Server-only via Cloud Functions
+    }
+
+    // Counter offers - offerer and target can read/write
+    match /counter_offers/{counterOfferId} {
+      allow read: if request.auth != null && 
+                    (request.auth.uid == resource.data.offererId || 
+                     request.auth.uid == resource.data.targetUserId);
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.offererId;
+      allow update: if request.auth != null && 
+                      request.auth.uid == resource.data.offererId &&
+                      request.resource.data.status in ['accepted', 'rejected'];
+      allow delete: if false; // Server-only via Cloud Functions
+    }
     
     // Notifications - users can only read/write their own notifications
     // New (subcollection under user):

@@ -12,6 +12,7 @@ class RouteNames {
   static const String editItem = '/edit-item';
   static const String notifications = '/notifications';
   static const String barterMatches = '/barter-matches';
+  static const String negotiation = '/negotiation';
   // Sprint 7: Monetization routes
   static const String premiumPlans = '/premium-plans';
   static const String paymentSelection = '/payment-selection';

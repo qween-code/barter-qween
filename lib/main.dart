@@ -27,6 +27,7 @@ import 'presentation/pages/forgot_password_page.dart';
 import 'presentation/pages/items/create_item_page.dart';
 import 'presentation/pages/items/edit_item_page.dart';
 import 'presentation/pages/barter/barter_matches_page.dart';
+import 'presentation/pages/negotiation/negotiation_page.dart';
 import 'domain/entities/item_entity.dart';
 import 'domain/entities/payment_entity.dart';
 import 'domain/entities/subscription_entity.dart';
@@ -145,6 +146,20 @@ return GlobalBlocProviders(
               final itemEntity = args['item'] as ItemEntity;
               return MaterialPageRoute(
                 builder: (context) => BarterMatchesPage(sourceItem: itemEntity),
+              );
+            }
+            return MaterialPageRoute(builder: (_) => const LoginPage());
+          case RouteNames.negotiation:
+            if (s.arguments is Map<String, dynamic>) {
+              final args = s.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (context) => NegotiationPage(
+                  negotiationId: args['negotiationId'] as String,
+                  sourceItemId: args['sourceItemId'] as String,
+                  targetItemId: args['targetItemId'] as String,
+                  otherUserId: args['otherUserId'] as String,
+                  otherUserName: args['otherUserName'] as String,
+                ),
               );
             }
             return MaterialPageRoute(builder: (_) => const LoginPage());

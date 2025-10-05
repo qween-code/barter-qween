@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onTradeCompleted = exports.onItemUnfavorited = exports.onItemFavorited = exports.onItemViewCreated = exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = exports.onItemUpdated = exports.onItemCreated = exports.getMatchingItemsForCondition = exports.calculateBarterMatch = void 0;
+exports.onTradeCompleted = exports.onItemUnfavorited = exports.onItemFavorited = exports.onItemViewCreated = exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = exports.onNegotiationUpdated = exports.onCounterOfferCreated = exports.onItemUpdated = exports.onItemCreated = exports.getMatchingItemsForCondition = exports.calculateBarterMatch = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
@@ -45,6 +45,10 @@ Object.defineProperty(exports, "getMatchingItemsForCondition", { enumerable: tru
 const itemTriggers_1 = require("./barter/itemTriggers");
 Object.defineProperty(exports, "onItemCreated", { enumerable: true, get: function () { return itemTriggers_1.onItemCreated; } });
 Object.defineProperty(exports, "onItemUpdated", { enumerable: true, get: function () { return itemTriggers_1.onItemUpdated; } });
+// Import negotiation functions
+const negotiationTriggers_1 = require("./negotiation/negotiationTriggers");
+Object.defineProperty(exports, "onCounterOfferCreated", { enumerable: true, get: function () { return negotiationTriggers_1.onCounterOfferCreated; } });
+Object.defineProperty(exports, "onNegotiationUpdated", { enumerable: true, get: function () { return negotiationTriggers_1.onNegotiationUpdated; } });
 async function getUserTokens(userId) {
     const tokensSnap = await db.collection('users').doc(userId).collection('fcmTokens').get();
     if (tokensSnap.empty)
