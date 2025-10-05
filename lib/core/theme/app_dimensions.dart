@@ -492,6 +492,17 @@ class AppDimensions {
   static double get iconMedium => icon24;
   static double get iconLarge => icon32;
   static double get appBarElevation => appBarElevation4;
+  
+  // Missing properties for app_theme.dart compatibility
+  static double get buttonPaddingHorizontal => buttonPadding6;
+  static double get buttonBorderWidth => buttonBorderWidth2;
+  static double get inputPaddingHorizontal => inputPadding8;
+  static double get inputPaddingVertical => inputPadding8;
+  static double get inputBorderWidth => inputBorderWidth2;
+  static double get inputBorderWidthFocused => inputBorderWidth3;
+  static double get cardElevation => cardElevation2;
+  static double get bottomNavElevation => bottomNavElevation4;
+  static double get dividerThickness => dividerThickness2;
 
   // ============================================
   // UTILITY METHODS
