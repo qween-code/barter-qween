@@ -1,65 +1,132 @@
-# 🌟 Barter Qween
+# 🎯 Barter Qween - Modern Takas Platformu
 
-**A Modern Flutter Barter/Trading App with Firebase Backend**
+**Versiyon:** v1.2.0-beta  
+**Platform:** Flutter (iOS & Android)  
+**Firebase Project:** bogazici-barter
 
-Trade items you don't need for things you want! Barter Qween is a feature-rich mobile application built with Flutter and Firebase, following Clean Architecture principles and BLoC state management.
-
-[![Flutter](https://img.shields.io/badge/Flutter-3.27.1-02569B?logo=flutter)](https://flutter.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.24.3-02569B?logo=flutter)](https://flutter.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-Latest-FFCA28?logo=firebase)](https://firebase.google.com)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+
+Barter Qween, Boğaziçi Üniversitesi öğrencileri için geliştirilmiş modern bir takas/değiş tokuş platformudur. Gerçek zamanlı mesajlaşma, akıllı bildirimler ve Pinterest-seviyesi neuromorphic tasarım ile kullanıcı deneyimini üst seviyeye taşır.
 
 ---
 
-## 📱 Features
+## ✨ Öne Çıkan Özellikler
 
-### ✅ **Authentication**
-- 📧 Email/Password registration and login
-- 🔑 Google Sign-In integration  
-- 🔐 Password reset via email
-- 👤 Persistent authentication state
+### Core Features
+- 🔐 **Güvenli Kimlik Doğrulama** - Email/Password + Google Sign-in
+- 📦 **Ürün Yönetimi** - Çoklu fotoğraf desteği ile ürün ekleme/düzenleme
+- 🤝 **Akıllı Takas Sistemi** - Teklif gönderme, kabul/red, durum takibi
+- 💬 **Gerçek Zamanlı Chat** - Anlık mesajlaşma ve bildirimler
+- ⭐ **Rating Sistemi** - 5 yıldız + yorum ile güvenilirlik
+- 🔔 **Push Notifications** - Cloud Functions ile otomatik bildirimler
+- 🎨 **Ultra-Deep Neuromorphic UI** - Pinterest-level design system (16-24 layers)
+- 📊 **Analytics Tracking** - Firebase Analytics entegrasyonu
 
-### ✅ **Profile Management**
-- 👤 View and edit user profile
-- 📸 Avatar upload with Firebase Storage
-- 📊 User statistics display
-- ✏️ Update personal information
+### Technical Excellence
+- 🏗️ **Clean Architecture** - Domain, Data, Presentation layers
+- 🔄 **BLoC Pattern** - Advanced state management
+- 💉 **Dependency Injection** - GetIt + Injectable
+- 🔥 **Firebase Backend** - Firestore, Functions, FCM, Storage
+- 🚀 **Performance Optimized** - 60 FPS animations, efficient rendering
 
-### ✅ **Item Management**
-- ➕ Create items with multiple images (up to 5)
-- 📝 Full CRUD operations
-- 🔍 Real-time search (title, description, category)
-- 🏷️ Category filtering (7 categories)
-- 📱 Grid and list view toggle
-- 📤 Share items via social media
-- 🎨 Beautiful image carousel
-- 🖼️ Cached images for performance
-- ✏️ Edit and delete your items
+---
 
-### ✅ **Trade System**
-- 📬 Send trade offers with messages
-- 📨 Received and sent trade tabs
-- ✅ Accept trade offers
-- ❌ Reject trade offers  
-- 🚫 Cancel sent offers
-- 🔔 **Pending trade count badge**
-- 📄 Detailed trade view with timeline
-- 🎨 Status badges (6 states)
+## 📚 Dokümantasyon
 
-### ✅ **Advanced Features**
-- 🔍 **Advanced Filtering** (Price range, condition, distance, status)
-- ⭐ **User Rating System** with review comments
-- 🌍 **Multi-language Support** (English & Turkish)
-- 🔔 **Push Notifications** (Trade updates, messages)
-- 📄 **Legal Pages** (Terms of Service, Privacy Policy)
+### 📖 Ana Dökümanlar
+1. **[PROJECT_MASTER.md](PROJECT_MASTER.md)** - Proje durumu, müşteri gereksinimleri, kritik sorunlar
+2. **[DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)** - Setup, architecture, testing, deployment
+3. **[FEATURE_ROADMAP.md](FEATURE_ROADMAP.md)** - Sprint plan, upcoming features, timeline
+4. **[DESIGN_SYSTEM.md](DESIGN_SYSTEM.md)** - Neuromorphic design system, UI components
+5. **[docs/Bogaziçi Barter Mobil Uygulama Brief Dosyası.pdf](docs/)** - Müşteri brief (referans)
 
-### ✅ **UI/UX**
-- 🏠 5-tab dashboard
-- 🎨 Material Design 3
-- 🌈 Custom color scheme
-- 📱 Responsive layouts
-- ✨ Smooth animations
-- 🔄 Pull-to-refresh
-- 🌐 Internationalization (i18n)
+### 🔗 Hızlı Linkler
+- **Firebase Console:** https://console.firebase.google.com/project/bogazici-barter
+- **GitHub Repo:** https://github.com/qween-code/barter-qween
+- **Analytics:** https://console.firebase.google.com/project/bogazici-barter/analytics
+
+---
+
+## 🚀 Hızlı Başlangıç
+
+### Gereksinimler
+
+```bash
+Flutter SDK 3.24.3+
+Dart SDK 3.5.3+
+Firebase CLI
+Android Studio / VS Code
+Git
+```
+
+### Kurulum
+
+#### 1. Projeyi Klonla
+```bash
+git clone https://github.com/qween-code/barter-qween.git
+cd barter_qween
+```
+
+#### 2. Dependencies Yükle
+```bash
+flutter pub get
+```
+
+#### 3. Firebase Yapılandır
+```bash
+# Firebase CLI kurulu değilse
+npm install -g firebase-tools
+
+# Firebase'e giriş yap
+firebase login
+
+# Projeyi seç
+firebase use bogazici-barter
+```
+
+#### 4. Uygulamayı Çalıştır
+```bash
+# Android emulator'da çalıştır
+flutter run
+
+# Belirli cihazda çalıştır
+flutter run -d <device-id>
+```
+
+> **Detaylı setup için:** [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)
+
+---
+
+## 📊 Proje Durumu
+
+### Geliştirme İstatistikleri
+| Metrik | Değer |
+|--------|-------|
+| **Kod Satırı** | ~45,000 lines |
+| **Sayfalar** | 35+ screens |
+| **Widget'lar** | 24+ custom widgets |
+| **Firebase Functions** | 4 deployed |
+| **Analytics Events** | 12+ tracked |
+| **Test Coverage** | Expanding (target: 60%+) |
+
+### Son Commit
+```
+388edf7 - fix: Resolve 943 compilation errors in neuromorphic design system
+         (1,158 → 215 errors, %81.4 azalma)
+```
+
+### 🔴 Kritik Sorunlar (Çözülüyor)
+- Profile page crash
+- Favorites not working
+- Search functionality broken
+- Firestore permission issues
+- 215 compilation warnings (deprecated APIs)
+
+**Production Readiness:** 65% → Kritik bug'lar aktif olarak çözülüyor
+
+> **Detaylı durum için:** [PROJECT_MASTER.md](PROJECT_MASTER.md)
 
 ---
 
@@ -67,261 +134,220 @@ Trade items you don't need for things you want! Barter Qween is a feature-rich m
 
 ```
 lib/
-├── core/                      # Core functionality
-│   ├── di/                    # Dependency Injection
-│   ├── error/                 # Error handling
-│   ├── routes/                # Navigation
-│   └── theme/                 # App theme
+├── core/              # Framework & utilities
+│   ├── di/            # Dependency Injection (GetIt)
+│   ├── error/         # Error handling
+│   ├── routes/        # Navigation
+│   ├── services/      # App services (Analytics, FCM, AdMob)
+│   └── theme/         # Neuromorphic design system
 │
-├── domain/                    # Business Logic
-│   ├── entities/              # Domain models
-│   ├── repositories/          # Repository interfaces
-│   └── usecases/              # Use cases
+├── domain/            # Business Logic
+│   ├── entities/      # Domain models
+│   ├── repositories/  # Repository interfaces
+│   └── usecases/      # Use cases
 │
-├── data/                      # Data Layer
-│   ├── models/                # Data models
-│   ├── datasources/           # Remote data sources
-│   └── repositories/          # Repository implementations
+├── data/              # Data Layer
+│   ├── models/        # Data models
+│   ├── datasources/   # Remote data sources (Firebase)
+│   └── repositories/  # Repository implementations
 │
-└── presentation/              # UI Layer
-    ├── blocs/                 # BLoC state management
-    ├── pages/                 # UI pages (14 pages)
-    └── widgets/               # Reusable widgets
+└── presentation/      # UI Layer
+    ├── blocs/         # BLoC state management
+    ├── pages/         # UI screens (35+)
+    └── widgets/       # Reusable widgets (24+)
 ```
 
-**Design Patterns:** BLoC, Repository, Dependency Injection, Clean Architecture
+**Pattern:** Clean Architecture + BLoC  
+**DI:** GetIt + Injectable  
+**Backend:** Firebase (Firestore, Functions, Auth, Storage, FCM)
+
+> **Architecture detayları:** [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)
 
 ---
 
-## 🚀 Quick Start
+## 🎨 Design System
 
-### Prerequisites
-- Flutter 3.27.1+
-- Dart 3.x+
-- Firebase account
+### Neuromorphic UI Highlights
+- ✨ **16-24 layer shadows** - Ultra-deep 3D perception
+- 🎯 **40+ shadow presets** - Ready-to-use combinations
+- 💡 **Dynamic lighting** - Real-time light calculations
+- 🎬 **Smooth animations** - 60 FPS interactions
+- 📊 **Performance profiler** - Built-in monitoring tools
 
-### Installation
+### Key Components
+```dart
+// Primary Button (12-layer shadows)
+PrimaryButton(
+  text: 'Takas Teklifi Gönder',
+  onPressed: () {},
+  enableUltraEffects: true,
+)
 
+// Neuromorphic Container
+NeumorphismContainer(
+  type: NeumorphismType.ultraOutset,
+  depth: CardDepth.deep,
+  enableParallax: true,
+  child: YourWidget(),
+)
+
+// Neuromorphic Icon (4-layer with glow)
+NeuromorphicIcon(
+  icon: Icons.favorite,
+  enableGlow: true,
+  glowColor: AppColors.primary,
+)
+```
+
+> **Complete design system:** [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md)
+
+---
+
+## 📅 Roadmap
+
+### Current Sprint (Ocak 2025)
+**Sprint 11: Bug Fixes & Stabilization**
+- [x] Neuromorphic design errors (%81.4 fix)
+- [ ] Profile page crash fix
+- [ ] Favorites functionality fix
+- [ ] Search functionality fix
+- [ ] Unit test coverage (60%+)
+
+### Upcoming Features
+- **Sprint 12:** Production preparation (release build, store listing)
+- **Sprint 13:** Advanced search (Algolia integration)
+- **Sprint 14:** Social features (follow system, comments)
+- **Sprint 15:** Premium features V2
+- **Sprint 16:** AI integration (recommendations, image recognition)
+
+### Production Timeline
+- **Şubat 2025:** Soft launch (beta testers)
+- **Şubat 2025:** Beta launch (500-1000 users)
+- **Mart 2025:** Public launch (Play Store)
+- **Nisan 2025+:** Growth & scaling
+
+> **Complete roadmap:** [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md)
+
+---
+
+## 🧪 Testing & Build
+
+### Analysis
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/barter-qween.git
-cd barter-qween/barter_qween
-
-# Install dependencies
-flutter pub get
-
-# Generate DI code
-flutter pub run build_runner build --delete-conflicting-outputs
-
-# Run the app
-flutter run
-```
-
-### Firebase Setup
-
-1. Create Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Add Android/iOS apps
-3. Download config files:
-   - Android: `android/app/google-services.json`
-   - iOS: `ios/Runner/GoogleService-Info.plist`
-4. Enable services:
-   - Authentication (Email, Google)
-   - Cloud Firestore
-   - Firebase Storage
-   - Firebase Messaging
-5. Deploy rules & indexes:
-   ```bash
-   firebase deploy --only firestore:rules,firestore:indexes,storage
-   ```
-
----
-
-## 📦 Tech Stack
-
-| Category | Technologies |
-|----------|-------------|
-| **Framework** | Flutter 3.27.1, Dart 3.x |
-| **State Management** | flutter_bloc, equatable |
-| **DI** | get_it, injectable |
-| **Backend** | Firebase (Auth, Firestore, Storage, Messaging) |
-| **Images** | cached_network_image, image_picker |
-| **Utilities** | dartz, intl, share_plus |
-
----
-
-## 📊 Statistics
-
-| Metric | Value |
-|--------|-------|
-| Total Pages | 14 |
-| Lines of Code | ~10,000+ |
-| Compilation Errors | 0 |
-| Debug APK | 43 MB |
-| Release APK | 26 MB |
-| Build Time | ~45s |
-
----
-
-## 📸 App Structure
-
-### Pages Overview
-
-```
-📱 App Pages (14 total)
-├── Auth (4)
-│   ├── Login
-│   ├── Register  
-│   ├── Forgot Password
-│   └── Onboarding
-├── Profile (2)
-│   ├── View Profile
-│   └── Edit Profile
-├── Items (4)
-│   ├── Item List (with search)
-│   ├── Item Detail
-│   ├── Create Item
-│   └── Edit Item
-├── Trades (3)
-│   ├── Trades List (Received/Sent)
-│   ├── Send Trade Offer
-│   └── Trade Detail
-└── Dashboard (1)
-    └── Main Dashboard (5 tabs)
-```
-
----
-
-## 🔥 Firebase Collections
-
-### **users**
-```js
-{
-  uid, email, displayName, photoUrl,
-  phoneNumber, bio, location,
-  createdAt, updatedAt
-}
-```
-
-### **items**
-```js
-{
-  id, title, description, category,
-  images[], condition, ownerId, ownerName,
-  city, status, createdAt, updatedAt,
-  viewCount, favoriteCount
-}
-```
-
-### **tradeOffers**
-```js
-{
-  id, fromUserId, toUserId,
-  fromUserName, toUserName,
-  offeredItemId, offeredItemTitle, offeredItemImages[],
-  requestedItemId, requestedItemTitle, requestedItemImages[],
-  message, status,
-  createdAt, updatedAt
-}
-```
-
----
-
-## ✨ Recent Updates
-
-### v1.1.0 (October 2025) - Feature Complete!
-- ✅ **Advanced Filtering System** with price, condition, distance filters
-- ✅ **User Rating & Review System** for better trust
-- ✅ **Multi-language Support** (English & Turkish i18n)
-- ✅ **Push Notifications Framework** with FCM integration
-- ✅ **Legal Pages** (Terms of Service & Privacy Policy)
-- ✅ Fixed UI overflow issues
-- ✅ Improved navigation and bloc providers
-- ✅ Added comprehensive debug logging
-
-### v1.0.0 (October 2025) - Initial Release
-- ✅ Complete authentication system
-- ✅ Full item CRUD operations
-- ✅ Trade offer system
-- ✅ Profile management
-- ✅ Real-time search functionality
-- ✅ Fixed all compilation errors
-
----
-
-## 🎯 Development Phases
-
-| Phase | Feature | Status |
-|-------|---------|--------|
-| 0 | Authentication | ✅ 100% |
-| 1 | Profile Management | ✅ 100% |
-| 2 | Item Management | ✅ 100% |
-| 3 | Trade System | ✅ 100% |
-| 4 | Advanced Filtering | ✅ 100% |
-| 5 | User Rating System | ✅ 100% |
-| 6 | Multi-language Support | ✅ 100% |
-| 7 | Push Notifications | ✅ 100% |
-| 8 | Legal Pages | ✅ 100% |
-| 9 | Chat System (Framework Ready) | 💡 80% |
-| 10 | Phone Authentication (Framework Ready) | 💡 80% |
-| 11 | Photo Trade Verification (Placeholder) | ⏳ Planned |
-
----
-
-## 🧪 Testing
-
-```bash
-# Analyze code
+# Code analysis
 flutter analyze
 
-# Build debug
-flutter build apk --debug
-
-# Build release
-flutter build apk --release
-
-# Run tests (when added)
-flutter test
+# Current status: 215 warnings (mostly deprecated APIs)
 ```
 
-**Current Status:** 0 errors, 78 info warnings (style suggestions)
+### Build
+```bash
+# Debug build
+flutter build apk --debug
+
+# Release build  
+flutter build apk --release
+
+# Install to device
+adb install build/app/outputs/flutter-apk/app-release.apk
+```
+
+### Testing
+```bash
+# Run tests
+flutter test
+
+# With coverage
+flutter test --coverage
+```
+
+> **Testing guide:** [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md#testing-guide)
+
+---
+
+## 🔥 Firebase Services
+
+### Active Services
+- ✅ **Authentication** - Email/Password, Google Sign-in
+- ✅ **Firestore** - Real-time database
+- ✅ **Storage** - Image uploads
+- ✅ **Cloud Functions** - 4 deployed functions
+  - `onMessageCreated` - New message notifications
+  - `onTradeOfferCreated` - Trade offer notifications
+  - `onTradeOfferUpdated` - Trade status updates
+  - `onNotificationCreated` - General notifications
+- ✅ **Analytics** - 12+ custom events
+- ✅ **Cloud Messaging (FCM)** - Push notifications
+
+### Firestore Collections
+```
+users/                    # User profiles
+  └── {uid}/
+      ├── notifications/  # User notifications
+      └── fcmTokens/      # Push tokens
+items/                    # Trading items
+tradeOffers/              # Trade proposals
+conversations/            # Chat conversations
+messages/                 # Chat messages
+ratings/                  # User ratings
+```
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the project
-2. Create feature branch (`git checkout -b feature/Amazing`)
-3. Commit changes (`git commit -m 'Add Amazing'`)
-4. Push branch (`git push origin feature/Amazing`)
-5. Open Pull Request
+### Development Workflow
+1. Branch oluştur: `feature/your-feature` veya `fix/bug-description`
+2. Commit yap: Conventional commits kullan
+3. Push yap: `git push origin feature/your-feature`
+4. Pull request aç
+
+### Commit Convention
+```bash
+feat:     # Yeni özellik
+fix:      # Bug fix
+docs:     # Dokümantasyon
+style:    # Code style (formatting)
+refactor: # Code refactoring
+test:     # Test ekleme/güncelleme
+chore:    # Build/tool changes
+
+# Örnekler
+feat: Add chat notification system
+fix: Resolve profile page crash
+docs: Update setup instructions
+```
 
 ---
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file
+This project is proprietary software developed for Boğaziçi University.
+
+**© 2025 Barter Qween. All rights reserved.**
 
 ---
 
-## 👨‍💻 Credits
+## 📞 İletişim
+
+- **GitHub:** https://github.com/qween-code/barter-qween
+- **Firebase:** https://console.firebase.google.com/project/bogazici-barter
+- **Issues:** https://github.com/qween-code/barter-qween/issues
+
+---
+
+## 🌟 Credits
 
 Built with ❤️ using:
-- Flutter & Dart
-- Firebase
-- BLoC Pattern
-- Clean Architecture
-- Material Design 3
+- **Flutter & Dart** - Cross-platform framework
+- **Firebase** - Backend infrastructure
+- **BLoC Pattern** - State management
+- **Clean Architecture** - Code organization
+- **Neuromorphic Design** - Pinterest-level UI/UX
 
 ---
 
-## 📞 Support
+**Son Güncelleme:** 5 Ocak 2025  
+**Status:** 🟡 **Development In Progress** - Production hazırlık aşamasında
 
-- 📧 Email: support@barterqween.com
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/barter-qween/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/barter-qween/discussions)
-
----
-
-**🌟 Star this repo if you find it useful!**
-
-*Version 1.0.0 - October 2025*
+🌟 **Star this repo if you find it useful!**
