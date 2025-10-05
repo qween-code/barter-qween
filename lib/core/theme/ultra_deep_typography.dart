@@ -1,3 +1,4 @@
+import 'dart:math' show sin, cos, pi, abs;
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'neumorphism_standards.dart';

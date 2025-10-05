@@ -43,11 +43,16 @@ class RecommendationService {
           .toList();
 
       // Filter by price range (±30%)
-      final priceMin = sourceItem.price * 0.7;
-      final priceMax = sourceItem.price * 1.3;
+      final sourcePrice = sourceItem.price;
+      if (sourcePrice == null) return [];
+      
+      final priceMin = sourcePrice * 0.7;
+      final priceMax = sourcePrice * 1.3;
       
       final filteredItems = items.where((item) {
-        return item.price >= priceMin && item.price <= priceMax;
+        final itemPrice = item.price;
+        if (itemPrice == null) return false;
+        return itemPrice >= priceMin && itemPrice <= priceMax;
       }).toList();
 
       // Filter by distance if both have coordinates
@@ -69,8 +74,10 @@ class RecommendationService {
 
       // Sort by price similarity
       nearbyItems.sort((a, b) {
-        final diffA = (a.price - sourceItem.price).abs();
-        final diffB = (b.price - sourceItem.price).abs();
+        final aPrice = a.price ?? 0.0;
+        final bPrice = b.price ?? 0.0;
+        final diffA = (aPrice - sourcePrice).abs();
+        final diffB = (bPrice - sourcePrice).abs();
         return diffA.compareTo(diffB);
       });
 
