@@ -168,5 +168,72 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow create, update, delete: if false; // Server-only
     }
+    
+    // ==========================================
+    // PHASE 3: BARTER & NEGOTIATION SYSTEM
+    // ==========================================
+    
+    // Barter Matches - users can read matches for their items
+    match /barter_matches/{matchId} {
+      allow read: if request.auth != null && 
+                      (request.auth.uid == resource.data.sourceUserId || 
+                       request.auth.uid == resource.data.targetUserId);
+      allow create: if false; // Server-only via Cloud Functions
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.sourceUserId || 
+                       request.auth.uid == resource.data.targetUserId) &&
+                      // Only allow status updates
+                      request.resource.data.keys().hasOnly(['isSeen', 'isDismissed', 'seenAt', 'dismissedAt']);
+      allow delete: if false; // Server-only
+    }
+    
+    // Negotiations - participants can read/write
+    match /negotiations/{negotiationId} {
+      allow read: if request.auth != null && 
+                      (request.auth.uid == resource.data.initiatorId || 
+                       request.auth.uid == resource.data.responderId);
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.initiatorId;
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.initiatorId || 
+                       request.auth.uid == resource.data.responderId);
+      allow delete: if false; // Keep for audit trail
+    }
+    
+    // Counter Offers - negotiation participants can read/write
+    match /counter_offers/{counterOfferId} {
+      allow read: if request.auth != null && 
+                      (request.auth.uid == resource.data.offererId || 
+                       request.auth.uid == resource.data.targetUserId);
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.offererId;
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.offererId || 
+                       request.auth.uid == resource.data.targetUserId) &&
+                      // Only allow response updates
+                      request.resource.data.keys().hasOnly(['status', 'respondedAt', 'responseMessage']);
+      allow delete: if false; // Keep for audit trail
+    }
+    
+    // Trades - participants can read/write
+    match /trades/{tradeId} {
+      allow read: if request.auth != null && 
+                      (request.auth.uid == resource.data.initiatorId || 
+                       request.auth.uid == resource.data.receiverId);
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.initiatorId;
+      allow update: if request.auth != null && 
+                      (request.auth.uid == resource.data.initiatorId || 
+                       request.auth.uid == resource.data.receiverId);
+      allow delete: if false; // Keep for audit trail
+    }
+    
+    // Item Views - for analytics and matching
+    match /item_views/{viewId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+                      request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false; // Server-only
+    }
   }
 }

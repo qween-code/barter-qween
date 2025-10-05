@@ -13,7 +13,7 @@ const db = admin.firestore();
 const auth = admin.auth();
 const bucket = admin.storage().bucket();
 
-// Test users data
+// Test users data with barter conditions
 const users = [
   {
     email: 'alice.johnson@example.com',
@@ -119,7 +119,17 @@ const items = [
       'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=800',
       'https://images.unsplash.com/photo-1632633728024-e1fd4beec1b6?w=800'
     ],
-    status: 'active'
+    status: 'active',
+    price: 25000,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['MacBook', 'iPad', 'Samsung Galaxy'],
+      categories: ['Electronics'],
+      condition: 'Like New',
+      maxCashDifferential: 5000,
+      meetupLocation: 'Besiktas, Istanbul',
+      notes: 'Looking for high-end electronics in similar condition'
+    }
   },
   {
     title: 'Harry Potter Complete Book Set',
@@ -179,7 +189,17 @@ const items = [
       'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800',
       'https://images.unsplash.com/photo-1545127398-14699f92334b?w=800'
     ],
-    status: 'active'
+    status: 'active',
+    price: 8000,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['AirPods Pro', 'iPhone', 'Smart Watch'],
+      categories: ['Electronics'],
+      condition: 'Like New',
+      maxCashDifferential: 2000,
+      meetupLocation: 'Beyoglu, Istanbul',
+      notes: 'Open to electronics trades'
+    }
   },
   {
     title: 'LEGO Architecture Set - Taj Mahal',

@@ -26,7 +26,7 @@ import 'presentation/pages/register_page.dart';
 import 'presentation/pages/forgot_password_page.dart';
 import 'presentation/pages/items/create_item_page.dart';
 import 'presentation/pages/items/edit_item_page.dart';
-import 'presentation/pages/barter/barter_match_results_page.dart';
+import 'presentation/pages/barter/barter_matches_page.dart';
 import 'domain/entities/item_entity.dart';
 import 'domain/entities/payment_entity.dart';
 import 'domain/entities/subscription_entity.dart';
@@ -144,10 +144,7 @@ return GlobalBlocProviders(
               final args = s.arguments as Map<String, dynamic>;
               final itemEntity = args['item'] as ItemEntity;
               return MaterialPageRoute(
-                builder: (context) => BlocProvider(
-                  create: (_) => getIt<BarterBloc>(),
-                  child: BarterMatchResultsPage(sourceItem: itemEntity),
-                ),
+                builder: (context) => BarterMatchesPage(sourceItem: itemEntity),
               );
             }
             return MaterialPageRoute(builder: (_) => const LoginPage());

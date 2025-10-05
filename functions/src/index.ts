@@ -6,9 +6,10 @@ const db = admin.firestore();
 
 // Import barter functions
 import { calculateBarterMatch, getMatchingItemsForCondition } from './barter/matchingAlgorithm';
+import { onItemCreated, onItemUpdated } from './barter/itemTriggers';
 
 // Export barter functions
-export { calculateBarterMatch, getMatchingItemsForCondition };
+export { calculateBarterMatch, getMatchingItemsForCondition, onItemCreated, onItemUpdated };
 
 async function getUserTokens(userId: string): Promise<string[]> {
   const tokensSnap = await db.collection('users').doc(userId).collection('fcmTokens').get();

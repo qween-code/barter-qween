@@ -23,11 +23,18 @@ import '../profile/user_profile_page.dart';
 import '../trades/send_trade_offer_page.dart';
 import 'edit_item_page.dart';
 import '../../widgets/barter/barter_condition_summary_card.dart';
+import '../../widgets/barter/barter_match_card.dart';
 import '../../widgets/media/advanced_image_gallery.dart';
 import '../../widgets/loading/skeleton_loading.dart';
 import '../../widgets/map/item_map_view.dart';
 import '../../widgets/recommendations/similar_items_carousel.dart';
 import '../../widgets/recommendations/more_from_seller_widget.dart';
+import '../../blocs/barter/barter_match_cubit.dart';
+import '../../blocs/barter/barter_match_state.dart';
+import '../../blocs/barter/barter_match_event.dart';
+import '../../../core/theme/neumorphism_standards.dart';
+import '../../../core/theme/neuromorphic_effects.dart';
+import '../../../core/theme/neumorphism_animations.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
@@ -67,7 +74,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: NeumorphismStandards.baseColor,
       body: BlocBuilder<ItemBloc, ItemState>(
         builder: (context, state) {
           if (state is ItemLoading) {
@@ -112,7 +119,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       slivers: [
         _buildImageCarousel(item),
         _buildItemInfo(item),
-        if (item.barterCondition != null)
+        if (item.barterCondition != null) ...[
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -122,6 +129,106 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               ),
             ),
           ),
+          // Barter Matches Section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Suggested Matches',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => _findMatches(context, item),
+                        child: const Text('View All'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  // Barter matches will be loaded here
+                  BlocProvider(
+                    create: (context) => getIt<BarterMatchCubit>()
+                      ..add(LoadBarterMatches(item.id)),
+                    child: BlocBuilder<BarterMatchCubit, BarterMatchState>(
+                      builder: (context, state) {
+                        if (state is BarterMatchLoading) {
+                          return const SkeletonLoading();
+                        } else if (state is BarterMatchLoaded && state.matches.isNotEmpty) {
+                          // Track matches viewed
+                          getIt<AnalyticsService>().logBarterMatchesViewed(
+                            sourceItemId: item.id,
+                            matchCount: state.matches.length,
+                            source: 'item_detail',
+                          );
+                          
+                          return Column(
+                            children: state.matches.take(3).map((match) => 
+                              BarterMatchCard(
+                                match: match,
+                                onTap: () => _viewMatchDetails(context, match),
+                                onSendOffer: () => _sendOffer(context, match),
+                                onDismiss: () => _dismissMatch(context, match),
+                              ),
+                            ).toList(),
+                          );
+                        } else if (state is BarterMatchError) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.red[50],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red[200]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_outline, color: Colors.red[600]),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Failed to load matches: ${state.message}',
+                                    style: TextStyle(color: Colors.red[700]),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.info_outline, color: Colors.grey[600]),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'No matches found. Try adjusting your barter conditions.',
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -134,6 +241,39 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       arguments: {
         'item': item,
       },
+    );
+  }
+
+  void _viewMatchDetails(BuildContext context, dynamic match) {
+    // Navigate to match details page
+    // TODO: Implement match details page
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Match details view coming soon!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _sendOffer(BuildContext context, dynamic match) {
+    // Navigate to send offer page with match details
+    // TODO: Implement send offer with match context
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Send offer functionality coming soon!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _dismissMatch(BuildContext context, dynamic match) {
+    // Dismiss the match
+    // TODO: Implement match dismissal
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Match dismissed'),
+        duration: Duration(seconds: 1),
+      ),
     );
   }
 

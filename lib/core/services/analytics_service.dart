@@ -49,6 +49,151 @@ class AnalyticsService {
     });
   }
 
+  // ========================================
+  // PHASE 3: BARTER & NEGOTIATION EVENTS
+  // ========================================
+
+  /// Track when user views barter matches
+  Future<void> logBarterMatchesViewed({
+    required String sourceItemId,
+    required int matchCount,
+    String? source,
+  }) async {
+    await _analytics.logEvent(name: 'barter_matches_viewed', parameters: {
+      'source_item_id': sourceItemId,
+      'match_count': matchCount,
+      'source': source ?? 'item_detail',
+    });
+  }
+
+  /// Track when user clicks on a specific match
+  Future<void> logBarterMatchClicked({
+    required String matchId,
+    required String sourceItemId,
+    required String targetItemId,
+    required double matchScore,
+    required String matchQuality,
+  }) async {
+    await _analytics.logEvent(name: 'barter_match_clicked', parameters: {
+      'match_id': matchId,
+      'source_item_id': sourceItemId,
+      'target_item_id': targetItemId,
+      'match_score': matchScore,
+      'match_quality': matchQuality,
+    });
+  }
+
+  /// Track when user sends an offer from a match
+  Future<void> logBarterOfferSent({
+    required String matchId,
+    required String sourceItemId,
+    required String targetItemId,
+    required double matchScore,
+    double? cashDifferential,
+  }) async {
+    await _analytics.logEvent(name: 'barter_offer_sent', parameters: {
+      'match_id': matchId,
+      'source_item_id': sourceItemId,
+      'target_item_id': targetItemId,
+      'match_score': matchScore,
+      'cash_differential': cashDifferential,
+    });
+  }
+
+  /// Track when user dismisses a match
+  Future<void> logBarterMatchDismissed({
+    required String matchId,
+    required String sourceItemId,
+    required String targetItemId,
+    required double matchScore,
+  }) async {
+    await _analytics.logEvent(name: 'barter_match_dismissed', parameters: {
+      'match_id': matchId,
+      'source_item_id': sourceItemId,
+      'target_item_id': targetItemId,
+      'match_score': matchScore,
+    });
+  }
+
+  /// Track negotiation started
+  Future<void> logNegotiationStarted({
+    required String negotiationId,
+    required String tradeOfferId,
+    required String initiatorId,
+    required String responderId,
+  }) async {
+    await _analytics.logEvent(name: 'negotiation_started', parameters: {
+      'negotiation_id': negotiationId,
+      'trade_offer_id': tradeOfferId,
+      'initiator_id': initiatorId,
+      'responder_id': responderId,
+    });
+  }
+
+  /// Track counter-offer sent
+  Future<void> logCounterOfferSent({
+    required String counterOfferId,
+    required String negotiationId,
+    required String offererId,
+    required String counterOfferType,
+    double? proposedCash,
+  }) async {
+    await _analytics.logEvent(name: 'counter_offer_sent', parameters: {
+      'counter_offer_id': counterOfferId,
+      'negotiation_id': negotiationId,
+      'offerer_id': offererId,
+      'counter_offer_type': counterOfferType,
+      'proposed_cash': proposedCash,
+    });
+  }
+
+  /// Track counter-offer accepted
+  Future<void> logCounterOfferAccepted({
+    required String counterOfferId,
+    required String negotiationId,
+    required String accepterId,
+  }) async {
+    await _analytics.logEvent(name: 'counter_offer_accepted', parameters: {
+      'counter_offer_id': counterOfferId,
+      'negotiation_id': negotiationId,
+      'accepter_id': accepterId,
+    });
+  }
+
+  /// Track counter-offer rejected
+  Future<void> logCounterOfferRejected({
+    required String counterOfferId,
+    required String negotiationId,
+    required String rejecterId,
+    String? rejectionReason,
+  }) async {
+    await _analytics.logEvent(name: 'counter_offer_rejected', parameters: {
+      'counter_offer_id': counterOfferId,
+      'negotiation_id': negotiationId,
+      'rejecter_id': rejecterId,
+      'rejection_reason': rejectionReason,
+    });
+  }
+
+  /// Track trade completed
+  Future<void> logTradeCompleted({
+    required String tradeId,
+    required String initiatorId,
+    required String receiverId,
+    required String initiatorItemId,
+    required String receiverItemId,
+    double? cashDifferential,
+  }) async {
+    await _analytics.logEvent(name: 'trade_completed', parameters: {
+      'trade_id': tradeId,
+      'initiator_id': initiatorId,
+      'receiver_id': receiverId,
+      'initiator_item_id': initiatorItemId,
+      'receiver_item_id': receiverItemId,
+      'cash_differential': cashDifferential,
+    });
+  }
+
   Future<void> logMessageSent({required String conversationId}) async {
     await _analytics.logEvent(name: 'message_sent', parameters: {
       'conversation_id': conversationId,
@@ -471,5 +616,95 @@ class AnalyticsService {
       name: eventName,
       parameters: parameters,
     );
+  }
+
+  // ========================================
+  // PHASE 3: BARTER ML & FILTERING EVENTS
+  // ========================================
+
+  /// Track ML training data for barter matching
+  Future<void> logBarterMatchMLData({
+    required Map<String, dynamic> features,
+    required Map<String, dynamic> metadata,
+    required double finalScore,
+  }) async {
+    await _analytics.logEvent(name: 'barter_match_ml_data', parameters: {
+      'features': features,
+      'metadata': metadata,
+      'final_score': finalScore,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+  }
+
+  /// Track filter usage for barter matches
+  Future<void> logBarterFiltersUsed({
+    required String sourceItemId,
+    required Map<String, dynamic> filters,
+    required int resultCount,
+    required int originalCount,
+  }) async {
+    await _analytics.logEvent(name: 'barter_filters_used', parameters: {
+      'source_item_id': sourceItemId,
+      'filters': filters,
+      'result_count': resultCount,
+      'original_count': originalCount,
+      'filter_efficiency': resultCount / originalCount,
+    });
+  }
+
+  /// Track sorting preferences for barter matches
+  Future<void> logBarterSortingUsed({
+    required String sourceItemId,
+    required String sortCriteria,
+    required bool ascending,
+    required int matchCount,
+  }) async {
+    await _analytics.logEvent(name: 'barter_sorting_used', parameters: {
+      'source_item_id': sourceItemId,
+      'sort_criteria': sortCriteria,
+      'ascending': ascending,
+      'match_count': matchCount,
+    });
+  }
+
+  /// Track match quality preferences
+  Future<void> logBarterMatchQualityPreference({
+    required String sourceItemId,
+    required String quality,
+    required int matchCount,
+  }) async {
+    await _analytics.logEvent(name: 'barter_match_quality_preference', parameters: {
+      'source_item_id': sourceItemId,
+      'quality': quality,
+      'match_count': matchCount,
+    });
+  }
+
+  /// Track distance preferences for barter matches
+  Future<void> logBarterDistancePreference({
+    required String sourceItemId,
+    required double maxDistance,
+    required int matchCount,
+  }) async {
+    await _analytics.logEvent(name: 'barter_distance_preference', parameters: {
+      'source_item_id': sourceItemId,
+      'max_distance': maxDistance,
+      'match_count': matchCount,
+    });
+  }
+
+  /// Track cash differential preferences
+  Future<void> logBarterCashPreference({
+    required String sourceItemId,
+    required bool prefersCashDifferential,
+    required String? cashDirection,
+    required int matchCount,
+  }) async {
+    await _analytics.logEvent(name: 'barter_cash_preference', parameters: {
+      'source_item_id': sourceItemId,
+      'prefers_cash_differential': prefersCashDifferential,
+      'cash_direction': cashDirection,
+      'match_count': matchCount,
+    });
   }
 }

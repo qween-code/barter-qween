@@ -5,6 +5,9 @@ import '../../../core/di/injection.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/neumorphism_standards.dart';
+import '../../../core/theme/neuromorphic_effects.dart';
+import '../../../core/theme/neumorphism_animations.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/item/item_bloc.dart';
@@ -63,7 +66,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
     return BlocProvider(
       create: (_) => getIt<SearchBloc>(),
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: NeumorphismStandards.baseColor,
         body: Stack(
           children: [
             NestedScrollView(
@@ -95,30 +98,47 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
       expandedHeight: 120,
       floating: false,
       pinned: true,
-      backgroundColor: Colors.white,
+      backgroundColor: NeumorphismStandards.baseColor,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
-        title: const Text(
+        title: Text(
           'Explore',
           style: TextStyle(
-            color: Colors.black87,
+            color: NeumorphismStandards.ultraDark,
             fontWeight: FontWeight.bold,
           ),
         ),
         background: Container(
           decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
+            color: NeumorphismStandards.baseColor,
+            boxShadow: NeumorphismStandards.neumorphismInsetShadow,
           ),
         ),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.search, color: Colors.black87),
-          onPressed: () => _showSearchDialog(),
+        Container(
+          margin: const EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: NeumorphismStandards.baseColor,
+            boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          ),
+          child: IconButton(
+            icon: Icon(Icons.search, color: NeumorphismStandards.softDark),
+            onPressed: () => _showSearchDialog(),
+          ),
         ),
-        IconButton(
-          icon: const Icon(Icons.filter_list, color: Colors.black87),
-          onPressed: _showFilterSheet,
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: NeumorphismStandards.baseColor,
+            boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          ),
+          child: IconButton(
+            icon: Icon(Icons.filter_list, color: NeumorphismStandards.softDark),
+            onPressed: _showFilterSheet,
+          ),
         ),
       ],
     );

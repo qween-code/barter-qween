@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onTradeCompleted = exports.onItemUnfavorited = exports.onItemFavorited = exports.onItemViewCreated = exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = exports.getMatchingItemsForCondition = exports.calculateBarterMatch = void 0;
+exports.onTradeCompleted = exports.onItemUnfavorited = exports.onItemFavorited = exports.onItemViewCreated = exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = exports.onItemUpdated = exports.onItemCreated = exports.getMatchingItemsForCondition = exports.calculateBarterMatch = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
@@ -42,6 +42,9 @@ const db = admin.firestore();
 const matchingAlgorithm_1 = require("./barter/matchingAlgorithm");
 Object.defineProperty(exports, "calculateBarterMatch", { enumerable: true, get: function () { return matchingAlgorithm_1.calculateBarterMatch; } });
 Object.defineProperty(exports, "getMatchingItemsForCondition", { enumerable: true, get: function () { return matchingAlgorithm_1.getMatchingItemsForCondition; } });
+const itemTriggers_1 = require("./barter/itemTriggers");
+Object.defineProperty(exports, "onItemCreated", { enumerable: true, get: function () { return itemTriggers_1.onItemCreated; } });
+Object.defineProperty(exports, "onItemUpdated", { enumerable: true, get: function () { return itemTriggers_1.onItemUpdated; } });
 async function getUserTokens(userId) {
     const tokensSnap = await db.collection('users').doc(userId).collection('fcmTokens').get();
     if (tokensSnap.empty)
