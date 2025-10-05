@@ -62,10 +62,10 @@ class AdMobService {
       listener: listener ??
           BannerAdListener(
             onAdLoaded: (ad) {
-              print('Banner ad loaded');
+              // Debug: Banner ad loaded
             },
             onAdFailedToLoad: (ad, error) {
-              print('Banner ad failed to load: $error');
+              // Debug: Banner ad failed to load: $error
               ad.dispose();
             },
           ),
@@ -91,7 +91,7 @@ class AdMobService {
               _interstitialAd = null;
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
-              print('Interstitial ad failed to show: $error');
+              // Debug: Interstitial ad failed to show: $error
               ad.dispose();
               _interstitialAd = null;
             },
@@ -99,7 +99,7 @@ class AdMobService {
           onAdLoaded();
         },
         onAdFailedToLoad: (error) {
-          print('Interstitial ad failed to load: $error');
+          // Debug: Interstitial ad failed to load: $error
           if (onAdFailedToLoad != null) {
             onAdFailedToLoad();
           }
@@ -113,9 +113,8 @@ class AdMobService {
     if (_interstitialAd != null) {
       await _interstitialAd!.show();
       _interstitialAd = null;
-    } else {
-      print('Interstitial ad not loaded yet');
     }
+    // Debug: Interstitial ad not loaded yet
   }
 
   /// Load rewarded ad
@@ -137,7 +136,7 @@ class AdMobService {
               _rewardedAd = null;
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
-              print('Rewarded ad failed to show: $error');
+              // Debug: Rewarded ad failed to show: $error
               ad.dispose();
               _rewardedAd = null;
             },
@@ -145,7 +144,7 @@ class AdMobService {
           onAdLoaded();
         },
         onAdFailedToLoad: (error) {
-          print('Rewarded ad failed to load: $error');
+          // Debug: Rewarded ad failed to load: $error
           if (onAdFailedToLoad != null) {
             onAdFailedToLoad();
           }
@@ -170,10 +169,9 @@ class AdMobService {
       
       _rewardedAd = null;
       return rewardEarned;
-    } else {
-      print('Rewarded ad not loaded yet');
-      return false;
     }
+    // Debug: Rewarded ad not loaded yet
+    return false;
   }
 
   /// Dispose ads
@@ -219,15 +217,16 @@ class AdHelper {
   }
 
   /// Get adaptive banner size
-  static Future<AdSize> getAdaptiveBannerSize() async {
-    return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-      await MobileAds.instance.getRequestConfiguration().then(
-        (config) => MediaQuery.of(
-          // Bu context gerekli, gerçek uygulamada BuildContext ile çağırılmalı
-          throw UnimplementedError('Use with BuildContext'),
-        ).size.width.toInt(),
-      ),
-    ) ?? AdSize.banner;
+  /// For simple implementation, returns standard banner size
+  /// For adaptive sizing, pass BuildContext to calculate screen width
+  static Future<AdSize> getAdaptiveBannerSize([BuildContext? context]) async {
+    if (context != null) {
+      final screenWidth = MediaQuery.of(context).size.width.toInt();
+      return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(screenWidth)
+          ?? AdSize.banner;
+    }
+    // Fallback to standard banner when no context provided
+    return AdSize.banner;
   }
 }
 

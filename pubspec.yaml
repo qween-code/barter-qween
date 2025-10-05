@@ -95,6 +95,8 @@ dev_dependencies:
   # Code Generation
   build_runner: ^2.4.6
   injectable_generator: ^2.4.1
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

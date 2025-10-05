@@ -1,4 +1,4 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
+﻿import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:io' show Platform;
@@ -42,12 +42,12 @@ class FCMService {
 
     // Get FCM token
     _fcmToken = await _firebaseMessaging.getToken();
-    print('📱 FCM Token: $_fcmToken');
+    // DEBUG: print('📱 FCM Token: $_fcmToken');
 
     // Listen to token refresh
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       _fcmToken = newToken;
-      print('📱 FCM Token refreshed: $newToken');
+      // DEBUG: print('📱 FCM Token refreshed: $newToken');
       // TODO: Update token in Firestore
     });
 
@@ -79,7 +79,7 @@ class FCMService {
       provisional: false,
     );
 
-    print('📱 Permission status: ${settings.authorizationStatus}');
+    // DEBUG: print('📱 Permission status: ${settings.authorizationStatus}');
   }
 
   /// Initialize local notifications for foreground display
@@ -119,7 +119,7 @@ class FCMService {
 
   /// Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
-    print('📬 Foreground message received: ${message.notification?.title}');
+    // DEBUG: print('📬 Foreground message received: ${message.notification?.title}');
 
     final notification = message.notification;
     if (notification != null) {
@@ -168,7 +168,7 @@ class FCMService {
 
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
-    print('📲 Notification tapped: ${message.data}');
+    // DEBUG: print('📲 Notification tapped: ${message.data}');
     final data = message.data;
     final type = data['type'] as String?;
     final entityId = data['entityId'] as String?;
@@ -278,7 +278,7 @@ class FCMService {
 
   /// Handle local notification tap
   void _onNotificationTap(NotificationResponse response) {
-    print('📲 Local notification tapped: ${response.payload}');
+    // DEBUG: print('📲 Local notification tapped: ${response.payload}');
     final nav = navigatorKey.currentState;
     if (nav != null) {
       nav.pushNamedAndRemoveUntil(RouteNames.dashboard, (route) => route.isFirst);
@@ -288,27 +288,27 @@ class FCMService {
   /// Subscribe to topic
   Future<void> subscribeToTopic(String topic) async {
     await _firebaseMessaging.subscribeToTopic(topic);
-    print('📬 Subscribed to topic: $topic');
+    // DEBUG: print('📬 Subscribed to topic: $topic');
   }
 
   /// Unsubscribe from topic
   Future<void> unsubscribeFromTopic(String topic) async {
     await _firebaseMessaging.unsubscribeFromTopic(topic);
-    print('📬 Unsubscribed from topic: $topic');
+    // DEBUG: print('📬 Unsubscribed from topic: $topic');
   }
 
   /// Delete FCM token
   Future<void> deleteToken() async {
     await _firebaseMessaging.deleteToken();
     _fcmToken = null;
-    print('📱 FCM Token deleted');
+    // DEBUG: print('📱 FCM Token deleted');
   }
 }
 
 /// Background message handler (must be top-level function)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('📬 Background message received: ${message.notification?.title}');
+  // DEBUG: print('📬 Background message received: ${message.notification?.title}');
   // Handle background message
   // Note: Cannot show UI or access context here
 }

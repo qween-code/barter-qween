@@ -1,8 +1,10 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+// Note: Platform-specific packages are optional dependencies
+// Uncomment if needed: in_app_purchase_android, in_app_purchase_storekit
+// import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+// import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import '../../domain/entities/subscription_entity.dart';
 
 /// IAP (In-App Purchase) Service
@@ -41,17 +43,17 @@ class IAPService {
   Future<bool> initialize() async {
     try {
       // Platform-specific initialization
-      if (Platform.isAndroid) {
-        final androidDetails = InAppPurchaseAndroidPlatformAddition.instance;
-        // Android billing client hazır olana kadar bekle
-        await androidDetails.isFeatureSupported(BillingClientFeature.subscriptions);
-      }
+      // Note: Android/iOS specific code is optional
+      // if (Platform.isAndroid) {
+      //   // Requires in_app_purchase_android package
+      //   final androidAddition = _iap.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+      // }
 
       // IAP servisi kullanılabilir mi kontrol et
       _isAvailable = await _iap.isAvailable();
       
       if (!_isAvailable) {
-        print('⚠️ In-App Purchase servisi kullanılamıyor');
+      // DEBUG: print('⚠️ In-App Purchase servisi kullanılamıyor');
         return false;
       }
 
@@ -60,17 +62,17 @@ class IAPService {
         _onPurchaseUpdate,
         onDone: () => _subscription?.cancel(),
         onError: (error) {
-          print('❌ Purchase stream error: $error');
+      // DEBUG: print('❌ Purchase stream error: $error');
         },
       );
 
       // Ürünleri yükle
       await loadProducts();
 
-      print('✅ IAP Service başlatıldı');
+      // DEBUG: print('✅ IAP Service başlatıldı');
       return true;
     } catch (e) {
-      print('❌ IAP initialization error: $e');
+      // DEBUG: print('❌ IAP initialization error: $e');
       return false;
     }
   }
@@ -83,23 +85,23 @@ class IAPService {
       final ProductDetailsResponse response = await _iap.queryProductDetails(_productIds.toSet());
 
       if (response.error != null) {
-        print('❌ Product query error: ${response.error}');
+      // DEBUG: print('❌ Product query error: ${response.error}');
         return;
       }
 
       if (response.notFoundIDs.isNotEmpty) {
-        print('⚠️ Bulunamayan ürünler: ${response.notFoundIDs}');
+      // DEBUG: print('⚠️ Bulunamayan ürünler: ${response.notFoundIDs}');
       }
 
       _products = response.productDetails;
-      print('✅ ${_products.length} ürün yüklendi');
+      // DEBUG: print('✅ ${_products.length} ürün yüklendi');
 
       // Debug: Ürünleri listele
       for (var product in _products) {
-        print('  📦 ${product.id}: ${product.title} - ${product.price}');
+      // DEBUG: print('  📦 ${product.id}: ${product.title} - ${product.price}');
       }
     } catch (e) {
-      print('❌ Load products error: $e');
+      // DEBUG: print('❌ Load products error: $e');
     }
   }
 
@@ -124,18 +126,18 @@ class IAPService {
     String? oldSubscriptionId, // Android upgrade/downgrade için
   }) async {
     if (!_isAvailable) {
-      print('❌ IAP servisi kullanılamıyor');
+      // DEBUG: print('❌ IAP servisi kullanılamıyor');
       return false;
     }
 
     final product = getProduct(productId);
     if (product == null) {
-      print('❌ Ürün bulunamadı: $productId');
+      // DEBUG: print('❌ Ürün bulunamadı: $productId');
       return false;
     }
 
     try {
-      print('🛒 Satın alma başlatılıyor: ${product.title}');
+      // DEBUG: print('🛒 Satın alma başlatılıyor: ${product.title}');
 
       late PurchaseParam purchaseParam;
 
@@ -162,10 +164,10 @@ class IAPService {
 
       // Satın almayı başlat
       final success = await _iap.buyNonConsumable(purchaseParam: purchaseParam);
-      print(success ? '✅ Satın alma başlatıldı' : '❌ Satın alma başlatılamadı');
+      // DEBUG: print(success ? '✅ Satın alma başlatıldı' : '❌ Satın alma başlatılamadı');
       return success;
     } catch (e) {
-      print('❌ Purchase error: $e');
+      // DEBUG: print('❌ Purchase error: $e');
       return false;
     }
   }
@@ -175,18 +177,18 @@ class IAPService {
     if (!_isAvailable) return;
 
     try {
-      print('🔄 Satın almalar geri yükleniyor...');
+      // DEBUG: print('🔄 Satın almalar geri yükleniyor...');
       await _iap.restorePurchases();
-      print('✅ Restore tamamlandı');
+      // DEBUG: print('✅ Restore tamamlandı');
     } catch (e) {
-      print('❌ Restore error: $e');
+      // DEBUG: print('❌ Restore error: $e');
     }
   }
 
   /// Satın alma güncellemelerini işle
   void _onPurchaseUpdate(List<PurchaseDetails> purchaseDetailsList) {
     for (final purchaseDetails in purchaseDetailsList) {
-      print('📦 Purchase update: ${purchaseDetails.productID} - ${purchaseDetails.status}');
+      // DEBUG: print('📦 Purchase update: ${purchaseDetails.productID} - ${purchaseDetails.status}');
 
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
@@ -215,13 +217,13 @@ class IAPService {
 
   /// Pending purchase işleme
   void _handlePendingPurchase(PurchaseDetails purchaseDetails) {
-    print('⏳ Satın alma beklemede: ${purchaseDetails.productID}');
+      // DEBUG: print('⏳ Satın alma beklemede: ${purchaseDetails.productID}');
     // Kullanıcıya loading göster
   }
 
   /// Başarılı satın alma işleme
   void _handleSuccessfulPurchase(PurchaseDetails purchaseDetails) {
-    print('✅ Satın alma başarılı: ${purchaseDetails.productID}');
+      // DEBUG: print('✅ Satın alma başarılı: ${purchaseDetails.productID}');
     
     // Server-side verification yapılmalı (Production'da zorunlu)
     _verifyPurchase(purchaseDetails).then((isValid) {
@@ -234,7 +236,7 @@ class IAPService {
         // Firestore'a subscription ekle
         _saveSubscriptionToFirestore(purchaseDetails);
       } else {
-        print('❌ Purchase verification failed');
+      // DEBUG: print('❌ Purchase verification failed');
         if (onPurchaseError != null) {
           onPurchaseError!(purchaseDetails, 'Verification failed');
         }
@@ -244,7 +246,7 @@ class IAPService {
 
   /// Geri yüklenen satın alma işleme
   void _handleRestoredPurchase(PurchaseDetails purchaseDetails) {
-    print('🔄 Satın alma geri yüklendi: ${purchaseDetails.productID}');
+      // DEBUG: print('🔄 Satın alma geri yüklendi: ${purchaseDetails.productID}');
     
     if (onPurchaseRestored != null) {
       onPurchaseRestored!(purchaseDetails);
@@ -256,7 +258,7 @@ class IAPService {
 
   /// Başarısız satın alma işleme
   void _handleFailedPurchase(PurchaseDetails purchaseDetails) {
-    print('❌ Satın alma başarısız: ${purchaseDetails.error}');
+      // DEBUG: print('❌ Satın alma başarısız: ${purchaseDetails.error}');
     
     if (onPurchaseError != null) {
       onPurchaseError!(purchaseDetails, purchaseDetails.error);
@@ -265,7 +267,7 @@ class IAPService {
 
   /// İptal edilen satın alma işleme
   void _handleCanceledPurchase(PurchaseDetails purchaseDetails) {
-    print('🚫 Satın alma iptal edildi: ${purchaseDetails.productID}');
+      // DEBUG: print('🚫 Satın alma iptal edildi: ${purchaseDetails.productID}');
   }
 
   /// Purchase verification (Server-side yapılmalı)
@@ -281,7 +283,7 @@ class IAPService {
   /// Subscription'ı Firestore'a kaydet
   Future<void> _saveSubscriptionToFirestore(PurchaseDetails purchaseDetails) async {
     // TODO: Firestore'a subscription kaydetme implementasyonu
-    print('📝 Subscription Firestore\'a kaydedilecek: ${purchaseDetails.productID}');
+      // DEBUG: print('📝 Subscription Firestore\'a kaydedilecek: ${purchaseDetails.productID}');
     
     // Bu method Repository pattern ile implement edilmeli
     // SubscriptionRepository.saveSubscription() çağrılmalı
@@ -304,7 +306,7 @@ class IAPService {
         final response = await androidAddition.queryPastPurchases();
         
         if (response.error != null) {
-          print('❌ Query error: ${response.error}');
+      // DEBUG: print('❌ Query error: ${response.error}');
           return false;
         }
 
@@ -321,7 +323,7 @@ class IAPService {
       
       return false;
     } catch (e) {
-      print('❌ Check subscription error: $e');
+      // DEBUG: print('❌ Check subscription error: $e');
       return false;
     }
   }
