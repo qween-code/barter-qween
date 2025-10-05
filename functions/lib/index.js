@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = exports.getMatchingItemsForCondition = exports.calculateBarterMatch = void 0;
+exports.onTradeCompleted = exports.onItemUnfavorited = exports.onItemFavorited = exports.onItemViewCreated = exports.onNotificationCreated = exports.onTradeOfferUpdated = exports.onTradeOfferCreated = exports.onMessageCreated = exports.getMatchingItemsForCondition = exports.calculateBarterMatch = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
@@ -174,6 +174,128 @@ exports.onNotificationCreated = functions.firestore
         pushData.entityId = entityId;
     const tokens = await getUserTokens(userId);
     await sendMulticast(tokens, { title, body }, pushData);
+    return null;
+});
+// Trigger: Update item view count when item_views document is created
+exports.onItemViewCreated = functions.firestore
+    .document('item_views/{viewId}')
+    .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data)
+        return null;
+    const itemId = data.itemId;
+    if (!itemId)
+        return null;
+    try {
+        // Increment viewCount on the item
+        const itemRef = db.collection('items').doc(itemId);
+        await itemRef.update({
+            viewCount: admin.firestore.FieldValue.increment(1),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        functions.logger.info('Item view count incremented', { itemId });
+    }
+    catch (error) {
+        functions.logger.error('Error incrementing view count', { itemId, error });
+    }
+    return null;
+});
+// Trigger: Update user stats when item is favorited
+exports.onItemFavorited = functions.firestore
+    .document('favorites/{favoriteId}')
+    .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data)
+        return null;
+    const itemId = data.itemId;
+    if (!itemId)
+        return null;
+    try {
+        // Get item to find owner
+        const itemDoc = await db.collection('items').doc(itemId).get();
+        if (!itemDoc.exists)
+            return null;
+        const ownerId = itemDoc.get('ownerId');
+        if (!ownerId)
+            return null;
+        // Increment favoriteCount on item
+        await db.collection('items').doc(itemId).update({
+            favoriteCount: admin.firestore.FieldValue.increment(1),
+        });
+        // Increment seller's totalFavorites
+        await db.collection('users').doc(ownerId).update({
+            totalFavorites: admin.firestore.FieldValue.increment(1),
+        });
+        functions.logger.info('Item favorited', { itemId, ownerId });
+    }
+    catch (error) {
+        functions.logger.error('Error updating favorite stats', { itemId, error });
+    }
+    return null;
+});
+// Trigger: Update user stats when item is unfavorited
+exports.onItemUnfavorited = functions.firestore
+    .document('favorites/{favoriteId}')
+    .onDelete(async (snap, context) => {
+    const data = snap.data();
+    if (!data)
+        return null;
+    const itemId = data.itemId;
+    if (!itemId)
+        return null;
+    try {
+        // Get item to find owner
+        const itemDoc = await db.collection('items').doc(itemId).get();
+        if (!itemDoc.exists)
+            return null;
+        const ownerId = itemDoc.get('ownerId');
+        if (!ownerId)
+            return null;
+        // Decrement favoriteCount on item
+        await db.collection('items').doc(itemId).update({
+            favoriteCount: admin.firestore.FieldValue.increment(-1),
+        });
+        // Decrement seller's totalFavorites
+        await db.collection('users').doc(ownerId).update({
+            totalFavorites: admin.firestore.FieldValue.increment(-1),
+        });
+        functions.logger.info('Item unfavorited', { itemId, ownerId });
+    }
+    catch (error) {
+        functions.logger.error('Error updating unfavorite stats', { itemId, error });
+    }
+    return null;
+});
+// Trigger: Update seller stats when trade is completed
+exports.onTradeCompleted = functions.firestore
+    .document('tradeOffers/{tradeId}')
+    .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    if (!before || !after)
+        return null;
+    const beforeStatus = before.status;
+    const afterStatus = after.status;
+    // Only trigger when status changes to 'completed'
+    if (beforeStatus !== 'completed' && afterStatus === 'completed') {
+        const fromUserId = after.fromUserId;
+        const toUserId = after.toUserId;
+        if (!fromUserId || !toUserId)
+            return null;
+        try {
+            // Increment totalTrades for both users
+            await db.collection('users').doc(fromUserId).update({
+                totalTrades: admin.firestore.FieldValue.increment(1),
+            });
+            await db.collection('users').doc(toUserId).update({
+                totalTrades: admin.firestore.FieldValue.increment(1),
+            });
+            functions.logger.info('Trade completed - stats updated', { fromUserId, toUserId });
+        }
+        catch (error) {
+            functions.logger.error('Error updating trade stats', { fromUserId, toUserId, error });
+        }
+    }
     return null;
 });
 //# sourceMappingURL=index.js.map
