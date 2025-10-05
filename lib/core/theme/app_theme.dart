@@ -18,13 +18,13 @@ class AppTheme {
       brightness: Brightness.light,
       
       // ============================================
-      // COLOR SCHEME
+      // NEUMORPHISM COLOR SCHEME
       // ============================================
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         primaryContainer: AppColors.primaryLight,
-        secondary: AppColors.accent,
-        secondaryContainer: AppColors.accentLight,
+        secondary: AppColors.secondary,
+        secondaryContainer: AppColors.secondaryLight,
         surface: AppColors.surface,
         surfaceContainerHighest: AppColors.surfaceVariant,
         error: AppColors.error,
@@ -37,7 +37,7 @@ class AppTheme {
       ),
 
       // ============================================
-      // SCAFFOLD
+      // NEUMORPHISM SCAFFOLD
       // ============================================
       scaffoldBackgroundColor: AppColors.background,
 
@@ -75,12 +75,12 @@ class AppTheme {
       ),
 
       // ============================================
-      // BUTTON THEMES
+      // NEUMORPHISM BUTTON THEMES
       // ============================================
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.textOnPrimary,
+          backgroundColor: AppColors.surface,
+          foregroundColor: AppColors.textPrimary,
           textStyle: AppTextStyles.buttonLarge,
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.buttonPaddingHorizontal,
@@ -90,6 +90,13 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
           ),
           elevation: 0,
+          shadowColor: Colors.transparent,
+        ).copyWith(
+          backgroundColor: WidgetStateProperty.all(AppColors.surface),
+          foregroundColor: WidgetStateProperty.all(AppColors.textPrimary),
+          overlayColor: WidgetStateProperty.all(AppColors.primaryLight.withOpacity(0.1)),
+          elevation: WidgetStateProperty.all(0),
+          shadowColor: WidgetStateProperty.all(Colors.transparent),
         ),
       ),
 

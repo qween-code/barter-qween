@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/di/injection.dart';
 import '../../core/routes/route_names.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimensions.dart';
+import '../../core/theme/neuromorphic_effects.dart';
+import '../widgets/neumorphism/neuromorphic_icon.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/chat/chat_bloc.dart';
@@ -20,6 +24,7 @@ import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
 import 'search/search_page.dart';
 import 'trades/trades_page.dart';
+import 'neumorphism_demo_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -78,6 +83,8 @@ class _DashboardViewState extends State<DashboardView> {
         }
       },
       child: Scaffold(
+        extendBody: true,
+        backgroundColor: AppColors.background,
         body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -99,38 +106,147 @@ class _DashboardViewState extends State<DashboardView> {
           ),
           const TradesPage(),
           const ConversationsListPage(),
-          BlocProvider(
-            create: (_) => getIt<ProfileBloc>(),
-            child: const ProfilePage(),
+          // Neumorphism Demo Page
+          const NeumorphismDemoPage(),
+        ],
+      ),
+      bottomNavigationBar: _buildUltraNeumorphismNavigation(),
+      floatingActionButton: null,
+      ),
+    );
+  }
+
+  /// Ultra-Deep Neuromorphic Bottom Navigation with 16-layer shadows
+  Widget _buildUltraNeumorphismNavigation() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      height: 75,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radius32),
+        boxShadow: [
+          ...NeuromorphicPresets.NavigationPresets.bottomNav(),
+          ...NeuromorphicEffects.lighting.createAmbientGlow(
+            glowColor: AppColors.primary,
+            intensity: 0.5,
+            radius: 30.0,
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) => setState(() => _currentIndex = index),
-        destinations: [
-          const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          const NavigationDestination(icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explore'),
-          NavigationDestination(
-            icon: _pendingTradeCount > 0
-                ? Badge(
-                    label: Text('$_pendingTradeCount'),
-                    child: const Icon(Icons.swap_horiz_outlined),
-                  )
-                : const Icon(Icons.swap_horiz_outlined),
-            selectedIcon: _pendingTradeCount > 0
-                ? Badge(
-                    label: Text('$_pendingTradeCount'),
-                    child: const Icon(Icons.swap_horiz),
-                  )
-                : const Icon(Icons.swap_horiz),
-            label: 'Trades',
-          ),
-          const NavigationDestination(icon: Icon(Icons.message_outlined), selectedIcon: Icon(Icons.message), label: 'Messages'),
-          const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppDimensions.radius32),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(
+              icon: Icons.home_outlined,
+              activeIcon: Icons.home,
+              label: 'Home',
+              index: 0,
+            ),
+            _buildNavItem(
+              icon: Icons.explore_outlined,
+              activeIcon: Icons.explore,
+              label: 'Explore',
+              index: 1,
+            ),
+            _buildNavItem(
+              icon: Icons.swap_horiz_outlined,
+              activeIcon: Icons.swap_horiz,
+              label: 'Trades',
+              index: 2,
+              badgeCount: _pendingTradeCount,
+            ),
+            _buildNavItem(
+              icon: Icons.message_outlined,
+              activeIcon: Icons.message,
+              label: 'Messages',
+              index: 3,
+            ),
+            _buildNavItem(
+              icon: Icons.palette_outlined,
+              activeIcon: Icons.palette,
+              label: 'Design',
+              index: 4,
+            ),
+          ],
+        ),
       ),
-      floatingActionButton: null, // FAB moved to ItemListPage
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required int index,
+    int badgeCount = 0,
+  }) {
+    final isActive = _currentIndex == index;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _currentIndex = index),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                NeuromorphicIcon(
+                  icon: isActive ? activeIcon : icon,
+                  size: isActive ? IconSize.large : IconSize.medium,
+                  style: IconStyle.circular,
+                  isActive: isActive,
+                  color: isActive ? AppColors.primary : AppColors.textSecondary,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -4,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.error.withOpacity(0.5),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Center(
+                        child: Text(
+                          badgeCount > 99 ? '99+' : badgeCount.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: isActive ? AppColors.primary : AppColors.textSecondary,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

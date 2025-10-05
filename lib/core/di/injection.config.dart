@@ -34,6 +34,8 @@ import 'package:barter_qween/data/datasources/search_remote_data_source.dart'
     as _i955;
 import 'package:barter_qween/data/repositories/auth_repository_impl.dart'
     as _i828;
+import 'package:barter_qween/data/repositories/barter_repository_impl.dart'
+    as _i697;
 import 'package:barter_qween/data/repositories/chat_repository_impl.dart'
     as _i66;
 import 'package:barter_qween/data/repositories/favorite_repository_impl.dart'
@@ -51,6 +53,8 @@ import 'package:barter_qween/data/repositories/search_repository_impl.dart'
 import 'package:barter_qween/data/repositories/trade_repository_impl.dart'
     as _i429;
 import 'package:barter_qween/domain/repositories/auth_repository.dart' as _i113;
+import 'package:barter_qween/domain/repositories/barter_repository.dart'
+    as _i573;
 import 'package:barter_qween/domain/repositories/chat_repository.dart' as _i920;
 import 'package:barter_qween/domain/repositories/favorite_repository.dart'
     as _i933;
@@ -78,6 +82,10 @@ import 'package:barter_qween/domain/usecases/auth/reset_password_usecase.dart'
     as _i668;
 import 'package:barter_qween/domain/usecases/auth/verify_otp_usecase.dart'
     as _i936;
+import 'package:barter_qween/domain/usecases/barter/barter_usecases.dart'
+    as _i268;
+import 'package:barter_qween/domain/usecases/barter/calculate_compatibility_score_usecase.dart'
+    as _i969;
 import 'package:barter_qween/domain/usecases/chat/get_conversations_usecase.dart'
     as _i610;
 import 'package:barter_qween/domain/usecases/chat/get_messages_usecase.dart'
@@ -97,10 +105,16 @@ import 'package:barter_qween/domain/usecases/favorites/remove_favorite_usecase.d
 import 'package:barter_qween/domain/usecases/item/item_usecases.dart' as _i301;
 import 'package:barter_qween/domain/usecases/items/delete_item_usecase.dart'
     as _i529;
+import 'package:barter_qween/domain/usecases/items/get_recent_items_usecase.dart'
+    as _i367;
+import 'package:barter_qween/domain/usecases/items/get_trending_items_usecase.dart'
+    as _i1070;
 import 'package:barter_qween/domain/usecases/items/get_user_items_usecase.dart'
     as _i217;
 import 'package:barter_qween/domain/usecases/items/update_item_usecase.dart'
     as _i768;
+import 'package:barter_qween/domain/usecases/notifications/get_notifications_usecase.dart'
+    as _i983;
 import 'package:barter_qween/domain/usecases/profile/get_user_profile_usecase.dart'
     as _i680;
 import 'package:barter_qween/domain/usecases/profile/get_user_stats_usecase.dart'
@@ -122,9 +136,12 @@ import 'package:barter_qween/domain/usecases/search/search_items_usecase.dart'
 import 'package:barter_qween/domain/usecases/trade/trade_usecases.dart'
     as _i773;
 import 'package:barter_qween/presentation/blocs/auth/auth_bloc.dart' as _i161;
+import 'package:barter_qween/presentation/blocs/barter/barter_bloc.dart'
+    as _i360;
 import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart' as _i241;
 import 'package:barter_qween/presentation/blocs/favorite/favorite_bloc.dart'
     as _i935;
+import 'package:barter_qween/presentation/blocs/home/home_bloc.dart' as _i433;
 import 'package:barter_qween/presentation/blocs/item/item_bloc.dart' as _i1004;
 import 'package:barter_qween/presentation/blocs/notification/notification_bloc.dart'
     as _i622;
@@ -158,6 +175,9 @@ extension GetItInjectableX on _i174.GetIt {
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => firebaseInjectableModule.prefs,
       preResolve: true,
+    );
+    gh.factory<_i969.CalculateCompatibilityScoreUseCase>(
+      () => _i969.CalculateCompatibilityScoreUseCase(),
     );
     gh.lazySingleton<_i59.FirebaseAuth>(
       () => firebaseInjectableModule.firebaseAuth,
@@ -229,6 +249,23 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1020.ChatRemoteDataSource>(
       () => _i1020.ChatRemoteDataSource(gh<_i974.FirebaseFirestore>()),
+    );
+    gh.lazySingleton<_i573.BarterRepository>(
+      () =>
+          _i697.BarterRepositoryImpl(firestore: gh<_i974.FirebaseFirestore>()),
+    );
+    gh.factory<_i268.GetMatchingItemsUseCase>(
+      () => _i268.GetMatchingItemsUseCase(gh<_i573.BarterRepository>()),
+    );
+    gh.factory<_i268.ValidateBarterMatchUseCase>(
+      () => _i268.ValidateBarterMatchUseCase(gh<_i573.BarterRepository>()),
+    );
+    gh.factory<_i268.CalculateCashDifferentialUseCase>(
+      () =>
+          _i268.CalculateCashDifferentialUseCase(gh<_i573.BarterRepository>()),
+    );
+    gh.factory<_i268.SuggestCashDifferentialUseCase>(
+      () => _i268.SuggestCashDifferentialUseCase(gh<_i573.BarterRepository>()),
     );
     gh.lazySingleton<_i754.ItemRepository>(
       () => _i703.ItemRepositoryImpl(
@@ -360,6 +397,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i576.UploadAvatarUseCase>(
       () => _i576.UploadAvatarUseCase(gh<_i1043.ProfileRepository>()),
     );
+    gh.factory<_i433.HomeBloc>(
+      () => _i433.HomeBloc(
+        getAllItemsUseCase: gh<_i301.GetAllItemsUseCase>(),
+        getFeaturedItemsUseCase: gh<_i301.GetFeaturedItemsUseCase>(),
+        getRecentItemsUseCase: gh<_i367.GetRecentItemsUseCase>(),
+        getTrendingItemsUseCase: gh<_i1070.GetTrendingItemsUseCase>(),
+        addFavoriteUseCase: gh<_i191.AddFavoriteUseCase>(),
+        removeFavoriteUseCase: gh<_i469.RemoveFavoriteUseCase>(),
+      ),
+    );
     gh.factory<_i742.SearchBloc>(
       () => _i742.SearchBloc(
         searchItemsUseCase: gh<_i481.SearchItemsUseCase>(),
@@ -380,6 +427,16 @@ extension GetItInjectableX on _i174.GetIt {
         getOrCreateConversationUseCase:
             gh<_i232.GetOrCreateConversationUseCase>(),
         chatRepository: gh<_i920.ChatRepository>(),
+      ),
+    );
+    gh.factory<_i360.BarterBloc>(
+      () => _i360.BarterBloc(
+        getMatchingItemsUseCase: gh<_i268.GetMatchingItemsUseCase>(),
+        validateBarterMatchUseCase: gh<_i268.ValidateBarterMatchUseCase>(),
+        calculateCashDifferentialUseCase:
+            gh<_i268.CalculateCashDifferentialUseCase>(),
+        suggestCashDifferentialUseCase:
+            gh<_i268.SuggestCashDifferentialUseCase>(),
       ),
     );
     gh.factory<_i935.FavoriteBloc>(
@@ -446,6 +503,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i121.GetUserRatingStatsUseCase>(
       () => _i121.GetUserRatingStatsUseCase(gh<_i374.RatingRepository>()),
+    );
+    gh.factory<_i983.GetNotificationsUseCase>(
+      () => _i983.GetNotificationsUseCase(gh<_i772.NotificationRepository>()),
     );
     gh.factory<_i622.NotificationBloc>(
       () => _i622.NotificationBloc(gh<_i772.NotificationRepository>()),

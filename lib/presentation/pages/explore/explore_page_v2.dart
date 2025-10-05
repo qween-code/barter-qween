@@ -2,6 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../domain/entities/item_entity.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_dimensions.dart';
+import '../../../core/theme/neuromorphic_effects.dart';
+import '../../widgets/neumorphism/neuromorphic_icon.dart';
 
 /// World-Class Explore Page
 /// 
@@ -91,12 +95,13 @@ class _ExplorePageV2State extends State<ExplorePageV2>
         bottom: 12,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+          ...NeuromorphicPresets.NavigationPresets.appBar(),
+          ...NeuromorphicEffects.lighting.createAmbientGlow(
+            glowColor: AppColors.primary,
+            intensity: 0.3,
+            radius: 20.0,
           ),
         ],
       ),

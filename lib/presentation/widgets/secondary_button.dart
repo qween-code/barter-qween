@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/neuromorphic_effects.dart';
 
-/// Secondary Button - Outlined Style
-/// For less prominent actions like "Back", "Cancel", social login
+/// Ultra-Deep Neuromorphic Secondary Button
+/// 8-layer medium depth shadows for secondary actions
+
 class SecondaryButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool isLoading;
   final bool isFullWidth;
   final IconData? icon;
-  final Widget? customIcon;
-  final Color? borderColor;
-  final Color? textColor;
+  final double? width;
+  final double? height;
+  final bool enableUltraEffects;
 
   const SecondaryButton({
     super.key,
@@ -22,9 +24,9 @@ class SecondaryButton extends StatefulWidget {
     this.isLoading = false,
     this.isFullWidth = true,
     this.icon,
-    this.customIcon,
-    this.borderColor,
-    this.textColor,
+    this.width,
+    this.height,
+    this.enableUltraEffects = true,
   });
 
   @override
@@ -36,6 +38,7 @@ class _SecondaryButtonState extends State<SecondaryButton>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   bool _isPressed = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -45,7 +48,7 @@ class _SecondaryButtonState extends State<SecondaryButton>
       vsync: this,
     );
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
 
@@ -63,95 +66,127 @@ class _SecondaryButtonState extends State<SecondaryButton>
   }
 
   void _onTapUp(TapUpDetails details) {
-    if (_isPressed) {
-      _controller.reverse();
-      setState(() => _isPressed = false);
-    }
+    setState(() => _isPressed = false);
+    _controller.reverse();
+    widget.onPressed?.call();
   }
 
   void _onTapCancel() {
-    if (_isPressed) {
-      _controller.reverse();
-      setState(() => _isPressed = false);
+    setState(() => _isPressed = false);
+    _controller.reverse();
+  }
+
+  void _onHoverEnter(PointerEnterEvent event) {
+    if (widget.onPressed != null && !widget.isLoading) {
+      setState(() => _isHovered = true);
     }
+  }
+
+  void _onHoverExit(PointerExitEvent event) {
+    setState(() => _isHovered = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isDisabled = widget.onPressed == null || widget.isLoading;
-    final borderColor = widget.borderColor ?? AppColors.primary;
-    final textColor = widget.textColor ?? AppColors.primary;
 
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      onTap: isDisabled ? null : widget.onPressed,
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: child,
-          );
-        },
-        child: Container(
-          width: widget.isFullWidth ? double.infinity : null,
-          height: AppDimensions.buttonHeightMedium,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            border: Border.all(
-              color: isDisabled ? AppColors.borderDefault : borderColor,
-              width: AppDimensions.buttonBorderWidth,
-            ),
-            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: isDisabled ? null : widget.onPressed,
-              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.spacing24,
+    return MouseRegion(
+      onEnter: _onHoverEnter,
+      onExit: _onHoverExit,
+      child: GestureDetector(
+        onTapDown: _onTapDown,
+        onTapUp: _onTapUp,
+        onTapCancel: _onTapCancel,
+        child: AnimatedBuilder(
+          animation: _scaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: child,
+            );
+          },
+          child: RepaintBoundary(
+            child: Container(
+              width: widget.isFullWidth
+                  ? double.infinity
+                  : (widget.width ?? AppDimensions.buttonHeight8 * 3),
+              height: widget.height ?? AppDimensions.buttonHeight8,
+              decoration: BoxDecoration(
+                color: isDisabled ? AppColors.surfaceVariant : AppColors.surface,
+                borderRadius: BorderRadius.circular(AppDimensions.radius16),
+                border: Border.all(
+                  color: isDisabled
+                      ? AppColors.border
+                      : (_isHovered ? AppColors.primary : AppColors.borderNeumorphism),
+                  width: _isHovered ? 2 : 1,
                 ),
-                child: Center(
-                  child: widget.isLoading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(textColor),
-                          ),
-                        )
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (widget.customIcon != null) ...[
-                              widget.customIcon!,
-                              const SizedBox(width: AppDimensions.spacing12),
-                            ] else if (widget.icon != null) ...[
-                              Icon(
-                                widget.icon,
-                                color: isDisabled
-                                    ? AppColors.textDisabled
-                                    : textColor,
-                                size: AppDimensions.iconSmall,
-                              ),
-                              const SizedBox(width: AppDimensions.spacing8),
-                            ],
-                            Text(
-                              widget.text,
-                              style: AppTextStyles.buttonMedium.copyWith(
-                                color: isDisabled
-                                    ? AppColors.textDisabled
-                                    : textColor,
-                              ),
+                boxShadow: isDisabled
+                    ? []
+                    : (widget.enableUltraEffects
+                        ? NeuromorphicPresets.ButtonPresets.secondary(
+                            isPressed: _isPressed,
+                            isHovered: _isHovered,
+                          )
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
-                          ],
-                        ),
+                          ]),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isDisabled ? null : widget.onPressed,
+                  borderRadius: BorderRadius.circular(AppDimensions.radius16),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppDimensions.buttonPadding6,
+                    ),
+                    child: Center(
+                      child: widget.isLoading
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primary,
+                                ),
+                              ),
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (widget.icon != null) ...[
+                                  Icon(
+                                    widget.icon,
+                                    size: 20,
+                                    color: isDisabled
+                                        ? AppColors.textDisabled
+                                        : AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                ],
+                                Flexible(
+                                  child: Text(
+                                    widget.text,
+                                    style: AppTextStyles.buttonMedium.copyWith(
+                                      color: isDisabled
+                                          ? AppColors.textDisabled
+                                          : AppColors.primary,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
                 ),
               ),
             ),
