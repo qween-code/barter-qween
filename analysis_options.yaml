@@ -13,6 +13,10 @@ analyzer:
   exclude:
     - functions/**
     - functions/**/node_modules/**
+  errors:
+    # Suppress deprecated member warnings temporarily
+    # TODO: Migrate withOpacity to withValues() in future sprint
+    deprecated_member_use: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the
