@@ -451,7 +451,6 @@ class _ButtonPresets {
       ];
     }
   }
-}
 
 /// Card presets
 class _CardPresets {
@@ -492,7 +491,6 @@ class _CardPresets {
       ];
     }
   }
-}
 
 /// Input presets
 class _InputPresets {
@@ -545,7 +543,6 @@ class _InputPresets {
       ];
     }
   }
-}
 
 /// Navigation presets
 class _NavigationPresets {
@@ -580,7 +577,6 @@ class _NavigationPresets {
       return NeuromorphicEffects.depth.createDepthAwareShadows(depth: 2.0);
     }
   }
-}
 
 /// Icon presets
 class _IconPresets {
@@ -611,4 +607,3 @@ class _IconPresets {
       ];
     }
   }
-}

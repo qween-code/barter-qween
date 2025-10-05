@@ -44,6 +44,7 @@ void main() {
   group('SearchBloc', () {
     const tQuery = 'iPhone';
     const tFilters = SearchFilterEntity();
+    
     final tItem = ItemEntity(
       id: '1',
       title: 'iPhone 12',
@@ -54,16 +55,25 @@ void main() {
       ownerId: 'user1',
       ownerName: 'John Doe',
       city: 'Istanbul',
-      status: 'active',
+      status: ItemStatus.active, // Fixed: Use enum instead of string
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       viewCount: 0,
       favoriteCount: 0,
     );
+    
+    final tMetadata = SearchMetadata(
+      query: tQuery,
+      resultsCount: 1,
+      searchDuration: const Duration(milliseconds: 100),
+      timestamp: DateTime.now(),
+    );
+    
     final tSearchResult = SearchResultEntity(
       items: [tItem],
       totalCount: 1,
       hasMore: false,
+      metadata: tMetadata, // Added required metadata
     );
 
     test('initial state should be SearchInitial', () {
@@ -96,6 +106,7 @@ void main() {
             filters: tFilters,
             totalCount: 1,
             hasMore: false,
+            metadata: tMetadata, // Added required metadata
           ),
         ],
         verify: (_) {
@@ -106,11 +117,18 @@ void main() {
       blocTest<SearchBloc, SearchState>(
         'emits [SearchLoading, SearchEmpty] when no results found',
         build: () {
+          final emptyMetadata = SearchMetadata(
+            query: tQuery,
+            resultsCount: 0,
+            searchDuration: const Duration(milliseconds: 50),
+            timestamp: DateTime.now(),
+          );
           when(() => mockSearchItemsUseCase(any())).thenAnswer(
-            (_) => Stream.value(Right(const SearchResultEntity(
-              items: [],
+            (_) => Stream.value(Right(SearchResultEntity(
+              items: const [],
               totalCount: 0,
               hasMore: false,
+              metadata: emptyMetadata, // Added required metadata
             ))),
           );
           return searchBloc;
@@ -150,6 +168,7 @@ void main() {
           filters: tFilters,
           totalCount: 1,
           hasMore: false,
+          metadata: tMetadata, // Added required metadata
         ),
         act: (bloc) => bloc.add(const SearchCleared()),
         expect: () => [const SearchInitial()],
@@ -176,6 +195,7 @@ void main() {
           filters: tFilters,
           totalCount: 1,
           hasMore: false,
+          metadata: tMetadata, // Added required metadata
         ),
         act: (bloc) => bloc.add(const FiltersApplied(tNewFilters)),
         expect: () => [
@@ -186,6 +206,7 @@ void main() {
             filters: tNewFilters,
             totalCount: 1,
             hasMore: false,
+            metadata: tMetadata, // Added required metadata
           ),
         ],
         verify: (_) {
@@ -196,7 +217,25 @@ void main() {
 
     group('GetSuggestionsEvent', () {
       const tPartialQuery = 'iP';
-      final tSuggestions = ['iPhone', 'iPad', 'iPod'];
+      
+      // Fixed: Use SearchSuggestionEntity instead of plain strings
+      final tSuggestions = [
+        const SearchSuggestionEntity(
+          suggestion: 'iPhone',
+          type: SuggestionType.autoComplete,
+          popularity: 100,
+        ),
+        const SearchSuggestionEntity(
+          suggestion: 'iPad',
+          type: SuggestionType.autoComplete,
+          popularity: 80,
+        ),
+        const SearchSuggestionEntity(
+          suggestion: 'iPod',
+          type: SuggestionType.autoComplete,
+          popularity: 50,
+        ),
+      ];
 
       blocTest<SearchBloc, SearchState>(
         'emits [SuggestionsLoaded] when suggestions succeed',
