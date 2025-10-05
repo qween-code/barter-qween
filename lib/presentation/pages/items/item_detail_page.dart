@@ -25,6 +25,7 @@ import 'edit_item_page.dart';
 import '../../widgets/barter/barter_condition_summary_card.dart';
 import '../../widgets/media/advanced_image_gallery.dart';
 import '../../widgets/loading/skeleton_loading.dart';
+import '../../widgets/map/item_map_view.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
@@ -430,6 +431,24 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                   ),
 
                   const SizedBox(height: 24),
+
+                  // Location Map (if coordinates available)
+                  if (item.latitude != null && item.longitude != null) ...[
+                    const Text(
+                      'Location',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ItemMapView(
+                      item: item,
+                      currentUserId: _currentUserId,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
 
                   // Stats
                   Row(
