@@ -885,6 +885,7 @@ class SmartSearchBar extends StatelessWidget {
   final VoidCallback? onCameraSearch;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onTap;
+  final VoidCallback? onFilterTap;
 
   const SmartSearchBar({
     Key? key,
@@ -894,6 +895,7 @@ class SmartSearchBar extends StatelessWidget {
     this.onCameraSearch,
     this.onChanged,
     this.onTap,
+    this.onFilterTap,
   }) : super(key: key);
 
   @override

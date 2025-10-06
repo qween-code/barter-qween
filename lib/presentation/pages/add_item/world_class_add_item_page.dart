@@ -165,11 +165,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
         ownerId: user.uid,
         ownerName: user.displayName ?? 'Unknown',
         status: 'active',
-        estimatedValue: _originalPriceController.text.isNotEmpty 
-            ? int.tryParse(_originalPriceController.text) 
-            : null,
-        barterPreferences: _wantToTradeFor,
-        isOpenToCash: _isOpenToCash,
+        // estimatedValue removed - not in ItemEntity
+        // barterPreferences removed - not in constructor  
+        // isOpenToCash: removed - not in constructor
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

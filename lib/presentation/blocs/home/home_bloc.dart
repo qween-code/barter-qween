@@ -85,7 +85,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     LoadRecentItems event,
     Emitter<HomeState> emit,
   ) async {
-    final result = await getRecentItemsUseCase();
+    final result = await getRecentItemsUseCase(NoParams());
     
     result.fold(
       (failure) => emit(HomeError('Failed to load recent items: ${failure.message}')),
@@ -97,7 +97,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     LoadTrendingItems event,
     Emitter<HomeState> emit,
   ) async {
-    final result = await getTrendingItemsUseCase();
+    final result = await getTrendingItemsUseCase(NoParams());
     
     result.fold(
       (failure) => emit(HomeError('Failed to load trending items: ${failure.message}')),

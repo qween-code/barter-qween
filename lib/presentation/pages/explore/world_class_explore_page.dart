@@ -145,17 +145,17 @@ class _WorldClassExplorePageState extends State<WorldClassExplorePage>
                     title: 'Item ${index + 1}',
                     imageUrl: 'https://via.placeholder.com/300',
                     price: (index + 1) * 100.0,
-                    originalPrice: (index + 1) * 150.0,
+                    // originalPrice removed - not needed
                     matchScore: 85 + (index % 15),
                     distance: '${(index % 5) + 1}.${index % 10}km',
                     condition: ['Brand New', 'Like New', 'Good'][index % 3],
                     viewCount: (index + 1) * 47,
-                    badge: index % 5 == 0 ? 'HOT' : (index % 7 == 0 ? 'NEW' : null),
-                    isFavorite: index % 4 == 0,
+                    // badge: removed - not in PremiumItemCard
+                    // isFavorite: removed - not in PremiumItemCard
                     onTap: () {
                       Navigator.of(context).pushNamed('/item-detail', arguments: 'item_$index');
                     },
-                    onFavorite: () {},
+                    // onFavorite: removed - not in PremiumItemCard
                   );
                 },
               ),
