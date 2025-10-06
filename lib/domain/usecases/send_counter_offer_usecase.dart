@@ -31,11 +31,14 @@ class SendCounterOfferUsecase {
       final now = DateTime.now();
       final counterOffer = CounterOfferEntity(
         id: '', // Firestore will generate
-        negotiationId: params.negotiationId,
         offerId: params.offerId,
+        negotiationId: params.negotiationId,
         offererId: params.offererId,
         targetUserId: params.targetUserId,
+        sourceItemId: '', // TODO: Get from negotiation
+        targetItemId: '', // TODO: Get from negotiation
         type: params.type,
+        offerType: params.type,
         proposedCash: params.proposedCash,
         proposedPaymentDirection: params.proposedPaymentDirection,
         proposedMeetupLocation: params.proposedMeetupLocation,
@@ -116,6 +119,10 @@ class SendCounterOfferUsecase {
         if (params.message == null || params.message!.isEmpty) {
           return 'Message is required for terms counter-offers';
         }
+        break;
+      
+      case CounterOfferType.itemSwap:
+        // TODO: Validate item swap specific fields
         break;
     }
 

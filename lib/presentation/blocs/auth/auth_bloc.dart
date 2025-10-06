@@ -1,31 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:injectable/injectable.dart';
-import '../../../domain/usecases/auth/get_current_user_usecase.dart';
-import '../../../domain/usecases/auth/google_sign_in_usecase.dart';
-import '../../../domain/usecases/auth/login_usecase.dart';
-import '../../../domain/usecases/auth/logout_usecase.dart';
-import '../../../domain/usecases/auth/register_usecase.dart';
-import '../../../domain/usecases/auth/reset_password_usecase.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../../domain/entities/user_entity.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
-@injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final LoginUseCase loginUseCase;
-  final RegisterUseCase registerUseCase;
-  final LogoutUseCase logoutUseCase;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
-  final GoogleSignInUseCase googleSignInUseCase;
-  final ResetPasswordUseCase resetPasswordUseCase;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  AuthBloc({
-    required this.loginUseCase,
-    required this.registerUseCase,
-    required this.logoutUseCase,
-    required this.getCurrentUserUseCase,
-    required this.googleSignInUseCase,
-    required this.resetPasswordUseCase,
-  }) : super(AuthInitial()) {
+  AuthBloc() : super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<AuthLoginRequested>(_onAuthLoginRequested);
     on<AuthRegisterRequested>(_onAuthRegisterRequested);
@@ -39,17 +22,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await getCurrentUserUseCase();
-    result.fold(
-      (failure) => emit(AuthUnauthenticated()),
-      (user) {
-        if (user != null) {
-          emit(AuthAuthenticated(user));
-        } else {
-          emit(AuthUnauthenticated());
-        }
-      },
-    );
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        final userEntity = _convertToUserEntity(user);
+        emit(AuthAuthenticated(userEntity));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } catch (e) {
+      emit(AuthUnauthenticated());
+    }
   }
 
   Future<void> _onAuthLoginRequested(
@@ -57,14 +40,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await loginUseCase(
-      email: event.email,
-      password: event.password,
-    );
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (user) => emit(AuthAuthenticated(user)),
-    );
+    try {
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: event.email,
+        password: event.password,
+      );
+      if (credential.user != null) {
+        final userEntity = _convertToUserEntity(credential.user!);
+        emit(AuthAuthenticated(userEntity));
+      } else {
+        emit(AuthError('Login failed'));
+      }
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   Future<void> _onAuthRegisterRequested(
@@ -72,15 +61,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await registerUseCase(
-      email: event.email,
-      password: event.password,
-      displayName: event.displayName,
-    );
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (user) => emit(AuthAuthenticated(user)),
-    );
+    try {
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: event.email,
+        password: event.password,
+      );
+      if (credential.user != null) {
+        await credential.user!.updateDisplayName(event.displayName);
+        final userEntity = _convertToUserEntity(credential.user!);
+        emit(AuthAuthenticated(userEntity));
+      } else {
+        emit(AuthError('Registration failed'));
+      }
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   Future<void> _onAuthLogoutRequested(
@@ -88,11 +83,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await logoutUseCase();
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(AuthUnauthenticated()),
-    );
+    try {
+      await _firebaseAuth.signOut();
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
   }
 
   Future<void> _onAuthGoogleSignInRequested(
@@ -100,11 +96,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await googleSignInUseCase();
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (user) => emit(AuthAuthenticated(user)),
-    );
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      
+      if (googleUser == null) {
+        emit(AuthUnauthenticated());
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+      
+      if (userCredential.user != null) {
+        final userEntity = _convertToUserEntity(userCredential.user!);
+        emit(AuthAuthenticated(userEntity));
+      } else {
+        emit(AuthError('Google Sign In failed'));
+      }
+    } catch (e) {
+      emit(AuthError('Google Sign In error: ${e.toString()}'));
+    }
   }
 
   Future<void> _onAuthResetPasswordRequested(
@@ -112,10 +129,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await resetPasswordUseCase(event.email);
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(AuthInitial()), // Return to initial state after success
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: event.email);
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  UserEntity _convertToUserEntity(User firebaseUser) {
+    return UserEntity(
+      uid: firebaseUser.uid,
+      email: firebaseUser.email ?? '',
+      displayName: firebaseUser.displayName,
+      photoUrl: firebaseUser.photoURL,
+      phoneNumber: firebaseUser.phoneNumber,
+      isEmailVerified: firebaseUser.emailVerified,
+      createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
+      trustScore: 5.0, // Default trust score
     );
   }
 }

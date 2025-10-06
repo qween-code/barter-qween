@@ -1,48 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../login_page.dart';
+import '../../../core/theme/world_class_design_system.dart';
+import '../auth/login_page.dart';
 
-/// Onboarding page with 3 slides introducing the app
+/// 🌟 WORLD-CLASS ONBOARDING PAGE
+/// 
+/// Features:
+/// - 3-step introduction slides
+/// - Smooth page transitions
+/// - Interactive elements
+/// - Skip option
+/// - Progress indicator
 class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({super.key});
+  const OnboardingPage({Key? key}) : super(key: key);
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends State<OnboardingPage> {
-  final PageController _pageController = PageController();
+class _OnboardingPageState extends State<OnboardingPage>
+    with TickerProviderStateMixin {
+  late PageController _pageController;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  
   int _currentPage = 0;
-
-  final List<OnboardingSlide> _slides = const [
+  
+  final List<OnboardingSlide> _slides = [
     OnboardingSlide(
       icon: Icons.swap_horiz_rounded,
       title: 'Welcome to Barter Queen',
-      description:
-          'Trade items you no longer need with people nearby. Give your unused items a second life!',
-      color: AppColors.primary,
+      description: 'Trade items you no longer need with people nearby. Give your unused items a second life!',
+      color: WorldClassDesignSystem.primaryColor,
+      features: ['Smart Matching', 'Safe Trading', 'Real-time Chat'],
     ),
     OnboardingSlide(
       icon: Icons.favorite_rounded,
       title: 'Find What You Want',
-      description:
-          'Browse thousands of items, save your favorites, and chat with owners to make great trades.',
-      color: AppColors.secondary,
+      description: 'Browse thousands of items, save your favorites, and chat with owners to make great trades.',
+      color: WorldClassDesignSystem.secondaryColor,
+      features: ['Advanced Search', 'Smart Filters', 'Location-based'],
     ),
     OnboardingSlide(
       icon: Icons.handshake_rounded,
       title: 'Trade Safely',
-      description:
-          'Make offers, negotiate, and complete trades with confidence. Build your reputation and join our community.',
-      color: AppColors.accent,
+      description: 'Make offers, negotiate, and complete trades with confidence. Build your reputation and join our community.',
+      color: WorldClassDesignSystem.accentColor,
+      features: ['Secure Payments', 'Rating System', 'Dispute Resolution'],
     ),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _animationController = AnimationController(
+      duration: WorldClassDesignSystem.animationNormal,
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+    
+    _animationController.forward();
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -52,7 +92,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginPage()),
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: WorldClassDesignSystem.animationNormal,
+        ),
       );
     }
   }
@@ -60,7 +109,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   void _nextPage() {
     if (_currentPage < _slides.length - 1) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
+        duration: WorldClassDesignSystem.animationNormal,
         curve: Curves.easeInOut,
       );
     } else {
@@ -75,203 +124,218 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: WorldClassDesignSystem.primaryBackground,
       body: SafeArea(
         child: Column(
           children: [
-            // Skip button
+            // Skip Button
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: TextButton(
-                  onPressed: _skipOnboarding,
-                  child: Text(
-                    'Skip',
-                    style: AppTextStyles.bodyLarge.copyWith(
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w600,
+              padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: _skipOnboarding,
+                    child: Text(
+                      'Skip',
+                      style: WorldClassDesignSystem.labelMedium.copyWith(
+                        color: WorldClassDesignSystem.secondaryText,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-
-            // PageView
+            
+            // Page View
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _slides.length,
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
                   });
+                  _animationController.reset();
+                  _animationController.forward();
                 },
+                itemCount: _slides.length,
                 itemBuilder: (context, index) {
-                  return _OnboardingSlideWidget(
-                    slide: _slides[index],
-                    isActive: _currentPage == index,
-                  );
+                  return _buildSlide(_slides[index]);
                 },
               ),
             ),
-
-            // Page indicators
+            
+            // Progress Indicator
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   _slides.length,
-                  (index) => AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: _currentPage == index ? 32 : 8,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: WorldClassDesignSystem.spacingXS,
+                    ),
+                    width: _currentPage == index ? 24 : 8,
                     height: 8,
                     decoration: BoxDecoration(
                       color: _currentPage == index
-                          ? _slides[index].color
-                          : Colors.grey[300],
+                          ? WorldClassDesignSystem.primaryColor
+                          : WorldClassDesignSystem.borderColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
               ),
             ),
-
-            // Next/Get Started button
+            
+            // Action Buttons
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _nextPage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _slides[_currentPage].color,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
+              child: Row(
+                children: [
+                  if (_currentPage > 0)
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          _pageController.previousPage(
+                            duration: WorldClassDesignSystem.animationNormal,
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        style: WorldClassDesignSystem.secondaryButtonStyle,
+                        child: const Text('Previous'),
+                      ),
                     ),
-                    elevation: 0,
+                  
+                  if (_currentPage > 0)
+                    const SizedBox(width: WorldClassDesignSystem.spacingM),
+                  
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _nextPage,
+                      style: WorldClassDesignSystem.primaryButtonStyle,
+                      child: Text(
+                        _currentPage == _slides.length - 1 ? 'Get Started' : 'Next',
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _currentPage == _slides.length - 1
-                            ? 'Get Started'
-                            : 'Next',
-                        style: AppTextStyles.titleMedium.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        _currentPage == _slides.length - 1
-                            ? Icons.check_circle_outline
-                            : Icons.arrow_forward,
-                        color: Colors.white,
-                      ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSlide(OnboardingSlide slide) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: Padding(
+          padding: const EdgeInsets.all(WorldClassDesignSystem.spacingXL),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      slide.color,
+                      slide.color.withOpacity(0.8),
                     ],
                   ),
+                  borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusXXL),
+                  boxShadow: [
+                    BoxShadow(
+                      color: slide.color.withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  slide.icon,
+                  size: 60,
+                  color: WorldClassDesignSystem.primaryWhite,
                 ),
               ),
-            ),
-          ],
+              
+              const SizedBox(height: WorldClassDesignSystem.spacingXXL),
+              
+              // Title
+              Text(
+                slide.title,
+                style: WorldClassDesignSystem.heading1.copyWith(
+                  color: WorldClassDesignSystem.primaryText,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: WorldClassDesignSystem.spacingL),
+              
+              // Description
+              Text(
+                slide.description,
+                style: WorldClassDesignSystem.bodyLarge.copyWith(
+                  color: WorldClassDesignSystem.secondaryText,
+                  height: 1.6,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: WorldClassDesignSystem.spacingXL),
+              
+              // Features
+              ...slide.features.map((feature) => Padding(
+                padding: const EdgeInsets.only(
+                  bottom: WorldClassDesignSystem.spacingM,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: WorldClassDesignSystem.successColor,
+                      size: WorldClassDesignSystem.iconM,
+                    ),
+                    const SizedBox(width: WorldClassDesignSystem.spacingM),
+                    Text(
+                      feature,
+                      style: WorldClassDesignSystem.bodyMedium.copyWith(
+                        color: WorldClassDesignSystem.primaryText,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Widget for displaying a single onboarding slide
-class _OnboardingSlideWidget extends StatelessWidget {
-  final OnboardingSlide slide;
-  final bool isActive;
-
-  const _OnboardingSlideWidget({
-    required this.slide,
-    required this.isActive,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedOpacity(
-      opacity: isActive ? 1.0 : 0.5,
-      duration: const Duration(milliseconds: 300),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon with animation
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.8, end: isActive ? 1.0 : 0.8),
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.elasticOut,
-              builder: (context, scale, child) {
-                return Transform.scale(
-                  scale: scale,
-                  child: Container(
-                    width: 160,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      color: slide.color.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      slide.icon,
-                      size: 80,
-                      color: slide.color,
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 48),
-
-            // Title
-            Text(
-              slide.title,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.headlineMedium.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Description
-            Text(
-              slide.description,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyLarge.copyWith(
-                color: Colors.grey[600],
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Model for onboarding slide data
 class OnboardingSlide {
   final IconData icon;
   final String title;
   final String description;
   final Color color;
+  final List<String> features;
 
   const OnboardingSlide({
     required this.icon,
     required this.title,
     required this.description,
     required this.color,
+    required this.features,
   });
 }

@@ -12,6 +12,9 @@ class BarterConditionEntity extends Equatable {
   final double? maxValue; // Maximum değer
   final String? description; // Özel açıklama
   final DateTime createdAt;
+  final List<String>? categories;
+  final String? condition;
+  final double? maxCashDifferential;
 
   const BarterConditionEntity({
     required this.id,
@@ -24,6 +27,9 @@ class BarterConditionEntity extends Equatable {
     this.maxValue,
     this.description,
     required this.createdAt,
+    this.categories,
+    this.condition,
+    this.maxCashDifferential,
   });
 
   BarterConditionEntity copyWith({
@@ -37,6 +43,9 @@ class BarterConditionEntity extends Equatable {
     double? maxValue,
     String? description,
     DateTime? createdAt,
+    List<String>? categories,
+    String? condition,
+    double? maxCashDifferential,
   }) {
     return BarterConditionEntity(
       id: id ?? this.id,
@@ -49,6 +58,9 @@ class BarterConditionEntity extends Equatable {
       maxValue: maxValue ?? this.maxValue,
       description: description ?? this.description,
       createdAt: createdAt ?? this.createdAt,
+      categories: categories ?? this.categories,
+      condition: condition ?? this.condition,
+      maxCashDifferential: maxCashDifferential ?? this.maxCashDifferential,
     );
   }
 
@@ -64,6 +76,9 @@ class BarterConditionEntity extends Equatable {
         maxValue,
         description,
         createdAt,
+        categories,
+        condition,
+        maxCashDifferential,
       ];
 
   @override

@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:equatable/equatable.dart';
-import '../../../domain/entities/user_entity.dart';
 
 abstract class ProfileEvent extends Equatable {
   const ProfileEvent();
@@ -9,7 +7,6 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Load user profile
 class LoadProfile extends ProfileEvent {
   final String userId;
 
@@ -19,51 +16,11 @@ class LoadProfile extends ProfileEvent {
   List<Object?> get props => [userId];
 }
 
-/// Update user profile
 class UpdateProfile extends ProfileEvent {
-  final UserEntity user;
+  final Map<String, dynamic> updates;
 
-  const UpdateProfile(this.user);
-
-  @override
-  List<Object?> get props => [user];
-}
-
-/// Upload avatar
-class UploadAvatar extends ProfileEvent {
-  final String userId;
-  final File imageFile;
-
-  const UploadAvatar({
-    required this.userId,
-    required this.imageFile,
-  });
+  const UpdateProfile(this.updates);
 
   @override
-  List<Object?> get props => [userId, imageFile];
-}
-
-/// Delete avatar
-class DeleteAvatar extends ProfileEvent {
-  final String userId;
-
-  const DeleteAvatar(this.userId);
-
-  @override
-  List<Object?> get props => [userId];
-}
-
-/// Reset profile state
-class ResetProfile extends ProfileEvent {
-  const ResetProfile();
-}
-
-/// Load user statistics
-class LoadUserStats extends ProfileEvent {
-  final String userId;
-
-  const LoadUserStats(this.userId);
-
-  @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [updates];
 }

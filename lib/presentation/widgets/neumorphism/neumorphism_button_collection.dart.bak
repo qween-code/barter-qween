@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import '../../../core/theme/neumorphism_standards.dart';
+import '../../../core/theme/neuromorphic_effects.dart';
+import 'neumorphic_button.dart';
+
+class NeumorphismButtonCollection extends StatelessWidget {
+  final String? text;
+  final IconData? icon;
+  final VoidCallback? onPressed;
+  final NeumorphicDepth depth;
+  final EdgeInsets? padding;
+  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final Color? textColor;
+
+  const NeumorphismButtonCollection({
+    super.key,
+    this.text,
+    this.icon,
+    this.onPressed,
+    this.depth = NeumorphicDepth.convex,
+    this.padding,
+    this.borderRadius,
+    this.backgroundColor,
+    this.textColor,
+  });
+
+  static Widget heroButton({
+    String? text,
+    IconData? icon,
+    VoidCallback? onPressed,
+    NeumorphicDepth depth = NeumorphicDepth.convex,
+    EdgeInsets? padding,
+    BorderRadius? borderRadius,
+    Color? backgroundColor,
+    Color? textColor,
+  }) {
+    return NeumorphicButton(
+      onPressed: onPressed,
+      depth: depth,
+      padding: padding,
+      borderRadius: borderRadius,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon),
+            if (text != null) const SizedBox(width: 8),
+          ],
+          if (text != null) Text(text!),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NeumorphicButton(
+      onPressed: onPressed,
+      depth: depth,
+      padding: padding,
+      borderRadius: borderRadius,
+      backgroundColor: backgroundColor,
+      textColor: textColor,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon),
+            if (text != null) const SizedBox(width: 8),
+          ],
+          if (text != null) Text(text!),
+        ],
+      ),
+    );
+  }
+}

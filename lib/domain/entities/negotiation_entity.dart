@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'counter_offer_entity.dart';
 
 /// Negotiation Entity
 /// 
@@ -9,6 +10,12 @@ class NegotiationEntity extends Equatable {
   final String tradeOfferId; // Original trade offer being negotiated
   final String initiatorId; // User who started the negotiation
   final String responderId; // User responding to negotiation
+  final String sourceItemId;
+  final String targetItemId;
+  final String receiverId;
+  final String lastActionBy;
+  final CounterOfferEntity? lastCounterOffer;
+  final List<CounterOfferEntity> counterOffers;
 
   // Negotiation state
   final NegotiationStatus status;
@@ -46,6 +53,12 @@ class NegotiationEntity extends Equatable {
     required this.tradeOfferId,
     required this.initiatorId,
     required this.responderId,
+    required this.sourceItemId,
+    required this.targetItemId,
+    required this.receiverId,
+    required this.lastActionBy,
+    this.lastCounterOffer,
+    this.counterOffers = const [],
     required this.status,
     this.roundCount = 0,
     required this.currentOfferer,
@@ -107,6 +120,12 @@ class NegotiationEntity extends Equatable {
     String? tradeOfferId,
     String? initiatorId,
     String? responderId,
+    String? sourceItemId,
+    String? targetItemId,
+    String? receiverId,
+    String? lastActionBy,
+    CounterOfferEntity? lastCounterOffer,
+    List<CounterOfferEntity>? counterOffers,
     NegotiationStatus? status,
     int? roundCount,
     String? currentOfferer,
@@ -132,6 +151,12 @@ class NegotiationEntity extends Equatable {
       tradeOfferId: tradeOfferId ?? this.tradeOfferId,
       initiatorId: initiatorId ?? this.initiatorId,
       responderId: responderId ?? this.responderId,
+      sourceItemId: sourceItemId ?? this.sourceItemId,
+      targetItemId: targetItemId ?? this.targetItemId,
+      receiverId: receiverId ?? this.receiverId,
+      lastActionBy: lastActionBy ?? this.lastActionBy,
+      lastCounterOffer: lastCounterOffer ?? this.lastCounterOffer,
+      counterOffers: counterOffers ?? this.counterOffers,
       status: status ?? this.status,
       roundCount: roundCount ?? this.roundCount,
       currentOfferer: currentOfferer ?? this.currentOfferer,
@@ -162,6 +187,12 @@ class NegotiationEntity extends Equatable {
         tradeOfferId,
         initiatorId,
         responderId,
+        sourceItemId,
+        targetItemId,
+        receiverId,
+        lastActionBy,
+        lastCounterOffer,
+        counterOffers,
         status,
         roundCount,
         currentOfferer,
@@ -229,8 +260,11 @@ class NegotiationRound extends Equatable {
 /// Negotiation status enum
 enum NegotiationStatus {
   active, // Ongoing negotiation
+  counterOffered, // Counter-offer made
+  accepted, // Counter-offer accepted
   agreed, // Both parties agreed
   rejected, // One party rejected
+  completed, // Trade completed
   expired, // Time expired
   cancelled, // Cancelled by system
 }
@@ -241,10 +275,16 @@ extension NegotiationStatusExtension on NegotiationStatus {
     switch (this) {
       case NegotiationStatus.active:
         return 'Aktif';
+      case NegotiationStatus.counterOffered:
+        return 'Karşı Teklif';
+      case NegotiationStatus.accepted:
+        return 'Kabul Edildi';
       case NegotiationStatus.agreed:
         return 'Anlaşma Sağlandı';
       case NegotiationStatus.rejected:
         return 'Reddedildi';
+      case NegotiationStatus.completed:
+        return 'Tamamlandı';
       case NegotiationStatus.expired:
         return 'Süresi Doldu';
       case NegotiationStatus.cancelled:
@@ -256,10 +296,16 @@ extension NegotiationStatusExtension on NegotiationStatus {
     switch (this) {
       case NegotiationStatus.active:
         return '💬';
+      case NegotiationStatus.counterOffered:
+        return '🔄';
+      case NegotiationStatus.accepted:
+        return '✅';
       case NegotiationStatus.agreed:
         return '🤝';
       case NegotiationStatus.rejected:
         return '❌';
+      case NegotiationStatus.completed:
+        return '🎉';
       case NegotiationStatus.expired:
         return '⏰';
       case NegotiationStatus.cancelled:
@@ -270,6 +316,7 @@ extension NegotiationStatusExtension on NegotiationStatus {
   bool get isFinal =>
       this == NegotiationStatus.agreed ||
       this == NegotiationStatus.rejected ||
+      this == NegotiationStatus.completed ||
       this == NegotiationStatus.expired ||
       this == NegotiationStatus.cancelled;
 }

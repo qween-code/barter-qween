@@ -1,22 +1,11 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/di/injection.dart';
 import '../../core/routes/route_names.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_dimensions.dart';
-import '../../core/theme/app_shadows.dart';
-import '../../core/theme/app_text_styles.dart';
-import '../../core/theme/neumorphism_standards.dart';
-import '../../core/theme/neuromorphic_effects.dart';
-import '../../core/theme/neumorphism_animations.dart';
+import '../../core/theme/minimal_design_system.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
-import '../widgets/primary_button.dart';
-import '../widgets/secondary_button.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/password_field.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -41,7 +30,8 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -52,275 +42,276 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthAuthenticated) {
-            Navigator.of(context).pushReplacementNamed(RouteNames.dashboard);
-          } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+      backgroundColor: MinimalDesignSystem.primaryWhite,
+      body: SafeArea(
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthLoading) {
+              setState(() => _isLoading = true);
+            } else if (state is AuthAuthenticated) {
+              setState(() => _isLoading = false);
+              Navigator.of(context).pushReplacementNamed(RouteNames.dashboard);
+            } else if (state is AuthError) {
+              setState(() => _isLoading = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: MinimalDesignSystem.errorColor,
                 ),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is AuthLoading;
-          
-          return Container(
-            width: size.width,
-            height: size.height,
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-            ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppDimensions.spacing24),
-                child: Column(
-                  children: [
-                    SizedBox(height: size.height * 0.08),
-                    
-                    // Logo Section
-                    _buildLogo(),
-                    SizedBox(height: size.height * 0.06),
-                    
-                    // Glass Card with Form
-                    _buildGlassCard(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              'Welcome Back!',
-                              style: AppTextStyles.displaySmall,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: AppDimensions.spacing8),
-                            Text(
-                              'Sign in to continue trading',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: AppDimensions.spacing32),
-                            
-                            // Email Field
-                            CustomTextField(
-                              controller: _emailController,
-                              labelText: 'Email',
-                              hintText: 'Enter your email',
-                              prefixIcon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                }
-                                if (!value.contains('@')) {
-                                  return 'Please enter a valid email';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: AppDimensions.spacing16),
-                            
-                            // Password Field
-                            PasswordField(
-                              controller: _passwordController,
-                              labelText: 'Password',
-                              hintText: 'Enter your password',
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
-                                }
-                                if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            
-                            // Forgot Password
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pushNamed(RouteNames.forgotPassword);
-                                },
-                                child: Text(
-                                  'Forgot Password?',
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.accent,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            
-                            const SizedBox(height: AppDimensions.spacing24),
-                            
-                            // Login Button
-                            PrimaryButton(
-                              text: 'Sign In',
-                              onPressed: isLoading ? null : _handleLogin,
-                              isLoading: isLoading,
-                            ),
-                            
-                            const SizedBox(height: AppDimensions.spacing24),
-                            
-                            // Divider
-                            Row(
-                              children: [
-                                const Expanded(child: Divider()),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppDimensions.spacing12,
-                                  ),
-                                  child: Text(
-                                    'OR',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ),
-                                const Expanded(child: Divider()),
-                              ],
-                            ),
-                            
-                            const SizedBox(height: AppDimensions.spacing24),
-                            
-                            // Google Sign In
-                            SecondaryButton(
-                              text: 'Continue with Google',
-                              onPressed: isLoading ? null : () {
-                                context.read<AuthBloc>().add(AuthGoogleSignInRequested());
-                              },
-                              customIcon: Image.asset(
-                                'assets/images/google_logo.png',
-                                width: 20,
-                                height: 20,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.g_mobiledata,
-                                    size: 24,
-                                  );
-                                },
-                              ),
-                            ),
-                            
-                            const SizedBox(height: AppDimensions.spacing12),
-                            
-                            // Phone Sign In
-                            SecondaryButton(
-                              text: 'Continue with Phone',
-                              onPressed: () {
-                                // TODO: Navigate to phone auth
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Phone Sign In - Coming Soon!'),
-                                  ),
-                                );
-                              },
-                              icon: Icons.phone_android,
-                            ),
-                            
-                            const SizedBox(height: AppDimensions.spacing24),
-                            
-                            // Register Link
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Don't have an account? ",
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: isLoading
-                                      ? null
-                                      : () {
-                                          Navigator.of(context).pushReplacementNamed(
-                                            RouteNames.register,
-                                          );
-                                        },
-                                  child: Text(
-                                    'Sign Up',
-                                    style: AppTextStyles.labelMedium.copyWith(
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+              );
+            } else {
+              setState(() => _isLoading = false);
+            }
+          },
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(MinimalDesignSystem.spacingL),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: MinimalDesignSystem.spacingXL),
+                  
+                  // Logo
+                  Center(
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: MinimalDesignSystem.primaryBlack,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        Icons.swap_horiz_rounded,
+                        size: 40,
+                        color: MinimalDesignSystem.primaryWhite,
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingXL),
+                  
+                  // Title
+                  Text(
+                    'Hoş Geldiniz',
+                    style: MinimalDesignSystem.heading1.copyWith(
+                      color: MinimalDesignSystem.primaryBlack,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingS),
+                  
+                  Text(
+                    'Hesabınıza giriş yapın',
+                    style: MinimalDesignSystem.bodyLarge.copyWith(
+                      color: MinimalDesignSystem.secondaryGray,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingXL),
+                  
+                  // Email Field
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'E-posta',
+                      hintText: 'ornek@email.com',
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: MinimalDesignSystem.secondaryGray,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: MinimalDesignSystem.lightGray,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: MinimalDesignSystem.lightGray,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: MinimalDesignSystem.primaryBlack,
+                          width: 2,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'E-posta adresi gerekli';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Geçerli bir e-posta adresi girin';
+                      }
+                      return null;
+                    },
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingL),
+                  
+                  // Password Field
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'Şifre',
+                      hintText: 'Şifrenizi girin',
+                      prefixIcon: Icon(
+                        Icons.lock_outlined,
+                        color: MinimalDesignSystem.secondaryGray,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible 
+                            ? Icons.visibility_off_outlined 
+                            : Icons.visibility_outlined,
+                          color: MinimalDesignSystem.secondaryGray,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: MinimalDesignSystem.lightGray,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: MinimalDesignSystem.lightGray,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: MinimalDesignSystem.primaryBlack,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Şifre gerekli';
+                      }
+                      if (value.length < 6) {
+                        return 'Şifre en az 6 karakter olmalı';
+                      }
+                      return null;
+                    },
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingL),
+                  
+                  // Login Button
+                  SizedBox(
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _handleLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: MinimalDesignSystem.primaryBlack,
+                        foregroundColor: MinimalDesignSystem.primaryWhite,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                        ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                MinimalDesignSystem.primaryWhite,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            'Giriş Yap',
+                            style: MinimalDesignSystem.buttonText.copyWith(
+                              color: MinimalDesignSystem.primaryWhite,
+                            ),
+                          ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingL),
+                  
+                  // Register Link
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Hesabınız yok mu? ',
+                        style: MinimalDesignSystem.bodyMedium.copyWith(
+                          color: MinimalDesignSystem.secondaryGray,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(RouteNames.register);
+                        },
+                        child: Text(
+                          'Kayıt Ol',
+                          style: MinimalDesignSystem.bodyMedium.copyWith(
+                            color: MinimalDesignSystem.primaryBlack,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: MinimalDesignSystem.spacingL),
+                  
+                  // Test User Info
+                  Container(
+                    padding: const EdgeInsets.all(MinimalDesignSystem.spacingM),
+                    decoration: BoxDecoration(
+                      color: MinimalDesignSystem.lightGray,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Test Kullanıcısı',
+                          style: MinimalDesignSystem.bodySmall.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: MinimalDesignSystem.primaryBlack,
+                          ),
+                        ),
+                        const SizedBox(height: MinimalDesignSystem.spacingXS),
+                        Text(
+                          'alice.johnson@example.com',
+                          style: MinimalDesignSystem.bodySmall.copyWith(
+                            color: MinimalDesignSystem.secondaryGray,
+                          ),
+                        ),
+                        Text(
+                          'Test123!',
+                          style: MinimalDesignSystem.bodySmall.copyWith(
+                            color: MinimalDesignSystem.secondaryGray,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
-  
-  Widget _buildLogo() {
-    return Column(
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-            boxShadow: AppShadows.shadowLg,
           ),
-          child: const Icon(
-            Icons.swap_horiz_rounded,
-            size: 48,
-            color: AppColors.primary,
-          ),
-        ),
-        const SizedBox(height: AppDimensions.spacing16),
-        Text(
-          'Barter Qween',
-          style: AppTextStyles.displayMedium.copyWith(
-            color: AppColors.surface,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-  
-  Widget _buildGlassCard({required Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppDimensions.radiusXLarge),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(AppDimensions.spacing24),
-          decoration: BoxDecoration(
-            gradient: AppColors.glassGradient,
-            borderRadius: BorderRadius.circular(AppDimensions.radiusXLarge),
-            border: Border.all(
-              color: AppColors.surface.withOpacity(0.3),
-              width: 1.5,
-            ),
-            boxShadow: AppShadows.shadowXl,
-          ),
-          child: child,
         ),
       ),
     );
@@ -329,11 +320,11 @@ class _LoginViewState extends State<LoginView> {
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            AuthLoginRequested(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        AuthLoginRequested(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 }

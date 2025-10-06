@@ -158,4 +158,37 @@ class ItemRepositoryImpl implements ItemRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<ItemEntity>>> getRecentItems() async {
+    try {
+      final result = await remoteDataSource.getRecentItems();
+      return Right(result.map((model) => model.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ItemEntity>>> getTrendingItems() async {
+    try {
+      final result = await remoteDataSource.getTrendingItems();
+      return Right(result.map((model) => model.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<List<String>> getSearchSuggestions(String query) async {
+    try {
+      return await remoteDataSource.getSearchSuggestions(query);
+    } catch (e) {
+      return [];
+    }
+  }
 }

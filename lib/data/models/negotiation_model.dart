@@ -190,6 +190,12 @@ class NegotiationModel {
       tradeOfferId: tradeOfferId,
       initiatorId: initiatorId,
       responderId: responderId,
+      sourceItemId: '', // TODO: Get from trade offer
+      targetItemId: '', // TODO: Get from trade offer
+      receiverId: responderId,
+      lastActionBy: currentOfferer,
+      lastCounterOffer: null,
+      counterOffers: const [],
       status:
           NegotiationStatus.values.firstWhere((e) => e.name == status),
       roundCount: roundCount,

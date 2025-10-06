@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/negotiation_entity.dart';
 import '../../../domain/entities/counter_offer_entity.dart';
 
@@ -115,12 +113,12 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                 height: 40,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: NeumorphismStandards.baseColor,
-                  boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                  color: MinimalDesignSystem.baseColor,
+                  boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
                 ),
                 child: Icon(
                   Icons.timeline,
-                  color: NeumorphismStandards.primaryColor,
+                  color: MinimalDesignSystem.primaryColor,
                   size: 20,
                 ),
               ),
@@ -134,14 +132,14 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: NeumorphismStandards.ultraDark,
+                        color: MinimalDesignSystem.ultraDark,
                       ),
                     ),
                     Text(
                       'Track the progress of your negotiation',
                       style: TextStyle(
                         fontSize: 12,
-                        color: NeumorphismStandards.softDark,
+                        color: MinimalDesignSystem.softDark,
                       ),
                     ),
                   ],
@@ -193,7 +191,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                   height: 40,
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
-                    color: NeumorphismStandards.lightShadow,
+                    color: MinimalDesignSystem.lightShadow,
                     borderRadius: BorderRadius.circular(1),
                   ),
                 ),
@@ -208,10 +206,10 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: NeumorphismStandards.baseColor,
+                color: MinimalDesignSystem.baseColor,
                 boxShadow: step.status == TimelineStepStatus.active
-                    ? NeumorphismStandards.neumorphismOutsetShadow
-                    : NeumorphismStandards.neumorphismInsetShadow,
+                    ? MinimalDesignSystem.neumorphismOutsetShadow
+                    : MinimalDesignSystem.neumorphismInsetShadow,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +236,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                                 width: 8,
                                 height: 8,
                                 decoration: BoxDecoration(
-                                  color: NeumorphismStandards.primaryColor,
+                                  color: MinimalDesignSystem.primaryColor,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -252,7 +250,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                     step.subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: NeumorphismStandards.softDark,
+                      color: MinimalDesignSystem.softDark,
                     ),
                   ),
                   if (step.timestamp != null) ...[
@@ -261,7 +259,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                       _formatTimestamp(step.timestamp!),
                       style: TextStyle(
                         fontSize: 10,
-                        color: NeumorphismStandards.lightShadow,
+                        color: MinimalDesignSystem.lightShadow,
                       ),
                     ),
                   ],
@@ -281,19 +279,19 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
 
     switch (step.status) {
       case TimelineStepStatus.completed:
-        iconColor = NeumorphismStandards.successColor;
-        backgroundColor = NeumorphismStandards.baseColor;
-        shadows = NeumorphismStandards.neumorphismOutsetShadow;
+        iconColor = MinimalDesignSystem.successColor;
+        backgroundColor = MinimalDesignSystem.baseColor;
+        shadows = MinimalDesignSystem.neumorphismOutsetShadow;
         break;
       case TimelineStepStatus.active:
-        iconColor = NeumorphismStandards.primaryColor;
-        backgroundColor = NeumorphismStandards.baseColor;
-        shadows = NeumorphismStandards.neumorphismOutsetShadow;
+        iconColor = MinimalDesignSystem.primaryColor;
+        backgroundColor = MinimalDesignSystem.baseColor;
+        shadows = MinimalDesignSystem.neumorphismOutsetShadow;
         break;
       case TimelineStepStatus.pending:
-        iconColor = NeumorphismStandards.lightShadow;
-        backgroundColor = NeumorphismStandards.baseColor;
-        shadows = NeumorphismStandards.neumorphismInsetShadow;
+        iconColor = MinimalDesignSystem.lightShadow;
+        backgroundColor = MinimalDesignSystem.baseColor;
+        shadows = MinimalDesignSystem.neumorphismInsetShadow;
         break;
     }
 
@@ -316,11 +314,11 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
   Color _getStepTextColor(TimelineStepStatus status) {
     switch (status) {
       case TimelineStepStatus.completed:
-        return NeumorphismStandards.successColor;
+        return MinimalDesignSystem.successColor;
       case TimelineStepStatus.active:
-        return NeumorphismStandards.primaryColor;
+        return MinimalDesignSystem.primaryColor;
       case TimelineStepStatus.pending:
-        return NeumorphismStandards.softDark;
+        return MinimalDesignSystem.softDark;
     }
   }
 

@@ -482,27 +482,28 @@ class AppDimensions {
   
   /// Legacy compatibility getters for older code
   static double get radiusSmall => radius8;
-  static double get radiusMedium => radius16;
-  static double get radiusLarge => radius24;
-  static double get radiusXLarge => radius32;
+  static const double radiusMedium = 16.0;
+  static const double radiusLarge = 24.0;
+  static const double radiusXLarge = 32.0;
   static double get paddingSmall => spacing8;
   static double get paddingMedium => spacing16;
   static double get paddingLarge => spacing24;
   static double get iconSmall => icon16;
-  static double get iconMedium => icon24;
+  static const double iconMedium = 24.0;
   static double get iconLarge => icon32;
   static double get appBarElevation => appBarElevation4;
   
   // Missing properties for app_theme.dart compatibility
-  static double get buttonPaddingHorizontal => buttonPadding6;
-  static double get buttonBorderWidth => buttonBorderWidth2;
-  static double get inputPaddingHorizontal => inputPadding8;
-  static double get inputPaddingVertical => inputPadding8;
-  static double get inputBorderWidth => inputBorderWidth2;
-  static double get inputBorderWidthFocused => inputBorderWidth3;
-  static double get cardElevation => cardElevation2;
-  static double get bottomNavElevation => bottomNavElevation4;
-  static double get dividerThickness => dividerThickness2;
+  static const double buttonPaddingHorizontal = 16.0;
+  static const double buttonBorderWidth = 1.5;
+  static const double inputPaddingHorizontal = 12.0;
+  static const double inputPaddingVertical = 12.0;
+  static const double inputBorderWidth = 1.5;
+  static const double inputBorderWidthFocused = 2.0;
+  static const double cardElevation = 2.0;
+  static const double bottomNavElevation = 0.0;
+  static const double dividerThickness = 1.0;
+  
 
   // ============================================
   // UTILITY METHODS

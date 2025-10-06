@@ -187,4 +187,41 @@ class BarterMatchRepositoryImpl implements BarterMatchRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<BarterMatchEntity>>> getBarterMatches(String itemId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('barter_matches')
+          .where('sourceItemId', isEqualTo: itemId)
+          .orderBy('matchScore', descending: true)
+          .limit(20)
+          .get();
+
+      final matches = snapshot.docs
+          .map((doc) => BarterMatchEntityExtension.fromJson(doc.data()))
+          .toList();
+
+      return Right(matches);
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Firebase error'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> dismissBarterMatch(String matchId) async {
+    try {
+      await _firestore.collection('barter_matches').doc(matchId).update({
+        'isDismissed': true,
+        'dismissedAt': FieldValue.serverTimestamp(),
+      });
+      return const Right(null);
+    } on FirebaseException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Firebase error'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

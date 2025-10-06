@@ -792,7 +792,7 @@ class _ItemListPageState extends State<ItemListPage> {
     if (authBloc.state is AuthAuthenticated) {
       final authState = authBloc.state as AuthAuthenticated;
       context.read<FavoriteBloc>().add(
-        ToggleFavorite(authState.user.uid, itemId),
+        ToggleFavorite(itemId),
       );
     }
   }
@@ -1179,12 +1179,12 @@ class _ItemListPageState extends State<ItemListPage> {
   
   void _applyFilters() {
     // Apply all filters using FilterItems event
-    context.read<ItemBloc>().add(FilterItems(
-      categories: _selectedCategory != null ? [_selectedCategory!] : null,
-      condition: _selectedCondition,
-      minPrice: _priceRange.start,
-      maxPrice: _priceRange.end,
-      sortBy: _sortBy,
-    ));
+    context.read<ItemBloc>().add(FilterItems({
+      'categories': _selectedCategory != null ? [_selectedCategory!] : null,
+      'condition': _selectedCondition,
+      'minPrice': _priceRange.start,
+      'maxPrice': _priceRange.end,
+      'sortBy': _sortBy,
+    }));
   }
 }

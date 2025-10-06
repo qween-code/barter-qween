@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/profile/user_badges_widget.dart';
 import '../../widgets/profile/user_stats_widget.dart';
 import '../../widgets/profile/user_rating_breakdown_widget.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
 
 /// WORLD-CLASS Profile Page V3
 /// Based on Depop, Vinted, Poshmark, OfferUp
@@ -91,7 +89,7 @@ class _ProfilePageV3WorldClassState extends State<ProfilePageV3WorldClass> with 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: NeumorphismStandards.baseColor,
+      backgroundColor: MinimalDesignSystem.baseColor,
       body: CustomScrollView(
         slivers: [
           // App Bar with cover photo

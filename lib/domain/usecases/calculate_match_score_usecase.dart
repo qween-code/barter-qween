@@ -77,6 +77,7 @@ class CalculateMatchScoreUsecase {
         sourceUserId: source.userId,
         targetUserId: target.userId,
         matchScore: matchScore,
+        compatibilityScore: matchScore, // Use matchScore as compatibilityScore
         categoryScore: categoryScore,
         priceScore: priceScore,
         locationScore: locationScore,

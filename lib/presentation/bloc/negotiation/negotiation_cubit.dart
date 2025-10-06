@@ -8,7 +8,7 @@ import '../../../domain/usecases/send_counter_offer_usecase.dart';
 import '../../../domain/usecases/accept_counter_offer_usecase.dart';
 import '../../../domain/usecases/reject_counter_offer_usecase.dart';
 
-part 'negotiation_state.dart';
+import 'negotiation_state.dart';
 
 /// Cubit for managing negotiation threads and counter-offers
 @injectable

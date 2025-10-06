@@ -5,6 +5,9 @@ import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/blocs/auth/auth_event.dart';
 import '../../presentation/blocs/favorite/favorite_bloc.dart';
 import '../../presentation/blocs/profile/profile_bloc.dart';
+import '../../presentation/blocs/search/search_bloc.dart';
+import '../../presentation/blocs/item/item_bloc.dart';
+import '../../domain/usecases/get_item_usecase.dart';
 
 /// Global BlocProviders that should be available throughout the app
 class GlobalBlocProviders extends StatelessWidget {
@@ -21,19 +24,31 @@ class GlobalBlocProviders extends StatelessWidget {
       providers: [
         // Auth bloc is global and shared across entire app
         BlocProvider<AuthBloc>(
-          create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),
+          create: (_) => AuthBloc()..add(AuthCheckRequested()),
           lazy: false,
         ),
         
         // Favorite bloc - persist state across page visits
         BlocProvider<FavoriteBloc>(
-          create: (_) => getIt<FavoriteBloc>(),
+          create: (_) => FavoriteBloc(),
           lazy: false,
         ),
         
         // Profile bloc - single instance for entire app
         BlocProvider<ProfileBloc>(
-          create: (_) => getIt<ProfileBloc>(),
+          create: (_) => ProfileBloc(),
+          lazy: false,
+        ),
+        
+        // Search bloc - global search functionality
+        BlocProvider<SearchBloc>(
+          create: (_) => getIt<SearchBloc>(),
+          lazy: false,
+        ),
+        
+        // Item bloc - global item management
+        BlocProvider<ItemBloc>(
+          create: (_) => ItemBloc(getIt<GetItemUsecase>()),
           lazy: false,
         ),
       ],

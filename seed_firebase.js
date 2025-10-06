@@ -107,28 +107,50 @@ const users = [
   }
 ];
 
-// Items data with realistic descriptions
+// High-quality items data with realistic descriptions
 const items = [
   {
-    title: 'iPhone 13 Pro - 256GB',
-    description: 'Excellent condition iPhone 13 Pro with 256GB storage. Sierra Blue color. Includes original box, charger, and protective case. Battery health at 92%. No scratches or dents. Perfect for someone looking to upgrade!',
+    title: 'iPhone 15 Pro Max - 512GB',
+    description: 'Brand new iPhone 15 Pro Max with 512GB storage. Natural Titanium color. Includes original box, charger, and screen protector. Still sealed in original packaging. Perfect for tech enthusiasts!',
     category: 'Electronics',
-    condition: 'Like New',
+    condition: 'Brand New',
     city: 'Besiktas, Istanbul',
     images: [
-      'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=800',
-      'https://images.unsplash.com/photo-1632633728024-e1fd4beec1b6?w=800'
+      'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80',
+      'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&q=80'
     ],
     status: 'active',
-    price: 25000,
+    price: 45000,
     barterCondition: {
       enabled: true,
-      lookingFor: ['MacBook', 'iPad', 'Samsung Galaxy'],
+      lookingFor: ['MacBook Pro', 'iPad Pro', 'Samsung Galaxy S24'],
+      categories: ['Electronics'],
+      condition: 'Brand New',
+      maxCashDifferential: 10000,
+      meetupLocation: 'Besiktas, Istanbul',
+      notes: 'Looking for premium electronics in similar condition'
+    }
+  },
+  {
+    title: 'MacBook Pro M3 - 16 inch',
+    description: 'Latest MacBook Pro with M3 chip, 16GB RAM, 512GB SSD. Space Gray color. Includes original charger and carrying case. Perfect for professionals and creators.',
+    category: 'Electronics',
+    condition: 'Like New',
+    city: 'Sisli, Istanbul',
+    images: [
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&q=80',
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&q=80'
+    ],
+    status: 'active',
+    price: 55000,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['iPhone 15 Pro', 'iPad Pro', 'Gaming PC'],
       categories: ['Electronics'],
       condition: 'Like New',
-      maxCashDifferential: 5000,
-      meetupLocation: 'Besiktas, Istanbul',
-      notes: 'Looking for high-end electronics in similar condition'
+      maxCashDifferential: 15000,
+      meetupLocation: 'Sisli, Istanbul',
+      notes: 'Looking for high-end electronics or cash'
     }
   },
   {
@@ -220,10 +242,99 @@ const items = [
     condition: 'Like New',
     city: 'Sariyer, Istanbul',
     images: [
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800',
-      'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800'
+      'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&q=80',
+      'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&q=80'
     ],
-    status: 'active'
+    status: 'active',
+    price: 1500
+  },
+  {
+    title: 'iPad Pro 12.9" M2 - 256GB',
+    description: 'Latest iPad Pro with M2 chip, 12.9-inch Liquid Retina XDR display. Space Gray color. Includes Apple Pencil 2nd generation and Magic Keyboard. Perfect for professionals.',
+    category: 'Electronics',
+    condition: 'Like New',
+    city: 'Kadikoy, Istanbul',
+    images: [
+      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80',
+      'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=800&q=80'
+    ],
+    status: 'active',
+    price: 35000,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['MacBook Air', 'iPhone 15', 'Samsung Tab'],
+      categories: ['Electronics'],
+      condition: 'Like New',
+      maxCashDifferential: 8000,
+      meetupLocation: 'Kadikoy, Istanbul',
+      notes: 'Looking for premium electronics'
+    }
+  },
+  {
+    title: 'Samsung Galaxy S24 Ultra - 512GB',
+    description: 'Brand new Samsung Galaxy S24 Ultra with 512GB storage. Titanium Black color. Includes original box, charger, and screen protector. Latest flagship with S Pen.',
+    category: 'Electronics',
+    condition: 'Brand New',
+    city: 'Maltepe, Istanbul',
+    images: [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80'
+    ],
+    status: 'active',
+    price: 42000,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['iPhone 15 Pro', 'MacBook Air', 'iPad Pro'],
+      categories: ['Electronics'],
+      condition: 'Brand New',
+      maxCashDifferential: 10000,
+      meetupLocation: 'Maltepe, Istanbul',
+      notes: 'Looking for Apple products or cash'
+    }
+  },
+  {
+    title: 'AirPods Pro 2nd Generation',
+    description: 'Latest AirPods Pro with USB-C charging case. Active noise cancellation and spatial audio. Includes original box and all accessories. Perfect sound quality.',
+    category: 'Electronics',
+    condition: 'Like New',
+    city: 'Beyoglu, Istanbul',
+    images: [
+      'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=800&q=80',
+      'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=800&q=80'
+    ],
+    status: 'active',
+    price: 8500,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['Sony Headphones', 'Smart Watch', 'iPhone Accessories'],
+      categories: ['Electronics'],
+      condition: 'Like New',
+      maxCashDifferential: 2000,
+      meetupLocation: 'Beyoglu, Istanbul',
+      notes: 'Open to electronics trades'
+    }
+  },
+  {
+    title: 'Apple Watch Series 9 - 45mm',
+    description: 'Latest Apple Watch Series 9 with GPS + Cellular. Midnight color. Includes original band and charger. Health monitoring and fitness tracking features.',
+    category: 'Electronics',
+    condition: 'Like New',
+    city: 'Uskudar, Istanbul',
+    images: [
+      'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800&q=80',
+      'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=800&q=80'
+    ],
+    status: 'active',
+    price: 18000,
+    barterCondition: {
+      enabled: true,
+      lookingFor: ['iPhone', 'iPad', 'MacBook'],
+      categories: ['Electronics'],
+      condition: 'Like New',
+      maxCashDifferential: 5000,
+      meetupLocation: 'Uskudar, Istanbul',
+      notes: 'Looking for Apple ecosystem products'
+    }
   },
   {
     title: 'Designer Handbag - Michael Kors',

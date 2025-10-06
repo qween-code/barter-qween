@@ -181,6 +181,7 @@ class BarterMatchModel {
       sourceUserId: sourceUserId,
       targetUserId: targetUserId,
       matchScore: matchScore,
+      compatibilityScore: matchScore, // Use matchScore as compatibilityScore
       categoryScore: categoryScore,
       priceScore: priceScore,
       locationScore: locationScore,

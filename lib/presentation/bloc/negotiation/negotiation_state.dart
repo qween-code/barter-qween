@@ -1,4 +1,6 @@
-part of 'negotiation_cubit.dart';
+import 'package:equatable/equatable.dart';
+import '../../../domain/entities/negotiation_entity.dart';
+import '../../../domain/entities/counter_offer_entity.dart';
 
 /// Base state for negotiation
 abstract class NegotiationState extends Equatable {

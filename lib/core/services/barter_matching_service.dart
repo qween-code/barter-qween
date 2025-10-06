@@ -79,9 +79,6 @@ class BarterMatchingService {
       
       // Additional scores for ML
       compatibilityScore: scores['compatibility']!,
-      demandScore: scores['demand']!,
-      seasonalityScore: scores['seasonality']!,
-      userPreferenceScore: scores['userPreference']!,
       
       // Match details
       quality: quality,
@@ -99,11 +96,10 @@ class BarterMatchingService {
       
       // Cash differential
       suggestedCashDifferential: cashDifferential,
-      cashDirection: _determineCashDirection(sourceItem.price, targetItem.price),
+      cashDirection: null, // TODO: Fix CashDirection mapping
       
       // ML insights
-      mlInsights: mlData,
-      matchInsights: insights,
+      // matchInsights: insights, // TODO: Add matchInsights property to BarterMatchEntity
       
       // Metadata
       calculatedAt: DateTime.now(),

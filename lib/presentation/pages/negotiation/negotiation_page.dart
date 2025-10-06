@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/negotiation_entity.dart';
 import '../../../domain/entities/counter_offer_entity.dart';
+import '../../../domain/usecases/create_negotiation_usecase.dart';
+import '../../../domain/usecases/send_counter_offer_usecase.dart';
 import '../../bloc/negotiation/negotiation_cubit.dart';
 import '../../bloc/negotiation/negotiation_state.dart';
 import '../../widgets/negotiation/negotiation_timeline_widget.dart';
@@ -95,7 +95,7 @@ class _NegotiationPageState extends State<NegotiationPage>
     return BlocProvider(
       create: (_) => getIt<NegotiationCubit>(),
       child: Scaffold(
-        backgroundColor: NeumorphismStandards.baseColor,
+        backgroundColor: MinimalDesignSystem.baseColor,
         appBar: _buildAppBar(),
         body: BlocBuilder<NegotiationCubit, NegotiationState>(
           builder: (context, state) {
@@ -119,19 +119,19 @@ class _NegotiationPageState extends State<NegotiationPage>
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: NeumorphismStandards.baseColor,
+      backgroundColor: MinimalDesignSystem.baseColor,
       elevation: 0,
       leading: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: NeumorphismStandards.baseColor,
-          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          color: MinimalDesignSystem.baseColor,
+          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: NeumorphismStandards.softDark,
+            color: MinimalDesignSystem.softDark,
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -144,14 +144,14 @@ class _NegotiationPageState extends State<NegotiationPage>
             'Negotiation',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: NeumorphismStandards.ultraDark,
+              color: MinimalDesignSystem.ultraDark,
               fontSize: 18,
             ),
           ),
           Text(
             'with ${widget.otherUserName}',
             style: TextStyle(
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.softDark,
               fontSize: 12,
             ),
           ),
@@ -162,13 +162,13 @@ class _NegotiationPageState extends State<NegotiationPage>
           margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: NeumorphismStandards.baseColor,
-            boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+            color: MinimalDesignSystem.baseColor,
+            boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
           ),
           child: IconButton(
             icon: Icon(
               Icons.more_vert,
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.softDark,
             ),
             onPressed: _showOptionsMenu,
           ),
@@ -203,13 +203,13 @@ class _NegotiationPageState extends State<NegotiationPage>
             height: 80,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+              color: MinimalDesignSystem.baseColor,
+              boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
             ),
             child: Icon(
               Icons.handshake,
               size: 40,
-              color: NeumorphismStandards.primaryColor,
+              color: MinimalDesignSystem.primaryColor,
             ),
           ),
           const SizedBox(height: 24),
@@ -217,7 +217,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             'Loading negotiation...',
             style: TextStyle(
               fontSize: 16,
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.softDark,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -233,8 +233,8 @@ class _NegotiationPageState extends State<NegotiationPage>
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: NeumorphismStandards.baseColor,
-          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          color: MinimalDesignSystem.baseColor,
+          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -242,7 +242,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             Icon(
               Icons.error_outline,
               size: 64,
-              color: NeumorphismStandards.errorColor,
+              color: MinimalDesignSystem.errorColor,
             ),
             const SizedBox(height: 16),
             Text(
@@ -250,7 +250,7 @@ class _NegotiationPageState extends State<NegotiationPage>
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.ultraDark,
               ),
             ),
             const SizedBox(height: 8),
@@ -259,7 +259,7 @@ class _NegotiationPageState extends State<NegotiationPage>
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
               ),
             ),
             const SizedBox(height: 24),
@@ -281,8 +281,8 @@ class _NegotiationPageState extends State<NegotiationPage>
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          color: NeumorphismStandards.baseColor,
-          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          color: MinimalDesignSystem.baseColor,
+          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -297,13 +297,13 @@ class _NegotiationPageState extends State<NegotiationPage>
                     height: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: NeumorphismStandards.baseColor,
-                      boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                      color: MinimalDesignSystem.baseColor,
+                      boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
                     ),
                     child: Icon(
                       Icons.handshake,
                       size: 50,
-                      color: NeumorphismStandards.primaryColor,
+                      color: MinimalDesignSystem.primaryColor,
                     ),
                   ),
                 );
@@ -315,7 +315,7 @@ class _NegotiationPageState extends State<NegotiationPage>
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.ultraDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -324,7 +324,7 @@ class _NegotiationPageState extends State<NegotiationPage>
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
               ),
             ),
             const SizedBox(height: 32),
@@ -349,8 +349,8 @@ class _NegotiationPageState extends State<NegotiationPage>
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+              color: MinimalDesignSystem.baseColor,
+              boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
             ),
             child: NegotiationTimelineWidget(
               negotiation: state.negotiation,
@@ -366,8 +366,8 @@ class _NegotiationPageState extends State<NegotiationPage>
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+              color: MinimalDesignSystem.baseColor,
+              boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
             ),
             child: NegotiationChatWidget(
               negotiationId: widget.negotiationId,
@@ -387,10 +387,10 @@ class _NegotiationPageState extends State<NegotiationPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: NeumorphismStandards.baseColor,
+        color: MinimalDesignSystem.baseColor,
         boxShadow: [
           BoxShadow(
-            color: NeumorphismStandards.shadowColor,
+            color: MinimalDesignSystem.secondaryGray,
             offset: const Offset(0, -4),
             blurRadius: 8,
             spreadRadius: 0,
@@ -431,10 +431,10 @@ class _NegotiationPageState extends State<NegotiationPage>
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: NeumorphismStandards.baseColor,
+          color: MinimalDesignSystem.baseColor,
           boxShadow: isPrimary
-              ? NeumorphismStandards.neumorphismInsetShadow
-              : NeumorphismStandards.neumorphismOutsetShadow,
+              ? MinimalDesignSystem.neumorphismInsetShadow
+              : MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: Text(
           text,
@@ -443,8 +443,8 @@ class _NegotiationPageState extends State<NegotiationPage>
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: isPrimary
-                ? NeumorphismStandards.primaryColor
-                : NeumorphismStandards.softDark,
+                ? MinimalDesignSystem.primaryColor
+                : MinimalDesignSystem.softDark,
           ),
         ),
       ),
@@ -454,11 +454,11 @@ class _NegotiationPageState extends State<NegotiationPage>
   void _startNegotiation() {
     // Implement negotiation start logic
     context.read<NegotiationCubit>().createNegotiation(
-      CreateNegotiationParams(
-        sourceItemId: widget.sourceItemId,
-        targetItemId: widget.targetItemId,
+      CreateNegotiationParams.fromOffer(
+        tradeOfferId: 'temp_offer_id', // TODO: Get from actual offer
         initiatorId: 'current_user_id', // Get from auth
-        receiverId: widget.otherUserId,
+        responderId: widget.otherUserId,
+        message: 'Takas şartlarını görüşmek istiyorum',
       ),
     );
   }
@@ -480,21 +480,21 @@ class _NegotiationPageState extends State<NegotiationPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: NeumorphismStandards.baseColor,
+        backgroundColor: MinimalDesignSystem.baseColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         title: Text(
           'Accept Negotiation',
           style: TextStyle(
-            color: NeumorphismStandards.ultraDark,
+            color: MinimalDesignSystem.ultraDark,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Text(
           'Are you sure you want to accept this negotiation?',
           style: TextStyle(
-            color: NeumorphismStandards.softDark,
+            color: MinimalDesignSystem.softDark,
           ),
         ),
         actions: [
@@ -503,7 +503,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             child: Text(
               'Cancel',
               style: TextStyle(
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
               ),
             ),
           ),
@@ -515,7 +515,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             child: Text(
               'Accept',
               style: TextStyle(
-                color: NeumorphismStandards.primaryColor,
+                color: MinimalDesignSystem.primaryColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -533,8 +533,8 @@ class _NegotiationPageState extends State<NegotiationPage>
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: NeumorphismStandards.baseColor,
-          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          color: MinimalDesignSystem.baseColor,
+          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -542,12 +542,12 @@ class _NegotiationPageState extends State<NegotiationPage>
             ListTile(
               leading: Icon(
                 Icons.block,
-                color: NeumorphismStandards.errorColor,
+                color: MinimalDesignSystem.errorColor,
               ),
               title: Text(
                 'Block User',
                 style: TextStyle(
-                  color: NeumorphismStandards.ultraDark,
+                  color: MinimalDesignSystem.ultraDark,
                 ),
               ),
               onTap: () {
@@ -558,12 +558,12 @@ class _NegotiationPageState extends State<NegotiationPage>
             ListTile(
               leading: Icon(
                 Icons.report,
-                color: NeumorphismStandards.warningColor,
+                color: MinimalDesignSystem.warningColor,
               ),
               title: Text(
                 'Report',
                 style: TextStyle(
-                  color: NeumorphismStandards.ultraDark,
+                  color: MinimalDesignSystem.ultraDark,
                 ),
               ),
               onTap: () {
@@ -574,12 +574,12 @@ class _NegotiationPageState extends State<NegotiationPage>
             ListTile(
               leading: Icon(
                 Icons.close,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
               ),
               title: Text(
                 'Cancel',
                 style: TextStyle(
-                  color: NeumorphismStandards.softDark,
+                  color: MinimalDesignSystem.softDark,
                 ),
               ),
               onTap: () => Navigator.pop(context),

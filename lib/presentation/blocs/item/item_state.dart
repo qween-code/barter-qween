@@ -8,12 +8,26 @@ abstract class ItemState extends Equatable {
   List<Object?> get props => [];
 }
 
-class ItemInitial extends ItemState {
-  const ItemInitial();
+class ItemInitial extends ItemState {}
+
+class ItemLoading extends ItemState {}
+
+class ItemLoaded extends ItemState {
+  final ItemEntity item;
+
+  const ItemLoaded(this.item);
+
+  @override
+  List<Object?> get props => [item];
 }
 
-class ItemLoading extends ItemState {
-  const ItemLoading();
+class ItemError extends ItemState {
+  final String message;
+
+  const ItemError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class ItemsLoaded extends ItemState {
@@ -23,15 +37,6 @@ class ItemsLoaded extends ItemState {
 
   @override
   List<Object?> get props => [items];
-}
-
-class ItemLoaded extends ItemState {
-  final ItemEntity item;
-
-  const ItemLoaded(this.item);
-
-  @override
-  List<Object?> get props => [item];
 }
 
 class ItemCreated extends ItemState {
@@ -53,14 +58,10 @@ class ItemUpdated extends ItemState {
 }
 
 class ItemDeleted extends ItemState {
-  const ItemDeleted();
-}
+  final String itemId;
 
-class ItemError extends ItemState {
-  final String message;
-
-  const ItemError(this.message);
+  const ItemDeleted(this.itemId);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [itemId];
 }

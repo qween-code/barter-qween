@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/theme/neumorphism_standards.dart';
-import '../../core/theme/neumorphism_animations.dart';
-import '../../core/theme/neuromorphic_effects.dart';
+import '../../core/theme/minimal_design_system.dart';
 
 /// Ultra Advanced Neumorphism Search Bar & Text Field System
 /// Pinterest seviyesi gömülü nöromorfik tasarım ve dinamik efektler
@@ -83,8 +81,8 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField>
     with TickerProviderStateMixin {
-  late AnimationController _focusController;
-  late AnimationController _hoverController;
+  // late AnimationController _focusController;
+  // late AnimationController _hoverController;
   late AnimationController _loadingController;
   late AnimationController _shakeController;
 
@@ -114,16 +112,13 @@ class _CustomTextFieldState extends State<CustomTextField>
   }
 
   void _initializeAnimations() {
-    // Focus animasyonu
-    _focusController = NeumorphismAnimationController.createFocusController(this);
-    _focusScaleAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(
-      CurvedAnimation(parent: _focusController, curve: Curves.easeInOutCubic),
+    // Simplified animations for minimal design
+    _focusScaleAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
-    // Hover animasyonu
-    _hoverController = NeumorphismAnimationController.createHoverController(this);
-    _hoverScaleAnimation = Tween<double>(begin: 1.0, end: 1.01).animate(
-      CurvedAnimation(parent: _hoverController, curve: Curves.easeInOutCubic),
+    _hoverScaleAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
     // Border animasyonu
@@ -131,27 +126,27 @@ class _CustomTextFieldState extends State<CustomTextField>
       begin: AppDimensions.inputBorderWidth1,
       end: AppDimensions.inputBorderWidth3,
     ).animate(
-      CurvedAnimation(parent: _focusController, curve: Curves.easeInOutCubic),
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
     // Shadow animasyonu
     _shadowAnimation = TweenSequence<List<BoxShadow>>([
       TweenSequenceItem(
         tween: Tween<List<BoxShadow>>(
-          begin: NeumorphismStandards.neumorphismUltraOutsetShadow,
-          end: NeumorphismStandards.neumorphismHoverShadow,
+          begin: MinimalDesignSystem.neumorphismUltraOutsetShadow,
+          end: MinimalDesignSystem.neumorphismHoverShadow,
         ),
         weight: 50,
       ),
       TweenSequenceItem(
         tween: Tween<List<BoxShadow>>(
-          begin: NeumorphismStandards.neumorphismHoverShadow,
-          end: NeumorphismStandards.neumorphismUltraOutsetShadow,
+          begin: MinimalDesignSystem.neumorphismHoverShadow,
+          end: MinimalDesignSystem.neumorphismUltraOutsetShadow,
         ),
         weight: 50,
       ),
     ]).animate(
-      CurvedAnimation(parent: _hoverController, curve: Curves.easeInOutCubic),
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
     // Loading animasyonu
@@ -174,8 +169,8 @@ class _CustomTextFieldState extends State<CustomTextField>
   }
 
   void _disposeAnimations() {
-    _focusController.dispose();
-    _hoverController.dispose();
+    // _focusController.dispose();
+    // _hoverController.dispose();
     _loadingController.dispose();
     _shakeController.dispose();
   }
@@ -186,11 +181,11 @@ class _CustomTextFieldState extends State<CustomTextField>
         final hasFocus = _focusNode.hasFocus;
         if (hasFocus && widget.enabled) {
           _currentState = TextFieldState.focused;
-          _focusController.forward();
+          // _focusController.forward();
           widget.onFocus?.call();
         } else {
           _currentState = _hasError ? TextFieldState.error : TextFieldState.normal;
-          _focusController.reverse();
+          // _focusController.reverse();
           widget.onBlur?.call();
         }
       });
@@ -207,7 +202,7 @@ class _CustomTextFieldState extends State<CustomTextField>
     if (widget.enabled && !_focusNode.hasFocus) {
       _isHovered = true;
       _updateState(TextFieldState.normal);
-      _hoverController.forward();
+      // _hoverController.forward();
     }
   }
 
@@ -215,7 +210,7 @@ class _CustomTextFieldState extends State<CustomTextField>
     _isHovered = false;
     if (!_focusNode.hasFocus) {
       _updateState(_hasError ? TextFieldState.error : TextFieldState.normal);
-      _hoverController.reverse();
+      // _hoverController.reverse();
     }
   }
 
@@ -234,8 +229,8 @@ class _CustomTextFieldState extends State<CustomTextField>
       onExit: _onHoverExit,
       child: AnimatedBuilder(
         animation: Listenable.merge([
-          _focusController,
-          _hoverController,
+          // _focusController,
+          // _hoverController,
           _shakeController,
         ]),
         builder: (context, child) {
@@ -248,7 +243,7 @@ class _CustomTextFieldState extends State<CustomTextField>
           );
         },
         child: Container(
-          height: widget.height ?? fieldSize.height,
+          height: fieldSize.height,
           decoration: BoxDecoration(
             color: _getBackgroundColor(),
             borderRadius: BorderRadius.circular(
@@ -356,7 +351,7 @@ class _CustomTextFieldState extends State<CustomTextField>
       // Use new InputPresets with 8-layer inset neuromorphic effect
       switch (_currentState) {
         case TextFieldState.focused:
-          return NeuromorphicPresets.InputPresets.textField(isFocused: true);
+          return MinimalDesignSystem.cardShadow;
         case TextFieldState.error:
           return [
             BoxShadow(
@@ -365,7 +360,7 @@ class _CustomTextFieldState extends State<CustomTextField>
               offset: const Offset(0, 0),
               spreadRadius: 2,
             ),
-            ...NeuromorphicPresets.InputPresets.textField(),
+            ...MinimalDesignSystem.cardShadow,
           ];
         case TextFieldState.success:
           return [
@@ -375,21 +370,16 @@ class _CustomTextFieldState extends State<CustomTextField>
               offset: const Offset(0, 0),
               spreadRadius: 2,
             ),
-            ...NeuromorphicPresets.InputPresets.textField(),
+            ...MinimalDesignSystem.cardShadow,
           ];
         default:
-          return NeuromorphicPresets.InputPresets.textField();
+          return MinimalDesignSystem.cardShadow;
       }
     }
 
     if (widget.enableCinematicMode) {
       return [
-        ...NeuromorphicPresets.InputPresets.searchBar(isFocused: true),
-        ...NeuromorphicEffects.lighting.createAmbientGlow(
-          glowColor: AppColors.primary,
-          intensity: 0.5,
-          radius: 20.0,
-        ),
+        ...MinimalDesignSystem.cardShadow,
       ];
     }
 
@@ -547,7 +537,7 @@ class NeumorphismSearchBarCollection {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radius24),
-        boxShadow: NeumorphismStandards.neumorphismFloatingShadow,
+        boxShadow: MinimalDesignSystem.neumorphismFloatingShadow,
       ),
       child: CustomTextField(
         controller: controller,

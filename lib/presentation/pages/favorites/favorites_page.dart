@@ -40,7 +40,7 @@ class _FavoritesViewState extends State<FavoritesView> {
   void _loadFavorites() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      context.read<FavoriteBloc>().add(LoadFavorites(authState.user.uid));
+      context.read<FavoriteBloc>().add(LoadFavorites());
     }
   }
 
@@ -70,7 +70,7 @@ class _FavoritesViewState extends State<FavoritesView> {
           }
 
           if (state is FavoritesLoaded) {
-            if (state.items.isEmpty) {
+            if (state.favorites.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -110,9 +110,9 @@ class _FavoritesViewState extends State<FavoritesView> {
                   crossAxisSpacing: AppDimensions.spacing12,
                   mainAxisSpacing: AppDimensions.spacing12,
                 ),
-                itemCount: state.items.length,
+                itemCount: state.favorites.length,
                 itemBuilder: (context, index) {
-                  final item = state.items[index];
+                  final item = state.favorites[index];
                   return _buildItemCard(item);
                 },
               ),

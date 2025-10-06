@@ -308,7 +308,7 @@ class _TrendingItemCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '₺${item.price.toStringAsFixed(0)}',
+                          '₺${item.price?.toStringAsFixed(0) ?? '0'}',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

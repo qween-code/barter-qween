@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:equatable/equatable.dart';
+import 'dart:io';
 import '../../../domain/entities/item_entity.dart';
 
 abstract class ItemEvent extends Equatable {
@@ -7,25 +7,6 @@ abstract class ItemEvent extends Equatable {
 
   @override
   List<Object?> get props => [];
-}
-
-class LoadAllItems extends ItemEvent {
-  final String? category;
-  final String? city;
-
-  const LoadAllItems({this.category, this.city});
-
-  @override
-  List<Object?> get props => [category, city];
-}
-
-class LoadUserItems extends ItemEvent {
-  final String userId;
-
-  const LoadUserItems(this.userId);
-
-  @override
-  List<Object?> get props => [userId];
 }
 
 class LoadItem extends ItemEvent {
@@ -37,11 +18,47 @@ class LoadItem extends ItemEvent {
   List<Object?> get props => [itemId];
 }
 
+class LoadAllItems extends ItemEvent {
+  final String? category;
+
+  const LoadAllItems({this.category});
+
+  @override
+  List<Object?> get props => [category];
+}
+
+class LoadUserItems extends ItemEvent {
+  final String userId;
+
+  const LoadUserItems(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+class SearchItems extends ItemEvent {
+  final String query;
+
+  const SearchItems(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+
+class FilterItems extends ItemEvent {
+  final Map<String, dynamic> filters;
+
+  const FilterItems(this.filters);
+
+  @override
+  List<Object?> get props => [filters];
+}
+
 class CreateItem extends ItemEvent {
   final ItemEntity item;
-  final List<File>? images;
+  final List<File> images;
 
-  const CreateItem(this.item, {this.images});
+  const CreateItem(this.item, {required this.images});
 
   @override
   List<Object?> get props => [item, images];
@@ -49,9 +66,9 @@ class CreateItem extends ItemEvent {
 
 class UpdateItem extends ItemEvent {
   final ItemEntity item;
-  final List<File>? newImages;
+  final List<File> newImages;
 
-  const UpdateItem(this.item, [this.newImages]);
+  const UpdateItem(this.item, this.newImages);
 
   @override
   List<Object?> get props => [item, newImages];
@@ -66,40 +83,25 @@ class DeleteItem extends ItemEvent {
   List<Object?> get props => [itemId];
 }
 
-class SearchItems extends ItemEvent {
-  final String query;
-
-  const SearchItems(this.query);
-
-  @override
-  List<Object?> get props => [query];
-}
-
 class LoadFeaturedItems extends ItemEvent {
-  const LoadFeaturedItems();
-}
+  final int limit;
 
-class FilterItems extends ItemEvent {
-  final List<String>? categories;
-  final String? condition;
-  final double? minPrice;
-  final double? maxPrice;
-  final String? sortBy;
-
-  const FilterItems({
-    this.categories,
-    this.condition,
-    this.minPrice,
-    this.maxPrice,
-    this.sortBy,
-  });
+  const LoadFeaturedItems({this.limit = 10});
 
   @override
-  List<Object?> get props => [
-        categories,
-        condition,
-        minPrice,
-        maxPrice,
-        sortBy,
-      ];
+  List<Object?> get props => [limit];
+}
+
+class LoadRecentItems extends ItemEvent {
+  const LoadRecentItems();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class LoadTrendingItems extends ItemEvent {
+  const LoadTrendingItems();
+
+  @override
+  List<Object?> get props => [];
 }

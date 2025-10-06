@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/admin_user_entity.dart';
+import '../../domain/entities/item_entity.dart';
 import '../../domain/entities/moderation_request_entity.dart';
 import '../../domain/repositories/admin_repository.dart';
 
@@ -38,41 +39,53 @@ class AdminRepositoryImpl implements AdminRepository {
 
       final requests = await Future.wait(
         snapshot.docs.map((doc) async {
-          final data = doc.data();
+          final data = doc.data() as Map<String, dynamic>?;
+          if (data == null) return null;
+
+          final itemId = data['itemId'] as String?;
+          if (itemId == null) return null;
+
           final itemDoc = await _firestore
               .collection('items')
-              .doc(data['itemId'])
+              .doc(itemId)
               .get();
 
           if (!itemDoc.exists) {
-            throw CacheException();
+            throw CacheException('Item not found: $itemId');
           }
 
-          // TODO: Convert item document to ItemEntity
-          // For now, create a basic item entity
-          final itemData = itemDoc.data()!;
+          final itemData = itemDoc.data();
+          if (itemData == null) return null;
+
+          final item = await _convertToItemEntity(itemData);
 
           return ModerationRequestEntity(
             id: doc.id,
-            itemId: data['itemId'] as String,
-            item: await _convertToItemEntity(itemData), // TODO: Implement this
-            userId: data['userId'] as String,
+            itemId: itemId,
+            item: item,
+            userId: data['userId'] as String? ?? '',
             status: ModerationStatus.pending,
             priority: ModerationPriority.values.firstWhere(
               (p) => p.name == (data['priority'] ?? 'medium'),
+              orElse: () => ModerationPriority.medium,
             ),
-            submittedAt: (data['submittedAt'] as Timestamp).toDate(),
+            submittedAt: (data['submittedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
             suggestedTier: data['suggestedTier'] != null
                 ? ItemTier.values.firstWhere(
-                    (t) => t.name == data['suggestedTier'])
+                    (t) => t.name == data['suggestedTier'],
+                    orElse: () => ItemTier.medium,
+                  )
                 : null,
           );
         }),
       );
 
-      return Right(requests);
+      // Filter out null values
+      final validRequests = requests.whereType<ModerationRequestEntity>().toList();
+
+      return Right(validRequests);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(ServerFailure('Failed to get pending items: ${e.toString()}'));
     }
   }
 
@@ -85,7 +98,7 @@ class AdminRepositoryImpl implements AdminRepository {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        return Left(AuthenticationFailure());
+        return Left(AuthFailure('User not authenticated'));
       }
 
       final batch = _firestore.batch();
@@ -121,7 +134,7 @@ class AdminRepositoryImpl implements AdminRepository {
       await batch.commit();
       return Right(unit);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
   }
 
@@ -133,7 +146,7 @@ class AdminRepositoryImpl implements AdminRepository {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        return Left(AuthenticationFailure());
+        return Left(AuthFailure('User not authenticated'));
       }
 
       final batch = _firestore.batch();
@@ -166,7 +179,7 @@ class AdminRepositoryImpl implements AdminRepository {
       await batch.commit();
       return Right(unit);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
   }
 
@@ -225,7 +238,7 @@ class AdminRepositoryImpl implements AdminRepository {
 
       return Right(stats);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
   }
 
@@ -252,7 +265,7 @@ class AdminRepositoryImpl implements AdminRepository {
 
       return Right(reports);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
   }
 
@@ -261,7 +274,7 @@ class AdminRepositoryImpl implements AdminRepository {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        return Left(AuthenticationFailure());
+        return Left(AuthFailure('User not authenticated'));
       }
 
       final adminDoc = await _firestore
@@ -270,7 +283,7 @@ class AdminRepositoryImpl implements AdminRepository {
           .get();
 
       if (!adminDoc.exists) {
-        return Left(AuthenticationFailure());
+        return Left(AuthFailure('User not authenticated'));
       }
 
       final data = adminDoc.data()!;
@@ -292,13 +305,26 @@ class AdminRepositoryImpl implements AdminRepository {
         isActive: data['isActive'] as bool? ?? true,
       ));
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
   }
 
-  // TODO: Implement this method to convert Firestore data to ItemEntity
+  // Convert Firestore data to ItemEntity
   Future<ItemEntity> _convertToItemEntity(Map<String, dynamic> data) async {
-    // This is a placeholder - in real implementation, convert the data to proper ItemEntity
-    throw UnimplementedError('ItemEntity conversion not implemented');
+    // Simplified conversion - you may need to adjust based on your ItemEntity structure
+    return ItemEntity(
+      id: data['id'] as String? ?? '',
+      title: data['title'] as String? ?? '',
+      description: data['description'] as String? ?? '',
+      category: data['category'] as String? ?? '',
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
+      condition: data['condition'] as String? ?? 'used',
+      images: (data['imageUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
+      ownerId: data['ownerId'] as String? ?? '',
+      ownerName: data['ownerName'] as String? ?? 'Unknown',
+      status: data['status'] as String? ?? 'active',
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
   }
 }

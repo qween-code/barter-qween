@@ -123,11 +123,14 @@ class CounterOfferModel {
   CounterOfferEntity toEntity() {
     return CounterOfferEntity(
       id: id,
-      negotiationId: negotiationId,
       offerId: offerId,
+      negotiationId: negotiationId,
       offererId: offererId,
       targetUserId: targetUserId,
+      sourceItemId: '', // TODO: Get from negotiation
+      targetItemId: '', // TODO: Get from negotiation
       type: CounterOfferType.values.firstWhere((e) => e.name == type),
+      offerType: CounterOfferType.values.firstWhere((e) => e.name == type),
       proposedCash: proposedCash,
       proposedPaymentDirection: proposedPaymentDirection,
       proposedMeetupLocation: proposedMeetupLocation,

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/barter_match_entity.dart';
-import '../../../core/services/barter_matching_service.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/services/barter_matching_service.dart' hide CashDirection;
+import '../../../core/theme/minimal_design_system.dart';
 
 /// Advanced Barter Match Filters Widget
 /// 
@@ -57,8 +55,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
       ),
       child: Column(
         children: [
@@ -70,8 +68,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 topLeft: Radius.circular(24),
                 topRight: Radius.circular(24),
               ),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+              color: MinimalDesignSystem.baseColor,
+              boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
             ),
             child: Row(
               children: [
@@ -79,14 +77,14 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: NeumorphismStandards.baseColor,
-                    boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                    color: MinimalDesignSystem.baseColor,
+                    boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                   ),
                   child: Icon(
                     Icons.tune,
                     color: _activeFiltersCount > 0 
-                      ? NeumorphismStandards.primaryColor 
-                      : NeumorphismStandards.softDark,
+                      ? MinimalDesignSystem.primaryColor 
+                      : MinimalDesignSystem.softDark,
                     size: 24,
                   ),
                 ),
@@ -99,7 +97,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                         'Advanced Filters & Sort',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: NeumorphismStandards.ultraDark,
+                          color: MinimalDesignSystem.ultraDark,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -109,8 +107,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                           : 'No filters applied',
                         style: TextStyle(
                           color: _activeFiltersCount > 0 
-                            ? NeumorphismStandards.primaryColor
-                            : NeumorphismStandards.softDark,
+                            ? MinimalDesignSystem.primaryColor
+                            : MinimalDesignSystem.softDark,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -124,8 +122,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: NeumorphismStandards.baseColor,
-                          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                          color: MinimalDesignSystem.baseColor,
+                          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                         ),
                         child: Material(
                           color: Colors.transparent,
@@ -137,7 +135,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                               child: Text(
                                 'Clear All',
                                 style: TextStyle(
-                                  color: NeumorphismStandards.softDark,
+                                  color: MinimalDesignSystem.softDark,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -149,8 +147,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: NeumorphismStandards.baseColor,
-                        boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                        color: MinimalDesignSystem.baseColor,
+                        boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                       ),
                       child: Material(
                         color: Colors.transparent,
@@ -165,7 +163,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                             padding: const EdgeInsets.all(8),
                             child: Icon(
                               _isExpanded ? Icons.expand_less : Icons.expand_more,
-                              color: NeumorphismStandards.softDark,
+                              color: MinimalDesignSystem.softDark,
                             ),
                           ),
                         ),
@@ -630,7 +628,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       maxDistance: _maxDistance,
       categoryFilter: _categoryFilter.isNotEmpty ? _categoryFilter : null,
       hasCashDifferential: _hasCashDifferential,
-      cashDirection: _cashDirection,
+      cashDirection: null, // TODO: Fix CashDirection mapping
       fromDate: _fromDate,
       toDate: _toDate,
       excludeUsers: _excludeUsers.isNotEmpty ? _excludeUsers : null,
@@ -651,6 +649,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
     switch (quality) {
       case MatchQuality.excellent:
         return Colors.green;
+      case MatchQuality.veryGood:
+        return Colors.lightGreen;
       case MatchQuality.good:
         return Colors.blue;
       case MatchQuality.fair:

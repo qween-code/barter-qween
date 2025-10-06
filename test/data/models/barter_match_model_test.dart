@@ -17,6 +17,7 @@ void main() {
         sourceUserId: 'user1',
         targetUserId: 'user2',
         matchScore: 85.5,
+        compatibilityScore: 85.5,
         categoryScore: 30.0,
         priceScore: 22.5,
         locationScore: 18.0,

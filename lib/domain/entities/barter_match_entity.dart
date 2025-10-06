@@ -14,6 +14,7 @@ class BarterMatchEntity extends Equatable {
 
   // Match scoring (0-100)
   final double matchScore; // Overall match score
+  final double compatibilityScore; // Compatibility score
   final double categoryScore; // Category compatibility (0-100)
   final double priceScore; // Price similarity (0-100)
   final double locationScore; // Location proximity (0-100)
@@ -56,6 +57,7 @@ class BarterMatchEntity extends Equatable {
     required this.sourceUserId,
     required this.targetUserId,
     required this.matchScore,
+    required this.compatibilityScore,
     required this.categoryScore,
     required this.priceScore,
     required this.locationScore,
@@ -146,6 +148,7 @@ class BarterMatchEntity extends Equatable {
       sourceUserId: sourceUserId ?? this.sourceUserId,
       targetUserId: targetUserId ?? this.targetUserId,
       matchScore: matchScore ?? this.matchScore,
+      compatibilityScore: compatibilityScore ?? this.compatibilityScore,
       categoryScore: categoryScore ?? this.categoryScore,
       priceScore: priceScore ?? this.priceScore,
       locationScore: locationScore ?? this.locationScore,
@@ -180,6 +183,7 @@ class BarterMatchEntity extends Equatable {
         sourceUserId,
         targetUserId,
         matchScore,
+        compatibilityScore,
         categoryScore,
         priceScore,
         locationScore,
@@ -223,6 +227,9 @@ enum MatchQuality {
 enum CashDirection {
   sourceToTarget, // Source user pays target user
   targetToSource, // Target user pays source user
+  fromInitiator, // From initiator
+  toInitiator, // To initiator
+  none, // No cash differential
 }
 
 /// Helper to calculate match quality from score
@@ -264,5 +271,44 @@ extension MatchQualityExtension on MatchQuality {
       case MatchQuality.poor:
         return '#F44336'; // Red
     }
+  }
+}
+
+extension BarterMatchEntityExtension on BarterMatchEntity {
+  static BarterMatchEntity fromJson(Map<String, dynamic> json) {
+    return BarterMatchEntity(
+      id: json['id'] ?? '',
+      sourceItemId: json['sourceItemId'] ?? '',
+      targetItemId: json['targetItemId'] ?? '',
+      sourceUserId: json['sourceUserId'] ?? '',
+      targetUserId: json['targetUserId'] ?? '',
+      matchScore: (json['matchScore'] ?? 0).toDouble(),
+      compatibilityScore: (json['compatibilityScore'] ?? 0).toDouble(),
+      categoryScore: (json['categoryScore'] ?? 0).toDouble(),
+      priceScore: (json['priceScore'] ?? 0).toDouble(),
+      locationScore: (json['locationScore'] ?? 0).toDouble(),
+      trustScore: (json['trustScore'] ?? 0).toDouble(),
+      conditionScore: (json['conditionScore'] ?? 0).toDouble(),
+      quality: MatchQuality.values.firstWhere(
+        (e) => e.toString() == 'MatchQuality.${json['quality']}',
+        orElse: () => MatchQuality.fair,
+      ),
+      matchReasons: List<String>.from(json['matchReasons'] ?? []),
+      concerns: List<String>.from(json['concerns'] ?? []),
+      distanceKm: json['distanceKm']?.toDouble(),
+      locationDescription: json['locationDescription'],
+      conditionsCompatible: json['conditionsCompatible'] ?? true,
+      compatibilityNote: json['compatibilityNote'],
+      suggestedCashDifferential: json['suggestedCashDifferential']?.toDouble(),
+      cashDirection: CashDirection.values.firstWhere(
+        (e) => e.toString() == 'CashDirection.${json['cashDirection']}',
+        orElse: () => CashDirection.none,
+      ),
+      calculatedAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      isSeen: json['isSeen'] ?? false,
+      isDismissed: json['isDismissed'] ?? false,
+      dismissedAt: json['dismissedAt'] != null ? DateTime.parse(json['dismissedAt']) : null,
+      offerId: json['offerId'],
+    );
   }
 }

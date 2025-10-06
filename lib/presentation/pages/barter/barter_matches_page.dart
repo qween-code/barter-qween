@@ -5,16 +5,14 @@ import '../../../core/services/analytics_service.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../../domain/entities/barter_match_entity.dart';
 import '../../blocs/barter/barter_match_cubit.dart';
-import '../../blocs/barter/barter_match_state.dart';
-import '../../blocs/barter/barter_match_event.dart';
 import '../../widgets/barter/barter_match_card.dart';
 import '../../widgets/barter/barter_match_filters.dart';
 import '../../widgets/loading/skeleton_loading.dart';
 import '../items/item_detail_page.dart';
 import '../../../core/services/barter_matching_service.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
+import '../../blocs/item/item_bloc.dart';
+import '../../blocs/favorite/favorite_bloc.dart';
 
 /// Real Barter Matches Page
 /// Shows actual barter matches calculated by Cloud Functions
@@ -67,10 +65,10 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
           'Barter Matches',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: NeumorphismStandards.ultraDark,
+            color: MinimalDesignSystem.ultraDark,
           ),
         ),
-        backgroundColor: NeumorphismStandards.baseColor,
+        backgroundColor: MinimalDesignSystem.baseColor,
         elevation: 0,
         actions: [
           if (_hasFilters)
@@ -78,8 +76,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
               margin: const EdgeInsets.only(right: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                color: MinimalDesignSystem.baseColor,
+                boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
               ),
               child: Material(
                 color: Colors.transparent,
@@ -90,7 +88,7 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                     padding: const EdgeInsets.all(8),
                     child: Icon(
                       Icons.clear_all,
-                      color: NeumorphismStandards.softDark,
+                      color: MinimalDesignSystem.softDark,
                     ),
                   ),
                 ),
@@ -98,7 +96,7 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
             ),
         ],
       ),
-      backgroundColor: NeumorphismStandards.baseColor,
+      backgroundColor: MinimalDesignSystem.baseColor,
       body: BlocProvider.value(
         value: _barterMatchCubit,
         child: BlocBuilder<BarterMatchCubit, BarterMatchState>(
@@ -109,8 +107,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                   padding: const EdgeInsets.all(40),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    color: NeumorphismStandards.baseColor,
-                    boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                    color: MinimalDesignSystem.baseColor,
+                    boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -120,11 +118,11 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                         height: 60,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),
-                          color: NeumorphismStandards.baseColor,
-                          boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                          color: MinimalDesignSystem.baseColor,
+                          boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
                         ),
                         child: CircularProgressIndicator(
-                          color: NeumorphismStandards.primaryColor,
+                          color: MinimalDesignSystem.primaryColor,
                           strokeWidth: 3,
                         ),
                       ),
@@ -133,14 +131,14 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                         'Finding Perfect Matches',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: NeumorphismStandards.ultraDark,
+                          color: MinimalDesignSystem.ultraDark,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Analyzing compatibility and calculating scores...',
                         style: TextStyle(
-                          color: NeumorphismStandards.softDark,
+                          color: MinimalDesignSystem.softDark,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
@@ -156,8 +154,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                   padding: const EdgeInsets.all(40),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    color: NeumorphismStandards.baseColor,
-                    boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                    color: MinimalDesignSystem.baseColor,
+                    boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -167,8 +165,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                         height: 80,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(40),
-                          color: NeumorphismStandards.baseColor,
-                          boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                          color: MinimalDesignSystem.baseColor,
+                          boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
                         ),
                         child: Icon(
                           Icons.error_outline,
@@ -181,14 +179,14 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                         'Failed to Load Matches',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: NeumorphismStandards.ultraDark,
+                          color: MinimalDesignSystem.ultraDark,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         state.message,
                         style: TextStyle(
-                          color: NeumorphismStandards.softDark,
+                          color: MinimalDesignSystem.softDark,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
@@ -197,16 +195,16 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          color: NeumorphismStandards.primaryColor,
+                          color: MinimalDesignSystem.primaryColor,
                           boxShadow: [
                             BoxShadow(
-                              color: NeumorphismStandards.primaryColor.withOpacity(0.3),
+                              color: MinimalDesignSystem.primaryColor.withOpacity(0.3),
                               offset: const Offset(-4, -4),
                               blurRadius: 8,
                               spreadRadius: 0,
                             ),
                             BoxShadow(
-                              color: NeumorphismStandards.primaryColor.withOpacity(0.1),
+                              color: MinimalDesignSystem.primaryColor.withOpacity(0.1),
                               offset: const Offset(4, 4),
                               blurRadius: 8,
                               spreadRadius: 0,
@@ -278,8 +276,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: NeumorphismStandards.baseColor,
-                      boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                      color: MinimalDesignSystem.baseColor,
+                      boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                     ),
                     child: Row(
                       children: [
@@ -287,12 +285,12 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
-                            color: NeumorphismStandards.baseColor,
-                            boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                            color: MinimalDesignSystem.baseColor,
+                            boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
                           ),
                           child: Icon(
                             Icons.swap_horiz,
-                            color: NeumorphismStandards.primaryColor,
+                            color: MinimalDesignSystem.primaryColor,
                             size: 24,
                           ),
                         ),
@@ -305,14 +303,14 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                                 '${_filteredMatches.length} Matches Found',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: NeumorphismStandards.ultraDark,
+                                  color: MinimalDesignSystem.ultraDark,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 'Perfect barter opportunities waiting for you',
                                 style: TextStyle(
-                                  color: NeumorphismStandards.softDark,
+                                  color: MinimalDesignSystem.softDark,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -324,16 +322,16 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                              color: NeumorphismStandards.primaryColor,
+                              color: MinimalDesignSystem.primaryColor,
                               boxShadow: [
                                 BoxShadow(
-                                  color: NeumorphismStandards.primaryColor.withOpacity(0.3),
+                                  color: MinimalDesignSystem.primaryColor.withOpacity(0.3),
                                   offset: const Offset(-4, -4),
                                   blurRadius: 8,
                                   spreadRadius: 0,
                                 ),
                                 BoxShadow(
-                                  color: NeumorphismStandards.primaryColor.withOpacity(0.1),
+                                  color: MinimalDesignSystem.primaryColor.withOpacity(0.1),
                                   offset: const Offset(4, 4),
                                   blurRadius: 8,
                                   spreadRadius: 0,
@@ -388,8 +386,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
         padding: const EdgeInsets.all(40),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          color: NeumorphismStandards.baseColor,
-          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          color: MinimalDesignSystem.baseColor,
+          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -399,13 +397,13 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
               height: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                color: MinimalDesignSystem.baseColor,
+                boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
               ),
               child: Icon(
                 Icons.search_off,
                 size: 40,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
               ),
             ),
             const SizedBox(height: 24),
@@ -413,14 +411,14 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
               'No Matches Found',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.ultraDark,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               'Try adjusting your barter conditions or check back later for new items.',
               style: TextStyle(
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
@@ -429,8 +427,8 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                color: MinimalDesignSystem.baseColor,
+                boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
               ),
               child: Material(
                 color: Colors.transparent,
@@ -446,14 +444,14 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                       children: [
                         Icon(
                           Icons.arrow_back,
-                          color: NeumorphismStandards.softDark,
+                          color: MinimalDesignSystem.softDark,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Back to Item',
                           style: TextStyle(
-                            color: NeumorphismStandards.softDark,
+                            color: MinimalDesignSystem.softDark,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

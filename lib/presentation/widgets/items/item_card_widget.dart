@@ -221,7 +221,7 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
       final favoriteBloc = context.read<FavoriteBloc>();
       final wasFavorited = favoriteBloc.isFavorited(widget.item.id);
       
-      favoriteBloc.add(ToggleFavorite(authState.user.uid, widget.item.id));
+      favoriteBloc.add(ToggleFavorite(widget.item.id));
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

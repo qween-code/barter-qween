@@ -14,6 +14,7 @@ class UserEntity extends Equatable {
   final String? address;
   final String? city;
   final DateTime? updatedAt;
+  final double? trustScore;
 
   const UserEntity({
     required this.uid,
@@ -27,6 +28,7 @@ class UserEntity extends Equatable {
     this.address,
     this.city,
     this.updatedAt,
+    this.trustScore,
   });
 
   @override
@@ -42,6 +44,7 @@ class UserEntity extends Equatable {
         address,
         city,
         updatedAt,
+        trustScore,
       ];
       
   // CopyWith method for profile updates

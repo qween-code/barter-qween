@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../core/error/failures.dart';
 import '../entities/trade_entity.dart';
-import '../entities/trade_offer_entity.dart';
+import '../entities/trade_offer_entity.dart' hide TradeStatus;
 
 /// Use case for creating a confirmed trade from an accepted offer
 /// 

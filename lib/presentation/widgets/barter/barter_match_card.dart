@@ -3,9 +3,7 @@ import '../../../domain/entities/barter_match_entity.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../../core/services/analytics_service.dart';
 import '../../../core/di/injection.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
 
 /// World-Class Neuromorphic Barter Match Card Widget
 /// 
@@ -107,6 +105,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
       matchId: widget.match.id,
       sourceItemId: widget.match.sourceItemId,
       targetItemId: widget.match.targetItemId,
+      matchScore: widget.match.matchScore,
     );
   }
 
@@ -121,14 +120,14 @@ class _BarterMatchCardState extends State<BarterMatchCard>
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: NeumorphismStandards.baseColor,
+              color: MinimalDesignSystem.baseColor,
               boxShadow: [
                 // Base neuromorphic shadow
-                ...NeumorphismStandards.neumorphismOutsetShadow,
+                ...MinimalDesignSystem.neumorphismOutsetShadow,
                 // Hover effect shadow
                 if (_isHovered)
                   BoxShadow(
-                    color: NeumorphismStandards.primaryColor.withOpacity(0.1),
+                    color: MinimalDesignSystem.primaryColor.withOpacity(0.1),
                     offset: const Offset(0, 8),
                     blurRadius: 20,
                     spreadRadius: 2,
@@ -221,7 +220,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                 height: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
-                  color: NeumorphismStandards.baseColor,
+                  color: MinimalDesignSystem.baseColor,
                   boxShadow: [
                     BoxShadow(
                       color: _getScoreColor(widget.match.matchScore).withOpacity(0.3),
@@ -285,8 +284,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: NeumorphismStandards.baseColor,
-                    boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                    color: MinimalDesignSystem.baseColor,
+                    boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -294,13 +293,13 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                       Icon(
                         Icons.location_on,
                         size: 16,
-                        color: NeumorphismStandards.softDark,
+                        color: MinimalDesignSystem.softDark,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         '${widget.match.distanceKm!.toStringAsFixed(1)} km away',
                         style: TextStyle(
-                          color: NeumorphismStandards.softDark,
+                          color: MinimalDesignSystem.softDark,
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
                         ),
@@ -317,8 +316,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+              color: MinimalDesignSystem.baseColor,
+              boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
             ),
             child: IconButton(
               onPressed: () {
@@ -328,7 +327,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
               icon: Icon(
                 Icons.close,
                 size: 20,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
               ),
               constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
               padding: EdgeInsets.zero,
@@ -343,8 +342,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +352,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
             'Match Breakdown',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: NeumorphismStandards.ultraDark,
+              color: MinimalDesignSystem.ultraDark,
             ),
           ),
           const SizedBox(height: 16),
@@ -403,7 +402,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: NeumorphismStandards.softDark,
+            color: MinimalDesignSystem.softDark,
           ),
         ),
         const SizedBox(height: 4),
@@ -424,8 +423,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,7 +441,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                 'Why this is a great match',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: NeumorphismStandards.ultraDark,
+                  color: MinimalDesignSystem.ultraDark,
                 ),
               ),
             ],
@@ -465,7 +464,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                   child: Text(
                     reason,
                     style: TextStyle(
-                      color: NeumorphismStandards.ultraDark,
+                      color: MinimalDesignSystem.ultraDark,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -483,8 +482,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -524,7 +523,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                   child: Text(
                     concern,
                     style: TextStyle(
-                      color: NeumorphismStandards.ultraDark,
+                      color: MinimalDesignSystem.ultraDark,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -542,14 +541,14 @@ class _BarterMatchCardState extends State<BarterMatchCard>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
       ),
       child: Row(
         children: [
           Icon(
             Icons.account_balance_wallet,
-            color: NeumorphismStandards.primaryColor,
+            color: MinimalDesignSystem.primaryColor,
             size: 24,
           ),
           const SizedBox(width: 16),
@@ -561,7 +560,7 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                   'Cash Differential',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: NeumorphismStandards.ultraDark,
+                    color: MinimalDesignSystem.ultraDark,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -570,14 +569,14 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: NeumorphismStandards.primaryColor,
+                    color: MinimalDesignSystem.primaryColor,
                   ),
                 ),
                 Text(
-                  _getCashDirectionText(widget.match.cashDirection),
+                  _getCashDirectionText(widget.match.cashDirection ?? CashDirection.none),
                   style: TextStyle(
                     fontSize: 12,
-                    color: NeumorphismStandards.softDark,
+                    color: MinimalDesignSystem.softDark,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -596,8 +595,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+              color: MinimalDesignSystem.baseColor,
+              boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
             ),
             child: Material(
               color: Colors.transparent,
@@ -615,14 +614,14 @@ class _BarterMatchCardState extends State<BarterMatchCard>
                       Icon(
                         Icons.visibility,
                         size: 18,
-                        color: NeumorphismStandards.softDark,
+                        color: MinimalDesignSystem.softDark,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'View Details',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          color: NeumorphismStandards.softDark,
+                          color: MinimalDesignSystem.softDark,
                         ),
                       ),
                     ],
@@ -639,16 +638,16 @@ class _BarterMatchCardState extends State<BarterMatchCard>
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: NeumorphismStandards.primaryColor,
+              color: MinimalDesignSystem.primaryColor,
               boxShadow: [
                 BoxShadow(
-                  color: NeumorphismStandards.primaryColor.withOpacity(0.3),
+                  color: MinimalDesignSystem.primaryColor.withOpacity(0.3),
                   offset: const Offset(-4, -4),
                   blurRadius: 8,
                   spreadRadius: 0,
                 ),
                 BoxShadow(
-                  color: NeumorphismStandards.primaryColor.withOpacity(0.1),
+                  color: MinimalDesignSystem.primaryColor.withOpacity(0.1),
                   offset: const Offset(4, 4),
                   blurRadius: 8,
                   spreadRadius: 0,
@@ -703,6 +702,8 @@ class _BarterMatchCardState extends State<BarterMatchCard>
     switch (quality) {
       case MatchQuality.excellent:
         return Colors.green[600]!;
+      case MatchQuality.veryGood:
+        return Colors.lightGreen[600]!;
       case MatchQuality.good:
         return Colors.blue[600]!;
       case MatchQuality.fair:
@@ -714,6 +715,10 @@ class _BarterMatchCardState extends State<BarterMatchCard>
 
   String _getCashDirectionText(CashDirection direction) {
     switch (direction) {
+      case CashDirection.sourceToTarget:
+        return 'Source pays target';
+      case CashDirection.targetToSource:
+        return 'Target pays source';
       case CashDirection.fromInitiator:
         return 'You pay extra';
       case CashDirection.toInitiator:

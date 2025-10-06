@@ -465,7 +465,7 @@ class UserProfileView extends StatelessWidget {
                                             final authState = context.read<AuthBloc>().state;
                                             if (authState is AuthAuthenticated) {
                                               favoriteBloc.add(
-                                                ToggleFavorite(authState.user.uid, item.id),
+                                                ToggleFavorite(item.id),
                                               );
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 SnackBar(

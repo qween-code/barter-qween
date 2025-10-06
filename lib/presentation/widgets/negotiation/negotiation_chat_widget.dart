@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/message_entity.dart';
 import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
@@ -117,7 +115,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                     return _buildErrorState(state.message);
                   }
                   
-                  if (state is ChatLoaded) {
+                  if (state is MessagesLoaded) {
                     return _buildMessagesList(state.messages);
                   }
                   
@@ -144,8 +142,8 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.primaryWhite,
+        boxShadow: MinimalDesignSystem.subtleShadow,
       ),
       child: Row(
         children: [
@@ -154,12 +152,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+              color: MinimalDesignSystem.primaryWhite,
+              boxShadow: MinimalDesignSystem.cardShadow,
             ),
             child: Icon(
               Icons.chat,
-              color: NeumorphismStandards.primaryColor,
+              color: MinimalDesignSystem.primaryBlack,
               size: 20,
             ),
           ),
@@ -173,14 +171,14 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: NeumorphismStandards.ultraDark,
+                    color: MinimalDesignSystem.primaryBlack,
                   ),
                 ),
                 Text(
                   'Discuss terms with ${widget.otherUserName}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: NeumorphismStandards.softDark,
+                    color: MinimalDesignSystem.secondaryGray,
                   ),
                 ),
               ],
@@ -190,7 +188,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: NeumorphismStandards.successColor,
+              color: MinimalDesignSystem.successColor,
               shape: BoxShape.circle,
             ),
           ),
@@ -209,12 +207,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             height: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+              color: MinimalDesignSystem.primaryWhite,
+              boxShadow: MinimalDesignSystem.subtleShadow,
             ),
             child: Icon(
               Icons.chat_bubble_outline,
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.secondaryGray,
               size: 30,
             ),
           ),
@@ -222,7 +220,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
           Text(
             'Loading messages...',
             style: TextStyle(
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.secondaryGray,
               fontSize: 14,
             ),
           ),
@@ -238,8 +236,8 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: NeumorphismStandards.baseColor,
-          boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+          color: MinimalDesignSystem.primaryWhite,
+          boxShadow: MinimalDesignSystem.cardShadow,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -247,7 +245,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             Icon(
               Icons.error_outline,
               size: 48,
-              color: NeumorphismStandards.errorColor,
+              color: MinimalDesignSystem.errorColor,
             ),
             const SizedBox(height: 16),
             Text(
@@ -255,7 +253,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.primaryBlack,
               ),
             ),
             const SizedBox(height: 8),
@@ -264,7 +262,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.secondaryGray,
               ),
             ),
           ],
@@ -283,12 +281,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             height: 80,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+              color: MinimalDesignSystem.primaryWhite,
+              boxShadow: MinimalDesignSystem.subtleShadow,
             ),
             child: Icon(
               Icons.chat_bubble_outline,
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.secondaryGray,
               size: 40,
             ),
           ),
@@ -298,7 +296,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: NeumorphismStandards.ultraDark,
+              color: MinimalDesignSystem.primaryBlack,
             ),
           ),
           const SizedBox(height: 8),
@@ -306,7 +304,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             'Send a message to begin negotiating',
             style: TextStyle(
               fontSize: 14,
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.secondaryGray,
             ),
           ),
         ],
@@ -359,12 +357,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               height: 32,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                color: MinimalDesignSystem.primaryWhite,
+                boxShadow: MinimalDesignSystem.cardShadow,
               ),
               child: Icon(
                 Icons.person,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.secondaryGray,
                 size: 16,
               ),
             ),
@@ -376,11 +374,11 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: isCurrentUser
-                    ? NeumorphismStandards.primaryColor.withOpacity(0.1)
-                    : NeumorphismStandards.baseColor,
+                    ? MinimalDesignSystem.primaryBlack.withOpacity(0.1)
+                    : MinimalDesignSystem.primaryWhite,
                 boxShadow: isCurrentUser
-                    ? NeumorphismStandards.neumorphismOutsetShadow
-                    : NeumorphismStandards.neumorphismInsetShadow,
+                    ? MinimalDesignSystem.cardShadow
+                    : MinimalDesignSystem.subtleShadow,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,8 +388,8 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                     style: TextStyle(
                       fontSize: 14,
                       color: isCurrentUser
-                          ? NeumorphismStandards.primaryColor
-                          : NeumorphismStandards.ultraDark,
+                          ? MinimalDesignSystem.primaryBlack
+                          : MinimalDesignSystem.primaryBlack,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -399,7 +397,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                     _formatMessageTime(message.createdAt),
                     style: TextStyle(
                       fontSize: 10,
-                      color: NeumorphismStandards.lightShadow,
+                      color: MinimalDesignSystem.primaryWhite,
                     ),
                   ),
                 ],
@@ -413,12 +411,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               height: 32,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                color: MinimalDesignSystem.primaryWhite,
+                boxShadow: MinimalDesignSystem.cardShadow,
               ),
               child: Icon(
                 Icons.person,
-                color: NeumorphismStandards.primaryColor,
+                color: MinimalDesignSystem.primaryBlack,
                 size: 16,
               ),
             ),
@@ -438,12 +436,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             height: 32,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+              color: MinimalDesignSystem.primaryWhite,
+              boxShadow: MinimalDesignSystem.cardShadow,
             ),
             child: Icon(
               Icons.person,
-              color: NeumorphismStandards.softDark,
+              color: MinimalDesignSystem.secondaryGray,
               size: 16,
             ),
           ),
@@ -452,8 +450,8 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: NeumorphismStandards.baseColor,
-              boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+              color: MinimalDesignSystem.primaryWhite,
+              boxShadow: MinimalDesignSystem.subtleShadow,
             ),
             child: AnimatedBuilder(
               animation: _typingAnimation,
@@ -465,7 +463,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                       '${widget.otherUserName} is typing',
                       style: TextStyle(
                         fontSize: 12,
-                        color: NeumorphismStandards.softDark,
+                        color: MinimalDesignSystem.secondaryGray,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -476,7 +474,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                         width: 4,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: NeumorphismStandards.softDark,
+                          color: MinimalDesignSystem.secondaryGray,
                           shape: BoxShape.circle,
                         ),
                       );
@@ -495,8 +493,8 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.primaryWhite,
+        boxShadow: MinimalDesignSystem.subtleShadow,
       ),
       child: Row(
         children: [
@@ -504,13 +502,13 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
             child: TextField(
               controller: _messageController,
               style: TextStyle(
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.primaryBlack,
                 fontSize: 14,
               ),
               decoration: InputDecoration(
                 hintText: 'Type a message...',
                 hintStyle: TextStyle(
-                  color: NeumorphismStandards.lightShadow,
+                  color: MinimalDesignSystem.primaryWhite,
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
@@ -538,12 +536,12 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               height: 40,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                color: MinimalDesignSystem.primaryWhite,
+                boxShadow: MinimalDesignSystem.cardShadow,
               ),
               child: Icon(
                 Icons.send,
-                color: NeumorphismStandards.primaryColor,
+                color: MinimalDesignSystem.primaryBlack,
                 size: 20,
               ),
             ),
@@ -559,11 +557,11 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
 
     // Send message
     context.read<ChatBloc>().add(
-      SendMessageEvent(
+      SendMessage(
         conversationId: widget.negotiationId,
-        content: content,
         senderId: _currentUserId!,
-        receiverId: widget.otherUserId,
+        senderName: 'Current User', // TODO: Get from auth
+        text: content,
       ),
     );
 

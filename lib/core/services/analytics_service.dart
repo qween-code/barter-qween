@@ -229,10 +229,12 @@ class AnalyticsService {
     });
   }
 
-  Future<void> logTradeCompleted({required String tradeId}) async {
-    await _analytics.logEvent(name: 'trade_completed', parameters: {
-      'trade_id': tradeId,
-    });
+  /// Generic event logging
+  Future<void> logEvent({
+    required String name,
+    Map<String, dynamic>? parameters,
+  }) async {
+    await _analytics.logEvent(name: name, parameters: parameters ?? {});
   }
 
   Future<void> logUserRated({required String ratedUserId, required int rating}) async {

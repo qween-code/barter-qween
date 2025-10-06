@@ -357,9 +357,11 @@ class ItemEntity extends Equatable {
   final String? color;
   final String ownerId;
   final String ownerName;
+  String get userId => ownerId;
   final String? ownerPhotoUrl;
   final String? location;
   final String? city;
+  final String? district;
   final ItemStatus status;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -546,6 +548,7 @@ class ItemEntity extends Equatable {
     this.ownerPhotoUrl,
     this.location,
     this.city,
+    this.district,
     required this.status,
     required this.createdAt,
     this.updatedAt,
@@ -974,6 +977,7 @@ class ItemEntity extends Equatable {
         ownerPhotoUrl,
         location,
         city,
+        district,
         status,
         createdAt,
         updatedAt,

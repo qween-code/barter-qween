@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/theme/neumorphism_standards.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
-import '../../../core/theme/neumorphism_animations.dart';
+import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/negotiation_entity.dart';
 import '../../../domain/entities/counter_offer_entity.dart';
+import '../../../domain/usecases/send_counter_offer_usecase.dart';
 
 /// Neuromorphic Counter Offer Dialog
 /// Professional counter-offer interface with smooth animations
@@ -106,8 +105,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
                 margin: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  color: NeumorphismStandards.baseColor,
-                  boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                  color: MinimalDesignSystem.baseColor,
+                  boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -133,8 +132,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
       ),
       child: Row(
         children: [
@@ -148,12 +147,12 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
                   height: 40,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: NeumorphismStandards.baseColor,
-                    boxShadow: NeumorphismStandards.neumorphismOutsetShadow,
+                    color: MinimalDesignSystem.baseColor,
+                    boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
                   ),
                   child: Icon(
                     Icons.swap_horiz,
-                    color: NeumorphismStandards.primaryColor,
+                    color: MinimalDesignSystem.primaryColor,
                     size: 20,
                   ),
                 ),
@@ -170,14 +169,14 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: NeumorphismStandards.ultraDark,
+                    color: MinimalDesignSystem.ultraDark,
                   ),
                 ),
                 Text(
                   'Propose new terms for the negotiation',
                   style: TextStyle(
                     fontSize: 12,
-                    color: NeumorphismStandards.softDark,
+                    color: MinimalDesignSystem.softDark,
                   ),
                 ),
               ],
@@ -190,12 +189,12 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
               height: 32,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: NeumorphismStandards.baseColor,
-                boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+                color: MinimalDesignSystem.baseColor,
+                boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
               ),
               child: Icon(
                 Icons.close,
-                color: NeumorphismStandards.softDark,
+                color: MinimalDesignSystem.softDark,
                 size: 16,
               ),
             ),
@@ -219,7 +218,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.ultraDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -234,7 +233,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: NeumorphismStandards.ultraDark,
+                  color: MinimalDesignSystem.ultraDark,
                 ),
               ),
               const SizedBox(height: 12),
@@ -248,7 +247,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: NeumorphismStandards.ultraDark,
+                color: MinimalDesignSystem.ultraDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -264,8 +263,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
       ),
       child: Row(
         children: [
@@ -310,10 +309,10 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: isSelected
-              ? NeumorphismStandards.primaryColor.withOpacity(0.1)
+              ? MinimalDesignSystem.primaryColor.withOpacity(0.1)
               : Colors.transparent,
           boxShadow: isSelected
-              ? NeumorphismStandards.neumorphismOutsetShadow
+              ? MinimalDesignSystem.neumorphismOutsetShadow
               : null,
         ),
         child: Column(
@@ -321,8 +320,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
             Icon(
               icon,
               color: isSelected
-                  ? NeumorphismStandards.primaryColor
-                  : NeumorphismStandards.softDark,
+                  ? MinimalDesignSystem.primaryColor
+                  : MinimalDesignSystem.softDark,
               size: 20,
             ),
             const SizedBox(height: 4),
@@ -332,8 +331,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: isSelected
-                    ? NeumorphismStandards.primaryColor
-                    : NeumorphismStandards.softDark,
+                    ? MinimalDesignSystem.primaryColor
+                    : MinimalDesignSystem.softDark,
               ),
             ),
           ],
@@ -346,8 +345,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
       ),
       child: TextFormField(
         controller: _cashAmountController,
@@ -356,17 +355,17 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
           FilteringTextInputFormatter.digitsOnly,
         ],
         style: TextStyle(
-          color: NeumorphismStandards.ultraDark,
+          color: MinimalDesignSystem.ultraDark,
           fontSize: 16,
         ),
         decoration: InputDecoration(
           hintText: 'Enter cash amount',
           hintStyle: TextStyle(
-            color: NeumorphismStandards.lightShadow,
+            color: MinimalDesignSystem.lightShadow,
           ),
           prefixIcon: Icon(
             Icons.attach_money,
-            color: NeumorphismStandards.softDark,
+            color: MinimalDesignSystem.softDark,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
@@ -389,20 +388,20 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
       ),
       child: TextFormField(
         controller: _messageController,
         maxLines: 3,
         style: TextStyle(
-          color: NeumorphismStandards.ultraDark,
+          color: MinimalDesignSystem.ultraDark,
           fontSize: 16,
         ),
         decoration: InputDecoration(
           hintText: 'Add a message to your counter offer...',
           hintStyle: TextStyle(
-            color: NeumorphismStandards.lightShadow,
+            color: MinimalDesignSystem.lightShadow,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(16),
@@ -419,8 +418,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
         ),
-        color: NeumorphismStandards.baseColor,
-        boxShadow: NeumorphismStandards.neumorphismInsetShadow,
+        color: MinimalDesignSystem.baseColor,
+        boxShadow: MinimalDesignSystem.neumorphismInsetShadow,
       ),
       child: Row(
         children: [
@@ -456,10 +455,10 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: NeumorphismStandards.baseColor,
+          color: MinimalDesignSystem.baseColor,
           boxShadow: isPrimary
-              ? NeumorphismStandards.neumorphismInsetShadow
-              : NeumorphismStandards.neumorphismOutsetShadow,
+              ? MinimalDesignSystem.neumorphismInsetShadow
+              : MinimalDesignSystem.neumorphismOutsetShadow,
         ),
         child: Text(
           text,
@@ -468,8 +467,8 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: isPrimary
-                ? NeumorphismStandards.primaryColor
-                : NeumorphismStandards.softDark,
+                ? MinimalDesignSystem.primaryColor
+                : MinimalDesignSystem.softDark,
           ),
         ),
       ),
@@ -486,18 +485,20 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
     // Create counter offer parameters
     final params = SendCounterOfferParams(
       negotiationId: widget.negotiation.id,
+      offerId: 'temp_offer_id', // TODO: Generate proper offer ID
       offererId: 'current_user_id', // Get from auth
-      offerType: _selectedType,
-      cashAmount: _selectedType == CounterOfferType.cash
+      targetUserId: widget.negotiation.getOtherPartyId('current_user_id'),
+      type: _selectedType,
+      proposedCash: _selectedType == CounterOfferType.cash
           ? double.tryParse(_cashAmountController.text) ?? 0.0
           : null,
       message: _messageController.text.isNotEmpty
           ? _messageController.text
           : null,
-      proposedLocation: _selectedType == CounterOfferType.location
+      proposedMeetupLocation: _selectedType == CounterOfferType.location
           ? 'New location' // Implement location picker
           : null,
-      proposedTime: _selectedType == CounterOfferType.time
+      proposedMeetupTime: _selectedType == CounterOfferType.time
           ? DateTime.now().add(const Duration(days: 1))
           : null,
     );
@@ -514,31 +515,3 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
   }
 }
 
-// Placeholder classes - these should be imported from domain layer
-class SendCounterOfferParams {
-  final String negotiationId;
-  final String offererId;
-  final CounterOfferType offerType;
-  final double? cashAmount;
-  final String? message;
-  final String? proposedLocation;
-  final DateTime? proposedTime;
-
-  SendCounterOfferParams({
-    required this.negotiationId,
-    required this.offererId,
-    required this.offerType,
-    this.cashAmount,
-    this.message,
-    this.proposedLocation,
-    this.proposedTime,
-  });
-}
-
-enum CounterOfferType {
-  cash,
-  location,
-  time,
-  terms,
-  full,
-}

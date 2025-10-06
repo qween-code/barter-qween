@@ -14,6 +14,9 @@ class MessageEntity extends Equatable {
   final String senderId;
   final String senderName;
   final String text;
+  final String receiverId;
+  final DateTime timestamp;
+  String get content => text;
   final MessageType type;
   final DateTime createdAt;
   final bool isRead;
@@ -25,6 +28,8 @@ class MessageEntity extends Equatable {
     required this.senderId,
     required this.senderName,
     required this.text,
+    required this.receiverId,
+    required this.timestamp,
     required this.type,
     required this.createdAt,
     required this.isRead,
@@ -59,9 +64,46 @@ class MessageEntity extends Equatable {
         senderId,
         senderName,
         text,
+        receiverId,
+        timestamp,
         type,
         createdAt,
         isRead,
         imageUrl,
       ];
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'conversationId': conversationId,
+      'senderId': senderId,
+      'senderName': senderName,
+      'text': text,
+      'receiverId': receiverId,
+      'timestamp': timestamp.toIso8601String(),
+      'type': type.toString(),
+      'createdAt': createdAt.toIso8601String(),
+      'isRead': isRead,
+      'imageUrl': imageUrl,
+    };
+  }
+
+  factory MessageEntity.fromJson(Map<String, dynamic> json) {
+    return MessageEntity(
+      id: json['id'] ?? '',
+      conversationId: json['conversationId'] ?? '',
+      senderId: json['senderId'] ?? '',
+      senderName: json['senderName'] ?? '',
+      text: json['text'] ?? '',
+      receiverId: json['receiverId'] ?? '',
+      timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
+      type: MessageType.values.firstWhere(
+        (e) => e.toString() == 'MessageType.${json['type']}',
+        orElse: () => MessageType.text,
+      ),
+      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      isRead: json['isRead'] ?? false,
+      imageUrl: json['imageUrl'],
+    );
+  }
 }

@@ -34,6 +34,12 @@ class CreateNegotiationUsecase {
         tradeOfferId: params.tradeOfferId,
         initiatorId: params.initiatorId,
         responderId: params.responderId,
+        sourceItemId: '', // TODO: Get from trade offer
+        targetItemId: '', // TODO: Get from trade offer
+        receiverId: params.responderId,
+        lastActionBy: params.initiatorId,
+        lastCounterOffer: null,
+        counterOffers: const [],
         status: NegotiationStatus.active,
         roundCount: 0,
         currentOfferer: params.initiatorId, // Initiator starts

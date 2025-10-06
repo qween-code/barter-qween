@@ -58,18 +58,25 @@ class RecommendationService {
       // Filter by distance if both have coordinates
       List<ItemEntity> nearbyItems = filteredItems;
       if (sourceItem.latitude != null && sourceItem.longitude != null) {
-        nearbyItems = filteredItems.where((item) {
-          if (item.latitude == null || item.longitude == null) return true;
+        final validItems = <ItemEntity>[];
+        for (final item in filteredItems) {
+          if (item.latitude == null || item.longitude == null) {
+            validItems.add(item);
+            continue;
+          }
           
-          final distance = _mapService.calculateDistance(
+          final distance = await _mapService.calculateDistance(
             sourceItem.latitude!,
             sourceItem.longitude!,
             item.latitude!,
             item.longitude!,
           );
           
-          return distance <= maxDistanceKm;
-        }).toList();
+          if (distance <= maxDistanceKm) {
+            validItems.add(item);
+          }
+        }
+        nearbyItems = validItems;
       }
 
       // Sort by price similarity
@@ -152,34 +159,39 @@ class RecommendationService {
 
       final querySnapshot = await query.limit(limit * 2).get();
 
-      final items = querySnapshot.docs
+      final allItems = querySnapshot.docs
           .map((doc) => ItemModel.fromFirestore(doc).toEntity())
-          .where((item) {
-            if (item.latitude == null || item.longitude == null) return false;
-            
-            final distance = _mapService.calculateDistance(
-              userLat,
-              userLon,
-              item.latitude!,
-              item.longitude!,
-            );
-            
-            return distance <= radiusKm;
-          })
           .toList();
+      
+      final items = <ItemEntity>[];
+      for (final item in allItems) {
+        if (item.latitude == null || item.longitude == null) continue;
+        
+        final distance = await _mapService.calculateDistance(
+          userLat,
+          userLon,
+          item.latitude!,
+          item.longitude!,
+        );
+        
+        if (distance <= radiusKm) {
+          items.add(item);
+        }
+      }
 
       // Sort by distance
-      items.sort((a, b) {
-        final distA = _mapService.calculateDistance(
-          userLat, userLon, a.latitude!, a.longitude!,
+      final itemsWithDistance = <MapEntry<ItemEntity, double>>[];
+      for (final item in items) {
+        final distance = await _mapService.calculateDistance(
+          userLat, userLon, item.latitude!, item.longitude!,
         );
-        final distB = _mapService.calculateDistance(
-          userLat, userLon, b.latitude!, b.longitude!,
-        );
-        return distA.compareTo(distB);
-      });
+        itemsWithDistance.add(MapEntry(item, distance));
+      }
+      
+      itemsWithDistance.sort((a, b) => a.value.compareTo(b.value));
+      final sortedItems = itemsWithDistance.map((entry) => entry.key).toList();
 
-      return items.take(limit).toList();
+      return sortedItems.take(limit).toList();
     } catch (e) {
       print('Error getting nearby items: $e');
       return [];

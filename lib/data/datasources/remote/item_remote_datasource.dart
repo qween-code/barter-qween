@@ -18,6 +18,9 @@ abstract class ItemRemoteDataSource {
   Future<List<ItemModel>> searchItems(String query);
   Future<void> incrementViewCount(String itemId);
   Future<List<ItemModel>> getFeaturedItems({int limit = 10});
+  Future<List<ItemModel>> getRecentItems();
+  Future<List<ItemModel>> getTrendingItems();
+  Future<List<String>> getSearchSuggestions(String query);
 }
 
 @LazySingleton(as: ItemRemoteDataSource)
@@ -228,6 +231,57 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
       return snapshot.docs.map((doc) => ItemModel.fromFirestore(doc)).toList();
     } catch (e) {
       throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<ItemModel>> getRecentItems() async {
+    try {
+      final snapshot = await firestore
+          .collection('items')
+          .where('status', isEqualTo: 'active')
+          .orderBy('createdAt', descending: true)
+          .limit(20)
+          .get();
+
+      return snapshot.docs.map((doc) => ItemModel.fromFirestore(doc)).toList();
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<ItemModel>> getTrendingItems() async {
+    try {
+      final snapshot = await firestore
+          .collection('items')
+          .where('status', isEqualTo: 'active')
+          .orderBy('viewCount', descending: true)
+          .limit(20)
+          .get();
+
+      return snapshot.docs.map((doc) => ItemModel.fromFirestore(doc)).toList();
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<String>> getSearchSuggestions(String query) async {
+    try {
+      final snapshot = await firestore
+          .collection('items')
+          .where('title', isGreaterThanOrEqualTo: query)
+          .where('title', isLessThan: query + 'z')
+          .limit(10)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => doc.data()['title'] as String)
+          .toSet()
+          .toList();
+    } catch (e) {
+      return [];
     }
   }
 }

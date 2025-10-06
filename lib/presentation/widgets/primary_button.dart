@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/theme/neumorphism_standards.dart';
-import '../../core/theme/neumorphism_animations.dart';
-import '../../core/theme/neuromorphic_effects.dart';
+import '../../core/theme/minimal_design_system.dart';
 
 /// Ultra Advanced Neumorphism Primary Button
 /// Pinterest seviyesi çok katmanlı nöromorfik efektler ve sinematik geçişler
@@ -69,9 +67,9 @@ class PrimaryButton extends StatefulWidget {
 
 class _PrimaryButtonState extends State<PrimaryButton>
     with TickerProviderStateMixin {
-  late AnimationController _hoverController;
-  late AnimationController _pressController;
-  late AnimationController _focusController;
+  // late AnimationController _hoverController;
+  // late AnimationController _pressController;
+  // late AnimationController _focusController;
   late AnimationController _loadingController;
 
   late Animation<double> _hoverScaleAnimation;
@@ -97,49 +95,49 @@ class _PrimaryButtonState extends State<PrimaryButton>
 
   void _initializeAnimations() {
     // Hover animasyonu
-    _hoverController = NeumorphismAnimationController.createHoverController(this);
-    _hoverScaleAnimation = NeumorphismAnimations.createCinematicHoverAnimation(_hoverController);
+    // _hoverController = NeumorphismAnimationController.createHoverController(this);
+    // _hoverScaleAnimation = NeumorphismAnimations.createCinematicHoverAnimation(_hoverController);
 
     // Press animasyonu
-    _pressController = NeumorphismAnimationController.createPressController(this);
+    // _pressController = NeumorphismAnimationController.createPressController(this);
     _pressScaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _pressController, curve: Curves.easeInOutCubic),
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
     // Focus animasyonu
-    _focusController = NeumorphismAnimationController.createFocusController(this);
+    // _focusController = NeumorphismAnimationController.createFocusController(this);
     _focusScaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _focusController, curve: Curves.easeInOutCubic),
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
     // Loading animasyonu
-    _loadingController = NeumorphismAnimationController.createLoadingController(this);
+    // _loadingController = NeumorphismAnimationController.createLoadingController(this);
 
     // Shadow animasyonu
     _shadowAnimation = TweenSequence<List<BoxShadow>>([
       TweenSequenceItem(
         tween: Tween<List<BoxShadow>>(
-          begin: NeumorphismStandards.neumorphismUltraOutsetShadow,
-          end: NeumorphismStandards.neumorphismHoverShadow,
+          begin: MinimalDesignSystem.neumorphismUltraOutsetShadow,
+          end: MinimalDesignSystem.neumorphismHoverShadow,
         ),
         weight: 50,
       ),
       TweenSequenceItem(
         tween: Tween<List<BoxShadow>>(
-          begin: NeumorphismStandards.neumorphismHoverShadow,
-          end: NeumorphismStandards.neumorphismPressedShadow,
+          begin: MinimalDesignSystem.neumorphismHoverShadow,
+          end: MinimalDesignSystem.neumorphismPressedShadow,
         ),
         weight: 50,
       ),
     ]).animate(
-      CurvedAnimation(parent: _pressController, curve: Curves.easeInOutCubic),
+      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
   }
 
   void _disposeAnimations() {
-    _hoverController.dispose();
-    _pressController.dispose();
-    _focusController.dispose();
+    // _hoverController.dispose();
+    // _pressController.dispose();
+    // _focusController.dispose();
     _loadingController.dispose();
   }
 
@@ -152,13 +150,13 @@ class _PrimaryButtonState extends State<PrimaryButton>
   void _onTapDown(TapDownDetails details) {
     if (widget.onPressed != null && !widget.isLoading) {
       _updateState(ButtonState.pressed);
-      _pressController.forward();
+      // _pressController.forward();
     }
   }
 
   void _onTapUp(TapUpDetails details) {
     if (_currentState == ButtonState.pressed) {
-      _pressController.reverse();
+      // _pressController.reverse();
       _updateState(_isHovered ? ButtonState.hover : ButtonState.normal);
       widget.onPressed?.call();
     }
@@ -166,7 +164,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
 
   void _onTapCancel() {
     if (_currentState == ButtonState.pressed) {
-      _pressController.reverse();
+      // _pressController.reverse();
       _updateState(_isHovered ? ButtonState.hover : ButtonState.normal);
     }
   }
@@ -175,7 +173,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
     if (widget.onPressed != null && !widget.isLoading) {
       _isHovered = true;
       _updateState(ButtonState.hover);
-      _hoverController.forward();
+      // _hoverController.forward();
       widget.onHover?.call();
     }
   }
@@ -184,7 +182,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
     _isHovered = false;
     if (_currentState != ButtonState.pressed) {
       _updateState(ButtonState.normal);
-      _hoverController.reverse();
+      // _hoverController.reverse();
     }
   }
 
@@ -192,11 +190,11 @@ class _PrimaryButtonState extends State<PrimaryButton>
     _isFocused = hasFocus;
     if (hasFocus && widget.onPressed != null && !widget.isLoading) {
       _updateState(ButtonState.focused);
-      _focusController.forward();
+      // _focusController.forward();
       widget.onFocus?.call();
     } else if (!hasFocus && _currentState == ButtonState.focused) {
       _updateState(_isHovered ? ButtonState.hover : ButtonState.normal);
-      _focusController.reverse();
+      // _focusController.reverse();
     }
   }
 
@@ -220,9 +218,9 @@ class _PrimaryButtonState extends State<PrimaryButton>
           onTapCancel: _onTapCancel,
           child: AnimatedBuilder(
             animation: Listenable.merge([
-              _hoverController,
-              _pressController,
-              _focusController,
+              // _hoverController,
+              // _pressController,
+              // _focusController,
               _loadingController,
             ]),
             builder: (context, child) {
@@ -306,43 +304,29 @@ class _PrimaryButtonState extends State<PrimaryButton>
   }
 
   List<BoxShadow> _getCurrentShadow(bool isDisabled) {
-    if (isDisabled) return NeumorphismStandards.neumorphismDisabledShadow;
+    if (isDisabled) return MinimalDesignSystem.neumorphismDisabledShadow;
 
     if (widget.enableUltraEffects) {
       // Use new ButtonPresets with 12-layer ultra-deep shadows
       switch (_currentState) {
         case ButtonState.hover:
-          return NeuromorphicPresets.ButtonPresets.primary(
-            isHovered: true,
-            isPressed: false,
-          );
+          return MinimalDesignSystem.cardShadow;
         case ButtonState.pressed:
-          return NeuromorphicPresets.ButtonPresets.primary(
-            isHovered: false,
-            isPressed: true,
-          );
+          return MinimalDesignSystem.cardShadow;
         case ButtonState.focused:
           return [
-            ...NeuromorphicPresets.ButtonPresets.primary(isHovered: true),
-            ...NeuromorphicEffects.lighting.createAmbientGlow(
-              glowColor: AppColors.primary,
-              intensity: 0.6,
-              radius: 20.0,
-            ),
+            ...MinimalDesignSystem.cardShadow,
+            ...MinimalDesignSystem.cardShadow,
           ];
         default:
-          return NeuromorphicPresets.ButtonPresets.primary();
+          return MinimalDesignSystem.cardShadow;
       }
     }
 
     if (widget.enableCinematicMode) {
       return [
-        ...NeumorphismStandards.neumorphismCinematicShadow,
-        ...NeuromorphicEffects.lighting.createAmbientGlow(
-          glowColor: AppColors.primary,
-          intensity: 0.8,
-          radius: 30.0,
-        ),
+        ...MinimalDesignSystem.neumorphismCinematicShadow,
+        ...MinimalDesignSystem.cardShadow,
       ];
     }
 
@@ -354,7 +338,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
       animation: _loadingController,
       builder: (context, child) {
         return Transform.rotate(
-          angle: _loadingController.value * 2 * 3.14159,
+          angle: 0.0,
           child: SizedBox(
             width: AppDimensions.icon20,
             height: AppDimensions.icon20,
@@ -490,7 +474,7 @@ class NeumorphismButtonCollection {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: AppColors.floatingGradient,
-        boxShadow: NeumorphismStandards.neumorphismFloatingShadow,
+        boxShadow: MinimalDesignSystem.neumorphismFloatingShadow,
       ),
       child: Material(
         color: Colors.transparent,
@@ -521,7 +505,7 @@ class NeumorphismButtonCollection {
           width: AppDimensions.buttonBorderWidth2,
         ),
         borderRadius: BorderRadius.circular(AppDimensions.radius16),
-        boxShadow: NeumorphismStandards.neumorphismUltraOutsetShadow,
+        boxShadow: MinimalDesignSystem.neumorphismUltraOutsetShadow,
       ),
       child: Material(
         color: Colors.transparent,
@@ -565,7 +549,7 @@ class NeumorphismButtonCollection {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radius12),
-        boxShadow: NeumorphismStandards.neumorphismUltraOutsetShadow,
+        boxShadow: MinimalDesignSystem.neumorphismUltraOutsetShadow,
       ),
       child: Material(
         color: Colors.transparent,

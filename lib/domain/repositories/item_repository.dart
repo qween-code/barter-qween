@@ -43,4 +43,13 @@ abstract class ItemRepository {
 
   /// Get featured items
   Future<Either<Failure, List<ItemEntity>>> getFeaturedItems({int limit = 10});
+
+  /// Get recent items
+  Future<Either<Failure, List<ItemEntity>>> getRecentItems();
+
+  /// Get trending items
+  Future<Either<Failure, List<ItemEntity>>> getTrendingItems();
+
+  /// Get search suggestions
+  Future<List<String>> getSearchSuggestions(String query);
 }

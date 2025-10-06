@@ -51,6 +51,43 @@ class BarterConditionModel extends BarterConditionEntity {
     };
   }
 
+  /// Model'i JSON'a çevir
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type.name,
+      'cashDifferential': cashDifferential,
+      'paymentDirection': paymentDirection?.name,
+      'acceptedCategories': acceptedCategories,
+      'specificItemRequest': specificItemRequest,
+      'minValue': minValue,
+      'maxValue': maxValue,
+      'description': description,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
+  /// JSON'dan model oluştur
+  factory BarterConditionModel.fromJson(Map<String, dynamic> json) {
+    return BarterConditionModel(
+      id: json['id'] as String? ?? '',
+      type: _parseBarterConditionType(json['type'] as String?),
+      cashDifferential: (json['cashDifferential'] as num?)?.toDouble(),
+      paymentDirection:
+          _parsePaymentDirection(json['paymentDirection'] as String?),
+      acceptedCategories: (json['acceptedCategories'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      specificItemRequest: json['specificItemRequest'] as String?,
+      minValue: (json['minValue'] as num?)?.toDouble(),
+      maxValue: (json['maxValue'] as num?)?.toDouble(),
+      description: json['description'] as String?,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : DateTime.now(),
+    );
+  }
+
   /// Entity'den model oluştur
   factory BarterConditionModel.fromEntity(BarterConditionEntity entity) {
     return BarterConditionModel(
@@ -64,6 +101,22 @@ class BarterConditionModel extends BarterConditionEntity {
       maxValue: entity.maxValue,
       description: entity.description,
       createdAt: entity.createdAt,
+    );
+  }
+
+  /// Model'i entity'ye çevir
+  BarterConditionEntity toEntity() {
+    return BarterConditionEntity(
+      id: id,
+      type: type,
+      cashDifferential: cashDifferential,
+      paymentDirection: paymentDirection,
+      acceptedCategories: acceptedCategories,
+      specificItemRequest: specificItemRequest,
+      minValue: minValue,
+      maxValue: maxValue,
+      description: description,
+      createdAt: createdAt,
     );
   }
 
