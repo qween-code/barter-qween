@@ -1,11 +1,9 @@
+// 📦 WORLD CLASS ADD ITEM PAGE
+// 4-step wizard: Photos → Details → Barter Preferences → Preview
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import '../../../core/theme/world_class_design_system.dart';
-import '../../blocs/item/item_bloc.dart';
-import '../../blocs/item/item_event.dart';
-import '../../blocs/item/item_state.dart';
 
 class WorldClassAddItemPage extends StatefulWidget {
   const WorldClassAddItemPage({Key? key}) : super(key: key);
@@ -14,214 +12,220 @@ class WorldClassAddItemPage extends StatefulWidget {
   State<WorldClassAddItemPage> createState() => _WorldClassAddItemPageState();
 }
 
-class _WorldClassAddItemPageState extends State<WorldClassAddItemPage>
-    with TickerProviderStateMixin {
+class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
   final PageController _pageController = PageController();
-  final _formKey = GlobalKey<FormState>();
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  
   int _currentStep = 0;
-  final int _totalSteps = 4;
-  
+
   // Form data
-  String _title = '';
-  String _description = '';
-  String _category = '';
-  double _price = 0.0;
-  String _condition = 'excellent';
-  String _location = '';
-  List<File> _images = [];
-  
-  final ImagePicker _picker = ImagePicker();
+  final List<File> _images = [];
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _originalPriceController = TextEditingController();
+  String? _selectedCategory;
+  String? _selectedCondition;
+  final List<String> _wantToTradeFor = [];
+  bool _isOpenToCash = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeAnimations();
-  }
+  final List<String> _categories = [
+    'Electronics',
+    'Fashion',
+    'Books',
+    'Gaming',
+    'Home',
+    'Sports',
+    'Art',
+    'Music',
+  ];
 
-  void _initializeAnimations() {
-    _animationController = AnimationController(
-      duration: WorldClassDesignSystem.animationSlow,
-      vsync: this,
-    );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-    
-    _animationController.forward();
-  }
+  final List<String> _conditions = [
+    'Brand New',
+    'Like New',
+    'Good',
+    'Fair',
+  ];
 
   @override
   void dispose() {
     _pageController.dispose();
-    _animationController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _originalPriceController.dispose();
     super.dispose();
   }
 
   void _nextStep() {
-    if (_currentStep < _totalSteps - 1) {
-      setState(() {
-        _currentStep++;
-      });
-      _pageController.nextPage(
-        duration: WorldClassDesignSystem.animationMedium,
+    if (_currentStep < 3) {
+      setState(() => _currentStep++);
+      _pageController.animateToPage(
+        _currentStep,
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    } else {
+      _submitListing();
     }
   }
 
   void _previousStep() {
     if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
-      });
-      _pageController.previousPage(
-        duration: WorldClassDesignSystem.animationMedium,
+      setState(() => _currentStep--);
+      _pageController.animateToPage(
+        _currentStep,
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
   }
 
   Future<void> _pickImages() async {
-    try {
-      final List<XFile> images = await _picker.pickMultiImage();
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> images = await picker.pickMultiImage();
+    
+    if (images.isNotEmpty) {
       setState(() {
-        _images = images.map((image) => File(image.path)).toList();
+        _images.addAll(images.map((e) => File(e.path)));
       });
-    } catch (e) {
-      _showErrorSnackBar('Failed to pick images: $e');
     }
   }
 
-  Future<void> _pickImage() async {
-    try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-      if (image != null) {
-        setState(() {
-          _images.add(File(image.path));
-        });
-      }
-    } catch (e) {
-      _showErrorSnackBar('Failed to pick image: $e');
+  void _submitListing() {
+    // Validate and submit
+    if (_images.isEmpty) {
+      _showError('Please add at least one photo');
+      return;
     }
-  }
-
-  void _removeImage(int index) {
-    setState(() {
-      _images.removeAt(index);
-    });
-  }
-
-  void _showErrorSnackBar(String message) {
+    if (_titleController.text.isEmpty) {
+      _showError('Please enter a title');
+      return;
+    }
+    
+    // TODO: Submit to Firebase
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: WorldClassDesignSystem.errorColor,
+      const SnackBar(
+        content: Text('🎉 Item listed successfully!'),
+        backgroundColor: Colors.green,
       ),
     );
+    
+    Navigator.of(context).pop();
   }
 
-  void _submitItem() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Implement item creation
-      _showSuccessSnackBar('Item created successfully!');
-      Navigator.of(context).pop();
-    }
-  }
-
-  void _showSuccessSnackBar(String message) {
+  void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: WorldClassDesignSystem.successColor,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: WorldClassDesignSystem.primaryBackground,
       appBar: AppBar(
-        backgroundColor: WorldClassDesignSystem.primaryBackground,
+        title: const Text('List New Item'),
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: WorldClassDesignSystem.primaryText,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Add New Item',
-          style: WorldClassDesignSystem.headingMedium.copyWith(
-            color: WorldClassDesignSystem.primaryText,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Column(
-          children: [
-            _buildProgressIndicator(),
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    _buildStep1(),
-                    _buildStep2(),
-                    _buildStep3(),
-                    _buildStep4(),
-                  ],
-                ),
-              ),
+        actions: [
+          if (_currentStep > 0)
+            TextButton(
+              onPressed: () => setState(() {
+                _currentStep = 0;
+                _pageController.jumpToPage(0);
+              }),
+              child: const Text('Start Over'),
             ),
-            _buildNavigationButtons(),
-          ],
-        ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildProgressIndicator() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Column(
+      body: Column(
         children: [
-          Row(
-            children: List.generate(_totalSteps, (index) {
-              return Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(
-                    right: index < _totalSteps - 1 ? 8 : 0,
+          // Progress Indicator
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: List.generate(4, (index) {
+                final isActive = index <= _currentStep;
+                return Expanded(
+                  child: Container(
+                    height: 4,
+                    margin: EdgeInsets.only(right: index < 3 ? 8 : 0),
+                    decoration: BoxDecoration(
+                      color: isActive
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: index <= _currentStep
-                        ? WorldClassDesignSystem.primaryColor
-                        : WorldClassDesignSystem.cardBackground,
-                    borderRadius: BorderRadius.circular(2),
+                );
+              }),
+            ),
+          ),
+
+          // Content
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildPhotosStep(),
+                _buildDetailsStep(),
+                _buildBarterPreferencesStep(),
+                _buildPreviewStep(),
+              ],
+            ),
+          ),
+
+          // Bottom Actions
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                if (_currentStep > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _previousStep,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Back'),
+                    ),
+                  ),
+                if (_currentStep > 0) const SizedBox(width: 16),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: _nextStep,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(_currentStep == 3 ? 'Publish' : 'Continue'),
                   ),
                 ),
-              );
-            }),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Step ${_currentStep + 1} of $_totalSteps',
-            style: WorldClassDesignSystem.bodyMedium.copyWith(
-              color: WorldClassDesignSystem.secondaryText,
+              ],
             ),
           ),
         ],
@@ -229,528 +233,454 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage>
     );
   }
 
-  Widget _buildStep1() {
-    return Padding(
+  Widget _buildPhotosStep() {
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Basic Information',
-            style: WorldClassDesignSystem.headingLarge.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildTextField(
-            label: 'Item Title',
-            hint: 'Enter item title',
-            value: _title,
-            onChanged: (value) => setState(() => _title = value),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter item title';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 24),
-          _buildTextField(
-            label: 'Description',
-            hint: 'Describe your item',
-            value: _description,
-            onChanged: (value) => setState(() => _description = value),
-            maxLines: 4,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter description';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 24),
-          _buildDropdownField(
-            label: 'Category',
-            value: _category,
-            items: const [
-              'Electronics',
-              'Clothing',
-              'Home & Garden',
-              'Sports',
-              'Books',
-              'Toys',
-              'Other',
-            ],
-            onChanged: (value) => setState(() => _category = value ?? ''),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select category';
-              }
-              return null;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep2() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Price & Condition',
-            style: WorldClassDesignSystem.headingLarge.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildTextField(
-            label: 'Price (₺)',
-            hint: '0.00',
-            value: _price.toString(),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                _price = double.tryParse(value) ?? 0.0;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter price';
-              }
-              if (double.tryParse(value) == null) {
-                return 'Please enter valid price';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 24),
-          _buildDropdownField(
-            label: 'Condition',
-            value: _condition,
-            items: const [
-              'excellent',
-              'good',
-              'fair',
-              'poor',
-            ],
-            onChanged: (value) => setState(() => _condition = value ?? 'excellent'),
-          ),
-          const SizedBox(height: 24),
-          _buildTextField(
-            label: 'Location',
-            hint: 'Enter location',
-            value: _location,
-            onChanged: (value) => setState(() => _location = value),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter location';
-              }
-              return null;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep3() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Photos',
-            style: WorldClassDesignSystem.headingLarge.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Add photos of your item (up to 10)',
-            style: WorldClassDesignSystem.bodyMedium.copyWith(
-              color: WorldClassDesignSystem.secondaryText,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildImageGrid(),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: _buildImageButton(
-                  icon: Icons.photo_library,
-                  label: 'Gallery',
-                  onPressed: _pickImages,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildImageButton(
-                  icon: Icons.camera_alt,
-                  label: 'Camera',
-                  onPressed: _pickImage,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStep4() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Review & Submit',
-            style: WorldClassDesignSystem.headingLarge.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildReviewCard(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required String hint,
-    required String value,
-    required ValueChanged<String> onChanged,
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: WorldClassDesignSystem.bodyMedium.copyWith(
-            color: WorldClassDesignSystem.primaryText,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          initialValue: value,
-          onChanged: onChanged,
-          validator: validator,
-          keyboardType: keyboardType,
-          maxLines: maxLines,
-          style: WorldClassDesignSystem.bodyMedium.copyWith(
-            color: WorldClassDesignSystem.primaryText,
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: WorldClassDesignSystem.bodyMedium.copyWith(
-              color: WorldClassDesignSystem.secondaryText,
-            ),
-            filled: true,
-            fillColor: WorldClassDesignSystem.cardBackground,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-              borderSide: BorderSide(
-                color: WorldClassDesignSystem.primaryColor,
-                width: 2,
-              ),
-            ),
-            contentPadding: const EdgeInsets.all(16),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDropdownField({
-    required String label,
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: WorldClassDesignSystem.bodyMedium.copyWith(
-            color: WorldClassDesignSystem.primaryText,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          value: value.isEmpty ? null : value,
-          onChanged: onChanged,
-          validator: validator,
-          style: WorldClassDesignSystem.bodyMedium.copyWith(
-            color: WorldClassDesignSystem.primaryText,
-          ),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: WorldClassDesignSystem.cardBackground,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-              borderSide: BorderSide(
-                color: WorldClassDesignSystem.primaryColor,
-                width: 2,
-              ),
-            ),
-            contentPadding: const EdgeInsets.all(16),
-          ),
-          items: items.map((item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImageGrid() {
-    return Container(
-      height: 200,
-      child: GridView.builder(
-        scrollDirection: Axis.horizontal,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 1,
-          mainAxisSpacing: 8,
-        ),
-        itemCount: _images.length + 1,
-        itemBuilder: (context, index) {
-          if (index == _images.length) {
-            return _buildAddImageButton();
-          }
-          return _buildImageItem(_images[index], index);
-        },
-      ),
-    );
-  }
-
-  Widget _buildAddImageButton() {
-    return GestureDetector(
-      onTap: _pickImages,
-      child: Container(
-        decoration: BoxDecoration(
-          color: WorldClassDesignSystem.cardBackground,
-          borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-          border: Border.all(
-            color: WorldClassDesignSystem.borderColor,
-            style: BorderStyle.solid,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.add_photo_alternate,
-              size: 32,
-              color: WorldClassDesignSystem.secondaryText,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add Photo',
-              style: WorldClassDesignSystem.bodySmall.copyWith(
-                color: WorldClassDesignSystem.secondaryText,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImageItem(File image, int index) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-            image: DecorationImage(
-              image: FileImage(image),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: GestureDetector(
-            onTap: () => _removeImage(index),
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: WorldClassDesignSystem.errorColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.close,
-                size: 16,
-                color: WorldClassDesignSystem.primaryWhite,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImageButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: WorldClassDesignSystem.cardBackground,
-        foregroundColor: WorldClassDesignSystem.primaryText,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReviewCard() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: WorldClassDesignSystem.cardBackground,
-        borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusLarge),
-        boxShadow: [WorldClassDesignSystem.cardShadow],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Item Details',
-            style: WorldClassDesignSystem.headingMedium.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildReviewItem('Title', _title),
-          _buildReviewItem('Category', _category),
-          _buildReviewItem('Condition', _condition),
-          _buildReviewItem('Price', '₺${_price.toStringAsFixed(2)}'),
-          _buildReviewItem('Location', _location),
-          const SizedBox(height: 16),
-          Text(
-            'Description',
-            style: WorldClassDesignSystem.bodyMedium.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-              fontWeight: FontWeight.w600,
-            ),
+          const Text(
+            'Add Photos',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            _description,
-            style: WorldClassDesignSystem.bodyMedium.copyWith(
-              color: WorldClassDesignSystem.secondaryText,
-            ),
+            'Add up to 10 photos. First photo will be the cover image.',
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Photos (${_images.length})',
-            style: WorldClassDesignSystem.bodyMedium.copyWith(
-              color: WorldClassDesignSystem.primaryText,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildReviewItem(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: WorldClassDesignSystem.bodyMedium.copyWith(
-                color: WorldClassDesignSystem.secondaryText,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: WorldClassDesignSystem.bodyMedium.copyWith(
-                color: WorldClassDesignSystem.primaryText,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+          const SizedBox(height: 24),
 
-  Widget _buildNavigationButtons() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: Row(
-        children: [
-          if (_currentStep > 0)
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _previousStep,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: WorldClassDesignSystem.cardBackground,
-                  foregroundColor: WorldClassDesignSystem.primaryText,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
+          // Photo Grid
+          if (_images.isEmpty)
+            InkWell(
+              onTap: _pickImages,
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey[300]!, width: 2, style: BorderStyle.solid),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_photo_alternate, size: 64, color: Colors.grey[400]),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Tap to add photos',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      ),
+                    ],
                   ),
                 ),
-                child: Text('Previous'),
               ),
+            )
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: _images.length + 1,
+              itemBuilder: (context, index) {
+                if (index == _images.length) {
+                  return InkWell(
+                    onTap: _pickImages,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: Icon(Icons.add, size: 32, color: Colors.grey[400]),
+                    ),
+                  );
+                }
+
+                return Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        _images[index],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                    if (index == 0)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'COVER',
+                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: InkWell(
+                        onTap: () => setState(() => _images.removeAt(index)),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 16, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          if (_currentStep > 0) const SizedBox(width: 16),
-          Expanded(
-            child: ElevatedButton(
-              onPressed: _currentStep == _totalSteps - 1 ? _submitItem : _nextStep,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: WorldClassDesignSystem.primaryColor,
-                foregroundColor: WorldClassDesignSystem.primaryWhite,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusMedium),
+
+          const SizedBox(height: 24),
+
+          // Tips
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.lightbulb, color: Colors.blue[700], size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Photo Tips',
+                      style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-              ),
-              child: Text(_currentStep == _totalSteps - 1 ? 'Submit' : 'Next'),
+                const SizedBox(height: 8),
+                Text(
+                  '• Use natural lighting\n• Show all angles\n• Include close-ups of details\n• Show any defects clearly',
+                  style: TextStyle(color: Colors.blue[900], fontSize: 13, height: 1.5),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailsStep() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Item Details',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 24),
+
+          // Title
+          TextField(
+            controller: _titleController,
+            decoration: InputDecoration(
+              labelText: 'Title *',
+              hintText: 'e.g., iPhone 13 Pro 256GB',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            maxLength: 60,
+          ),
+
+          const SizedBox(height: 16),
+
+          // Category
+          DropdownButtonFormField<String>(
+            value: _selectedCategory,
+            decoration: InputDecoration(
+              labelText: 'Category *',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            items: _categories.map((cat) {
+              return DropdownMenuItem(value: cat, child: Text(cat));
+            }).toList(),
+            onChanged: (value) => setState(() => _selectedCategory = value),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Condition
+          DropdownButtonFormField<String>(
+            value: _selectedCondition,
+            decoration: InputDecoration(
+              labelText: 'Condition *',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+            items: _conditions.map((cond) {
+              return DropdownMenuItem(value: cond, child: Text(cond));
+            }).toList(),
+            onChanged: (value) => setState(() => _selectedCondition = value),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Original Price
+          TextField(
+            controller: _originalPriceController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Original Price (optional)',
+              hintText: '₺1,000',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Colors.grey[50],
+              prefixText: '₺ ',
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Description
+          TextField(
+            controller: _descriptionController,
+            maxLines: 5,
+            maxLength: 500,
+            decoration: InputDecoration(
+              labelText: 'Description',
+              hintText: 'Describe your item, including any defects...',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              filled: true,
+              fillColor: Colors.grey[50],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBarterPreferencesStep() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'What do you want?',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Select categories you\'re interested in trading for',
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Category Selection
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: _categories.map((category) {
+              final isSelected = _wantToTradeFor.contains(category);
+              return FilterChip(
+                label: Text(category),
+                selected: isSelected,
+                onSelected: (selected) {
+                  setState(() {
+                    if (selected) {
+                      _wantToTradeFor.add(category);
+                    } else {
+                      _wantToTradeFor.remove(category);
+                    }
+                  });
+                },
+                selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                checkmarkColor: Theme.of(context).primaryColor,
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Cash Option
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey[300]!),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: SwitchListTile(
+              title: const Text('Open to cash difference'),
+              subtitle: const Text('I can add or receive cash for the trade'),
+              value: _isOpenToCash,
+              onChanged: (value) => setState(() => _isOpenToCash = value),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewStep() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Preview',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'This is how your listing will appear',
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Preview Card
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image
+                if (_images.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    child: AspectRatio(
+                      aspectRatio: 1.5,
+                      child: Image.file(_images.first, fit: BoxFit.cover),
+                    ),
+                  ),
+
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        _titleController.text.isEmpty ? 'Item Title' : _titleController.text,
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Category & Condition
+                      Row(
+                        children: [
+                          if (_selectedCategory != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.blue[50],
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                _selectedCategory!,
+                                style: TextStyle(fontSize: 12, color: Colors.blue[700]),
+                              ),
+                            ),
+                          if (_selectedCondition != null) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green[50],
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                _selectedCondition!,
+                                style: TextStyle(fontSize: 12, color: Colors.green[700]),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+
+                      if (_descriptionController.text.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          _descriptionController.text,
+                          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                        ),
+                      ],
+
+                      if (_wantToTradeFor.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Looking to trade for:',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: _wantToTradeFor.map((cat) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.purple[50],
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                cat,
+                                style: TextStyle(fontSize: 11, color: Colors.purple[700]),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+
+                      if (_isOpenToCash) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.attach_money, size: 16, color: Colors.green[700]),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Open to cash difference',
+                              style: TextStyle(fontSize: 12, color: Colors.green[700]),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
