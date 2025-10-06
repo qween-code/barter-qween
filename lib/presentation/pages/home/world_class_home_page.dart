@@ -229,7 +229,7 @@ class _WorldClassHomePageState extends State<WorldClassHomePage>
                         ),
                       ),
                     );
-                  } else if (state is FeaturedItemsLoaded) {
+                  } else if (state is ItemsLoaded) {
                     return SliverToBoxAdapter(
                       child: WorldClassFeaturedCarousel(
                         items: state.items,
@@ -336,7 +336,7 @@ class _WorldClassHomePageState extends State<WorldClassHomePage>
                         ),
                       ),
                     );
-                  } else if (state is RecentItemsLoaded) {
+                  } else if (state is ItemsLoaded) {
                     return SliverToBoxAdapter(
                       child: WorldClassRecentItems(
                         items: state.items,
