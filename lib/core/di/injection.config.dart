@@ -216,7 +216,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => firebaseInjectableModule.prefs,
       preResolve: true,
     );
-    gh.factory<_i89.ImageService>(() => _i89.ImageService());
     gh.factory<_i728.MapService>(() => _i728.MapService());
     gh.factory<_i969.CalculateCompatibilityScoreUseCase>(
       () => _i969.CalculateCompatibilityScoreUseCase(),
@@ -268,6 +267,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i493.SearchLocalDataSource>(
       () => _i493.SearchLocalDataSource(gh<_i460.SharedPreferences>()),
+    );
+    gh.factory<_i89.ImageService>(
+      () => _i89.ImageService(gh<_i457.FirebaseStorage>()),
     );
     gh.factory<_i955.SearchRemoteDataSource>(
       () => _i955.SearchRemoteDataSource(gh<_i974.FirebaseFirestore>()),
@@ -435,6 +437,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i529.DeleteItemUseCase>(
       () => _i529.DeleteItemUseCase(gh<_i754.ItemRepository>()),
     );
+    gh.lazySingleton<_i163.GetAllItemsUseCase>(
+      () => _i163.GetAllItemsUseCase(gh<_i754.ItemRepository>()),
+    );
     gh.lazySingleton<_i367.GetRecentItemsUseCase>(
       () => _i367.GetRecentItemsUseCase(gh<_i754.ItemRepository>()),
     );
@@ -446,9 +451,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i768.UpdateItemUseCase>(
       () => _i768.UpdateItemUseCase(gh<_i754.ItemRepository>()),
-    );
-    gh.lazySingleton<_i163.GetAllItemsUseCase>(
-      () => _i163.GetAllItemsUseCase(gh<_i754.ItemRepository>()),
     );
     gh.factory<_i301.CreateItemUseCase>(
       () => _i301.CreateItemUseCase(gh<_i754.ItemRepository>()),

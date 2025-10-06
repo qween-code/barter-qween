@@ -8,6 +8,9 @@ import '../../presentation/blocs/profile/profile_bloc.dart';
 import '../../presentation/blocs/search/search_bloc.dart';
 import '../../presentation/blocs/item/item_bloc.dart';
 import '../../domain/usecases/get_item_usecase.dart';
+import '../../domain/usecases/items/get_all_items_usecase.dart';
+import '../../domain/usecases/items/get_trending_items_usecase.dart';
+import '../../domain/usecases/items/get_recent_items_usecase.dart';
 
 /// Global BlocProviders that should be available throughout the app
 class GlobalBlocProviders extends StatelessWidget {
@@ -48,7 +51,12 @@ class GlobalBlocProviders extends StatelessWidget {
         
         // Item bloc - global item management
         BlocProvider<ItemBloc>(
-          create: (_) => ItemBloc(getIt<GetItemUsecase>()),
+          create: (_) => ItemBloc(
+            getIt<GetItemUsecase>(),
+            getIt<GetAllItemsUseCase>(),
+            getIt<GetTrendingItemsUseCase>(),
+            getIt<GetRecentItemsUseCase>(),
+          ),
           lazy: false,
         ),
       ],
