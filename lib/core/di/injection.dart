@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/gamification_service.dart';
 import 'injection.config.dart';
 
 final getIt = GetIt.instance;
@@ -49,4 +50,10 @@ abstract class FirebaseInjectableModule {
 
   @preResolve
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+
+  @lazySingleton
+  GamificationService get gamificationService => GamificationService(
+    firestore: firestore,
+    auth: firebaseAuth,
+  );
 }

@@ -13,6 +13,7 @@ import 'package:barter_qween/core/di/injection.dart' as _i328;
 import 'package:barter_qween/core/services/analytics_service.dart' as _i628;
 import 'package:barter_qween/core/services/data_service.dart' as _i450;
 import 'package:barter_qween/core/services/fcm_service.dart' as _i1066;
+import 'package:barter_qween/core/services/gamification_service.dart' as _i754;
 import 'package:barter_qween/core/services/image_service.dart' as _i89;
 import 'package:barter_qween/core/services/map_service.dart' as _i728;
 import 'package:barter_qween/core/services/recommendation_service.dart'
@@ -241,6 +242,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i398.FirebaseAnalyticsObserver>(
       () => firebaseInjectableModule.analyticsObserver,
+    );
+    gh.lazySingleton<_i754.GamificationService>(
+      () => firebaseInjectableModule.gamificationService,
     );
     gh.lazySingleton<_i396.AcceptCounterOfferUsecase>(
       () => _i396.AcceptCounterOfferUsecase(),
