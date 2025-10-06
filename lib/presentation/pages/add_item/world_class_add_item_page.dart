@@ -2,8 +2,17 @@
 // 4-step wizard: Photos → Details → Barter Preferences → Preview
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../../../core/di/injection.dart';
+import '../../../core/services/image_service.dart';
+import '../../../core/services/gamification_service.dart';
+import '../../../domain/entities/item_entity.dart';
+import '../../blocs/item/item_bloc.dart';
+import '../../blocs/item/item_event.dart';
+import '../../blocs/item/item_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WorldClassAddItemPage extends StatefulWidget {
   const WorldClassAddItemPage({Key? key}) : super(key: key);
@@ -15,6 +24,8 @@ class WorldClassAddItemPage extends StatefulWidget {
 class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
+  bool _isUploading = false;
+  double _uploadProgress = 0.0;
 
   // Form data
   final List<File> _images = [];
@@ -88,8 +99,8 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
     }
   }
 
-  void _submitListing() {
-    // Validate and submit
+  Future<void> _submitListing() async {
+    // Validate
     if (_images.isEmpty) {
       _showError('Please add at least one photo');
       return;
@@ -98,16 +109,101 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
       _showError('Please enter a title');
       return;
     }
+    if (_selectedCategory == null) {
+      _showError('Please select a category');
+      return;
+    }
+    if (_selectedCondition == null) {
+      _showError('Please select condition');
+      return;
+    }
     
-    // TODO: Submit to Firebase
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('🎉 Item listed successfully!'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    setState(() => _isUploading = true);
     
-    Navigator.of(context).pop();
+    try {
+      final imageService = getIt<ImageService>();
+      final user = FirebaseAuth.instance.currentUser;
+      
+      if (user == null) {
+        _showError('Please login first');
+        setState(() => _isUploading = false);
+        return;
+      }
+      
+      // Step 1: Compress images
+      final compressedImages = <File>[];
+      for (int i = 0; i < _images.length; i++) {
+        setState(() => _uploadProgress = (i / (_images.length * 2)) * 0.5);
+        final compressed = await imageService.compressImage(_images[i]);
+        if (compressed != null) {
+          compressedImages.add(compressed);
+        }
+      }
+      
+      // Step 2: Upload to Firebase Storage
+      final imageUrls = <String>[];
+      final tempItemId = DateTime.now().millisecondsSinceEpoch.toString();
+      
+      for (int i = 0; i < compressedImages.length; i++) {
+        setState(() => _uploadProgress = 0.5 + ((i / compressedImages.length) * 0.4));
+        final url = await imageService.uploadItemImage(compressedImages[i], tempItemId);
+        if (url != null) {
+          imageUrls.add(url);
+        }
+      }
+      
+      setState(() => _uploadProgress = 0.9);
+      
+      // Step 3: Create ItemEntity
+      final item = ItemEntity(
+        id: tempItemId,
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        category: _selectedCategory!,
+        condition: _selectedCondition!,
+        images: imageUrls,
+        ownerId: user.uid,
+        ownerName: user.displayName ?? 'Unknown',
+        status: 'active',
+        estimatedValue: _originalPriceController.text.isNotEmpty 
+            ? int.tryParse(_originalPriceController.text) 
+            : null,
+        barterPreferences: _wantToTradeFor,
+        isOpenToCash: _isOpenToCash,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      
+      // Step 4: Save to Firestore via BLoC
+      context.read<ItemBloc>().add(CreateItem(item, images: const []));
+      
+      // Step 5: Reward gamification coins
+      final gamificationService = getIt<GamificationService>();
+      await gamificationService.rewardForAction(user.uid, CoinAction.listItem);
+      
+      setState(() => _uploadProgress = 1.0);
+      
+      // Success!
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🎉 Item listed successfully! +10 coins'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pop();
+      }
+      
+    } catch (e) {
+      _showError('Failed to upload: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+          _uploadProgress = 0.0;
+        });
+      }
+    }
   }
 
   void _showError(String message) {
@@ -213,7 +309,7 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: _nextStep,
+                    onPressed: _isUploading ? null : _nextStep,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Colors.white,
@@ -222,7 +318,24 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(_currentStep == 3 ? 'Publish' : 'Continue'),
+                    child: _isUploading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                  value: _uploadProgress,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text('Uploading ${(_uploadProgress * 100).toInt()}%'),
+                            ],
+                          )
+                        : Text(_currentStep == 3 ? 'Publish' : 'Continue'),
                   ),
                 ),
               ],

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:injectable/injectable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'dart:io';
+import 'package:path/path.dart' as path;
 
 /// Kaliteli görsel yükleme servisi
 @injectable
 class ImageService {
+  final FirebaseStorage _storage;
+  
+  ImageService(this._storage);
   static const String placeholderPath = 'assets/images/placeholder/';
   
   /// Kullanıcı avatarı için kaliteli görsel widget
@@ -77,6 +84,73 @@ class ImageService {
     );
   }
   
+  /// Compress image before upload
+  Future<File?> compressImage(File file) async {
+    try {
+      final filePath = file.absolute.path;
+      final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+      final splitted = filePath.substring(0, lastIndex);
+      final outPath = "${splitted}_compressed.jpg";
+
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        outPath,
+        quality: 85,
+        minWidth: 1024,
+        minHeight: 1024,
+      );
+
+      return result != null ? File(result.path) : null;
+    } catch (e) {
+      print('Error compressing image: $e');
+      return file; // Return original if compression fails
+    }
+  }
+
+  /// Upload item image to Firebase Storage
+  Future<String?> uploadItemImage(File imageFile, String itemId) async {
+    try {
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';
+      final ref = _storage.ref().child('items/$itemId/$fileName');
+      
+      final uploadTask = ref.putFile(imageFile);
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }
+
+  /// Upload user avatar
+  Future<String?> uploadUserAvatar(File imageFile, String userId) async {
+    try {
+      final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final ref = _storage.ref().child('users/$userId/$fileName');
+      
+      final uploadTask = ref.putFile(imageFile);
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading avatar: $e');
+      return null;
+    }
+  }
+
+  /// Delete image from Firebase Storage
+  Future<void> deleteImage(String imageUrl) async {
+    try {
+      final ref = _storage.refFromURL(imageUrl);
+      await ref.delete();
+    } catch (e) {
+      print('Error deleting image: $e');
+    }
+  }
+
   /// Placeholder widget
   static Widget _buildPlaceholder(double size) {
     return Container(
