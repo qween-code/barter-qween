@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
-import '../../../core/providers/global_bloc_providers.dart';
 import '../../widgets/navigation/world_class_bottom_nav.dart';
 import '../home/world_class_home_page.dart';
 import '../explore/world_class_explore_page.dart';
@@ -84,11 +83,9 @@ class _MainDashboardState extends State<MainDashboard>
       backgroundColor: WorldClassDesignSystem.primaryBackground,
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: GlobalBlocProviders(
-          child: IndexedStack(
-            index: _currentIndex,
-            children: _pages,
-          ),
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
         ),
       ),
       bottomNavigationBar: WorldClassBottomNav(
