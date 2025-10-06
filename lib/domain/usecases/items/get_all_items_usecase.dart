@@ -6,13 +6,13 @@ import '../../entities/item_entity.dart';
 import '../../repositories/item_repository.dart';
 
 @lazySingleton
-class GetTrendingItemsUseCase implements UseCase<List<ItemEntity>, NoParams> {
+class GetAllItemsUseCase implements UseCase<List<ItemEntity>, NoParams> {
   final ItemRepository repository;
 
-  GetTrendingItemsUseCase(this.repository);
+  GetAllItemsUseCase(this.repository);
 
   @override
   Future<Either<Failure, List<ItemEntity>>> call(NoParams params) async {
-    return await repository.getTrendingItems();
+    return await repository.getAllItems();
   }
 }

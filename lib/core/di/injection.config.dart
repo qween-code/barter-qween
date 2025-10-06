@@ -136,6 +136,8 @@ import 'package:barter_qween/domain/usecases/get_search_suggestions_usecase.dart
 import 'package:barter_qween/domain/usecases/item/item_usecases.dart' as _i301;
 import 'package:barter_qween/domain/usecases/items/delete_item_usecase.dart'
     as _i529;
+import 'package:barter_qween/domain/usecases/items/get_all_items_usecase.dart'
+    as _i163;
 import 'package:barter_qween/domain/usecases/items/get_recent_items_usecase.dart'
     as _i367;
 import 'package:barter_qween/domain/usecases/items/get_trending_items_usecase.dart'
@@ -433,11 +435,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i529.DeleteItemUseCase>(
       () => _i529.DeleteItemUseCase(gh<_i754.ItemRepository>()),
     );
+    gh.lazySingleton<_i367.GetRecentItemsUseCase>(
+      () => _i367.GetRecentItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.lazySingleton<_i1070.GetTrendingItemsUseCase>(
+      () => _i1070.GetTrendingItemsUseCase(gh<_i754.ItemRepository>()),
+    );
     gh.lazySingleton<_i217.GetUserItemsUseCase>(
       () => _i217.GetUserItemsUseCase(gh<_i754.ItemRepository>()),
     );
     gh.lazySingleton<_i768.UpdateItemUseCase>(
       () => _i768.UpdateItemUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.lazySingleton<_i163.GetAllItemsUseCase>(
+      () => _i163.GetAllItemsUseCase(gh<_i754.ItemRepository>()),
     );
     gh.factory<_i301.CreateItemUseCase>(
       () => _i301.CreateItemUseCase(gh<_i754.ItemRepository>()),
@@ -465,15 +476,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i301.UploadItemImagesUseCase>(
       () => _i301.UploadItemImagesUseCase(gh<_i754.ItemRepository>()),
-    );
-    gh.factory<_i367.GetRecentItemsUseCase>(
-      () => _i367.GetRecentItemsUseCase(gh<_i754.ItemRepository>()),
-    );
-    gh.factory<_i1070.GetTrendingItemsUseCase>(
-      () => _i1070.GetTrendingItemsUseCase(gh<_i754.ItemRepository>()),
-    );
-    gh.factory<_i1004.ItemBloc>(
-      () => _i1004.ItemBloc(gh<_i1051.GetItemUsecase>()),
     );
     gh.lazySingleton<_i610.GetConversationsUseCase>(
       () => _i610.GetConversationsUseCase(gh<_i920.ChatRepository>()),
@@ -524,6 +526,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i772.NotificationRepository>(
       () => _i931.NotificationRepositoryImpl(
         gh<_i73.NotificationRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i1004.ItemBloc>(
+      () => _i1004.ItemBloc(
+        gh<_i1051.GetItemUsecase>(),
+        gh<_i163.GetAllItemsUseCase>(),
+        gh<_i1070.GetTrendingItemsUseCase>(),
+        gh<_i367.GetRecentItemsUseCase>(),
       ),
     );
     gh.factory<_i790.DismissBarterMatchUsecase>(

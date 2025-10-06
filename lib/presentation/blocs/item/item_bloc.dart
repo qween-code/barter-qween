@@ -4,6 +4,10 @@ import 'package:injectable/injectable.dart';
 import 'dart:io';
 import '../../../domain/entities/item_entity.dart';
 import '../../../domain/usecases/get_item_usecase.dart';
+import '../../../domain/usecases/items/get_all_items_usecase.dart';
+import '../../../domain/usecases/items/get_trending_items_usecase.dart';
+import '../../../domain/usecases/items/get_recent_items_usecase.dart';
+import '../../../core/usecases/usecase.dart';
 
 import 'item_event.dart';
 import 'item_state.dart';
@@ -12,8 +16,16 @@ import 'item_state.dart';
 @injectable
 class ItemBloc extends Bloc<ItemEvent, ItemState> {
   final GetItemUsecase _getItemUsecase;
+  final GetAllItemsUseCase _getAllItemsUseCase;
+  final GetTrendingItemsUseCase _getTrendingItemsUseCase;
+  final GetRecentItemsUseCase _getRecentItemsUseCase;
 
-  ItemBloc(this._getItemUsecase) : super(ItemInitial()) {
+  ItemBloc(
+    this._getItemUsecase,
+    this._getAllItemsUseCase,
+    this._getTrendingItemsUseCase,
+    this._getRecentItemsUseCase,
+  ) : super(ItemInitial()) {
     on<LoadItem>(_onLoadItem);
     on<LoadAllItems>(_onLoadAllItems);
     on<LoadUserItems>(_onLoadUserItems);
@@ -40,8 +52,13 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
 
   Future<void> _onLoadAllItems(LoadAllItems event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
-    // TODO: Implement getAllItems usecase
-    emit(const ItemsLoaded([]));
+    
+    final result = await _getAllItemsUseCase(NoParams());
+    
+    result.fold(
+      (failure) => emit(ItemError(failure.message)),
+      (items) => emit(ItemsLoaded(items)),
+    );
   }
 
   Future<void> _onLoadUserItems(LoadUserItems event, Emitter<ItemState> emit) async {
@@ -82,31 +99,34 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
 
   Future<void> _onLoadFeaturedItems(LoadFeaturedItems event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
-    try {
-      // TODO: Implement GetFeaturedItemsUseCase
-      emit(ItemsLoaded([]));
-    } catch (e) {
-      emit(ItemError(e.toString()));
-    }
+    
+    final result = await _getAllItemsUseCase(NoParams());
+    
+    result.fold(
+      (failure) => emit(ItemError(failure.message)),
+      (items) => emit(ItemsLoaded(items)),
+    );
   }
 
   Future<void> _onLoadRecentItems(LoadRecentItems event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
-    try {
-      // TODO: Implement GetRecentItemsUseCase
-      emit(ItemsLoaded([]));
-    } catch (e) {
-      emit(ItemError(e.toString()));
-    }
+    
+    final result = await _getRecentItemsUseCase(NoParams());
+    
+    result.fold(
+      (failure) => emit(ItemError(failure.message)),
+      (items) => emit(ItemsLoaded(items)),
+    );
   }
 
   Future<void> _onLoadTrendingItems(LoadTrendingItems event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
-    try {
-      // TODO: Implement GetTrendingItemsUseCase
-      emit(ItemsLoaded([]));
-    } catch (e) {
-      emit(ItemError(e.toString()));
-    }
+    
+    final result = await _getTrendingItemsUseCase(NoParams());
+    
+    result.fold(
+      (failure) => emit(ItemError(failure.message)),
+      (items) => emit(ItemsLoaded(items)),
+    );
   }
 }
