@@ -164,7 +164,7 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
         images: imageUrls,
         ownerId: user.uid,
         ownerName: user.displayName ?? 'Unknown',
-        status: 'active',
+        status: ItemStatus.active,
         // estimatedValue removed - not in ItemEntity
         // barterPreferences removed - not in constructor  
         // isOpenToCash: removed - not in constructor

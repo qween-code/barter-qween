@@ -7,6 +7,7 @@ import '../../presentation/blocs/favorite/favorite_bloc.dart';
 import '../../presentation/blocs/profile/profile_bloc.dart';
 import '../../presentation/blocs/search/search_bloc.dart';
 import '../../presentation/blocs/item/item_bloc.dart';
+import '../../presentation/blocs/home/home_bloc.dart';
 import '../../domain/usecases/get_item_usecase.dart';
 import '../../domain/usecases/items/get_all_items_usecase.dart';
 import '../../domain/usecases/items/get_trending_items_usecase.dart';
@@ -57,6 +58,12 @@ class GlobalBlocProviders extends StatelessWidget {
             getIt<GetTrendingItemsUseCase>(),
             getIt<GetRecentItemsUseCase>(),
           ),
+          lazy: false,
+        ),
+        
+        // Home bloc - global home page management
+        BlocProvider<HomeBloc>(
+          create: (_) => getIt<HomeBloc>(),
           lazy: false,
         ),
       ],

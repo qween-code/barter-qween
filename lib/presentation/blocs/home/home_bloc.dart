@@ -7,6 +7,7 @@ import '../../../domain/usecases/items/get_recent_items_usecase.dart';
 import '../../../domain/usecases/items/get_trending_items_usecase.dart';
 import '../../../domain/usecases/favorites/add_favorite_usecase.dart';
 import '../../../domain/usecases/favorites/remove_favorite_usecase.dart';
+import '../../../core/usecases/usecase.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 

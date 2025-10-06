@@ -142,20 +142,24 @@ class _WorldClassExplorePageState extends State<WorldClassExplorePage>
                 itemCount: 20, // Mock data
                 itemBuilder: (context, index) {
                   return PremiumItemCard(
+                    username: 'User ${index + 1}',
                     title: 'Item ${index + 1}',
                     imageUrl: 'https://via.placeholder.com/300',
                     price: (index + 1) * 100.0,
-                    // originalPrice removed - not needed
                     matchScore: 85 + (index % 15),
                     distance: '${(index % 5) + 1}.${index % 10}km',
                     condition: ['Brand New', 'Like New', 'Good'][index % 3],
                     viewCount: (index + 1) * 47,
-                    // badge: removed - not in PremiumItemCard
-                    // isFavorite: removed - not in PremiumItemCard
+                    isVerified: index % 3 == 0,
+                    isFavorited: false,
                     onTap: () {
                       Navigator.of(context).pushNamed('/item-detail', arguments: 'item_$index');
                     },
-                    // onFavorite: removed - not in PremiumItemCard
+                    onFavorite: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('❤️ Added to favorites')),
+                      );
+                    },
                   );
                 },
               ),

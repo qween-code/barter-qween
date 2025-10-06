@@ -322,9 +322,26 @@ class AdminRepositoryImpl implements AdminRepository {
       images: (data['imageUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       ownerId: data['ownerId'] as String? ?? '',
       ownerName: data['ownerName'] as String? ?? 'Unknown',
-      status: data['status'] as String? ?? 'active',
+      status: _parseItemStatus(data['status'] as String?),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
+  }
+
+  ItemStatus _parseItemStatus(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return ItemStatus.active;
+      case 'pending':
+        return ItemStatus.pending;
+      case 'traded':
+        return ItemStatus.traded;
+      case 'deleted':
+        return ItemStatus.deleted;
+      case 'expired':
+        return ItemStatus.expired;
+      default:
+        return ItemStatus.active;
+    }
   }
 }
