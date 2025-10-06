@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 import '../../widgets/navigation/world_class_bottom_nav.dart';
-import '../home/world_class_home_page.dart';
-import '../explore/world_class_explore_page.dart';
+import '../home/modern_home_page.dart';
+import '../explore/modern_explore_page.dart';
 import '../add_item/world_class_add_item_page.dart';
 import '../messages/world_class_messages_page.dart';
 import '../profile/world_class_profile_page.dart';
@@ -29,8 +29,8 @@ class _MainDashboardState extends State<MainDashboard>
   late Animation<double> _fadeAnimation;
 
   final List<Widget> _pages = [
-    const WorldClassHomePage(),
-    const WorldClassExplorePage(),
+    const ModernHomePage(),
+    const ModernExplorePage(),
     const WorldClassAddItemPage(),
     const WorldClassMessagesPage(),
     const WorldClassProfilePage(),
