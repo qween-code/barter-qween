@@ -53,7 +53,10 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
   Future<void> _onLoadAllItems(LoadAllItems event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
     
-    final result = await _getAllItemsUseCase(NoParams());
+    final result = await _getAllItemsUseCase(GetAllItemsParams(
+      category: event.category,
+      city: event.city,
+    ));
     
     result.fold(
       (failure) => emit(ItemError(failure.message)),
@@ -100,7 +103,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
   Future<void> _onLoadFeaturedItems(LoadFeaturedItems event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
     
-    final result = await _getAllItemsUseCase(NoParams());
+    final result = await _getAllItemsUseCase(const GetAllItemsParams());
     
     result.fold(
       (failure) => emit(ItemError(failure.message)),

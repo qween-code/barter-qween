@@ -20,11 +20,12 @@ class LoadItem extends ItemEvent {
 
 class LoadAllItems extends ItemEvent {
   final String? category;
+  final String? city;
 
-  const LoadAllItems({this.category});
+  const LoadAllItems({this.category, this.city});
 
   @override
-  List<Object?> get props => [category];
+  List<Object?> get props => [category, city];
 }
 
 class LoadUserItems extends ItemEvent {
