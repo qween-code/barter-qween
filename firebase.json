@@ -1,12 +1,24 @@
 {
-  "functions": {
-    "source": "functions"
-  },
-  "storage": {
-    "rules": "storage.rules"
-  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    }
+  ],
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
-  }
+  },
+  "storage": [
+    {
+      "bucket": "bogazici-barter.appspot.com",
+      "rules": "storage.rules"
+    }
+  ]
 }
