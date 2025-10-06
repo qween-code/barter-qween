@@ -2,10 +2,14 @@
 // Conversion-optimized design inspired by: Hepsiburada, AliExpress, Dolap
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import '../../../core/theme/world_class_components.dart';
 import '../../../domain/entities/item_entity.dart';
+import '../../blocs/item/item_bloc.dart';
+import '../../blocs/item/item_event.dart';
+import '../../blocs/item/item_state.dart';
 
 class EnhancedItemDetailPageV2 extends StatefulWidget {
   final String itemId;
@@ -26,6 +30,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
   bool _showConfetti = false;
   late TabController _tabController;
 
+  // Mock images - will be replaced with real data
   final List<String> _images = [
     'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
     'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
@@ -36,6 +41,8 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    // Load item details
+    context.read<ItemBloc>().add(LoadItem(widget.itemId));
   }
 
   @override
@@ -46,6 +53,54 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<ItemBloc, ItemState>(
+      builder: (context, state) {
+        // Loading State
+        if (state is ItemLoading) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Loading...')),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+        
+        // Error State
+        if (state is ItemError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Error')),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('Error: ${state.message}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<ItemBloc>().add(LoadItem(widget.itemId)),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        
+        // Success State - Load item
+        if (state is ItemLoaded) {
+          final item = state.item;
+          return _buildItemDetail(item);
+        }
+        
+        // Initial/Unknown State
+        return Scaffold(
+          appBar: AppBar(),
+          body: const Center(child: Text('No data')),
+        );
+      },
+    );
+  }
+  
+  Widget _buildItemDetail(ItemEntity item) {
     return ConfettiOverlay(
       show: _showConfetti,
       child: Scaffold(
@@ -53,20 +108,20 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
         body: CustomScrollView(
           slivers: [
             // Image Gallery with Zoom
-            _buildImageGallery(),
+            _buildImageGallery(item),
             
             // Item Info
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  _buildTitleAndPrice(),
-                  _buildSellerCard(),
-                  _buildSocialProof(),
+                  _buildTitleAndPrice(item),
+                  _buildSellerCard(item),
+                  _buildSocialProof(item),
                   _buildTrustBadges(),
-                  _buildDescription(),
-                  _buildSpecifications(),
-                  _buildBarterPreferences(),
-                  _buildLocationAndMeetup(),
+                  _buildDescription(item),
+                  _buildSpecifications(item),
+                  _buildBarterPreferences(item),
+                  _buildLocationAndMeetup(item),
                   _buildReviews(),
                   _buildRelatedItems(),
                   const SizedBox(height: 100), // Bottom padding
@@ -77,12 +132,14 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
         ),
         
         // Sticky Bottom Action Bar
-        bottomNavigationBar: _buildActionBar(),
+        bottomNavigationBar: _buildActionBar(item),
       ),
     );
   }
 
-  Widget _buildImageGallery() {
+  Widget _buildImageGallery(ItemEntity item) {
+    final images = item.images.isNotEmpty ? item.images : _images;
+    
     return SliverAppBar(
       expandedHeight: 400,
       pinned: true,
@@ -145,10 +202,10 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
           children: [
             // Image Gallery
             PhotoViewGallery.builder(
-              itemCount: _images.length,
+              itemCount: images.length,
               builder: (context, index) {
                 return PhotoViewGalleryPageOptions(
-                  imageProvider: NetworkImage(_images[index]),
+                  imageProvider: NetworkImage(images[index]),
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 2,
                 );
@@ -221,7 +278,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildTitleAndPrice() {
+  Widget _buildTitleAndPrice(ItemEntity item) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -296,7 +353,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildSellerCard() {
+  Widget _buildSellerCard(ItemEntity item) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -404,7 +461,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildSocialProof() {
+  Widget _buildSocialProof(ItemEntity item) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -543,7 +600,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(ItemEntity item) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
@@ -570,7 +627,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildSpecifications() {
+  Widget _buildSpecifications(ItemEntity item) {
     final specs = [
       {'label': 'Category', 'value': 'Fashion • Shoes'},
       {'label': 'Condition', 'value': 'Like New'},
@@ -631,7 +688,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildBarterPreferences() {
+  Widget _buildBarterPreferences(ItemEntity item) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       padding: const EdgeInsets.all(16),
@@ -694,7 +751,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildLocationAndMeetup() {
+  Widget _buildLocationAndMeetup(ItemEntity item) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Column(
@@ -918,7 +975,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
     );
   }
 
-  Widget _buildActionBar() {
+  Widget _buildActionBar(ItemEntity item) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
