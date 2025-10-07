@@ -43,6 +43,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
     _tabController = TabController(length: 3, vsync: this);
     // Load all items and filter by itemId
     context.read<ItemBloc>().add(const LoadAllItems());
+    // Also try to load the specific item
+    context.read<ItemBloc>().add(LoadItem(widget.itemId));
   }
 
   @override
@@ -59,11 +61,19 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
       body: BlocListener<ItemBloc, ItemState>(
         listener: (context, state) {
           if (state is ItemsLoaded) {
-            final item = state.items.firstWhere(
-              (item) => item.id == widget.itemId,
-              orElse: () => state.items.first,
-            );
-            setState(() => _item = item);
+            try {
+              final item = state.items.firstWhere(
+                (item) => item.id == widget.itemId,
+              );
+              setState(() => _item = item);
+            } catch (e) {
+              // Item not found in loaded items - this is OK during hot reload
+              // Items will be loaded by HomeBloc
+              debugPrint('Item ${widget.itemId} not yet loaded, waiting...');
+            }
+          } else if (state is ItemLoaded && state.item.id == widget.itemId) {
+            // Single item loaded
+            setState(() => _item = state.item);
           } else if (state is ItemError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message), backgroundColor: Colors.red),

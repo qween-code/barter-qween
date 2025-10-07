@@ -18,8 +18,9 @@
 
 ## 🔴 OPEN BUGS
 
-### BUG-003: Item Detail Pages Not Loading [HIGH] ⚠️
+### BUG-003: Item Detail Pages Not Loading [FIXING] 🔧
 **Found**: 2025-01-07 18:08  
+**Fixed**: 2025-01-07 18:12 (in progress)  
 **Reported By**: User (Hamza Turhan)  
 **Phase**: Phase 2 - Home Feed Testing  
 **Priority**: P1 (High)  
@@ -54,11 +55,21 @@ After hot reload, item detail pages don't load when tapping on item cards.
 3. Item data not loading
 4. Navigation route issue
 
-**Investigation Needed**:
-- Check global_bloc_providers.dart for ItemBloc
-- Check if items are loading in HomeBloc
-- Verify navigation route
-- Check ItemBloc state
+**Root Cause Found**:
+- ItemDetailPage only loaded all items, didn't load specific item
+- After hot reload, items list was empty
+- firstWhere with orElse:first caused crash if no items
+
+**Fix Applied**:
+✅ Added LoadItem(itemId) call in initState
+✅ Added ItemLoaded state listener
+✅ Improved error handling (try-catch)
+✅ Better fallback behavior
+
+**Changes**:
+- Line 44: Added LoadItem event call
+- Line 61-73: Added ItemLoaded listener
+- Line 64-71: Wrapped firstWhere in try-catch
 
 ---
 
