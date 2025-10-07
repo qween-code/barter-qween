@@ -9,16 +9,66 @@
 
 | Status | Count | Percentage |
 |--------|-------|------------|
-| 🔴 Open | 0 | 0% |
+| 🔴 Open | 1 | 100% |
 | 🟡 In Progress | 0 | 0% |
 | ✅ Fixed | 0 | 0% |
-| **Total** | **0** | **100%** |
+| **Total** | **1** | **100%** |
 
 ---
 
 ## 🔴 OPEN BUGS
 
-*No open bugs currently. Bugs will be added as they are discovered during testing.*
+### BUG-001: UI Overflow in Item Cards [MINOR]
+**Found**: 2025-01-07 17:30  
+**Phase**: Phase 1 - Initial Launch  
+**Reporter**: Droid  
+**Assignee**: Droid  
+**Priority**: P3 (Low)  
+**Severity**: Minor  
+
+**Description**:
+Column widget in item card overflows by 9 pixels on the bottom.
+
+**Steps to Reproduce**:
+1. Launch app on emulator
+2. Navigate to home page
+3. Observe item cards in grid
+
+**Expected Behavior**:
+Item card content should fit within container without overflow
+
+**Actual Behavior**:
+RenderFlex overflows by 9.0 pixels on the bottom
+
+**Location**:
+- File: `modern_home_page.dart`
+- Line: 539:24
+- Widget: Column in item card layout
+
+**Environment**:
+- Device: Android Emulator (API 30)
+- App Version: 1.0.0+1
+- Flutter: 3.x
+
+**Screenshots/Logs**:
+```
+A RenderFlex overflowed by 9.0 pixels on the bottom.
+Column:file:///C:/Users/qw/Desktop/barter_qween/lib/presentation/pages/home/modern_home_page.dart:539:24
+```
+
+**Root Cause**:
+Item card Column widget has too much content for available space (76px height)
+
+**Fix**:
+- Option 1: Reduce padding/spacing in Column
+- Option 2: Reduce font sizes
+- Option 3: Remove one text element
+- Option 4: Increase card height
+
+**Verification**:
+- [ ] Overflow error no longer appears
+- [ ] Item cards display correctly on all screen sizes
+- [ ] No content is clipped
 
 ---
 
