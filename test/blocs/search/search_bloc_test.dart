@@ -133,7 +133,7 @@ void main() {
         wait: const Duration(milliseconds: 600),
         expect: () => [
           const SearchLoading(),
-          const SearchEmpty(query: tQuery, filters: tFilters),
+          const SearchEmpty(query: tQuery),
         ],
       );
 
@@ -159,12 +159,8 @@ void main() {
         'emits [SearchInitial] when search is cleared',
         build: () => searchBloc,
         seed: () => SearchLoaded(
-          items: [tItem],
           query: tQuery,
-          filters: tFilters,
-          totalCount: 1,
-          hasMore: false,
-          metadata: tMetadata, // Added required metadata
+          results: [tItem],
         ),
         act: (bloc) => bloc.add(const SearchCleared()),
         expect: () => [const SearchInitial()],
@@ -186,23 +182,15 @@ void main() {
           return searchBloc;
         },
         seed: () => SearchLoaded(
-          items: [tItem],
           query: tQuery,
-          filters: tFilters,
-          totalCount: 1,
-          hasMore: false,
-          metadata: tMetadata, // Added required metadata
+          results: [tItem],
         ),
         act: (bloc) => bloc.add(const FiltersApplied(tNewFilters)),
         expect: () => [
           const SearchLoading(),
           SearchLoaded(
-            items: [tItem],
             query: tQuery,
-            filters: tNewFilters,
-            totalCount: 1,
-            hasMore: false,
-            metadata: tMetadata, // Added required metadata
+            results: [tItem],
           ),
         ],
         verify: (_) {
