@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../entities/user_entity.dart';
-import '../../core/errors/failures.dart';
+import '../../core/error/failures.dart';
 
 abstract class AuthRepository {
   /// Sign in with email and password

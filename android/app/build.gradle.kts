@@ -38,8 +38,19 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("com.google.android.datatransport:transport-api:3.1.0")
+        force("com.google.android.datatransport:transport-backend-cct:3.2.0")
+        force("com.google.android.datatransport:transport-runtime:3.2.0")
+    }
+}
+
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    
+    // Use Firebase BOM for consistent versions
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
 }
 
 flutter {

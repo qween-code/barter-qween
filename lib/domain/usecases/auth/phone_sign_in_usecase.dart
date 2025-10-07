@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../repositories/auth_repository.dart';
-import '../../../core/errors/failures.dart';
+import '../../../core/error/failures.dart';
 
 @injectable
 class PhoneSignInUseCase {

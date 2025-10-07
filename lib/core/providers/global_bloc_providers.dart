@@ -34,7 +34,7 @@ class GlobalBlocProviders extends StatelessWidget {
         
         // Favorite bloc - persist state across page visits
         BlocProvider<FavoriteBloc>(
-          create: (_) => FavoriteBloc(),
+          create: (_) => getIt<FavoriteBloc>(),
           lazy: false,
         ),
         

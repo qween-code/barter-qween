@@ -20,6 +20,23 @@ class AuthFailure extends Failure {
   const AuthFailure(String message) : super(message);
 }
 
+/// Specific auth failures
+class InvalidCredentialsFailure extends AuthFailure {
+  const InvalidCredentialsFailure() : super('Invalid email or password');
+}
+
+class UserNotFoundFailure extends AuthFailure {
+  const UserNotFoundFailure() : super('User not found');
+}
+
+class EmailAlreadyInUseFailure extends AuthFailure {
+  const EmailAlreadyInUseFailure() : super('Email already in use');
+}
+
+class WeakPasswordFailure extends AuthFailure {
+  const WeakPasswordFailure() : super('Password is too weak');
+}
+
 /// Failure when cached data is not available
 class CacheFailure extends Failure {
   const CacheFailure(String message) : super(message);

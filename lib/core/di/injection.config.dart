@@ -222,7 +222,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => firebaseInjectableModule.prefs,
       preResolve: true,
     );
-    gh.factory<_i728.MapService>(() => _i728.MapService());
     gh.factory<_i969.CalculateCompatibilityScoreUseCase>(
       () => _i969.CalculateCompatibilityScoreUseCase(),
     );
@@ -253,6 +252,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i754.GamificationService>(
       () => firebaseInjectableModule.gamificationService,
     );
+    gh.lazySingleton<_i728.MapService>(() => _i728.MapService());
     gh.lazySingleton<_i396.AcceptCounterOfferUsecase>(
       () => _i396.AcceptCounterOfferUsecase(),
     );

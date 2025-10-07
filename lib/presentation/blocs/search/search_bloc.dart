@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../domain/usecases/search_items_usecase.dart';
 import '../../../domain/usecases/get_search_suggestions_usecase.dart';
+import '../../../domain/entities/search/search_filter_entity.dart';
 import 'search_event.dart';
 import 'search_state.dart';
 
