@@ -250,7 +250,7 @@ class _ModernHomePageState extends State<ModernHomePage> {
     return SliverToBoxAdapter(
       child: Container(
         margin: EdgeInsets.all(16),
-        height: 160,
+        height: 180,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
