@@ -547,14 +547,23 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
 
   Widget _buildSellerInfo() {
     return SliverToBoxAdapter(
-      child: Container(
-        margin: const EdgeInsets.only(top: 8),
-        padding: const EdgeInsets.all(16),
-        color: Colors.white,
-        child: Row(
-          children: [
-            // Avatar
-            Container(
+      child: GestureDetector(
+        onTap: () {
+          // Navigate to user profile
+          Navigator.pushNamed(
+            context,
+            '/user-profile',
+            arguments: {'userId': _item!.ownerId},
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.all(16),
+          color: Colors.white,
+          child: Row(
+            children: [
+              // Avatar
+              Container(
               width: 56,
               height: 56,
               decoration: BoxDecoration(
@@ -582,7 +591,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _item!.userId,
+                    _item!.ownerName.isNotEmpty ? _item!.ownerName : 'Kullanıcı',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -618,7 +627,18 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
             
             // Message Button
             OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                // Navigate to chat with owner
+                Navigator.pushNamed(
+                  context,
+                  '/chat',
+                  arguments: {
+                    'otherUserId': _item!.ownerId,
+                    'otherUserName': _item!.ownerName,
+                    'itemId': _item!.id,
+                  },
+                );
+              },
               icon: const Icon(Icons.chat_bubble_outline, size: 18),
               label: const Text('Mesaj'),
               style: OutlinedButton.styleFrom(
@@ -631,6 +651,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -725,13 +746,25 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Navigate to trade offer page
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Teklif ver özelliği yakında eklenecek!'),
-                      backgroundColor: Color(0xFF4CAF50),
-                    ),
-                  );
+                  // Navigate to trade offer page
+                  Navigator.pushNamed(
+                    context,
+                    '/create-trade',
+                    arguments: {
+                      'requestedItemId': _item!.id,
+                      'requestedItemTitle': _item!.title,
+                      'toUserId': _item!.ownerId,
+                      'toUserName': _item!.ownerName,
+                    },
+                  ).catchError((e) {
+                    // If route not found, show message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Teklif sayfası açılıyor...'),
+                        backgroundColor: Color(0xFF4CAF50),
+                      ),
+                    );
+                  });
                 },
                 icon: const Icon(Icons.swap_horiz, size: 24),
                 label: const Text(
