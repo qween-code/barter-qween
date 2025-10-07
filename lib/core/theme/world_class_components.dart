@@ -13,7 +13,7 @@ import 'dart:math' as math;
 class PremiumItemCard extends StatelessWidget {
   final String imageUrl;
   final String title;
-  final String username;
+  final String? username;  // Made nullable for flexibility
   final double? price;
   final String condition;
   final String? distance;
@@ -29,7 +29,7 @@ class PremiumItemCard extends StatelessWidget {
     Key? key,
     required this.imageUrl,
     required this.title,
-    required this.username,
+    this.username,  // Optional now
     this.price,
     required this.condition,
     this.distance,
@@ -88,25 +88,26 @@ class PremiumItemCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   
                   // Username with verification
-                  Row(
-                    children: [
-                      Text(
-                        '@$username',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
+                  if (username != null)
+                    Row(
+                      children: [
+                        Text(
+                          '@$username',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
                         ),
-                      ),
-                      if (isVerified) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.verified,
-                          size: 14,
-                          color: Colors.blue[600],
-                        ),
+                        if (isVerified) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.verified,
+                            size: 14,
+                            color: Colors.blue[600],
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
                   
                   const SizedBox(height: 8),
                   
