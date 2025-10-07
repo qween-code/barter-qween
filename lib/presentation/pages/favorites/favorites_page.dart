@@ -1,10 +1,28 @@
 // ❤️ FAVORITES PAGE
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/world_class_components.dart';
+import '../../../domain/entities/item_entity.dart';
+import '../../blocs/favorite/favorite_bloc.dart';
+import '../../blocs/favorite/favorite_event.dart';
+import '../../blocs/favorite/favorite_state.dart';
+import '../../widgets/items/item_card_widget.dart';
 
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
   const FavoritesPage({Key? key}) : super(key: key);
+
+  @override
+  State<FavoritesPage> createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Load favorites on page open
+    context.read<FavoriteBloc>().add(LoadFavorites());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,31 +36,105 @@ class FavoritesPage extends StatelessWidget {
           ),
         ],
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: 12,
-        itemBuilder: (context, index) {
-          return PremiumItemCard(
-            title: 'Favorited Item ${index + 1}',
-            username: 'user${index + 1}',
-            imageUrl: 'https://via.placeholder.com/300',
-            price: (index + 1) * 100.0,
-            matchScore: 85 + (index % 15),
-            distance: '${(index % 5) + 1}.${index % 10}km',
-            condition: ['Brand New', 'Like New', 'Good'][index % 3],
-            viewCount: (index + 1) * 47,
-            badges: index % 5 == 0 ? ['HOT'] : null,
-            isFavorited: true,
-            onTap: () {
-              Navigator.of(context).pushNamed('/item-detail', arguments: 'item_$index');
-            },
-            onFavorite: () {},
+      body: BlocBuilder<FavoriteBloc, FavoriteState>(
+        builder: (context, state) {
+          if (state is FavoriteLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (state is FavoriteError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading favorites',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    state.message,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      context.read<FavoriteBloc>().add(LoadFavorites());
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+          
+          if (state is FavoritesLoaded) {
+            final favorites = state.favorites;
+            
+            if (favorites.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.favorite_border, size: 80, color: Colors.grey[300]),
+                    const SizedBox(height: 24),
+                    Text(
+                      'No favorites yet',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tap ❤️ on items to add them here',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: favorites.length,
+              itemBuilder: (context, index) {
+                final item = favorites[index];
+                return ItemCardWidget(
+                  item: item,
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      '/item-detail',
+                      arguments: item.id,
+                    );
+                  },
+                );
+              },
+            );
+          }
+          
+          // Initial state - show empty
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(
+                  'Loading favorites...',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
           );
         },
       ),
