@@ -59,12 +59,17 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: MatchCard(
-                    myItemTitle: 'My iPhone 13',
-                    myItemImage: 'https://via.placeholder.com/200',
+                    yourItemTitle: 'My iPhone 13',
+                    yourItemImage: 'https://via.placeholder.com/200',
                     theirItemTitle: 'MacBook Air M1',
                     theirItemImage: 'https://via.placeholder.com/200',
-                    matchScore: 92 - (index * 2),
-                    matchExplanation: 'Great match! Both high-value electronics.',
+                    matchScore: 92 - (index * 2).toDouble(),
+                    matchReasons: const [
+                      'Similar value electronics',
+                      'Both in excellent condition',
+                      'Good category match',
+                    ],
+                    distance: '${index + 2} km',
                     onViewDetails: () {},
                     onMakeOffer: () {
                       ScaffoldMessenger.of(context).showSnackBar(

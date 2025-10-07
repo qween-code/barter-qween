@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../entities/admin_user_entity.dart';
 import '../entities/moderation_request_entity.dart';
+import '../entities/item_entity.dart';
 import '../../core/error/failures.dart';
 
 abstract class AdminRepository {

@@ -6,8 +6,8 @@ import '../../presentation/pages/splash/splash_screen.dart';
 import '../../presentation/pages/onboarding/enhanced_onboarding_flow.dart';
 import '../../presentation/pages/home/enhanced_home_page_v2.dart';
 import '../../presentation/pages/items/enhanced_item_detail_page_v2.dart';
-import '../../presentation/pages/auth/enhanced_login_page.dart';
-import '../../presentation/pages/auth/enhanced_register_page.dart';
+import '../../presentation/pages/auth/login_page.dart';
+import '../../presentation/pages/auth/register_page.dart';
 import '../../presentation/pages/add_item/world_class_add_item_page.dart';
 import '../../presentation/pages/explore/world_class_explore_page.dart';
 import '../../presentation/pages/messages/world_class_messages_page.dart';
@@ -39,10 +39,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const EnhancedOnboardingFlow());
 
       case login:
-        return MaterialPageRoute(builder: (_) => const EnhancedLoginPage());
+        return MaterialPageRoute(builder: (_) => const LoginPage());
 
       case register:
-        return MaterialPageRoute(builder: (_) => const EnhancedRegisterPage());
+        return MaterialPageRoute(builder: (_) => const RegisterPage());
 
       case home:
         return MaterialPageRoute(builder: (_) => const EnhancedHomePageV2());

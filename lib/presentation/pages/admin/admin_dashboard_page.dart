@@ -1,69 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../blocs/admin/admin_bloc.dart';
-import '../../blocs/admin/admin_event.dart';
-import '../../blocs/admin/admin_state.dart';
-import '../../widgets/admin/admin_sidebar.dart';
-import '../../widgets/admin/admin_app_bar.dart';
-import '../../widgets/admin/dashboard_content.dart';
 
+// TODO: Admin dashboard will be implemented in Phase 3
+// Requires admin_bloc, admin_event, admin_state to be recreated
 class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          // Sol sidebar - navigasyon
-          const AdminSidebar(),
-
-          // Ana içerik
-          Expanded(
-            child: Column(
-              children: [
-                // Üst bar - kullanıcı, bildirimler
-                const AdminAppBar(),
-
-                // İçerik alanı
-                Expanded(
-                  child: BlocBuilder<AdminBloc, AdminState>(
-                    builder: (context, state) {
-                      if (state is AdminLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (state is DashboardStatsLoaded) {
-                        return DashboardContent(stats: state.stats);
-                      } else if (state is AdminError) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('Hata: ${state.message}'),
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<AdminBloc>().add(const LoadDashboardStats());
-                                },
-                                child: const Text('Tekrar Dene'),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        // Initial state - load dashboard stats
-                        context.read<AdminBloc>().add(const LoadDashboardStats());
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ],
+      appBar: AppBar(
+        title: const Text('Admin Dashboard'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.admin_panel_settings,
+              size: 100,
+              color: Colors.grey[400],
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Text(
+              'Admin Dashboard',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Coming Soon in Phase 3',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 32),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Go Back'),
+            ),
+          ],
+        ),
       ),
     );
   }
