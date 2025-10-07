@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 import '../../../domain/entities/item_entity.dart';
+import '../items/item_card_widget.dart';
 
 /// 🌟 WORLD-CLASS ITEMS GRID
 /// 
 /// Features:
-/// - Grid layout
-/// - Item cards
-/// - Infinite scroll
+/// - Responsive grid layout (2-4 columns)
+/// - Modern item cards with quick actions
+/// - Infinite scroll pagination
 /// - Loading states
 /// - Empty states
+/// - Smooth animations
 class WorldClassItemsGrid extends StatefulWidget {
   final List<ItemEntity> items;
   final Function(ItemEntity) onItemTap;
   final VoidCallback onLoadMore;
+  final bool showLoadingIndicator;
 
   const WorldClassItemsGrid({
     Key? key,
     required this.items,
     required this.onItemTap,
     required this.onLoadMore,
+    this.showLoadingIndicator = false,
   }) : super(key: key);
 
   @override
@@ -67,130 +71,46 @@ class _WorldClassItemsGridState extends State<WorldClassItemsGrid> {
       return _buildEmptyState();
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = _calculateCrossAxisCount(screenWidth);
+
     return GridView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
         crossAxisSpacing: WorldClassDesignSystem.spacingM,
         mainAxisSpacing: WorldClassDesignSystem.spacingM,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.7, // Adjusted for better card proportions
       ),
-      itemCount: widget.items.length + (_isLoadingMore ? 1 : 0),
+      itemCount: widget.items.length + (_isLoadingMore || widget.showLoadingIndicator ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == widget.items.length) {
           return _buildLoadingIndicator();
         }
         
         final item = widget.items[index];
-        return _buildItemCard(item);
+        return ItemCardWidget(
+          item: item,
+          onTap: () => widget.onItemTap(item),
+          showFavoriteButton: true,
+          enableLongPressPreview: true,
+        );
       },
     );
   }
 
-  Widget _buildItemCard(ItemEntity item) {
-    return GestureDetector(
-      onTap: () => widget.onItemTap(item),
-      child: Container(
-        decoration: WorldClassDesignSystem.elevatedCardDecoration,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(WorldClassDesignSystem.radiusL),
-                    topRight: Radius.circular(WorldClassDesignSystem.radiusL),
-                  ),
-                  color: WorldClassDesignSystem.borderLight,
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(WorldClassDesignSystem.radiusL),
-                    topRight: Radius.circular(WorldClassDesignSystem.radiusL),
-                  ),
-                  child: item.images.isNotEmpty
-                      ? Image.network(
-                          item.images.first,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.image_outlined,
-                              size: 32,
-                              color: WorldClassDesignSystem.secondaryText,
-                            );
-                          },
-                        )
-                      : Icon(
-                          Icons.image_outlined,
-                          size: 32,
-                          color: WorldClassDesignSystem.secondaryText,
-                        ),
-                ),
-              ),
-            ),
-            
-            // Content
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(WorldClassDesignSystem.spacingS),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    Text(
-                      item.title,
-                      style: WorldClassDesignSystem.labelMedium.copyWith(
-                        color: WorldClassDesignSystem.primaryText,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    
-                    const SizedBox(height: WorldClassDesignSystem.spacingXS),
-                    
-                    // Category
-                    Text(
-                      item.category,
-                      style: WorldClassDesignSystem.labelSmall.copyWith(
-                        color: WorldClassDesignSystem.secondaryText,
-                      ),
-                    ),
-                    
-                    const Spacer(),
-                    
-                    // Price and Favorite
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${item.price?.toStringAsFixed(0) ?? '0'} TL',
-                          style: WorldClassDesignSystem.labelMedium.copyWith(
-                            color: WorldClassDesignSystem.primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Icon(
-                          Icons.favorite_border_rounded,
-                          size: 16,
-                          color: WorldClassDesignSystem.secondaryText,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  /// Calculate responsive column count based on screen width
+  int _calculateCrossAxisCount(double screenWidth) {
+    if (screenWidth > 1200) {
+      return 4; // Desktop/Large tablet - 4 columns
+    } else if (screenWidth > 900) {
+      return 3; // Tablet landscape - 3 columns
+    } else if (screenWidth > 600) {
+      return 3; // Tablet portrait - 3 columns
+    } else {
+      return 2; // Mobile - 2 columns
+    }
   }
 
   Widget _buildLoadingIndicator() {

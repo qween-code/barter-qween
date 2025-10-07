@@ -3,9 +3,17 @@ import 'favorite_event.dart';
 import 'favorite_state.dart';
 
 class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
+  // Track favorited items locally
+  final Set<String> _favoritedItemIds = {};
+
   FavoriteBloc() : super(FavoriteInitial()) {
     on<LoadFavorites>(_onLoadFavorites);
     on<ToggleFavorite>(_onToggleFavorite);
+  }
+
+  /// Check if an item is favorited
+  bool isFavorited(String itemId) {
+    return _favoritedItemIds.contains(itemId);
   }
 
   Future<void> _onLoadFavorites(
@@ -30,10 +38,17 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     Emitter<FavoriteState> emit,
   ) async {
     try {
+      // Toggle in local set
+      if (_favoritedItemIds.contains(event.itemId)) {
+        _favoritedItemIds.remove(event.itemId);
+      } else {
+        _favoritedItemIds.add(event.itemId);
+      }
+      
       // TODO: Toggle favorite in Firebase
       await Future.delayed(const Duration(milliseconds: 500));
       
-      // Mock success
+      // Emit success
       emit(FavoriteToggled(itemId: event.itemId));
     } catch (e) {
       emit(FavoriteError(message: e.toString()));

@@ -37,15 +37,27 @@ class ItemCardWidget extends StatefulWidget {
 
 class _ItemCardWidgetState extends State<ItemCardWidget> {
   bool _isHovered = false;
+  bool _showQuickActions = false;
 
   @override
   Widget build(BuildContext context) {
+    final isNew = widget.item.createdAt != null &&
+        DateTime.now().difference(widget.item.createdAt!).inDays <= 7;
+    
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) => setState(() {
+        _isHovered = true;
+        _showQuickActions = true;
+      }),
+      onExit: (_) => setState(() {
+        _isHovered = false;
+        _showQuickActions = false;
+      }),
       child: GestureDetector(
         onTap: widget.onTap ?? () => _navigateToDetail(context),
-        onLongPress: widget.enableLongPressPreview ? () => _showQuickPreview(context) : null,
+        onLongPress: widget.enableLongPressPreview ? () {
+          setState(() => _showQuickActions = !_showQuickActions);
+        } : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           transform: Matrix4.identity()
@@ -58,10 +70,11 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image with favorite button
+              // Image with badges and quick actions
               Expanded(
                 child: Stack(
                   children: [
+                    // Main Image
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(AppDimensions.radius16),
@@ -92,26 +105,73 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                               ),
                             ),
                     ),
-                    // Tier Badge (top-left)
-                    if (widget.item.tier != null)
+                    
+                    // NEW Badge (top-left)
+                    if (isNew)
                       Positioned(
                         top: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.success,
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.success.withOpacity(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            'NEW',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                    
+                    // Tier Badge (top-left, below NEW badge if exists)
+                    if (widget.item.tier != null)
+                      Positioned(
+                        top: isNew ? 32 : 8,
                         left: 8,
                         child: TierBadge(tier: widget.item.tier!, size: 20),
                       ),
                     
-                    // Barter Condition Badge (bottom-left)
-                    if (widget.item.barterCondition != null)
+                    // Condition Badge (bottom-left)
+                    if (widget.item.condition != null)
                       Positioned(
                         bottom: 8,
                         left: 8,
-                        child: BarterConditionBadge(
-                          type: widget.item.barterCondition!.type,
-                          compact: true,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getConditionColor(widget.item.condition!),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            widget.item.condition!,
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 10,
+                            ),
+                          ),
                         ),
                       ),
                     
-                    // Favorite button
+                    // Favorite button (top-right)
                     if (widget.showFavoriteButton)
                       Positioned(
                         top: 8,
@@ -143,11 +203,42 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                           },
                         ),
                       ),
+                    
+                    // Quick Actions (center overlay, shows on hover/long press)
+                    if (_showQuickActions)
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.4),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(AppDimensions.radius16),
+                            ),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildQuickActionButton(
+                                  icon: Icons.visibility_outlined,
+                                  label: 'Quick View',
+                                  onTap: () => _showQuickPreview(context),
+                                ),
+                                const SizedBox(width: 12),
+                                _buildQuickActionButton(
+                                  icon: Icons.swap_horiz_rounded,
+                                  label: 'Trade',
+                                  onTap: () => _navigateToDetail(context),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
 
-              // Content with inner shadow separator
+              // Content with enhanced info
               Container(
                 padding: const EdgeInsets.all(AppDimensions.spacing12),
                 decoration: BoxDecoration(
@@ -167,6 +258,21 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Brand (if available)
+                    if (widget.item.brand != null) ...[
+                      Text(
+                        widget.item.brand!,
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                    ],
+                    
+                    // Title
                     Text(
                       widget.item.title,
                       style: AppTextStyles.bodyMedium.copyWith(
@@ -175,7 +281,9 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppDimensions.spacing4),
+                    const SizedBox(height: AppDimensions.spacing8),
+                    
+                    // Location and distance
                     Row(
                       children: [
                         Icon(
@@ -194,6 +302,73 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        // Show distance if available
+                        if (widget.item.distance != null) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            '• ${widget.item.distance!.toStringAsFixed(1)} km',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: AppColors.textTertiary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: AppDimensions.spacing8),
+                    
+                    // Price or Trade info
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (widget.item.price != null)
+                          Text(
+                            '₺${widget.item.price!.toStringAsFixed(0)}',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        else
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryLight,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Trade Only',
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        
+                        // Show discount badge if original price available
+                        if (widget.item.originalPrice != null && 
+                            widget.item.price != null &&
+                            widget.item.originalPrice! > widget.item.price!)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.error,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '-${((1 - (widget.item.price! / widget.item.originalPrice!)) * 100).toInt()}%',
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -204,6 +379,62 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
         ),
       ),
     );
+  }
+  
+  Widget _buildQuickActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: AppColors.primary),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: AppTextStyles.labelSmall.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Color _getConditionColor(String condition) {
+    switch (condition.toLowerCase()) {
+      case 'brand new':
+      case 'new':
+        return AppColors.success;
+      case 'like new':
+        return Colors.green.shade400;
+      case 'good':
+        return Colors.blue;
+      case 'fair':
+        return Colors.orange;
+      case 'poor':
+        return Colors.red;
+      default:
+        return AppColors.textSecondary;
+    }
   }
 
   void _navigateToDetail(BuildContext context) {

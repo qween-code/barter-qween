@@ -1,290 +1,339 @@
-// 👤 WORLD CLASS PROFILE PAGE
-// User profile with stats, achievements, and settings
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/theme/world_class_design_system.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_event.dart';
+import '../../blocs/auth/auth_state.dart';
 
-class WorldClassProfilePage extends StatelessWidget {
+/// 🌟 WORLD-CLASS PROFILE PAGE - Instagram/LinkedIn Style
+/// 
+/// Features:
+/// - Beautiful profile header with stats
+/// - User items grid
+/// - Favorites, Reviews, Settings
+/// - Edit profile
+/// - Professional design
+class WorldClassProfilePage extends StatefulWidget {
   const WorldClassProfilePage({Key? key}) : super(key: key);
+
+  @override
+  State<WorldClassProfilePage> createState() => _WorldClassProfilePageState();
+}
+
+class _WorldClassProfilePageState extends State<WorldClassProfilePage> 
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // App Bar
-          SliverAppBar(
-            expandedHeight: 200,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.7),
-                    ],
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 40),
-                    // Profile Picture
-                    Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 4),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: const CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage('https://i.pravatar.cc/200'),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.verified, color: Colors.white, size: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'John Doe',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Text(
-                      'Pro Trader ⭐',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {},
-              ),
-            ],
-          ),
-
-          // Stats Cards
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(child: _buildStatCard('42', 'Trades', Icons.swap_horiz, Colors.blue)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildStatCard('1,250', 'Coins', Icons.monetization_on, Colors.amber)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildStatCard('4.9', 'Rating', Icons.star, Colors.orange)),
-                ],
-              ),
-            ),
-          ),
-
-          // Gamification Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Gamification',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      // Streak
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.orange[50],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.local_fire_department, color: Colors.orange),
-                          ),
-                          const SizedBox(width: 16),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('5 Day Streak', style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text('Keep it up!', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                              ],
-                            ),
-                          ),
-                          const Text('🔥', style: TextStyle(fontSize: 24)),
-                        ],
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Achievements
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.purple[50],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.emoji_events, color: Colors.purple),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('8 Achievements', style: TextStyle(fontWeight: FontWeight.bold)),
-                                Text('View all', style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor)),
-                              ],
-                            ),
-                          ),
-                          const Text('🏆', style: TextStyle(fontSize: 24)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // My Listings
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  const Text(
-                    'My Listings',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('See All'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Listings Grid
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => _buildListingCard(),
-                childCount: 4,
-              ),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
-          // Reviews Section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  const Text(
-                    'Reviews',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('See All'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Reviews List
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildReviewCard(),
-              childCount: 3,
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
-        ],
+      backgroundColor: const Color(0xFFF5F5F5),
+      body: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthAuthenticated) {
+            return _buildProfileContent(state.user);
+          }
+          
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
 
-  Widget _buildStatCard(String value, String label, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 8),
-          Text(
-            value,
+  Widget _buildProfileContent(dynamic user) {
+    return CustomScrollView(
+      slivers: [
+        // App Bar
+        SliverAppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          pinned: true,
+          title: Text(
+            user.displayName ?? 'Profil',
             style: const TextStyle(
-              fontSize: 20,
+              color: Colors.black,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings_outlined, color: Colors.black),
+              onPressed: () {
+                // Navigate to settings
+              },
+            ),
+          ],
+        ),
+
+        // Profile Header
+        SliverToBoxAdapter(
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                // Avatar & Basic Info
+                Row(
+                  children: [
+                    // Avatar
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF6B35), Color(0xFFF7931E)],
+                        ),
+                        border: Border.all(color: Colors.white, width: 4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFF6B35).withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: user.photoUrl != null
+                          ? ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: user.photoUrl!,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) => const Icon(
+                                  Icons.person,
+                                  size: 45,
+                                  color: Colors.white,
+                                ),
+                                errorWidget: (_, __, ___) => const Icon(
+                                  Icons.person,
+                                  size: 45,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : const Center(
+                              child: Icon(
+                                Icons.person,
+                                size: 45,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: 24),
+                    
+                    // Stats
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildStatItem('42', 'İlanlar'),
+                          _buildStatItem('128', 'Takipçi'),
+                          _buildStatItem('256', 'Takip'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                
+                // Name & Bio
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.displayName ?? 'Kullanıcı',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        user.email ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Takas tutkunları ile buluşmanın en iyi adresi 🔄',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            size: 16,
+                            color: Color(0xFFFF6B35),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Istanbul, Turkey',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Edit profile
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF6B35),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Profili Düzenle'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          // Share profile
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFFF6B35),
+                          side: const BorderSide(color: Color(0xFFFF6B35)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Icon(Icons.share, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Tabs
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _SliverAppBarDelegate(
+            TabBar(
+              controller: _tabController,
+              labelColor: const Color(0xFFFF6B35),
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: const Color(0xFFFF6B35),
+              tabs: const [
+                Tab(icon: Icon(Icons.grid_on), text: 'İlanlar'),
+                Tab(icon: Icon(Icons.favorite_border), text: 'Favoriler'),
+                Tab(icon: Icon(Icons.star_border), text: 'Değerlendirmeler'),
+              ],
+            ),
+          ),
+        ),
+
+        // Tab Content
+        SliverFillRemaining(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildMyItemsTab(),
+              _buildFavoritesTab(),
+              _buildReviewsTab(),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatItem(String count, String label) {
+    return Column(
+      children: [
+        Text(
+          count,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMyItemsTab() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(2),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        childAspectRatio: 1,
+        crossAxisSpacing: 2,
+        mainAxisSpacing: 2,
+      ),
+      itemCount: 12,
+      itemBuilder: (context, index) {
+        return Container(
+          color: Colors.grey[300],
+          child: Image.network(
+            'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(Icons.image, size: 40),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFavoritesTab() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.favorite_border,
+            size: 64,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
           Text(
-            label,
+            'Henüz favori ürün yok',
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 16,
               color: Colors.grey[600],
             ),
           ),
@@ -293,110 +342,98 @@ class WorldClassProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildListingCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          Container(
-            height: 120,
-            decoration: const BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-              image: DecorationImage(
-                image: NetworkImage('https://via.placeholder.com/300'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'iPhone 13 Pro',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.remove_red_eye, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text('147', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                    const SizedBox(width: 12),
-                    const Icon(Icons.favorite_border, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text('23', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReviewCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Card(
-        child: Padding(
+  Widget _buildReviewsTab() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 3,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage('https://i.pravatar.cc/100'),
+                    backgroundColor: Colors.grey[300],
+                    child: const Icon(Icons.person, size: 20),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Alice Smith', style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text('2 days ago', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        const Text(
+                          'Ahmet Yılmaz',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          children: List.generate(
+                            5,
+                            (i) => Icon(
+                              Icons.star,
+                              size: 14,
+                              color: i < 5 ? Colors.amber : Colors.grey,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index < 5 ? Icons.star : Icons.star_border,
-                        size: 16,
-                        color: Colors.amber,
-                      );
-                    }),
+                  Text(
+                    '2 gün önce',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               const Text(
-                'Great trader! Very professional and the item was exactly as described. Would trade again! 👍',
+                'Harika bir satıcı! Ürün tam açıklamadaki gibi çıktı. Çok memnun kaldım.',
                 style: TextStyle(fontSize: 14),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      color: Colors.white,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }
