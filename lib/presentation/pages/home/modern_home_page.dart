@@ -535,7 +535,7 @@ class _ModernHomePageState extends State<ModernHomePage> {
             // Content
             Expanded(
               child: Padding(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -557,7 +557,7 @@ class _ModernHomePageState extends State<ModernHomePage> {
                         color: Color(0xFF999999),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

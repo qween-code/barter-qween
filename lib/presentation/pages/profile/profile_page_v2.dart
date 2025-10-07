@@ -5,6 +5,7 @@ import '../../widgets/subscription/subscription_benefits_widget.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
+import '../../blocs/auth/auth_state.dart';
 // TODO: Neuromorphic effects will be added in Phase 3
 // import '../../../core/theme/neuromorphic_effects.dart';
 import '../../widgets/neumorphism/neuromorphic_icon.dart';
@@ -31,13 +32,7 @@ class ProfilePageV2 extends StatefulWidget {
 }
 
 class _ProfilePageV2State extends State<ProfilePageV2> {
-  // Mock data - replace with actual user data
-  final String userName = 'John Doe';
-  final String userEmail = 'john@example.com';
-  final String? userAvatar = null;
-  final SubscriptionPlan currentPlan = SubscriptionPlan.basic;
-  
-  // Mock stats
+  // Mock stats - TODO: Fetch from backend
   final int totalListings = 12;
   final int activeTrades = 3;
   final int completedTrades = 45;
@@ -46,9 +41,30 @@ class _ProfilePageV2State extends State<ProfilePageV2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: CustomScrollView(
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        // Get current user from AuthBloc
+        String userName = 'Guest';
+        String userEmail = 'guest@example.com';
+        String? userAvatar;
+        
+        if (authState is AuthAuthenticated) {
+          final user = authState.user;
+          userName = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+          userEmail = user.email ?? 'No email';
+          userAvatar = user.photoURL;
+        }
+        
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8F9FA),
+          body: _buildContent(context, userName, userEmail, userAvatar),
+        );
+      },
+    );
+  }
+  
+  Widget _buildContent(BuildContext context, String userName, String userEmail, String? userAvatar) {
+    return CustomScrollView(
         slivers: [
           // Profile Header
           _buildProfileHeader(),
@@ -86,6 +102,19 @@ class _ProfilePageV2State extends State<ProfilePageV2> {
   }
 
   Widget _buildProfileHeader() {
+    // Get user data from AuthBloc
+    final authState = context.read<AuthBloc>().state;
+    String userName = 'Guest';
+    String userEmail = '';
+    String? userAvatar;
+    
+    if (authState is AuthAuthenticated) {
+      final user = authState.user;
+      userName = user.displayName ?? user.email?.split('@')[0] ?? 'User';
+      userEmail = user.email ?? '';
+      userAvatar = user.photoURL;
+    }
+    
     return SliverAppBar(
       expandedHeight: 250,
       pinned: true,
