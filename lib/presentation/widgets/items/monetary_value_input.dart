@@ -167,7 +167,7 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
             ),
           ),
         ),
-        const SizedBox(height: AppDimensions.paddingSmall),
+        SizedBox(height: AppDimensions.paddingSmall),
         Text(
           'Ürününüzün tahmini değerini girin',
           style: AppTextStyles.bodySmall.copyWith(
