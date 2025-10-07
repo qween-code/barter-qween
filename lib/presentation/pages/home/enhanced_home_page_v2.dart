@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/world_class_components.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/item/item_bloc.dart';
+import '../../blocs/item/item_event.dart';
 
 class EnhancedHomePageV2 extends StatefulWidget {
   const EnhancedHomePageV2({Key? key}) : super(key: key);
