@@ -557,7 +557,7 @@ class _ModernHomePageState extends State<ModernHomePage> {
                         color: Color(0xFF999999),
                       ),
                     ),
-                    Spacer(),
+                    SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
