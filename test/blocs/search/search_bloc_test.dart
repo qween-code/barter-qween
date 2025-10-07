@@ -101,12 +101,8 @@ void main() {
         expect: () => [
           const SearchLoading(),
           SearchLoaded(
-            items: [tItem],
             query: tQuery,
-            filters: tFilters,
-            totalCount: 1,
-            hasMore: false,
-            metadata: tMetadata, // Added required metadata
+            results: [tItem],
           ),
         ],
         verify: (_) {

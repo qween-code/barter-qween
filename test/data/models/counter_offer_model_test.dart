@@ -14,9 +14,12 @@ void main() {
         id: 'counter123',
         negotiationId: 'negotiation123',
         offerId: 'offer123',
+        sourceItemId: 'item123',
+        targetItemId: 'item456',
         offererId: 'user1',
         targetUserId: 'user2',
         type: CounterOfferType.cash,
+        offerType: CounterOfferType.cash,
         status: CounterOfferStatus.pending,
         createdAt: testDate,
       );
