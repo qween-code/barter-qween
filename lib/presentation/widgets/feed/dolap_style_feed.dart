@@ -70,7 +70,7 @@ class _DolapStyleFeedState extends State<DolapStyleFeed> {
 
   Widget _buildShimmerCard() {
     return Container(
-      height: 200 + (index % 3) * 50,
+      height: 250,
       decoration: BoxDecoration(
         color: Colors.grey[300],
         borderRadius: BorderRadius.circular(16),
