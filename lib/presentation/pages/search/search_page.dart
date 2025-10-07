@@ -6,7 +6,9 @@ import '../../blocs/search/search_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../domain/entities/search/search_filter_entity.dart';
 import '../../widgets/items/item_card_widget.dart';
+import '../../widgets/search/filter_bottom_sheet.dart';
 import '../items/item_detail_page.dart';
 
 /// Main search page
@@ -20,12 +22,33 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
+  SearchFilterEntity? _currentFilter;
 
   @override
   void dispose() {
     _searchController.dispose();
     _searchFocus.dispose();
     super.dispose();
+  }
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => FilterBottomSheet(
+        currentFilter: _currentFilter,
+        onApply: (filter) {
+          setState(() => _currentFilter = filter);
+          // Trigger search with new filters
+          if (_searchController.text.isNotEmpty) {
+            context.read<SearchBloc>().add(
+              SearchQueryChanged(_searchController.text),
+            );
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -87,11 +110,26 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
                 const SizedBox(width: AppDimensions.spacing8),
-                IconButton(
-                  icon: const Icon(Icons.tune),
-                  onPressed: () {
-                    // TODO: Show filter bottom sheet
-                  },
+                Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.tune),
+                      onPressed: _showFilterSheet,
+                    ),
+                    if (_currentFilter != null && _currentFilter!.hasActiveFilters)
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
