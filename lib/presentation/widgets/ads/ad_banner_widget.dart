@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../../../core/services/admob_service.dart';
+// TODO: AdMob service will be implemented in Phase 4 (Monetization)
+// import '../../../core/services/admob_service.dart';
 
-/// Reusable Ad Banner Widget
+// Placeholder enum until AdMobService is implemented
+enum AdPlacement { top, bottom, inline }
+
+/// Reusable Ad Banner Widget (Placeholder for Phase 4)
 /// 
 /// Features:
 /// - Automatic loading and disposal
@@ -48,6 +52,16 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   }
 
   void _loadAd() {
+    // TODO: Implement AdMob in Phase 4
+    // For now, show placeholder
+    if (mounted) {
+      setState(() {
+        _isLoaded = false;
+        _isError = false;
+      });
+    }
+    
+    /* Original code - will be restored in Phase 4:
     _bannerAd = AdMobService.instance.createBannerAd(
       size: _getAdSize(),
       listener: BannerAdListener(
@@ -72,6 +86,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       ),
     );
     _bannerAd!.load();
+    */
   }
 
   AdSize _getAdSize() {

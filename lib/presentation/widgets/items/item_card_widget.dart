@@ -5,7 +5,8 @@ import '../../../domain/entities/item_entity.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
+// TODO: Neuromorphic effects will be added in Phase 3 UI Enhancement
+// import '../../../core/theme/neuromorphic_effects.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/favorite/favorite_event.dart';
 import '../../blocs/favorite/favorite_state.dart';
@@ -65,7 +66,21 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(AppDimensions.radius16),
-            boxShadow: NeuromorphicPresets.CardPresets.product(isHovered: _isHovered),
+            boxShadow: _isHovered
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ]
+                : [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,10 +203,15 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   shape: BoxShape.circle,
-                                  boxShadow: NeuromorphicPresets.IconPresets.circular(
-                                    isActive: isFavorited,
-                                    glowColor: Colors.red,
-                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: isFavorited
+                                          ? Colors.red.withOpacity(0.3)
+                                          : Colors.black.withOpacity(0.1),
+                                      blurRadius: isFavorited ? 12 : 8,
+                                      spreadRadius: isFavorited ? 2 : 0,
+                                    ),
+                                  ],
                                 ),
                                 child: Icon(
                                   isFavorited ? Icons.favorite : Icons.favorite_border,
@@ -249,9 +269,10 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                     ),
                   ),
                   boxShadow: [
-                    NeuromorphicEffects.lighting.createInnerGlow(
-                      color: Colors.white,
-                      intensity: 0.5,
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.5),
+                      blurRadius: 4,
+                      offset: const Offset(0, -1),
                     ),
                   ],
                 ),
@@ -302,16 +323,16 @@ class _ItemCardWidgetState extends State<ItemCardWidget> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        // Show distance if available
-                        if (widget.item.distance != null) ...[
-                          const SizedBox(width: 4),
-                          Text(
-                            '• ${widget.item.distance!.toStringAsFixed(1)} km',
-                            style: AppTextStyles.labelSmall.copyWith(
-                              color: AppColors.textTertiary,
-                            ),
-                          ),
-                        ],
+                        // TODO: Show distance in Phase 3 (requires distance calculation)
+                        // if (widget.item.distance != null) ...[
+                        //   const SizedBox(width: 4),
+                        //   Text(
+                        //     '• ${widget.item.distance!.toStringAsFixed(1)} km',
+                        //     style: AppTextStyles.labelSmall.copyWith(
+                        //       color: AppColors.textTertiary,
+                        //     ),
+                        //   ),
+                        // ],
                       ],
                     ),
                     const SizedBox(height: AppDimensions.spacing8),

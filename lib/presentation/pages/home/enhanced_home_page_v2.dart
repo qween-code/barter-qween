@@ -47,7 +47,7 @@ class _EnhancedHomePageV2State extends State<EnhancedHomePageV2> {
   @override
   Widget build(BuildContext context) {
     // Load trending items on init
-    context.read<ItemBloc>().add(LoadTrendingItems());
+    context.read<ItemBloc>().add(const LoadTrendingItems());
     
     return Scaffold(
       backgroundColor: Colors.grey[50],

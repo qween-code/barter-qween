@@ -258,7 +258,7 @@ class _EnhancedItemDetailPageV2State extends State<EnhancedItemDetailPageV2>
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.three_sixty, color: Colors.white, size: 16),
+                    Icon(Icons.threed_rotation, color: Colors.white, size: 16),
                     SizedBox(width: 4),
                     Text(
                       '360° View',
