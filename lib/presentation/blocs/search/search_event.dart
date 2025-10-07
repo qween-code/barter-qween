@@ -16,6 +16,21 @@ class SearchItems extends SearchEvent {
   List<Object?> get props => [query];
 }
 
+// Alias for SearchItems to support legacy code
+class SearchQueryChanged extends SearchEvent {
+  final String query;
+
+  const SearchQueryChanged(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+
 class ClearSearch extends SearchEvent {
   const ClearSearch();
+}
+
+// Alias for ClearSearch to support legacy code
+class SearchCleared extends SearchEvent {
+  const SearchCleared();
 }

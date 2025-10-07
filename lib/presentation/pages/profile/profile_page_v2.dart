@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/subscription_entity.dart';
 import '../../widgets/subscription/subscription_benefits_widget.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/neuromorphic_effects.dart';
+// TODO: Neuromorphic effects will be added in Phase 3
+// import '../../../core/theme/neuromorphic_effects.dart';
 import '../../widgets/neumorphism/neuromorphic_icon.dart';
 
 /// World-Class Profile Page V2
@@ -30,7 +31,7 @@ class _ProfilePageV2State extends State<ProfilePageV2> {
   // Mock data - replace with actual user data
   final String userName = 'John Doe';
   final String userEmail = 'john@example.com';
-  final String? userAvatar;
+  final String? userAvatar = null;
   final SubscriptionPlan currentPlan = SubscriptionPlan.basic;
   
   // Mock stats

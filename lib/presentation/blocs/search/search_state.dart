@@ -37,3 +37,30 @@ class SearchCompleted extends SearchState {
   @override
   List<Object?> get props => [query, results];
 }
+
+// Alias for SearchCompleted to support legacy code
+class SearchLoaded extends SearchState {
+  final String query;
+  final List<ItemEntity> results;
+
+  const SearchLoaded({
+    required this.query,
+    required this.results,
+  });
+
+  @override
+  List<Object?> get props => [query, results];
+}
+
+class SearchEmpty extends SearchState {
+  final String query;
+
+  const SearchEmpty({required this.query});
+
+  @override
+  List<Object?> get props => [query];
+}
+
+class SearchCleared extends SearchState {
+  const SearchCleared();
+}
