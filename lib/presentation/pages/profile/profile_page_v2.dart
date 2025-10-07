@@ -78,6 +78,10 @@ class _ProfilePageV2State extends State<ProfilePageV2> {
                 _buildStatsDashboard(),
                 const SizedBox(height: 20),
                 
+                // Logout Button - MOVED TO TOP FOR VISIBILITY
+                _buildLogoutButton(),
+                const SizedBox(height: 20),
+                
                 // Subscription Card
                 _buildSubscriptionCard(),
                 const SizedBox(height: 20),
@@ -88,10 +92,6 @@ class _ProfilePageV2State extends State<ProfilePageV2> {
                 
                 // Settings Menu
                 _buildSettingsMenu(),
-                const SizedBox(height: 20),
-                
-                // Logout Button
-                _buildLogoutButton(),
                 const SizedBox(height: 40),
               ]),
             ),
