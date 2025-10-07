@@ -76,6 +76,11 @@
 **17:44** - ✅ **BUG-001 FIXED**: Replaced Spacer() with SizedBox(height: 8)
 **17:45** - 📝 BUG_TRACKER.md updated - BUG-001 moved to FIXED section
 **17:46** - 🔄 Preparing hot reload to verify fix
+**18:00** - 🐛 **BUG-002 REPORTED**: User (Hamza Turhan) cannot logout
+**18:01** - 🔍 **INVESTIGATING**: Logout button found - TODO not implemented!
+**18:02** - 🔧 **FIXING BUG-002**: Implementing logout functionality
+**18:03** - ✅ **FIX APPLIED**: AuthBloc integrated, logout implemented
+**18:04** - 📝 BUG_TRACKER.md updated - BUG-002 logged
 
 ### 📈 Day 1 Summary (So Far)
 - **Major Achievement**: 🎉 App successfully launched on Android emulator

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/subscription_entity.dart';
 import '../../widgets/subscription/subscription_benefits_widget.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_event.dart';
 // TODO: Neuromorphic effects will be added in Phase 3
 // import '../../../core/theme/neuromorphic_effects.dart';
 import '../../widgets/neumorphism/neuromorphic_icon.dart';
@@ -564,8 +567,13 @@ class _ProfilePageV2State extends State<ProfilePageV2> {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implement logout
-              Navigator.pop(context);
+              // Logout user
+              context.read<AuthBloc>().add(const LogoutRequested());
+              Navigator.pop(context); // Close dialog
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/login',
+                (route) => false,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

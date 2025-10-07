@@ -10,13 +10,55 @@
 | Status | Count | Percentage |
 |--------|-------|------------|
 | 🔴 Open | 0 | 0% |
-| 🟡 In Progress | 0 | 0% |
-| ✅ Fixed | 1 | 100% |
-| **Total** | **1** | **100%** |
+| 🟡 In Progress | 1 | 50% |
+| ✅ Fixed | 1 | 50% |
+| **Total** | **2** | **100%** |
 
 ---
 
 ## 🔴 OPEN BUGS
+
+### BUG-002: Logout Button Not Working [CRITICAL] 🔥
+**Found**: 2025-01-07 18:00  
+**Reported By**: User (Hamza Turhan)  
+**Phase**: Phase 2 - Testing  
+**Priority**: P0 (Critical)  
+**Severity**: Critical - Blocking  
+
+**Description**:
+User cannot logout from profile page. Logout button shows dialog but doesn't actually logout.
+
+**Steps to Reproduce**:
+1. Login to app
+2. Navigate to Profile page
+3. Click "Çıkış Yap" (Logout) button
+4. Confirm logout in dialog
+5. Nothing happens - user stays logged in
+
+**Expected Behavior**:
+- User should be logged out
+- Firebase Auth session should end
+- User redirected to login page
+
+**Actual Behavior**:
+- Dialog closes
+- User stays logged in
+- No Firebase logout triggered
+
+**Location**:
+- File: `lib/presentation/pages/profile/profile_page_v2.dart`
+- Line: 567
+- Function: `_handleLogout()`
+
+**Root Cause**:
+Logout function not implemented - marked as TODO
+
+**Fix**:
+- Add AuthBloc import
+- Call `AuthBloc.add(LogoutRequested())`
+- Navigate to login page
+
+---
 
 ### BUG-001: UI Overflow in Item Cards [FIXED] ✅
 **Found**: 2025-01-07 17:30  
@@ -76,7 +118,21 @@ Item card Column widget has too much content for available space (76px height)
 
 ## 🟡 IN PROGRESS
 
-*No bugs currently being worked on.*
+### BUG-002: Logout Button Not Working [FIXING NOW] 🔧
+**Status**: 🟡 FIX IN PROGRESS  
+**Found**: 2025-01-07 18:00  
+**Started Fixing**: 2025-01-07 18:02  
+**ETA**: 5 minutes
+
+**Fix Applied**:
+✅ Added `flutter_bloc` import  
+✅ Added `AuthBloc` and `AuthEvent` imports  
+✅ Implemented logout in `_handleLogout()`:
+   - Calls `AuthBloc.add(LogoutRequested())`
+   - Navigates to login page
+   - Clears navigation stack
+
+**Testing**: Needs hot reload verification
 
 ---
 
