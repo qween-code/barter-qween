@@ -1,12 +1,23 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+import '../../../domain/repositories/favorite_repository.dart';
+import '../../../domain/usecases/get_user_favorites_usecase.dart';
+import '../../../domain/usecases/toggle_favorite_usecase.dart';
 import 'favorite_event.dart';
 import 'favorite_state.dart';
 
+@injectable
 class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
-  // Track favorited items locally
+  final GetUserFavoritesUseCase getUserFavorites;
+  final ToggleFavoriteUseCase toggleFavorite;
+  
+  // Track favorited items locally for quick access
   final Set<String> _favoritedItemIds = {};
 
-  FavoriteBloc() : super(FavoriteInitial()) {
+  FavoriteBloc({
+    required this.getUserFavorites,
+    required this.toggleFavorite,
+  }) : super(FavoriteInitial()) {
     on<LoadFavorites>(_onLoadFavorites);
     on<ToggleFavorite>(_onToggleFavorite);
   }
@@ -23,11 +34,20 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     emit(FavoriteLoading());
     
     try {
-      // TODO: Load favorites from Firebase
-      await Future.delayed(const Duration(seconds: 1));
+      final result = await getUserFavorites();
       
-      // Mock data for now
-      emit(FavoritesLoaded(favorites: []));
+      result.fold(
+        (failure) => emit(FavoriteError(message: failure.message)),
+        (items) {
+          // Update local cache
+          _favoritedItemIds.clear();
+          for (var item in items) {
+            if (item.id != null) _favoritedItemIds.add(item.id!);
+          }
+          
+          emit(FavoritesLoaded(favorites: items));
+        },
+      );
     } catch (e) {
       emit(FavoriteError(message: e.toString()));
     }
@@ -38,18 +58,21 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     Emitter<FavoriteState> emit,
   ) async {
     try {
-      // Toggle in local set
-      if (_favoritedItemIds.contains(event.itemId)) {
-        _favoritedItemIds.remove(event.itemId);
-      } else {
-        _favoritedItemIds.add(event.itemId);
-      }
+      final result = await toggleFavorite(event.itemId);
       
-      // TODO: Toggle favorite in Firebase
-      await Future.delayed(const Duration(milliseconds: 500));
-      
-      // Emit success
-      emit(FavoriteToggled(itemId: event.itemId));
+      result.fold(
+        (failure) => emit(FavoriteError(message: failure.message)),
+        (_) {
+          // Toggle in local set
+          if (_favoritedItemIds.contains(event.itemId)) {
+            _favoritedItemIds.remove(event.itemId);
+          } else {
+            _favoritedItemIds.add(event.itemId);
+          }
+          
+          emit(FavoriteToggled(itemId: event.itemId));
+        },
+      );
     } catch (e) {
       emit(FavoriteError(message: e.toString()));
     }

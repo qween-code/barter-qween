@@ -133,6 +133,8 @@ import 'package:barter_qween/domain/usecases/get_barter_matches_usecase.dart'
 import 'package:barter_qween/domain/usecases/get_item_usecase.dart' as _i1051;
 import 'package:barter_qween/domain/usecases/get_search_suggestions_usecase.dart'
     as _i525;
+import 'package:barter_qween/domain/usecases/get_user_favorites_usecase.dart'
+    as _i476;
 import 'package:barter_qween/domain/usecases/item/item_usecases.dart' as _i301;
 import 'package:barter_qween/domain/usecases/items/delete_item_usecase.dart'
     as _i529;
@@ -172,6 +174,8 @@ import 'package:barter_qween/domain/usecases/search_items_usecase.dart'
     as _i357;
 import 'package:barter_qween/domain/usecases/send_counter_offer_usecase.dart'
     as _i215;
+import 'package:barter_qween/domain/usecases/toggle_favorite_usecase.dart'
+    as _i743;
 import 'package:barter_qween/domain/usecases/trade/trade_usecases.dart'
     as _i773;
 import 'package:barter_qween/presentation/bloc/barter_match/barter_match_cubit.dart'
@@ -183,6 +187,8 @@ import 'package:barter_qween/presentation/blocs/barter/barter_bloc.dart'
 import 'package:barter_qween/presentation/blocs/barter/barter_match_cubit.dart'
     as _i92;
 import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart' as _i241;
+import 'package:barter_qween/presentation/blocs/favorite/favorite_bloc.dart'
+    as _i935;
 import 'package:barter_qween/presentation/blocs/home/home_bloc.dart' as _i433;
 import 'package:barter_qween/presentation/blocs/item/item_bloc.dart' as _i1004;
 import 'package:barter_qween/presentation/blocs/notification/notification_bloc.dart'
@@ -298,6 +304,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i163.FlutterLocalNotificationsPlugin>(),
       ),
     );
+    gh.lazySingleton<_i476.GetUserFavoritesUseCase>(
+      () => _i476.GetUserFavoritesUseCase(
+        gh<_i933.FavoriteRepository>(),
+        gh<_i59.FirebaseAuth>(),
+      ),
+    );
+    gh.lazySingleton<_i743.ToggleFavoriteUseCase>(
+      () => _i743.ToggleFavoriteUseCase(
+        gh<_i933.FavoriteRepository>(),
+        gh<_i59.FirebaseAuth>(),
+      ),
+    );
     gh.lazySingleton<_i72.ItemRemoteDataSource>(
       () => _i72.ItemRemoteDataSourceImpl(
         firestore: gh<_i974.FirebaseFirestore>(),
@@ -383,6 +401,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i73.NotificationRemoteDataSource>(
       () =>
           _i73.NotificationRemoteDataSourceImpl(gh<_i974.FirebaseFirestore>()),
+    );
+    gh.factory<_i935.FavoriteBloc>(
+      () => _i935.FavoriteBloc(
+        getUserFavorites: gh<_i476.GetUserFavoritesUseCase>(),
+        toggleFavorite: gh<_i743.ToggleFavoriteUseCase>(),
+      ),
     );
     gh.factory<_i1051.GetItemUsecase>(
       () => _i1051.GetItemUsecase(gh<_i754.ItemRepository>()),
