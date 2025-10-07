@@ -48,6 +48,10 @@ class SearchLoaded extends SearchState {
     required this.results,
   });
 
+  // Aliases for legacy code compatibility
+  List<ItemEntity> get items => results;
+  int get totalCount => results.length;
+
   @override
   List<Object?> get props => [query, results];
 }
@@ -61,6 +65,6 @@ class SearchEmpty extends SearchState {
   List<Object?> get props => [query];
 }
 
-class SearchCleared extends SearchState {
-  const SearchCleared();
+class SearchClearedState extends SearchState {
+  const SearchClearedState();
 }

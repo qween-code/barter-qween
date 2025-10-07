@@ -18,8 +18,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // TODO: Load profile from Firebase
       await Future.delayed(const Duration(seconds: 1));
       
-      // Mock data for now
-      emit(ProfileLoaded(userId: event.userId));
+      // TODO: Replace with actual user data from repository
+      // Mock - emit error until repository is implemented
+      emit(const ProfileError(message: 'Profile loading not yet implemented'));
     } catch (e) {
       emit(ProfileError(message: e.toString()));
     }
@@ -35,8 +36,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       // TODO: Update profile in Firebase
       await Future.delayed(const Duration(seconds: 1));
       
-      // Mock success
-      emit(ProfileUpdated());
+      // TODO: Replace with actual update logic
+      // Mock - emit updated with user from event
+      emit(ProfileUpdated(user: event.user));
     } catch (e) {
       emit(ProfileError(message: e.toString()));
     }

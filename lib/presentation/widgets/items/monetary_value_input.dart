@@ -73,7 +73,7 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: AppDimensions.paddingSmall),
+          SizedBox(height: AppDimensions.paddingSmall),
         ],
         TextFormField(
           controller: _controller,
@@ -108,7 +108,7 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
           decoration: InputDecoration(
             hintText: widget.hintText ?? '0',
             prefixIcon: Padding(
-              padding: const EdgeInsets.all(AppDimensions.paddingMedium),
+              padding: EdgeInsets.all(AppDimensions.paddingMedium),
               child: Text(
                 '₺',
                 style: AppTextStyles.h6.copyWith(
@@ -126,7 +126,7 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
             fillColor: widget.enabled
                 ? AppColors.surface
                 : AppColors.surfaceVariant,
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: AppDimensions.paddingMedium,
               vertical: AppDimensions.paddingMedium,
             ),

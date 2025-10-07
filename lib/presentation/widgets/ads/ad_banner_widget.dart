@@ -4,7 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 // import '../../../core/services/admob_service.dart';
 
 // Placeholder enum until AdMobService is implemented
-enum AdPlacement { top, bottom, inline }
+enum AdPlacement { top, bottom, inline, large }
 
 /// Reusable Ad Banner Widget (Placeholder for Phase 4)
 /// 
@@ -196,14 +196,6 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
       ),
     );
   }
-}
-
-/// Ad Placement Types
-enum AdPlacement {
-  top,
-  bottom,
-  inline,
-  large,
 }
 
 /// Smart Ad Banner - Shows ad only for free users
