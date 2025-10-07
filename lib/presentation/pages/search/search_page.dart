@@ -43,7 +43,10 @@ class _SearchPageState extends State<SearchPage> {
           // Trigger search with new filters
           if (_searchController.text.isNotEmpty) {
             context.read<SearchBloc>().add(
-              SearchQueryChanged(_searchController.text),
+              SearchWithFilters(
+                query: _searchController.text,
+                filters: filter,
+              ),
             );
           }
         },

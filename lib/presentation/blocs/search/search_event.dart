@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../domain/entities/search/search_filter_entity.dart';
 
 abstract class SearchEvent extends Equatable {
   const SearchEvent();
@@ -9,21 +10,36 @@ abstract class SearchEvent extends Equatable {
 
 class SearchItems extends SearchEvent {
   final String query;
+  final SearchFilterEntity? filters;
 
-  const SearchItems(this.query);
+  const SearchItems(this.query, {this.filters});
 
   @override
-  List<Object?> get props => [query];
+  List<Object?> get props => [query, filters];
 }
 
 // Alias for SearchItems to support legacy code
 class SearchQueryChanged extends SearchEvent {
   final String query;
+  final SearchFilterEntity? filters;
 
-  const SearchQueryChanged(this.query);
+  const SearchQueryChanged(this.query, {this.filters});
 
   @override
-  List<Object?> get props => [query];
+  List<Object?> get props => [query, filters];
+}
+
+class SearchWithFilters extends SearchEvent {
+  final String query;
+  final SearchFilterEntity filters;
+
+  const SearchWithFilters({
+    required this.query,
+    required this.filters,
+  });
+
+  @override
+  List<Object?> get props => [query, filters];
 }
 
 class ClearSearch extends SearchEvent {
