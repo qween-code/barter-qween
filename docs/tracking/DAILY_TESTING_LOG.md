@@ -81,6 +81,9 @@
 **18:02** - 🔧 **FIXING BUG-002**: Implementing logout functionality
 **18:03** - ✅ **FIX APPLIED**: AuthBloc integrated, logout implemented
 **18:04** - 📝 BUG_TRACKER.md updated - BUG-002 logged
+**18:05** - 💾 BUG-002 fix committed (9263c3a)
+**18:08** - 🐛 **BUG-003 REPORTED**: Item detail pages not loading after hot reload
+**18:09** - 🔍 **INVESTIGATING BUG-003**: ItemBloc exists, checking data loading
 
 ### 📈 Day 1 Summary (So Far)
 - **Major Achievement**: 🎉 App successfully launched on Android emulator

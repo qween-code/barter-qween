@@ -9,14 +9,58 @@
 
 | Status | Count | Percentage |
 |--------|-------|------------|
-| 🔴 Open | 0 | 0% |
-| 🟡 In Progress | 1 | 50% |
-| ✅ Fixed | 1 | 50% |
-| **Total** | **2** | **100%** |
+| 🔴 Open | 1 | 33% |
+| 🟡 In Progress | 1 | 33% |
+| ✅ Fixed | 1 | 33% |
+| **Total** | **3** | **100%** |
 
 ---
 
 ## 🔴 OPEN BUGS
+
+### BUG-003: Item Detail Pages Not Loading [HIGH] ⚠️
+**Found**: 2025-01-07 18:08  
+**Reported By**: User (Hamza Turhan)  
+**Phase**: Phase 2 - Home Feed Testing  
+**Priority**: P1 (High)  
+**Severity**: High - Feature broken  
+
+**Description**:
+After hot reload, item detail pages don't load when tapping on item cards.
+
+**Steps to Reproduce**:
+1. Hot reload app (after logout fix)
+2. Navigate to Home page
+3. Tap on any item card
+4. Detail page doesn't load or shows error
+
+**Expected Behavior**:
+- Item detail page opens
+- Shows item information
+- Image gallery displays
+
+**Actual Behavior**:
+- Page doesn't load
+- OR shows "Ürün bulunamadı" (Item not found)
+- Navigation might be broken
+
+**Location**:
+- File: `lib/presentation/pages/items/item_detail_page.dart`
+- Navigation: `lib/presentation/pages/home/modern_home_page.dart:593`
+
+**Possible Causes**:
+1. ItemBloc not initialized in provider tree
+2. Hot reload lost state
+3. Item data not loading
+4. Navigation route issue
+
+**Investigation Needed**:
+- Check global_bloc_providers.dart for ItemBloc
+- Check if items are loading in HomeBloc
+- Verify navigation route
+- Check ItemBloc state
+
+---
 
 ### BUG-002: Logout Button Not Working [CRITICAL] 🔥
 **Found**: 2025-01-07 18:00  
