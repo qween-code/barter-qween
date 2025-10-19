@@ -35,12 +35,12 @@ class SearchResultEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        items,
-        totalCount,
-        hasMore,
-        nextPageToken,
-        metadata,
-      ];
+    items,
+    totalCount,
+    hasMore,
+    nextPageToken,
+    metadata,
+  ];
 }
 
 /// Metadata about the search operation
@@ -58,12 +58,7 @@ class SearchMetadata extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        query,
-        resultsCount,
-        searchDuration,
-        timestamp,
-      ];
+  List<Object?> get props => [query, resultsCount, searchDuration, timestamp];
 }
 
 /// Entity for recent search history
@@ -100,9 +95,4 @@ class SearchSuggestionEntity extends Equatable {
   List<Object?> get props => [suggestion, type, popularity];
 }
 
-enum SuggestionType {
-  category,
-  recentSearch,
-  popularSearch,
-  autoComplete,
-}
+enum SuggestionType { category, recentSearch, popularSearch, autoComplete }

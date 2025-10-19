@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/negotiation_entity.dart';
-import '../../../domain/entities/counter_offer_entity.dart';
-import '../../../domain/usecases/create_negotiation_usecase.dart';
-import '../../../domain/usecases/send_counter_offer_usecase.dart';
 import '../../bloc/negotiation/negotiation_cubit.dart';
 import '../../bloc/negotiation/negotiation_state.dart';
 import '../../widgets/negotiation/negotiation_timeline_widget.dart';
 import '../../widgets/negotiation/counter_offer_dialog.dart';
 import '../../widgets/negotiation/negotiation_chat_widget.dart';
+import '../../../core/services/enhanced_negotiation_service.dart';
 
 /// Neuromorphic Negotiation Page
 /// World-class negotiation interface with real-time updates
@@ -36,16 +34,28 @@ class NegotiationPage extends StatefulWidget {
 
 class _NegotiationPageState extends State<NegotiationPage>
     with TickerProviderStateMixin {
+  late EnhancedNegotiationService _negotiationService;
   late AnimationController _slideController;
   late AnimationController _pulseController;
   late Animation<double> _slideAnimation;
   late Animation<double> _pulseAnimation;
+  late TextEditingController _messageController;
 
   @override
   void initState() {
     super.initState();
+    _negotiationService = getIt<EnhancedNegotiationService>();
+    _messageController = TextEditingController();
     _initializeAnimations();
     _loadNegotiation();
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _slideController.dispose();
+    _pulseController.dispose();
+    super.dispose();
   }
 
   void _initializeAnimations() {
@@ -58,21 +68,13 @@ class _NegotiationPageState extends State<NegotiationPage>
       vsync: this,
     );
 
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
 
-    _pulseAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
+    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
 
     _slideController.forward();
     _pulseController.repeat(reverse: true);
@@ -150,10 +152,7 @@ class _NegotiationPageState extends State<NegotiationPage>
           ),
           Text(
             'with ${widget.otherUserName}',
-            style: TextStyle(
-              color: MinimalDesignSystem.softDark,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: MinimalDesignSystem.softDark, fontSize: 12),
           ),
         ],
       ),
@@ -166,10 +165,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
           ),
           child: IconButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: MinimalDesignSystem.softDark,
-            ),
+            icon: Icon(Icons.more_vert, color: MinimalDesignSystem.softDark),
             onPressed: _showOptionsMenu,
           ),
         ),
@@ -339,7 +335,10 @@ class _NegotiationPageState extends State<NegotiationPage>
     );
   }
 
-  Widget _buildActiveNegotiation(BuildContext context, NegotiationActive state) {
+  Widget _buildActiveNegotiation(
+    BuildContext context,
+    NegotiationActive state,
+  ) {
     return Column(
       children: [
         // Negotiation Timeline
@@ -358,7 +357,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             ),
           ),
         ),
-        
+
         // Chat Section
         Expanded(
           flex: 3,
@@ -376,7 +375,7 @@ class _NegotiationPageState extends State<NegotiationPage>
             ),
           ),
         ),
-        
+
         // Action Buttons
         _buildActionButtons(context, state),
       ],
@@ -452,13 +451,10 @@ class _NegotiationPageState extends State<NegotiationPage>
   }
 
   void _startNegotiation() {
-    // Implement negotiation start logic
-    context.read<NegotiationCubit>().createNegotiation(
-      CreateNegotiationParams.fromOffer(
-        tradeOfferId: 'temp_offer_id', // TODO: Get from actual offer
-        initiatorId: 'current_user_id', // Get from auth
-        responderId: widget.otherUserId,
-        message: 'Takas şartlarını görüşmek istiyorum',
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Negotiation start functionality coming soon'),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -481,9 +477,7 @@ class _NegotiationPageState extends State<NegotiationPage>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: MinimalDesignSystem.baseColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Accept Negotiation',
           style: TextStyle(
@@ -493,18 +487,14 @@ class _NegotiationPageState extends State<NegotiationPage>
         ),
         content: Text(
           'Are you sure you want to accept this negotiation?',
-          style: TextStyle(
-            color: MinimalDesignSystem.softDark,
-          ),
+          style: TextStyle(color: MinimalDesignSystem.softDark),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: TextStyle(
-                color: MinimalDesignSystem.softDark,
-              ),
+              style: TextStyle(color: MinimalDesignSystem.softDark),
             ),
           ),
           TextButton(
@@ -540,15 +530,10 @@ class _NegotiationPageState extends State<NegotiationPage>
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(
-                Icons.block,
-                color: MinimalDesignSystem.errorColor,
-              ),
+              leading: Icon(Icons.block, color: MinimalDesignSystem.errorColor),
               title: Text(
                 'Block User',
-                style: TextStyle(
-                  color: MinimalDesignSystem.ultraDark,
-                ),
+                style: TextStyle(color: MinimalDesignSystem.ultraDark),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -562,9 +547,7 @@ class _NegotiationPageState extends State<NegotiationPage>
               ),
               title: Text(
                 'Report',
-                style: TextStyle(
-                  color: MinimalDesignSystem.ultraDark,
-                ),
+                style: TextStyle(color: MinimalDesignSystem.ultraDark),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -572,15 +555,10 @@ class _NegotiationPageState extends State<NegotiationPage>
               },
             ),
             ListTile(
-              leading: Icon(
-                Icons.close,
-                color: MinimalDesignSystem.softDark,
-              ),
+              leading: Icon(Icons.close, color: MinimalDesignSystem.softDark),
               title: Text(
                 'Cancel',
-                style: TextStyle(
-                  color: MinimalDesignSystem.softDark,
-                ),
+                style: TextStyle(color: MinimalDesignSystem.softDark),
               ),
               onTap: () => Navigator.pop(context),
             ),

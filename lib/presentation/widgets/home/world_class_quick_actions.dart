@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS QUICK ACTIONS
-/// 
+///
 /// Features:
 /// - Quick access buttons
 /// - Icon animations
@@ -10,15 +10,15 @@ import '../../../core/theme/world_class_design_system.dart';
 class WorldClassQuickActions extends StatelessWidget {
   final Function(String) onActionTap;
 
-  const WorldClassQuickActions({
-    Key? key,
-    required this.onActionTap,
-  }) : super(key: key);
+  const WorldClassQuickActions({Key? key, required this.onActionTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+      margin: const EdgeInsets.symmetric(
+        horizontal: WorldClassDesignSystem.spacingM,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -65,17 +65,11 @@ class WorldClassQuickActions extends StatelessWidget {
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusL),
-          border: Border.all(
-            color: color.withOpacity(0.2),
-          ),
+          border: Border.all(color: color.withOpacity(0.2)),
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: WorldClassDesignSystem.iconL,
-            ),
+            Icon(icon, color: color, size: WorldClassDesignSystem.iconL),
             const SizedBox(height: WorldClassDesignSystem.spacingXS),
             Text(
               label,

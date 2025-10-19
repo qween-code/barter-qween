@@ -27,131 +27,43 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdAt",
+          "fieldPath": "price",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isActive",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "lastLoginAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "rating",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "tradeCount",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "items",
+      "collectionGroup": "users",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "category",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
+          "fieldPath": "rating",
           "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "items",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ownerId",
-          "order": "ASCENDING"
         },
         {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "trades",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "fromUserId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "trades",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "toUserId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "trades",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "fromUserId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "trades",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "toUserId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "trades",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "offeredItemId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "trades",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "requestedItemId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
+          "fieldPath": "tradeCount",
           "order": "DESCENDING"
         }
       ]
@@ -161,8 +73,8 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "participants",
-          "arrayConfig": "CONTAINS"
+          "fieldPath": "lastMessageAt",
+          "order": "DESCENDING"
         },
         {
           "fieldPath": "updatedAt",
@@ -171,85 +83,43 @@
       ]
     },
     {
-      "collectionGroup": "messages",
+      "collectionGroup": "trades",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "conversationId",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "createdAt",
           "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "ownerId",
+          "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "favorites",
+      "collectionGroup": "barter_matches",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userId",
-          "order": "ASCENDING"
+          "fieldPath": "matchScore",
+          "order": "DESCENDING"
         },
         {
           "fieldPath": "createdAt",
           "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "messages",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "conversationId",
-          "order": "ASCENDING"
         },
         {
-          "fieldPath": "isRead",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "senderId",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "items",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "viewCount",
+          "fieldPath": "quality",
           "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "items",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "category",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "viewCount",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "items",
+      "collectionGroup": "barter_matches",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -257,21 +127,21 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "price",
+          "fieldPath": "ownerId",
           "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "item_views",
+      "collectionGroup": "negotiations",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userId",
+          "fieldPath": "status",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "viewedAt",
+          "fieldPath": "createdAt",
           "order": "DESCENDING"
         }
       ]

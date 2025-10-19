@@ -9,7 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/search/search_filter_entity.dart';
 import '../../widgets/items/item_card_widget.dart';
 import '../../widgets/search/filter_bottom_sheet.dart';
-import '../items/item_detail_page.dart';
+import '../../../core/routes/app_router.dart';
 
 /// Main search page
 class SearchPage extends StatefulWidget {
@@ -43,10 +43,7 @@ class _SearchPageState extends State<SearchPage> {
           // Trigger search with new filters
           if (_searchController.text.isNotEmpty) {
             context.read<SearchBloc>().add(
-              SearchWithFilters(
-                query: _searchController.text,
-                filters: filter,
-              ),
+              SearchWithFilters(query: _searchController.text, filters: filter),
             );
           }
         },
@@ -57,10 +54,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Search'), elevation: 0),
       body: Column(
         children: [
           // Search bar
@@ -91,23 +85,22 @@ class _SearchPageState extends State<SearchPage> {
                               onPressed: () {
                                 _searchController.clear();
                                 context.read<SearchBloc>().add(
-                                      const SearchCleared(),
-                                    );
+                                  const SearchCleared(),
+                                );
                               },
                             )
                           : null,
                       border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppDimensions.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusMedium,
+                        ),
                         borderSide: BorderSide(color: AppColors.borderDefault),
                       ),
                       filled: true,
                       fillColor: AppColors.background,
                     ),
                     onChanged: (query) {
-                      context.read<SearchBloc>().add(
-                            SearchQueryChanged(query),
-                          );
+                      context.read<SearchBloc>().add(SearchQueryChanged(query));
                       setState(() {});
                     },
                   ),
@@ -119,7 +112,8 @@ class _SearchPageState extends State<SearchPage> {
                       icon: const Icon(Icons.tune),
                       onPressed: _showFilterSheet,
                     ),
-                    if (_currentFilter != null && _currentFilter!.hasActiveFilters)
+                    if (_currentFilter != null &&
+                        _currentFilter!.hasActiveFilters)
                       Positioned(
                         right: 8,
                         top: 8,
@@ -167,11 +161,7 @@ class _SearchPageState extends State<SearchPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search,
-            size: 64,
-            color: AppColors.textTertiary,
-          ),
+          Icon(Icons.search, size: 64, color: AppColors.textTertiary),
           const SizedBox(height: AppDimensions.spacing16),
           Text(
             'Search for items',
@@ -193,9 +183,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildLoadingState() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
+    return const Center(child: CircularProgressIndicator());
   }
 
   Widget _buildResultsState(SearchLoaded state) {
@@ -230,7 +218,7 @@ class _SearchPageState extends State<SearchPage> {
             padding: const EdgeInsets.all(AppDimensions.spacing16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.58,
               crossAxisSpacing: AppDimensions.spacing12,
               mainAxisSpacing: AppDimensions.spacing12,
             ),
@@ -240,12 +228,7 @@ class _SearchPageState extends State<SearchPage> {
               return ItemCardWidget(
                 item: item,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemDetailPage(itemId: item.id),
-                    ),
-                  );
+                  AppRouter.toItemDetail(context, item.id);
                 },
               );
             },
@@ -260,11 +243,7 @@ class _SearchPageState extends State<SearchPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search_off,
-            size: 64,
-            color: AppColors.textTertiary,
-          ),
+          Icon(Icons.search_off, size: 64, color: AppColors.textTertiary),
           const SizedBox(height: AppDimensions.spacing16),
           Text(
             'No results found',
@@ -290,11 +269,7 @@ class _SearchPageState extends State<SearchPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 64,
-            color: AppColors.error,
-          ),
+          Icon(Icons.error_outline, size: 64, color: AppColors.error),
           const SizedBox(height: AppDimensions.spacing16),
           Text(
             'Search failed',

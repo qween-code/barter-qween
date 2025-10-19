@@ -30,7 +30,7 @@ class UserBadgesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final badges = _getBadgesToDisplay();
-    
+
     if (badges.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -46,66 +46,80 @@ class UserBadgesWidget extends StatelessWidget {
     final badges = <BadgeData>[];
 
     if (isVerifiedSeller) {
-      badges.add(BadgeData(
-        icon: Icons.verified,
-        label: 'Verified',
-        color: Colors.blue,
-        tooltip: 'Verified Seller - Identity confirmed',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.verified,
+          label: 'Verified',
+          color: Colors.blue,
+          tooltip: 'Verified Seller - Identity confirmed',
+        ),
+      );
     }
 
     if (isTopSeller) {
-      badges.add(BadgeData(
-        icon: Icons.star,
-        label: 'Top Seller',
-        color: Colors.amber,
-        tooltip: 'Top Seller - Exceptional performance',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.star,
+          label: 'Top Seller',
+          color: Colors.amber,
+          tooltip: 'Top Seller - Exceptional performance',
+        ),
+      );
     }
 
     if (isTrustedSeller) {
-      badges.add(BadgeData(
-        icon: Icons.shield,
-        label: 'Trusted',
-        color: Colors.green,
-        tooltip: 'Trusted Seller - Highly reliable',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.shield,
+          label: 'Trusted',
+          color: Colors.green,
+          tooltip: 'Trusted Seller - Highly reliable',
+        ),
+      );
     }
 
     if (isIdVerified) {
-      badges.add(BadgeData(
-        icon: Icons.badge,
-        label: 'ID Verified',
-        color: Colors.indigo,
-        tooltip: 'ID Verified - TruYou member',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.badge,
+          label: 'ID Verified',
+          color: Colors.indigo,
+          tooltip: 'ID Verified - TruYou member',
+        ),
+      );
     }
 
     if (hasReplyRateBadge) {
-      badges.add(BadgeData(
-        icon: Icons.chat_bubble,
-        label: 'Quick Reply',
-        color: Colors.purple,
-        tooltip: 'Quick Reply - Responds fast',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.chat_bubble,
+          label: 'Quick Reply',
+          color: Colors.purple,
+          tooltip: 'Quick Reply - Responds fast',
+        ),
+      );
     }
 
     if (hasFastShipperBadge) {
-      badges.add(BadgeData(
-        icon: Icons.local_shipping,
-        label: 'Fast Shipper',
-        color: Colors.orange,
-        tooltip: 'Fast Shipper - Ships within 3 days',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.local_shipping,
+          label: 'Fast Shipper',
+          color: Colors.orange,
+          tooltip: 'Fast Shipper - Ships within 3 days',
+        ),
+      );
     }
 
     if (hasTopRatedBadge) {
-      badges.add(BadgeData(
-        icon: Icons.stars,
-        label: 'Top Rated',
-        color: Colors.pink,
-        tooltip: 'Top Rated - 4.8+ rating',
-      ));
+      badges.add(
+        BadgeData(
+          icon: Icons.stars,
+          label: 'Top Rated',
+          color: Colors.pink,
+          tooltip: 'Top Rated - 4.8+ rating',
+        ),
+      );
     }
 
     return badges;
@@ -120,19 +134,12 @@ class UserBadgesWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: badge.color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: badge.color.withOpacity(0.3),
-              width: 1,
-            ),
+            border: Border.all(color: badge.color.withOpacity(0.3), width: 1),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                badge.icon,
-                size: 16,
-                color: badge.color,
-              ),
+              Icon(badge.icon, size: 16, color: badge.color),
               const SizedBox(width: 6),
               Text(
                 badge.label,
@@ -154,16 +161,9 @@ class UserBadgesWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: badge.color.withOpacity(0.1),
             shape: BoxShape.circle,
-            border: Border.all(
-              color: badge.color.withOpacity(0.3),
-              width: 1,
-            ),
+            border: Border.all(color: badge.color.withOpacity(0.3), width: 1),
           ),
-          child: Icon(
-            badge.icon,
-            size: 20,
-            color: badge.color,
-          ),
+          child: Icon(badge.icon, size: 20, color: badge.color),
         ),
       );
     }

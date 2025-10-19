@@ -61,7 +61,7 @@ class _DolapStyleFeedState extends State<DolapStyleFeed> {
           if (index >= widget.items.length) {
             return _buildShimmerCard();
           }
-          
+
           return _DolapFeedCard(item: widget.items[index]);
         },
       ),
@@ -75,9 +75,7 @@ class _DolapStyleFeedState extends State<DolapStyleFeed> {
         color: Colors.grey[300],
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Center(
-        child: CircularProgressIndicator(strokeWidth: 2),
-      ),
+      child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
     );
   }
 }
@@ -110,7 +108,9 @@ class _DolapFeedCard extends StatelessWidget {
           children: [
             // Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: AspectRatio(
                 aspectRatio: 0.75,
                 child: Image.network(
@@ -123,7 +123,7 @@ class _DolapFeedCard extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -140,21 +140,18 @@ class _DolapFeedCard extends StatelessWidget {
                       height: 1.3,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 4),
-                  
+
                   // Brand (if exists)
                   if (item.brand != null)
                     Text(
                       item.brand!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Price & Stats
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,17 +166,24 @@ class _DolapFeedCard extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.favorite_border, size: 14, color: Colors.grey),
+                          const Icon(
+                            Icons.favorite_border,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${item.likeCount}',
-                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  
+
                   // User info
                   const SizedBox(height: 8),
                   Row(

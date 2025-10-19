@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/item_entity.dart';
-import '../../domain/entities/barter_condition_entity.dart';
 import 'barter_condition_model.dart';
 
 class ItemModelV2 {
@@ -115,8 +114,9 @@ class ItemModelV2 {
       adminNotes: data['adminNotes'],
       approvedAt: data['approvedAt'],
       approvedBy: data['approvedBy'],
-      videoUrls:
-          data['videoUrls'] != null ? List<String>.from(data['videoUrls']) : null,
+      videoUrls: data['videoUrls'] != null
+          ? List<String>.from(data['videoUrls'])
+          : null,
       requiresDelivery: data['requiresDelivery'] ?? false,
       deliveryInfo: data['deliveryInfo'],
       latitude: data['latitude']?.toDouble(),
@@ -229,8 +229,9 @@ class ItemModelV2 {
       city: entity.city,
       status: _statusToString(entity.status),
       createdAt: Timestamp.fromDate(entity.createdAt),
-      updatedAt:
-          entity.updatedAt != null ? Timestamp.fromDate(entity.updatedAt!) : null,
+      updatedAt: entity.updatedAt != null
+          ? Timestamp.fromDate(entity.updatedAt!)
+          : null,
       viewCount: entity.viewCount,
       favoriteCount: entity.favoriteCount,
       tags: entity.tags,
@@ -239,8 +240,9 @@ class ItemModelV2 {
       // New fields
       monetaryValue: entity.monetaryValue,
       barterCondition: entity.barterCondition != null
-          ? BarterConditionModel.fromEntity(entity.barterCondition!)
-              .toFirestore()
+          ? BarterConditionModel.fromEntity(
+              entity.barterCondition!,
+            ).toFirestore()
           : null,
       tier: entity.tier?.name,
       moderationStatus: entity.moderationStatus.name,

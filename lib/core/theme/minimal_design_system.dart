@@ -13,7 +13,7 @@ class MinimalDesignSystem {
   static const Color accentRed = Color(0xFFEF4444);
   static const Color accentGreen = Color(0xFF10B981);
   static const Color accentBlue = Color(0xFF3B82F6);
-  
+
   // Additional colors for compatibility
   static const Color primaryColor = primaryBlack;
   static const Color baseColor = primaryWhite;
@@ -164,14 +164,12 @@ class MinimalDesignSystem {
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
-        var tween = Tween(begin: begin, end: end).chain(
-          CurveTween(curve: curve),
-        );
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        return SlideTransition(position: animation.drive(tween), child: child);
       },
       transitionDuration: normalTransition,
     );
@@ -186,9 +184,7 @@ class MinimalDesignSystem {
       horizontal: spacingXL,
       vertical: spacingM,
     ),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radiusM),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusM)),
     textStyle: buttonText,
   );
 
@@ -200,9 +196,7 @@ class MinimalDesignSystem {
       horizontal: spacingXL,
       vertical: spacingM,
     ),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radiusM),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusM)),
     textStyle: buttonText.copyWith(color: primaryBlack),
   );
 

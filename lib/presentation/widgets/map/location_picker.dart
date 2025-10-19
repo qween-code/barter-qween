@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../../core/services/map_service.dart';
 
 /// Location Picker Widget
@@ -25,7 +24,7 @@ class LocationPicker extends StatefulWidget {
 class _LocationPickerState extends State<LocationPicker> {
   final MapService _mapService = MapService();
   GoogleMapController? _mapController;
-  
+
   LatLng? _selectedLocation;
   String? _selectedAddress;
   bool _isLoading = false;
@@ -38,7 +37,10 @@ class _LocationPickerState extends State<LocationPicker> {
 
   Future<void> _initializeLocation() async {
     if (widget.initialLatitude != null && widget.initialLongitude != null) {
-      _selectedLocation = LatLng(widget.initialLatitude!, widget.initialLongitude!);
+      _selectedLocation = LatLng(
+        widget.initialLatitude!,
+        widget.initialLongitude!,
+      );
       _loadAddress(_selectedLocation!);
     } else {
       await _getCurrentLocation();
@@ -47,19 +49,15 @@ class _LocationPickerState extends State<LocationPicker> {
 
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final position = await _mapService.getCurrentLocation();
-      if (position != null) {
-        final location = LatLng(position.latitude, position.longitude);
-        setState(() {
-          _selectedLocation = location;
-        });
-        _loadAddress(location);
-        _mapController?.animateCamera(
-          CameraUpdate.newLatLngZoom(location, 15),
-        );
-      }
+      final location = LatLng(position.latitude, position.longitude);
+      setState(() {
+        _selectedLocation = location;
+      });
+      _loadAddress(location);
+      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
     } catch (e) {
       _showError('Konum alınamadı: $e');
     } finally {
@@ -73,7 +71,7 @@ class _LocationPickerState extends State<LocationPicker> {
       location.longitude,
     );
     setState(() {
-      _selectedAddress = address ?? 'Adres bulunamadı';
+      _selectedAddress = address;
     });
   }
 
@@ -97,6 +95,7 @@ class _LocationPickerState extends State<LocationPicker> {
   }
 
   void _showError(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
@@ -128,13 +127,12 @@ class _LocationPickerState extends State<LocationPicker> {
                   onMapCreated: (controller) => _mapController = controller,
                   onTap: _onMapTap,
                   markers: {
-                    if (_selectedLocation != null)
-                      Marker(
-                        markerId: const MarkerId('selected'),
-                        position: _selectedLocation!,
-                        draggable: true,
-                        onDragEnd: _onMapTap,
-                      ),
+                    Marker(
+                      markerId: const MarkerId('selected'),
+                      position: _selectedLocation!,
+                      draggable: true,
+                      onDragEnd: _onMapTap,
+                    ),
                   },
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
@@ -156,10 +154,7 @@ class _LocationPickerState extends State<LocationPicker> {
                     children: [
                       const Text(
                         'Seçili Konum',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -197,9 +192,7 @@ class _LocationPickerState extends State<LocationPicker> {
           if (_isLoading)
             Container(
               color: Colors.black26,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),

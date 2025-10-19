@@ -1,8 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../../domain/entities/negotiation_entity.dart';
-import '../../../domain/entities/counter_offer_entity.dart';
 import '../../../domain/usecases/create_negotiation_usecase.dart';
 import '../../../domain/usecases/send_counter_offer_usecase.dart';
 import '../../../domain/usecases/accept_counter_offer_usecase.dart';
@@ -60,10 +57,9 @@ class NegotiationCubit extends Cubit<NegotiationState> {
       (counterOffer) {
         // Update negotiation with new counter-offer
         // In real implementation, would fetch updated negotiation from repository
-        emit(NegotiationCounterOfferSent(
-          currentState.negotiation,
-          counterOffer,
-        ));
+        emit(
+          NegotiationCounterOfferSent(currentState.negotiation, counterOffer),
+        );
       },
     );
   }
@@ -89,16 +85,20 @@ class NegotiationCubit extends Cubit<NegotiationState> {
       },
       (acceptResult) {
         if (acceptResult.tradeCreated) {
-          emit(NegotiationCompleted(
-            currentState.negotiation,
-            'Anlaşma sağlandı! Takas oluşturuldu.',
-            trade: acceptResult.trade,
-          ));
+          emit(
+            NegotiationCompleted(
+              currentState.negotiation,
+              'Anlaşma sağlandı! Takas oluşturuldu.',
+              trade: acceptResult.trade,
+            ),
+          );
         } else {
-          emit(NegotiationCounterOfferAccepted(
-            currentState.negotiation,
-            acceptResult.counterOfferId,
-          ));
+          emit(
+            NegotiationCounterOfferAccepted(
+              currentState.negotiation,
+              acceptResult.counterOfferId,
+            ),
+          );
         }
       },
     );
@@ -125,15 +125,19 @@ class NegotiationCubit extends Cubit<NegotiationState> {
       },
       (rejectResult) {
         if (rejectResult.negotiationEnded) {
-          emit(NegotiationEnded(
-            currentState.negotiation,
-            'Müzakere sonlandırıldı',
-          ));
+          emit(
+            NegotiationEnded(
+              currentState.negotiation,
+              'Müzakere sonlandırıldı',
+            ),
+          );
         } else {
-          emit(NegotiationCounterOfferRejected(
-            currentState.negotiation,
-            rejectResult.counterOfferId,
-          ));
+          emit(
+            NegotiationCounterOfferRejected(
+              currentState.negotiation,
+              rejectResult.counterOfferId,
+            ),
+          );
         }
       },
     );

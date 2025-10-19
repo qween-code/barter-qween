@@ -125,10 +125,7 @@ class SendingMessage extends ChatState {
   final String conversationId;
   final String text;
 
-  const SendingMessage({
-    required this.conversationId,
-    required this.text,
-  });
+  const SendingMessage({required this.conversationId, required this.text});
 
   @override
   List<Object?> get props => [conversationId, text];

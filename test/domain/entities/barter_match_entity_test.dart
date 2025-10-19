@@ -15,6 +15,7 @@ void main() {
         sourceUserId: 'user1',
         targetUserId: 'user2',
         matchScore: 85.0,
+        compatibilityScore: 82.0,
         categoryScore: 100.0,
         priceScore: 90.0,
         locationScore: 80.0,
@@ -178,10 +179,7 @@ void main() {
       });
 
       test('should create copy with offer info', () {
-        final offered = match.copyWith(
-          wasOffered: true,
-          offerId: 'offer123',
-        );
+        final offered = match.copyWith(wasOffered: true, offerId: 'offer123');
         expect(offered.wasOffered, true);
         expect(offered.offerId, 'offer123');
       });
@@ -196,6 +194,7 @@ void main() {
           sourceUserId: 'user1',
           targetUserId: 'user2',
           matchScore: 85.0,
+          compatibilityScore: 82.0,
           categoryScore: 100.0,
           priceScore: 90.0,
           locationScore: 80.0,

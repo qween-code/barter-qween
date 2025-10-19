@@ -28,7 +28,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
   final _bioController = TextEditingController();
-  
+
   File? _selectedImage;
   String? _currentPhotoUrl;
   bool _isLoading = false;
@@ -84,37 +84,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() => _isLoading = true);
 
     final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) return;
+    if (authState is! AuthAuthenticated) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+      return;
+    }
 
     final user = authState.user;
 
     // Upload avatar first if image selected
     if (_selectedImage != null) {
       context.read<ProfileBloc>().add(
-        UploadAvatar(
-          userId: user.uid,
-          imageFile: _selectedImage!,
-        ),
+        UploadAvatar(userId: user.uid, imageFile: _selectedImage!),
       );
-      
+
       // Wait a bit for upload to complete
       await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
     }
 
     // Update profile
     final updatedUser = user.copyWith(
       displayName: _displayNameController.text.trim(),
-      phoneNumber: _phoneController.text.trim().isEmpty 
-          ? null 
+      phoneNumber: _phoneController.text.trim().isEmpty
+          ? null
           : _phoneController.text.trim(),
-      city: _cityController.text.trim().isEmpty 
-          ? null 
+      city: _cityController.text.trim().isEmpty
+          ? null
           : _cityController.text.trim(),
-      address: _addressController.text.trim().isEmpty 
-          ? null 
+      address: _addressController.text.trim().isEmpty
+          ? null
           : _addressController.text.trim(),
-      bio: _bioController.text.trim().isEmpty 
-          ? null 
+      bio: _bioController.text.trim().isEmpty
+          ? null
           : _bioController.text.trim(),
     );
 
@@ -132,6 +135,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
+          if (!mounted) return;
           if (state is ProfileUpdated || state is AvatarUploaded) {
             setState(() => _isLoading = false);
             ScaffoldMessenger.of(context).showSnackBar(
@@ -191,7 +195,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
 
                   const SizedBox(height: AppDimensions.spacing8),
-                  
+
                   TextButton.icon(
                     onPressed: _pickImage,
                     icon: const Icon(Icons.camera_alt_outlined),

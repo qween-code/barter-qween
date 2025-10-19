@@ -24,8 +24,8 @@ class ConversationModel extends ConversationEntity {
       listingId: data['listingId'],
       lastMessage: data['lastMessage'] ?? '',
       lastMessageSenderId: data['lastMessageSenderId'] ?? '',
-      lastMessageTime: (data['lastMessageTime'] as Timestamp?)?.toDate() ??
-          DateTime.now(),
+      lastMessageTime:
+          (data['lastMessageTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
       unreadCount: Map<String, int>.from(
         (data['unreadCount'] as Map<String, dynamic>?)?.map(
               (key, value) => MapEntry(key, value as int),

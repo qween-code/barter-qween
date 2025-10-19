@@ -10,7 +10,7 @@ class UserRatingBreakdownWidget extends StatelessWidget {
   final int threeStarReviews;
   final int twoStarReviews;
   final int oneStarReviews;
-  
+
   // Review attributes (OfferUp style)
   final int timelyCount;
   final int friendlyCount;
@@ -76,8 +76,8 @@ class UserRatingBreakdownWidget extends StatelessWidget {
                         index < averageRating.floor()
                             ? Icons.star
                             : (index < averageRating
-                                ? Icons.star_half
-                                : Icons.star_border),
+                                  ? Icons.star_half
+                                  : Icons.star_border),
                         color: Colors.amber,
                         size: 20,
                       ),
@@ -86,15 +86,12 @@ class UserRatingBreakdownWidget extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     '$totalReviews reviews',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ),
               const SizedBox(width: 24),
-              
+
               // Rating bars
               Expanded(
                 child: Column(
@@ -109,7 +106,7 @@ class UserRatingBreakdownWidget extends StatelessWidget {
               ),
             ],
           ),
-          
+
           // Review attributes (OfferUp style compliments)
           if (_hasAttributes()) ...[
             const SizedBox(height: 20),
@@ -117,10 +114,7 @@ class UserRatingBreakdownWidget extends StatelessWidget {
             const SizedBox(height: 16),
             const Text(
               'Buyer Compliments',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -165,24 +159,17 @@ class UserRatingBreakdownWidget extends StatelessWidget {
 
   Widget _buildRatingBar(int stars, int count, int total) {
     final percentage = total > 0 ? (count / total) : 0.0;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
           Text(
             '$stars',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade700,
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
           ),
           const SizedBox(width: 4),
-          Icon(
-            Icons.star,
-            size: 12,
-            color: Colors.grey.shade400,
-          ),
+          Icon(Icons.star, size: 12, color: Colors.grey.shade400),
           const SizedBox(width: 8),
           Expanded(
             child: ClipRRect(
@@ -191,7 +178,9 @@ class UserRatingBreakdownWidget extends StatelessWidget {
                 value: percentage,
                 backgroundColor: Colors.grey.shade200,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  stars >= 4 ? Colors.green : (stars >= 3 ? Colors.orange : Colors.red),
+                  stars >= 4
+                      ? Colors.green
+                      : (stars >= 3 ? Colors.orange : Colors.red),
                 ),
                 minHeight: 8,
               ),
@@ -202,10 +191,7 @@ class UserRatingBreakdownWidget extends StatelessWidget {
             width: 30,
             child: Text(
               count.toString(),
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               textAlign: TextAlign.end,
             ),
           ),
@@ -214,16 +200,18 @@ class UserRatingBreakdownWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAttributeChip(String label, int count, IconData icon, Color color) {
+  Widget _buildAttributeChip(
+    String label,
+    int count,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

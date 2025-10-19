@@ -66,13 +66,18 @@ class RatingRemoteDataSourceImpl implements RatingRemoteDataSource {
 
   @override
   Future<List<RatingEntity>> getUserRatings(String userId) async {
-    final snap = await _firestore
-        .collection('ratings')
-        .where('toUserId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
-        .limit(100)
-        .get();
-    return snap.docs.map(_fromDoc).toList();
+    try {
+      final snap = await _firestore
+          .collection('ratings')
+          .where('toUserId', isEqualTo: userId)
+          .limit(100)
+          .get();
+      final items = snap.docs.map(_fromDoc).toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return items;
+    } on FirebaseException catch (_) {
+      rethrow;
+    }
   }
 
   @override
@@ -83,9 +88,14 @@ class RatingRemoteDataSourceImpl implements RatingRemoteDataSource {
         .get();
     int total = snap.size;
     if (total == 0) {
-      return UserRatingStats(userId: userId, averageRating: 0.0, totalRatings: 0, ratingDistribution: const {});
+      return UserRatingStats(
+        userId: userId,
+        averageRating: 0.0,
+        totalRatings: 0,
+        ratingDistribution: const {},
+      );
     }
-    final dist = <int, int>{1:0,2:0,3:0,4:0,5:0};
+    final dist = <int, int>{1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
     int sum = 0;
     for (final doc in snap.docs) {
       final r = (doc.data()['rating'] as int);
@@ -93,6 +103,11 @@ class RatingRemoteDataSourceImpl implements RatingRemoteDataSource {
       dist[r] = (dist[r] ?? 0) + 1;
     }
     final avg = sum / total;
-    return UserRatingStats(userId: userId, averageRating: avg, totalRatings: total, ratingDistribution: dist);
+    return UserRatingStats(
+      userId: userId,
+      averageRating: avg,
+      totalRatings: total,
+      ratingDistribution: dist,
+    );
   }
 }

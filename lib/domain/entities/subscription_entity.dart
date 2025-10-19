@@ -85,20 +85,20 @@ class SubscriptionEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        plan,
-        status,
-        startDate,
-        expiryDate,
-        cancelledAt,
-        autoRenew,
-        paymentId,
-        storeProductId,
-        storeTransactionId,
-        createdAt,
-        lastRenewedAt,
-      ];
+    id,
+    userId,
+    plan,
+    status,
+    startDate,
+    expiryDate,
+    cancelledAt,
+    autoRenew,
+    paymentId,
+    storeProductId,
+    storeTransactionId,
+    createdAt,
+    lastRenewedAt,
+  ];
 }
 
 /// Subscription Plans
@@ -285,10 +285,7 @@ class ListingFeeConfig {
   static const double premiumPlanCommissionRate = 0.0;
 
   /// Calculate commission for a trade
-  static double calculateCommission(
-    double tradeValue,
-    SubscriptionPlan plan,
-  ) {
+  static double calculateCommission(double tradeValue, SubscriptionPlan plan) {
     final rate = plan.features.tradeCommissionRate;
     return (tradeValue * rate) / 100;
   }
@@ -312,7 +309,7 @@ class ListingFeeConfig {
     if (isPremiumListing) {
       final premiumListingsUsed = currentMonthListings; // Simplified
       final premiumAllowance = plan.features.premiumListingsPerMonth;
-      
+
       if (premiumListingsUsed >= premiumAllowance) {
         return premiumListingFee;
       }
@@ -354,15 +351,15 @@ class PremiumListingEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        itemId,
-        userId,
-        type,
-        startDate,
-        endDate,
-        isActive,
-        paymentId,
-      ];
+    id,
+    itemId,
+    userId,
+    type,
+    startDate,
+    endDate,
+    isActive,
+    paymentId,
+  ];
 }
 
 enum PremiumListingType {

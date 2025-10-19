@@ -13,13 +13,19 @@ abstract class NotificationRepository {
   Future<Either<Failure, int>> getUnreadCount(String userId);
 
   /// Mark notification as read
-  Future<Either<Failure, NotificationEntity>> markAsRead(String notificationId);
+  Future<Either<Failure, NotificationEntity>> markAsRead(
+    String userId,
+    String notificationId,
+  );
 
   /// Mark all notifications as read
   Future<Either<Failure, void>> markAllAsRead(String userId);
 
   /// Delete a notification
-  Future<Either<Failure, void>> deleteNotification(String notificationId);
+  Future<Either<Failure, void>> deleteNotification(
+    String userId,
+    String notificationId,
+  );
 
   /// Delete all notifications
   Future<Either<Failure, void>> deleteAllNotifications(String userId);

@@ -23,7 +23,7 @@ class VerificationBadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final verificationLevel = _getVerificationLevel();
-    
+
     if (verificationLevel == 'None') {
       return const SizedBox.shrink();
     }
@@ -40,19 +40,12 @@ class VerificationBadgeWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: _getColor().withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: _getColor().withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: _getColor().withOpacity(0.3), width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              _getIcon(),
-              size: 16,
-              color: _getColor(),
-            ),
+            Icon(_getIcon(), size: 16, color: _getColor()),
             const SizedBox(width: 6),
             Text(
               verificationLevel,
@@ -87,22 +80,16 @@ class VerificationBadgeWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.verified_user,
-                color: _getColor(),
-              ),
+              Icon(Icons.verified_user, color: _getColor()),
               const SizedBox(width: 12),
               const Text(
                 'Verification Status',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
+
           _buildVerificationItem(
             'Phone Number',
             isPhoneVerified,
@@ -123,7 +110,7 @@ class VerificationBadgeWidget extends StatelessWidget {
             isSelfieVerified,
             'TruYou selfie verification',
           ),
-          
+
           if (!isIdVerified || !isSelfieVerified) ...[
             const SizedBox(height: 16),
             const Divider(height: 1),
@@ -145,7 +132,11 @@ class VerificationBadgeWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildVerificationItem(String label, bool isVerified, String description) {
+  Widget _buildVerificationItem(
+    String label,
+    bool isVerified,
+    String description,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -169,10 +160,7 @@ class VerificationBadgeWidget extends StatelessWidget {
                 ),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
             ),

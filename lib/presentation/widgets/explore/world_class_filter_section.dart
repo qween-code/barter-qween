@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS FILTER SECTION
-/// 
+///
 /// Features:
 /// - Category chips
 /// - Filter button
@@ -38,7 +38,9 @@ class WorldClassFilterSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+      margin: const EdgeInsets.symmetric(
+        horizontal: WorldClassDesignSystem.spacingM,
+      ),
       child: Column(
         children: [
           // Category Chips
@@ -50,9 +52,11 @@ class WorldClassFilterSection extends StatelessWidget {
               itemBuilder: (context, index) {
                 final category = _categories[index];
                 final isSelected = category == selectedCategory;
-                
+
                 return Container(
-                  margin: const EdgeInsets.only(right: WorldClassDesignSystem.spacingS),
+                  margin: const EdgeInsets.only(
+                    right: WorldClassDesignSystem.spacingS,
+                  ),
                   child: FilterChip(
                     label: Text(
                       category,
@@ -60,7 +64,9 @@ class WorldClassFilterSection extends StatelessWidget {
                         color: isSelected
                             ? WorldClassDesignSystem.primaryWhite
                             : WorldClassDesignSystem.primaryText,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
                     ),
                     selected: isSelected,
@@ -80,9 +86,9 @@ class WorldClassFilterSection extends StatelessWidget {
               },
             ),
           ),
-          
+
           const SizedBox(height: WorldClassDesignSystem.spacingM),
-          
+
           // Filter and Map Toggle Row
           Row(
             children: [
@@ -103,9 +109,13 @@ class WorldClassFilterSection extends StatelessWidget {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: WorldClassDesignSystem.primaryColor),
+                    side: BorderSide(
+                      color: WorldClassDesignSystem.primaryColor,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusM),
+                      borderRadius: BorderRadius.circular(
+                        WorldClassDesignSystem.radiusM,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: WorldClassDesignSystem.spacingM,
@@ -114,9 +124,9 @@ class WorldClassFilterSection extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: WorldClassDesignSystem.spacingM),
-              
+
               // Map Toggle Button
               Expanded(
                 child: OutlinedButton.icon(
@@ -141,9 +151,13 @@ class WorldClassFilterSection extends StatelessWidget {
                     backgroundColor: isMapView
                         ? WorldClassDesignSystem.primaryColor
                         : Colors.transparent,
-                    side: BorderSide(color: WorldClassDesignSystem.primaryColor),
+                    side: BorderSide(
+                      color: WorldClassDesignSystem.primaryColor,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusM),
+                      borderRadius: BorderRadius.circular(
+                        WorldClassDesignSystem.radiusM,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: WorldClassDesignSystem.spacingM,

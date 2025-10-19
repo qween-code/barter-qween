@@ -52,7 +52,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadConversation event,
     Emitter<ChatState> emit,
   ) async {
-    print('💬 ChatBloc: LoadConversation event received for ID: ${event.conversationId}');
+    print(
+      '💬 ChatBloc: LoadConversation event received for ID: ${event.conversationId}',
+    );
     emit(const ChatLoading());
 
     final result = await chatRepository.getConversation(event.conversationId);
@@ -73,7 +75,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadConversations event,
     Emitter<ChatState> emit,
   ) async {
-    print('💬 ChatBloc: LoadConversations event received for user: ${event.userId}');
+    print(
+      '💬 ChatBloc: LoadConversations event received for user: ${event.userId}',
+    );
     // Cancel previous subscription if exists
     await _conversationsSubscription?.cancel();
 
@@ -84,7 +88,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         print('💬 ChatBloc: Conversations stream update received');
         return result.fold(
           (failure) {
-            print('❌ ChatBloc: Failed to load conversations - ${failure.message}');
+            print(
+              '❌ ChatBloc: Failed to load conversations - ${failure.message}',
+            );
             return ChatError(failure.message);
           },
           (conversations) {
@@ -114,8 +120,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadMessages event,
     Emitter<ChatState> emit,
   ) async {
-    print('📥 ChatBloc: Loading messages for conversation: ${event.conversationId}');
-    
+    print(
+      '📥 ChatBloc: Loading messages for conversation: ${event.conversationId}',
+    );
+
     // Cancel previous subscription if exists
     await _messagesSubscription?.cancel();
 
@@ -155,13 +163,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     SendMessage event,
     Emitter<ChatState> emit,
   ) async {
-    print('💬 ChatBloc: Sending message - Conv: ${event.conversationId}, Sender: ${event.senderId}');
-    
+    print(
+      '💬 ChatBloc: Sending message - Conv: ${event.conversationId}, Sender: ${event.senderId}',
+    );
+
     // Show optimistic update
-    emit(SendingMessage(
-      conversationId: event.conversationId,
-      text: event.text,
-    ));
+    emit(
+      SendingMessage(conversationId: event.conversationId, text: event.text),
+    );
 
     final result = await sendMessageUseCase(
       SendMessageParams(
@@ -229,7 +238,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     DeleteConversation event,
     Emitter<ChatState> emit,
   ) async {
-    final result = await chatRepository.deleteConversation(event.conversationId);
+    final result = await chatRepository.deleteConversation(
+      event.conversationId,
+    );
 
     result.fold(
       (failure) => emit(ChatError(failure.message)),

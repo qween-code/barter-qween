@@ -3,6 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import '../widgets/safe_text_widget.dart';
+import '../widgets/item_card_frame.dart';
+import '../widgets/fallback_network_image.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 1. ENHANCED CARDS
@@ -13,15 +16,18 @@ import 'dart:math' as math;
 class PremiumItemCard extends StatelessWidget {
   final String imageUrl;
   final String title;
-  final String? username;  // Made nullable for flexibility
+  final String? username; // Made nullable for flexibility
   final double? price;
   final String condition;
   final String? distance;
   final int viewCount;
   final bool isVerified;
   final bool isFavorited;
+  final bool showFavoriteButton;
+  final bool showQuickViewButton;
   final VoidCallback? onTap;
   final VoidCallback? onFavorite;
+  final VoidCallback? onQuickView;
   final double? matchScore;
   final List<String>? badges; // "NEW", "HOT", "ENDING"
 
@@ -29,170 +35,255 @@ class PremiumItemCard extends StatelessWidget {
     Key? key,
     required this.imageUrl,
     required this.title,
-    this.username,  // Optional now
+    this.username, // Optional now
     this.price,
     required this.condition,
     this.distance,
     this.viewCount = 0,
     this.isVerified = false,
     this.isFavorited = false,
+    this.showFavoriteButton = true,
+    this.showQuickViewButton = true,
     this.onTap,
     this.onFavorite,
+    this.onQuickView,
     this.matchScore,
     this.badges,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final formattedUsername = _normalizedUsername();
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+      child: ItemCardFrame(
+        image: _buildMainImage(),
+        imageOverlays: _buildImageOverlays(context),
+        contentBuilder: (ctx, layout) =>
+            _buildContent(ctx, formattedUsername, layout),
+        backgroundColor: Colors.white,
+        borderRadius: 16,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    String? formattedUsername,
+    ItemCardContentLayout layout,
+  ) {
+    final locationLabel = distance != null && distance!.trim().isNotEmpty
+        ? distance!.trim()
+        : null;
+    final hasCondition = condition.trim().isNotEmpty;
+    final isCompact = layout.isCompact;
+    final spacing = isCompact ? 4.0 : 6.0;
+    final isUltraCompact = layout.isUltraCompact;
+    final bodyHeight = layout.bodyHeight;
+
+    if (isUltraCompact) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SafeText(
+            text: title,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          _buildPriceSection(context),
+        ],
+      );
+    }
+
+    if (isCompact) {
+      final hasTightSpace = bodyHeight < 92;
+      final showLocation = locationLabel != null && !hasTightSpace;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (matchScore != null) ...[
+            _buildMatchScore(),
+            const SizedBox(height: 3),
           ],
+          SafeText(
+            text: title,
+            style: const TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (showLocation) ...[
+            const SizedBox(height: 3),
+            _buildLocationRow(locationLabel!),
+          ],
+          SizedBox(height: showLocation ? 6 : 4),
+          _buildPriceSection(context),
+        ],
+      );
+    }
+
+    final showMatchScore = matchScore != null && bodyHeight >= 120;
+    final showUsername = formattedUsername != null && bodyHeight >= 112;
+    final showLocation = locationLabel != null && bodyHeight >= 96;
+    final showCondition = hasCondition && bodyHeight >= 132;
+
+    final double spacingUnit = (bodyHeight / 140).clamp(3.0, 6.0);
+    final double primarySpacing = spacingUnit;
+    final double secondarySpacing = spacingUnit * 0.75;
+    final double tertiarySpacing = spacingUnit * 0.5;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showMatchScore) ...[
+          _buildMatchScore(),
+          SizedBox(height: tertiarySpacing),
+        ],
+        SafeText(
+          text: title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            height: 1.25,
+          ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image Section
-            _buildImageSection(context),
-            
-            // Content Section
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Match Score (if applicable)
-                  if (matchScore != null) _buildMatchScore(),
-                  
-                  // Title
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  // Username with verification
-                  if (username != null)
-                    Row(
-                      children: [
-                        Text(
-                          '@$username',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        if (isVerified) ...[
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.verified,
-                            size: 14,
-                            color: Colors.blue[600],
-                          ),
-                        ],
-                      ],
-                    ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  // Condition & Distance
-                  Row(
-                    children: [
-                      _buildChip(condition, Colors.green[50]!, Colors.green[700]!),
-                      if (distance != null) ...[
-                        const SizedBox(width: 8),
-                        _buildChip(distance!, Colors.blue[50]!, Colors.blue[700]!),
-                      ],
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  // Price (if applicable)
-                  if (price != null)
-                    Text(
-                      '${price!.toStringAsFixed(0)}₺',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    )
-                  else
-                    Text(
-                      '🔄 Trade Only',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.orange[700],
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
+        if (showUsername) ...[
+          SizedBox(height: secondarySpacing),
+          _buildUsernameRow(formattedUsername!),
+        ],
+        if (showLocation) ...[
+          SizedBox(height: tertiarySpacing),
+          _buildLocationRow(locationLabel!),
+        ],
+        if (showCondition) ...[
+          SizedBox(height: tertiarySpacing),
+          _buildConditionBadge(),
+        ],
+        SizedBox(height: (showLocation || showCondition) ? secondarySpacing : tertiarySpacing),
+        _buildPriceSection(context),
+      ],
+    );
+  }
+
+  Widget _buildMainImage() {
+    return FallbackNetworkImage(
+      imageUrl: imageUrl,
+      fit: BoxFit.cover,
+    );
+  }
+
+  List<Widget> _buildImageOverlays(BuildContext context) {
+    return [
+      if (badges != null && badges!.isNotEmpty)
+        Positioned(top: 8, left: 8, child: _buildBadges()),
+      if (showFavoriteButton)
+        Positioned(top: 8, right: 8, child: _buildFavoriteButton()),
+      if (showQuickViewButton && onQuickView != null)
+        Positioned(bottom: 8, left: 8, child: _buildQuickViewButton()),
+      if (viewCount > 0)
+        Positioned(bottom: 8, right: 8, child: _buildViewCounter()),
+    ];
+  }
+
+  Widget _buildUsernameRow(String usernameValue) {
+    return Row(
+      children: [
+        const Icon(Icons.person_outline, size: 12, color: Colors.grey),
+        const SizedBox(width: 4),
+        Expanded(
+          child: SafeText.label(
+            '@$usernameValue',
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+          ),
+        ),
+        if (isVerified) ...[
+          const SizedBox(width: 4),
+          Icon(Icons.verified, size: 14, color: Colors.blue[600]),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLocationRow(String label) {
+    return Row(
+      children: [
+        const Icon(Icons.location_on, size: 12, color: Colors.grey),
+        const SizedBox(width: 4),
+        Expanded(
+          child: SafeText.label(
+            label,
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConditionBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: SafeText.label(
+        condition,
+        style: TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          color: Colors.green[700],
         ),
       ),
     );
   }
 
-  Widget _buildImageSection(BuildContext context) {
-    return Stack(
-      children: [
-        // Main Image
-        ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.image, size: 48, color: Colors.grey),
-              ),
-            ),
-          ),
+  Widget _buildPriceSection(BuildContext context) {
+    if (price != null) {
+      return Text(
+        '${price!.toStringAsFixed(0)}₺',
+        style: TextStyle(
+          fontSize: 14.5,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).primaryColor,
         ),
-        
-        // Badges (Top Left)
-        if (badges != null && badges!.isNotEmpty)
-          Positioned(
-            top: 8,
-            left: 8,
-            child: _buildBadges(),
-          ),
-        
-        // Favorite Button (Top Right)
-        Positioned(
-          top: 8,
-          right: 8,
-          child: _buildFavoriteButton(),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: Colors.orange[50],
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        'Trade Only',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: Colors.orange[700],
         ),
-        
-        // View Counter (Bottom Right)
-        Positioned(
-          bottom: 8,
-          right: 8,
-          child: _buildViewCounter(),
-        ),
-      ],
+      ),
     );
   }
 
@@ -201,7 +292,7 @@ class PremiumItemCard extends StatelessWidget {
       children: badges!.map((badge) {
         Color color;
         Color bgColor;
-        
+
         switch (badge.toUpperCase()) {
           case 'NEW':
             color = Colors.green[700]!;
@@ -219,7 +310,7 @@ class PremiumItemCard extends StatelessWidget {
             color = Colors.blue[700]!;
             bgColor = Colors.blue[50]!;
         }
-        
+
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
@@ -240,6 +331,9 @@ class PremiumItemCard extends StatelessWidget {
   }
 
   Widget _buildFavoriteButton() {
+    if (onFavorite == null) {
+      return const SizedBox.shrink();
+    }
     return GestureDetector(
       onTap: onFavorite,
       child: Container(
@@ -248,10 +342,7 @@ class PremiumItemCard extends StatelessWidget {
           color: Colors.white.withOpacity(0.9),
           shape: BoxShape.circle,
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-            ),
+            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4),
           ],
         ),
         child: Icon(
@@ -265,7 +356,7 @@ class PremiumItemCard extends StatelessWidget {
 
   Widget _buildViewCounter() {
     if (viewCount == 0) return const SizedBox.shrink();
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -290,11 +381,40 @@ class PremiumItemCard extends StatelessWidget {
     );
   }
 
+  Widget _buildQuickViewButton() {
+    return Material(
+      color: Colors.white.withOpacity(0.92),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onQuickView,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.visibility_outlined, size: 16, color: Colors.black87),
+              SizedBox(width: 6),
+              Text(
+                'Quick View',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMatchScore() {
     final score = matchScore!;
     Color color;
     String emoji;
-    
+
     if (score >= 90) {
       color = Colors.green[600]!;
       emoji = '🔥';
@@ -305,7 +425,7 @@ class PremiumItemCard extends StatelessWidget {
       color = Colors.orange[600]!;
       emoji = '✨';
     }
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -332,22 +452,16 @@ class PremiumItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildChip(String label, Color bgColor, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
-      ),
-    );
+  String? _normalizedUsername() {
+    if (username == null) return null;
+    final raw = username!.trim();
+    if (raw.isEmpty) return null;
+
+    final condensed = raw.replaceAll(RegExp(r'\s+'), '');
+    final candidate = condensed.isNotEmpty ? condensed : raw;
+    final sanitized = candidate.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '');
+    final value = sanitized.isNotEmpty ? sanitized : candidate;
+    return value.length > 18 ? value.substring(0, 18) : value;
   }
 }
 
@@ -393,14 +507,14 @@ class FeaturedItemCard extends StatelessWidget {
             // Background Image
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                imageUrl,
+              child: FallbackNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
               ),
             ),
-            
+
             // Gradient Overlay
             Container(
               decoration: BoxDecoration(
@@ -408,14 +522,11 @@ class FeaturedItemCard extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
                 ),
               ),
             ),
-            
+
             // Content
             Positioned(
               left: 20,
@@ -450,12 +561,7 @@ class FeaturedItemCard extends StatelessWidget {
                       color: Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black26,
-                          blurRadius: 4,
-                        ),
-                      ],
+                      shadows: [Shadow(color: Colors.black26, blurRadius: 4)],
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -507,7 +613,7 @@ class MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isExcellentMatch = matchScore >= 90;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -560,7 +666,7 @@ class MatchCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Items Comparison
           Padding(
             padding: const EdgeInsets.all(16),
@@ -574,7 +680,7 @@ class MatchCard extends StatelessWidget {
                     'Your Item',
                   ),
                 ),
-                
+
                 // Swap Icon
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -584,7 +690,7 @@ class MatchCard extends StatelessWidget {
                     color: Colors.grey[400],
                   ),
                 ),
-                
+
                 // Their Item
                 Expanded(
                   child: _buildItemPreview(
@@ -596,13 +702,11 @@ class MatchCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Match Reasons
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-            ),
+            decoration: BoxDecoration(color: Colors.grey[50]),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -615,40 +719,39 @@ class MatchCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                ...matchReasons.map((reason) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        size: 16,
-                        color: Colors.green[600],
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          reason,
-                          style: const TextStyle(fontSize: 13),
+                ...matchReasons.map(
+                  (reason) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          size: 16,
+                          color: Colors.green[600],
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            reason,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )),
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Icon(Icons.location_on, size: 16, color: Colors.blue[600]),
                     const SizedBox(width: 8),
-                    Text(
-                      distance,
-                      style: const TextStyle(fontSize: 13),
-                    ),
+                    Text(distance, style: const TextStyle(fontSize: 13)),
                   ],
                 ),
               ],
             ),
           ),
-          
+
           // Action Buttons
           Padding(
             padding: const EdgeInsets.all(16),
@@ -698,31 +801,18 @@ class MatchCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: AspectRatio(
             aspectRatio: 1,
-            child: Image.network(
-              image,
+            child: FallbackNetworkImage(
+              imageUrl: image,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.image, color: Colors.grey),
-              ),
             ),
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
         const SizedBox(height: 4),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
           maxLines: 2,
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
@@ -757,11 +847,13 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = gradientColors ?? [
-      Theme.of(context).primaryColor,
-      Theme.of(context).primaryColor.withOpacity(0.8),
-    ];
-    
+    final colors =
+        gradientColors ??
+        [
+          Theme.of(context).primaryColor,
+          Theme.of(context).primaryColor.withOpacity(0.8),
+        ];
+
     return Container(
       width: width,
       height: 52,
@@ -820,12 +912,14 @@ class PulsingFAB extends StatefulWidget {
   final IconData icon;
   final VoidCallback onPressed;
   final Color? backgroundColor;
+  final Object? heroTag;
 
   const PulsingFAB({
     Key? key,
     required this.icon,
     required this.onPressed,
     this.backgroundColor,
+    this.heroTag,
   }) : super(key: key);
 
   @override
@@ -844,10 +938,11 @@ class _PulsingFABState extends State<PulsingFAB>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat(reverse: true);
-    
-    _animation = Tween<double>(begin: 1.0, end: 1.1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+
+    _animation = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -865,7 +960,9 @@ class _PulsingFABState extends State<PulsingFAB>
           scale: _animation.value,
           child: FloatingActionButton(
             onPressed: widget.onPressed,
-            backgroundColor: widget.backgroundColor ?? Theme.of(context).primaryColor,
+            backgroundColor:
+                widget.backgroundColor ?? Theme.of(context).primaryColor,
+            heroTag: widget.heroTag,
             child: Icon(widget.icon, color: Colors.white),
           ),
         );
@@ -953,11 +1050,8 @@ class ConfettiOverlay extends StatefulWidget {
   final Widget child;
   final bool show;
 
-  const ConfettiOverlay({
-    Key? key,
-    required this.child,
-    this.show = false,
-  }) : super(key: key);
+  const ConfettiOverlay({Key? key, required this.child, this.show = false})
+    : super(key: key);
 
   @override
   State<ConfettiOverlay> createState() => _ConfettiOverlayState();
@@ -975,7 +1069,7 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
       duration: const Duration(seconds: 3),
       vsync: this,
     );
-    
+
     if (widget.show) {
       _generateConfetti();
       _controller.forward();
@@ -995,12 +1089,14 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
     _pieces.clear();
     final random = math.Random();
     for (int i = 0; i < 50; i++) {
-      _pieces.add(ConfettiPiece(
-        x: random.nextDouble(),
-        y: -0.1,
-        color: Colors.primaries[random.nextInt(Colors.primaries.length)],
-        rotation: random.nextDouble() * math.pi * 2,
-      ));
+      _pieces.add(
+        ConfettiPiece(
+          x: random.nextDouble(),
+          y: -0.1,
+          color: Colors.primaries[random.nextInt(Colors.primaries.length)],
+          rotation: random.nextDouble() * math.pi * 2,
+        ),
+      );
     }
   }
 
@@ -1059,14 +1155,11 @@ class ConfettiPainter extends CustomPainter {
       final paint = Paint()..color = piece.color;
       final x = piece.x * size.width;
       final y = piece.y * size.height + (progress * size.height * 1.2);
-      
+
       canvas.save();
       canvas.translate(x, y);
       canvas.rotate(piece.rotation + progress * math.pi * 4);
-      canvas.drawRect(
-        const Rect.fromLTWH(-5, -5, 10, 10),
-        paint,
-      );
+      canvas.drawRect(const Rect.fromLTWH(-5, -5, 10, 10), paint);
       canvas.restore();
     }
   }

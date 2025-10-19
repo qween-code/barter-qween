@@ -121,14 +121,15 @@ class BarterMatchModel {
       locationDescription: data['locationDescription'] as String?,
       conditionsCompatible: data['conditionsCompatible'] as bool,
       compatibilityNote: data['compatibilityNote'] as String?,
-      suggestedCashDifferential:
-          (data['suggestedCashDifferential'] as num?)?.toDouble(),
+      suggestedCashDifferential: (data['suggestedCashDifferential'] as num?)
+          ?.toDouble(),
       cashDirection: data['cashDirection'] as String?,
       calculatedAt: (data['calculatedAt'] as Timestamp).toDate(),
       isSeen: data['isSeen'] as bool? ?? false,
       isDismissed: data['isDismissed'] as bool? ?? false,
-      seenAt:
-          data['seenAt'] != null ? (data['seenAt'] as Timestamp).toDate() : null,
+      seenAt: data['seenAt'] != null
+          ? (data['seenAt'] as Timestamp).toDate()
+          : null,
       dismissedAt: data['dismissedAt'] != null
           ? (data['dismissedAt'] as Timestamp).toDate()
           : null,
@@ -164,8 +165,9 @@ class BarterMatchModel {
       'isSeen': isSeen,
       'isDismissed': isDismissed,
       'seenAt': seenAt != null ? Timestamp.fromDate(seenAt!) : null,
-      'dismissedAt':
-          dismissedAt != null ? Timestamp.fromDate(dismissedAt!) : null,
+      'dismissedAt': dismissedAt != null
+          ? Timestamp.fromDate(dismissedAt!)
+          : null,
       'viewCount': viewCount,
       'wasOffered': wasOffered,
       'offerId': offerId,

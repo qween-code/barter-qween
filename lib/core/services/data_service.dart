@@ -1,23 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 
 /// Gelişmiş veri çekme servisi
 @injectable
 class DataService {
   final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
 
-  DataService(this._firestore, this._auth);
+  DataService(this._firestore);
 
   /// Kullanıcı verilerini çek
   Future<Map<String, dynamic>?> getUserData(String userId) async {
     try {
-      final doc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .get();
-      
+      final doc = await _firestore.collection('users').doc(userId).get();
+
       if (doc.exists) {
         return doc.data();
       }
@@ -44,8 +39,9 @@ class DataService {
       }
 
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        query = query.where('title', isGreaterThanOrEqualTo: searchQuery)
-                    .where('title', isLessThan: searchQuery + '\uf8ff');
+        query = query
+            .where('title', isGreaterThanOrEqualTo: searchQuery)
+            .where('title', isLessThan: '$searchQuery\uf8ff');
       }
 
       // Sıralama ve limit
@@ -57,7 +53,7 @@ class DataService {
       }
 
       final snapshot = await query.get();
-      
+
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;
@@ -99,8 +95,10 @@ class DataService {
 
       if (snapshot.docs.isEmpty) return [];
 
-      final itemIds = snapshot.docs.map((doc) => doc.data()['itemId'] as String).toList();
-      
+      final itemIds = snapshot.docs
+          .map((doc) => doc.data()['itemId'] as String)
+          .toList();
+
       final itemsSnapshot = await _firestore
           .collection('items')
           .where(FieldPath.documentId, whereIn: itemIds)

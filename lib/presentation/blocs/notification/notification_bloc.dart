@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../domain/usecases/notifications/get_notifications_usecase.dart';
 import '../../../domain/repositories/notification_repository.dart';
 import 'notification_event.dart';
 import 'notification_state.dart';
@@ -15,10 +14,14 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<WatchUnreadCount>(_onWatchUnread);
     on<MarkNotificationAsRead>(_onMarkRead);
     on<MarkAllNotificationsAsRead>(_onMarkAllRead);
+    on<DeleteNotification>(_onDelete);
     on<DeleteAllNotifications>(_onDeleteAll);
   }
 
-  Future<void> _onLoad(LoadNotifications e, Emitter<NotificationState> emit) async {
+  Future<void> _onLoad(
+    LoadNotifications e,
+    Emitter<NotificationState> emit,
+  ) async {
     emit(const NotificationLoading());
     final res = await repository.getNotifications(e.userId);
     res.fold(
@@ -27,18 +30,25 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     );
   }
 
-  Future<void> _onWatch(WatchNotifications e, Emitter<NotificationState> emit) async {
+  Future<void> _onWatch(
+    WatchNotifications e,
+    Emitter<NotificationState> emit,
+  ) async {
     await emit.forEach(
       repository.watchNotifications(e.userId),
       onData: (data) => data.fold(
         (f) => NotificationError(f.message),
         (list) => NotificationsStreaming(list),
       ),
-      onError: (error, st) => NotificationError('Failed to stream notifications: $error'),
+      onError: (error, st) =>
+          NotificationError('Failed to stream notifications: $error'),
     );
   }
 
-  Future<void> _onLoadUnread(LoadUnreadCount e, Emitter<NotificationState> emit) async {
+  Future<void> _onLoadUnread(
+    LoadUnreadCount e,
+    Emitter<NotificationState> emit,
+  ) async {
     final res = await repository.getUnreadCount(e.userId);
     res.fold(
       (f) => emit(NotificationError(f.message)),
@@ -46,22 +56,36 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     );
   }
 
-  Future<void> _onWatchUnread(WatchUnreadCount e, Emitter<NotificationState> emit) async {
+  Future<void> _onWatchUnread(
+    WatchUnreadCount e,
+    Emitter<NotificationState> emit,
+  ) async {
     await emit.forEach(
       repository.watchUnreadCount(e.userId),
       onData: (data) => data.fold(
         (f) => NotificationError(f.message),
         (count) => UnreadCountStreaming(count),
       ),
-      onError: (error, st) => NotificationError('Failed to stream unread count: $error'),
+      onError: (error, st) =>
+          NotificationError('Failed to stream unread count: $error'),
     );
   }
 
-  Future<void> _onMarkRead(MarkNotificationAsRead e, Emitter<NotificationState> emit) async {
-    // Interface mismatch here (userId needed); leave as TODO and no-op for now
+  Future<void> _onMarkRead(
+    MarkNotificationAsRead e,
+    Emitter<NotificationState> emit,
+  ) async {
+    final res = await repository.markAsRead(e.userId, e.notificationId);
+    res.fold(
+      (f) => emit(NotificationError(f.message)),
+      (notification) => emit(NotificationMarkedAsRead(notification)),
+    );
   }
 
-  Future<void> _onMarkAllRead(MarkAllNotificationsAsRead e, Emitter<NotificationState> emit) async {
+  Future<void> _onMarkAllRead(
+    MarkAllNotificationsAsRead e,
+    Emitter<NotificationState> emit,
+  ) async {
     final res = await repository.markAllAsRead(e.userId);
     res.fold(
       (f) => emit(NotificationError(f.message)),
@@ -69,7 +93,21 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     );
   }
 
-  Future<void> _onDeleteAll(DeleteAllNotifications e, Emitter<NotificationState> emit) async {
+  Future<void> _onDelete(
+    DeleteNotification e,
+    Emitter<NotificationState> emit,
+  ) async {
+    final res = await repository.deleteNotification(e.userId, e.notificationId);
+    res.fold(
+      (f) => emit(NotificationError(f.message)),
+      (_) => emit(const NotificationDeleted()),
+    );
+  }
+
+  Future<void> _onDeleteAll(
+    DeleteAllNotifications e,
+    Emitter<NotificationState> emit,
+  ) async {
     final res = await repository.deleteAllNotifications(e.userId);
     res.fold(
       (f) => emit(NotificationError(f.message)),

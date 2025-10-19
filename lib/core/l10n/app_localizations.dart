@@ -26,14 +26,14 @@ class AppLocalizations {
       'dont_have_account': "Don't have an account?",
       'continue_with_google': 'Continue with Google',
       'continue_with_phone': 'Continue with Phone',
-      
+
       // Navigation
       'home': 'Home',
       'explore': 'Explore',
       'trades': 'Trades',
       'favorites': 'Favorites',
       'profile': 'Profile',
-      
+
       // Items
       'discover_items': 'Discover Items',
       'my_listings': 'My Listings',
@@ -48,23 +48,23 @@ class AppLocalizations {
       'save': 'Save',
       'delete': 'Delete',
       'share': 'Share',
-      
+
       // Categories
       'all': 'All',
       'electronics': 'Electronics',
       'fashion': 'Fashion',
-      'home': 'Home',
       'books': 'Books',
       'sports': 'Sports',
       'toys': 'Toys',
-      
+      'category_home': 'Home',
+
       // Conditions
       'new': 'New',
       'like_new': 'Like New',
       'good': 'Good',
       'fair': 'Fair',
       'poor': 'Poor',
-      
+
       // Trades
       'send_trade_offer': 'Send Trade Offer',
       'accept_trade': 'Accept Trade',
@@ -74,7 +74,7 @@ class AppLocalizations {
       'accepted': 'Accepted',
       'rejected': 'Rejected',
       'completed': 'Completed',
-      
+
       // Profile
       'edit_profile': 'Edit Profile',
       'settings': 'Settings',
@@ -82,7 +82,7 @@ class AppLocalizations {
       'total_items': 'Total Items',
       'completed_trades': 'Completed Trades',
       'member_since': 'Member Since',
-      
+
       // Search & Filter
       'search': 'Search',
       'search_items': 'Search items...',
@@ -93,7 +93,7 @@ class AppLocalizations {
       'price_range': 'Price Range',
       'max_distance': 'Maximum Distance',
       'show_only_active': 'Show only active items',
-      
+
       // Messages
       'no_items': 'No items yet',
       'no_trades': 'No trades yet',
@@ -107,7 +107,7 @@ class AppLocalizations {
       'trade_sent': 'Trade offer sent',
       'trade_accepted': 'Trade accepted',
       'trade_rejected': 'Trade rejected',
-      
+
       // Common
       'yes': 'Yes',
       'no': 'No',
@@ -133,14 +133,14 @@ class AppLocalizations {
       'dont_have_account': 'Hesabınız yok mu?',
       'continue_with_google': 'Google ile Devam Et',
       'continue_with_phone': 'Telefon ile Devam Et',
-      
+
       // Navigation
       'home': 'Ana Sayfa',
       'explore': 'Keşfet',
       'trades': 'Takaslar',
       'favorites': 'Favoriler',
       'profile': 'Profil',
-      
+
       // Items
       'discover_items': 'Ürünleri Keşfet',
       'my_listings': 'İlanlarım',
@@ -155,23 +155,23 @@ class AppLocalizations {
       'save': 'Kaydet',
       'delete': 'Sil',
       'share': 'Paylaş',
-      
+
       // Categories
       'all': 'Tümü',
       'electronics': 'Elektronik',
       'fashion': 'Moda',
-      'home': 'Ev',
       'books': 'Kitap',
       'sports': 'Spor',
       'toys': 'Oyuncak',
-      
+      'category_home': 'Ev',
+
       // Conditions
       'new': 'Sıfır',
       'like_new': 'Sıfır Gibi',
       'good': 'İyi',
       'fair': 'Orta',
       'poor': 'Kötü',
-      
+
       // Trades
       'send_trade_offer': 'Takas Teklifi Gönder',
       'accept_trade': 'Takası Kabul Et',
@@ -181,7 +181,7 @@ class AppLocalizations {
       'accepted': 'Kabul Edildi',
       'rejected': 'Reddedildi',
       'completed': 'Tamamlandı',
-      
+
       // Profile
       'edit_profile': 'Profili Düzenle',
       'settings': 'Ayarlar',
@@ -189,7 +189,7 @@ class AppLocalizations {
       'total_items': 'Toplam Ürün',
       'completed_trades': 'Tamamlanan Takaslar',
       'member_since': 'Üyelik Tarihi',
-      
+
       // Search & Filter
       'search': 'Ara',
       'search_items': 'Ürün ara...',
@@ -200,7 +200,7 @@ class AppLocalizations {
       'price_range': 'Fiyat Aralığı',
       'max_distance': 'Maksimum Mesafe',
       'show_only_active': 'Sadece aktif ürünleri göster',
-      
+
       // Messages
       'no_items': 'Henüz ürün yok',
       'no_trades': 'Henüz takas yok',
@@ -214,7 +214,7 @@ class AppLocalizations {
       'trade_sent': 'Takas teklifi gönderildi',
       'trade_accepted': 'Takas kabul edildi',
       'trade_rejected': 'Takas reddedildi',
-      
+
       // Common
       'yes': 'Evet',
       'no': 'Hayır',
@@ -230,9 +230,24 @@ class AppLocalizations {
   };
 
   String translate(String key) {
-    return _localizedValues[locale.languageCode]?[key] ?? key;
+    final values = _localizedValues[locale.languageCode];
+    if (values == null) return key;
+
+    if (values.containsKey(key)) {
+      return values[key]!;
+    }
+
+    final fallbackKeys = ['category_$key'];
+    for (final composedKey in fallbackKeys) {
+      final value = values[composedKey];
+      if (value != null) {
+        return value;
+      }
+    }
+
+    return key;
   }
-  
+
   // Convenience getters
   String get signIn => translate('sign_in');
   String get signUp => translate('sign_up');
@@ -245,13 +260,13 @@ class AppLocalizations {
   String get dontHaveAccount => translate('dont_have_account');
   String get continueWithGoogle => translate('continue_with_google');
   String get continueWithPhone => translate('continue_with_phone');
-  
+
   String get home => translate('home');
   String get explore => translate('explore');
   String get trades => translate('trades');
   String get favorites => translate('favorites');
   String get profile => translate('profile');
-  
+
   String get discoverItems => translate('discover_items');
   String get myListings => translate('my_listings');
   String get createItem => translate('create_item');
@@ -265,14 +280,14 @@ class AppLocalizations {
   String get save => translate('save');
   String get delete => translate('delete');
   String get share => translate('share');
-  
+
   String get search => translate('search');
   String get searchItems => translate('search_items');
   String get filter => translate('filter');
   String get filterOptions => translate('filter_options');
   String get applyFilters => translate('apply_filters');
   String get reset => translate('reset');
-  
+
   String get yes => translate('yes');
   String get no => translate('no');
   String get cancel => translate('cancel');

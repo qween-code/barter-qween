@@ -24,9 +24,6 @@ class MatchNotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNewMatch = notification.type == NotificationType.newMatch;
-    final isPriceDrop = notification.type == NotificationType.priceDropMatch;
-
     return Card(
       margin: const EdgeInsets.symmetric(
         horizontal: AppDimensions.spacing16,
@@ -59,16 +56,14 @@ class MatchNotificationCard extends StatelessWidget {
                     height: 40,
                     decoration: BoxDecoration(
                       color: _getBackgroundColor().withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusSmall,
+                      ),
                     ),
-                    child: Icon(
-                      _getIcon(),
-                      color: _getIconColor(),
-                      size: 24,
-                    ),
+                    child: Icon(_getIcon(), color: _getIconColor(), size: 24),
                   ),
                   const SizedBox(width: AppDimensions.spacing12),
-                  
+
                   // Content
                   Expanded(
                     child: Column(
@@ -119,13 +114,17 @@ class MatchNotificationCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Image preview
                   if (notification.imageUrl != null)
                     Container(
-                      margin: const EdgeInsets.only(left: AppDimensions.spacing8),
+                      margin: const EdgeInsets.only(
+                        left: AppDimensions.spacing8,
+                      ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusSmall,
+                        ),
                         child: CachedNetworkImage(
                           imageUrl: notification.imageUrl!,
                           width: 60,
@@ -139,14 +138,17 @@ class MatchNotificationCard extends StatelessWidget {
                           ),
                           errorWidget: (context, url, error) => Container(
                             color: AppColors.surfaceVariant,
-                            child: const Icon(Icons.image_not_supported, size: 24),
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              size: 24,
+                            ),
                           ),
                         ),
                       ),
                     ),
                 ],
               ),
-              
+
               // Quick actions
               if (onViewMatch != null || onDismiss != null)
                 Padding(
@@ -162,7 +164,9 @@ class MatchNotificationCard extends StatelessWidget {
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                                borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusSmall,
+                                ),
                               ),
                             ),
                           ),
@@ -178,7 +182,9 @@ class MatchNotificationCard extends StatelessWidget {
                             style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                                borderRadius: BorderRadius.circular(
+                                  AppDimensions.radiusSmall,
+                                ),
                               ),
                             ),
                           ),

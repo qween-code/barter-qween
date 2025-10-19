@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/subscription_entity.dart';
 
 /// Subscription Management Service
-/// 
+///
 /// Handles subscription lifecycle inspired by world-class services:
 /// - Netflix (auto-renewal, grace period)
 /// - Spotify Premium (seamless upgrades)
@@ -48,7 +48,7 @@ class SubscriptionManagementService {
   /// Get subscription plan for user (returns free if no active subscription)
   Future<SubscriptionPlan> getUserPlan(String userId) async {
     final subscription = await getUserSubscription(userId);
-    
+
     if (subscription == null || !subscription.isActive) {
       return SubscriptionPlan.free;
     }
@@ -117,7 +117,9 @@ class SubscriptionManagementService {
       if (!subscription.autoRenew) return false;
 
       final now = DateTime.now();
-      final newExpiryDate = subscription.expiryDate.add(const Duration(days: 30));
+      final newExpiryDate = subscription.expiryDate.add(
+        const Duration(days: 30),
+      );
 
       await _firestore.collection('subscriptions').doc(subscriptionId).update({
         'expiryDate': Timestamp.fromDate(newExpiryDate),
@@ -168,17 +170,17 @@ class SubscriptionManagementService {
   }) async {
     try {
       final currentSubscription = await getUserSubscription(userId);
-      
+
       // Cancel current subscription
       if (currentSubscription != null) {
         await _firestore
             .collection('subscriptions')
             .doc(currentSubscription.id)
             .update({
-          'status': 'cancelled',
-          'cancelledAt': FieldValue.serverTimestamp(),
-          'autoRenew': false,
-        });
+              'status': 'cancelled',
+              'cancelledAt': FieldValue.serverTimestamp(),
+              'autoRenew': false,
+            });
       }
 
       // Create new subscription with remaining days credited
@@ -224,7 +226,7 @@ class SubscriptionManagementService {
   Future<void> checkExpiredSubscriptions() async {
     try {
       final now = DateTime.now();
-      
+
       final expiredSnapshots = await _firestore
           .collection('subscriptions')
           .where('status', isEqualTo: 'active')
@@ -233,15 +235,16 @@ class SubscriptionManagementService {
 
       for (var doc in expiredSnapshots.docs) {
         final subscription = _subscriptionFromFirestore(doc);
-        
+
         if (subscription.autoRenew) {
           // Try to renew
           await renewSubscription(subscription.id);
         } else {
           // Mark as expired
-          await _firestore.collection('subscriptions').doc(subscription.id).update({
-            'status': 'expired',
-          });
+          await _firestore
+              .collection('subscriptions')
+              .doc(subscription.id)
+              .update({'status': 'expired'});
 
           // Downgrade user to free
           await _updateUserSubscription(
@@ -315,7 +318,7 @@ class SubscriptionManagementService {
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
     final data = doc.data()!;
-    
+
     return SubscriptionEntity(
       id: doc.id,
       userId: data['userId'] as String,

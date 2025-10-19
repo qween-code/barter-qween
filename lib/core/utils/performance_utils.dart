@@ -62,7 +62,7 @@ class PerformanceUtils {
 class Timer {
   final Duration duration;
   final VoidCallback callback;
-  
+
   Timer(this.duration, this.callback) {
     Future.delayed(duration, callback);
   }

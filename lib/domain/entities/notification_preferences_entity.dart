@@ -4,27 +4,27 @@ import 'package:equatable/equatable.dart';
 /// Kullanıcının bildirim tercihlerini yönetir
 class NotificationPreferencesEntity extends Equatable {
   final String userId;
-  
+
   // Match notifications (Sprint 3)
   final bool enableMatchNotifications;
   final bool enablePriceDropNotifications;
-  
+
   // Existing notification types
   final bool enableTradeNotifications;
   final bool enableMessageNotifications;
   final bool enableItemNotifications;
   final bool enableFollowNotifications;
   final bool enableSystemNotifications;
-  
+
   // Sound and vibration
   final bool enableSound;
   final bool enableVibration;
-  
+
   // Quiet hours
   final bool enableQuietHours;
   final int? quietHoursStart; // Hour (0-23)
-  final int? quietHoursEnd;   // Hour (0-23)
-  
+  final int? quietHoursEnd; // Hour (0-23)
+
   final DateTime lastUpdated;
 
   const NotificationPreferencesEntity({
@@ -70,13 +70,20 @@ class NotificationPreferencesEntity extends Equatable {
   }) {
     return NotificationPreferencesEntity(
       userId: userId ?? this.userId,
-      enableMatchNotifications: enableMatchNotifications ?? this.enableMatchNotifications,
-      enablePriceDropNotifications: enablePriceDropNotifications ?? this.enablePriceDropNotifications,
-      enableTradeNotifications: enableTradeNotifications ?? this.enableTradeNotifications,
-      enableMessageNotifications: enableMessageNotifications ?? this.enableMessageNotifications,
-      enableItemNotifications: enableItemNotifications ?? this.enableItemNotifications,
-      enableFollowNotifications: enableFollowNotifications ?? this.enableFollowNotifications,
-      enableSystemNotifications: enableSystemNotifications ?? this.enableSystemNotifications,
+      enableMatchNotifications:
+          enableMatchNotifications ?? this.enableMatchNotifications,
+      enablePriceDropNotifications:
+          enablePriceDropNotifications ?? this.enablePriceDropNotifications,
+      enableTradeNotifications:
+          enableTradeNotifications ?? this.enableTradeNotifications,
+      enableMessageNotifications:
+          enableMessageNotifications ?? this.enableMessageNotifications,
+      enableItemNotifications:
+          enableItemNotifications ?? this.enableItemNotifications,
+      enableFollowNotifications:
+          enableFollowNotifications ?? this.enableFollowNotifications,
+      enableSystemNotifications:
+          enableSystemNotifications ?? this.enableSystemNotifications,
       enableSound: enableSound ?? this.enableSound,
       enableVibration: enableVibration ?? this.enableVibration,
       enableQuietHours: enableQuietHours ?? this.enableQuietHours,
@@ -88,19 +95,19 @@ class NotificationPreferencesEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        userId,
-        enableMatchNotifications,
-        enablePriceDropNotifications,
-        enableTradeNotifications,
-        enableMessageNotifications,
-        enableItemNotifications,
-        enableFollowNotifications,
-        enableSystemNotifications,
-        enableSound,
-        enableVibration,
-        enableQuietHours,
-        quietHoursStart,
-        quietHoursEnd,
-        lastUpdated,
-      ];
+    userId,
+    enableMatchNotifications,
+    enablePriceDropNotifications,
+    enableTradeNotifications,
+    enableMessageNotifications,
+    enableItemNotifications,
+    enableFollowNotifications,
+    enableSystemNotifications,
+    enableSound,
+    enableVibration,
+    enableQuietHours,
+    quietHoursStart,
+    quietHoursEnd,
+    lastUpdated,
+  ];
 }

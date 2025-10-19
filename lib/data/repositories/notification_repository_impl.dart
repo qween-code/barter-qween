@@ -11,7 +11,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   NotificationRepositoryImpl(this._remote);
 
   @override
-  Future<Either<Failure, List<NotificationEntity>>> getNotifications(String userId) async {
+  Future<Either<Failure, List<NotificationEntity>>> getNotifications(
+    String userId,
+  ) async {
     try {
       final list = await _remote.getNotifications(userId);
       return Right(list);
@@ -31,9 +33,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, NotificationEntity>> markAsRead(String notificationId) async {
-    // userId must be known to address the subcollection; expose via method param in domain, but keep interface as-is
-    return Left(UnknownFailure('markAsRead requires userId in this implementation'));
+  Future<Either<Failure, NotificationEntity>> markAsRead(
+    String userId,
+    String notificationId,
+  ) async {
+    try {
+      final notification = await _remote.markAsRead(userId, notificationId);
+      return Right(notification);
+    } catch (e) {
+      return Left(UnknownFailure('Failed to mark notification as read: $e'));
+    }
   }
 
   @override
@@ -47,8 +56,16 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteNotification(String notificationId) async {
-    return Left(UnknownFailure('deleteNotification requires userId in this implementation'));
+  Future<Either<Failure, void>> deleteNotification(
+    String userId,
+    String notificationId,
+  ) async {
+    try {
+      await _remote.deleteNotification(userId, notificationId);
+      return const Right(null);
+    } catch (e) {
+      return Left(UnknownFailure('Failed to delete notification: $e'));
+    }
   }
 
   @override
@@ -62,7 +79,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Stream<Either<Failure, List<NotificationEntity>>> watchNotifications(String userId) {
+  Stream<Either<Failure, List<NotificationEntity>>> watchNotifications(
+    String userId,
+  ) {
     return _remote
         .watchNotifications(userId)
         .map((list) => Right<Failure, List<NotificationEntity>>(list));
@@ -70,13 +89,14 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Stream<Either<Failure, int>> watchUnreadCount(String userId) {
-    return _remote
-        .watchUnreadCount(userId)
-        .map((c) => Right<Failure, int>(c));
+    return _remote.watchUnreadCount(userId).map((c) => Right<Failure, int>(c));
   }
 
   @override
-  Future<Either<Failure, void>> saveFcmToken(String userId, String token) async {
+  Future<Either<Failure, void>> saveFcmToken(
+    String userId,
+    String token,
+  ) async {
     // Saving token handled in main for now; can be moved here later
     return const Right(null);
   }

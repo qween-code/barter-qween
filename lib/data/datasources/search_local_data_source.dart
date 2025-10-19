@@ -18,10 +18,10 @@ class SearchLocalDataSource {
     required int resultCount,
   }) async {
     final searches = await getRecentSearches();
-    
+
     // Remove existing search with same query
     searches.removeWhere((s) => s.query.toLowerCase() == query.toLowerCase());
-    
+
     // Add new search at the beginning
     searches.insert(
       0,
@@ -32,22 +32,24 @@ class SearchLocalDataSource {
         resultCount: resultCount,
       ),
     );
-    
+
     // Keep only max recent searches
     if (searches.length > _maxRecentSearches) {
       searches.removeRange(_maxRecentSearches, searches.length);
     }
-    
+
     // Save to preferences
     final jsonList = searches
-        .map((s) => {
-              'id': s.id,
-              'query': s.query,
-              'searchedAt': s.searchedAt.toIso8601String(),
-              'resultCount': s.resultCount,
-            })
+        .map(
+          (s) => {
+            'id': s.id,
+            'query': s.query,
+            'searchedAt': s.searchedAt.toIso8601String(),
+            'resultCount': s.resultCount,
+          },
+        )
         .toList();
-    
+
     await prefs.setString(_recentSearchesKey, jsonEncode(jsonList));
   }
 
@@ -55,16 +57,18 @@ class SearchLocalDataSource {
   Future<List<RecentSearchEntity>> getRecentSearches() async {
     final jsonString = prefs.getString(_recentSearchesKey);
     if (jsonString == null) return [];
-    
+
     try {
       final jsonList = jsonDecode(jsonString) as List;
       return jsonList
-          .map((json) => RecentSearchEntity(
-                id: json['id'],
-                query: json['query'],
-                searchedAt: DateTime.parse(json['searchedAt']),
-                resultCount: json['resultCount'],
-              ))
+          .map(
+            (json) => RecentSearchEntity(
+              id: json['id'],
+              query: json['query'],
+              searchedAt: DateTime.parse(json['searchedAt']),
+              resultCount: json['resultCount'],
+            ),
+          )
           .toList();
     } catch (e) {
       return [];
@@ -80,16 +84,18 @@ class SearchLocalDataSource {
   Future<void> deleteRecentSearch(String searchId) async {
     final searches = await getRecentSearches();
     searches.removeWhere((s) => s.id == searchId);
-    
+
     final jsonList = searches
-        .map((s) => {
-              'id': s.id,
-              'query': s.query,
-              'searchedAt': s.searchedAt.toIso8601String(),
-              'resultCount': s.resultCount,
-            })
+        .map(
+          (s) => {
+            'id': s.id,
+            'query': s.query,
+            'searchedAt': s.searchedAt.toIso8601String(),
+            'resultCount': s.resultCount,
+          },
+        )
         .toList();
-    
+
     await prefs.setString(_recentSearchesKey, jsonEncode(jsonList));
   }
 }

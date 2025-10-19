@@ -65,17 +65,19 @@ class TradeOfferModel extends TradeOfferEntity {
     return TradeOfferModel(
       id: doc.id,
       fromUserId: data['fromUserId'] as String,
-      fromUserName: data['fromUserName'] as String,
+      fromUserName: (data['fromUserName'] as String?) ?? '',
       fromUserPhotoUrl: data['fromUserPhotoUrl'] as String?,
       toUserId: data['toUserId'] as String,
-      toUserName: data['toUserName'] as String,
+      toUserName: (data['toUserName'] as String?) ?? '',
       toUserPhotoUrl: data['toUserPhotoUrl'] as String?,
       offeredItemId: data['offeredItemId'] as String,
       offeredItemTitle: data['offeredItemTitle'] as String,
       offeredItemImages: List<String>.from(data['offeredItemImages'] as List),
       requestedItemId: data['requestedItemId'] as String,
       requestedItemTitle: data['requestedItemTitle'] as String,
-      requestedItemImages: List<String>.from(data['requestedItemImages'] as List),
+      requestedItemImages: List<String>.from(
+        data['requestedItemImages'] as List,
+      ),
       status: _statusFromString(data['status'] as String),
       message: data['message'] as String?,
       responseMessage: data['responseMessage'] as String?,
@@ -105,7 +107,9 @@ class TradeOfferModel extends TradeOfferEntity {
       offeredItemImages: List<String>.from(json['offeredItemImages'] as List),
       requestedItemId: json['requestedItemId'] as String,
       requestedItemTitle: json['requestedItemTitle'] as String,
-      requestedItemImages: List<String>.from(json['requestedItemImages'] as List),
+      requestedItemImages: List<String>.from(
+        json['requestedItemImages'] as List,
+      ),
       status: _statusFromString(json['status'] as String),
       message: json['message'] as String?,
       responseMessage: json['responseMessage'] as String?,
@@ -139,8 +143,12 @@ class TradeOfferModel extends TradeOfferEntity {
       'message': message,
       'responseMessage': responseMessage,
       'createdAt': Timestamp.fromDate(createdAt),
-      'respondedAt': respondedAt != null ? Timestamp.fromDate(respondedAt!) : null,
-      'completedAt': completedAt != null ? Timestamp.fromDate(completedAt!) : null,
+      'respondedAt': respondedAt != null
+          ? Timestamp.fromDate(respondedAt!)
+          : null,
+      'completedAt': completedAt != null
+          ? Timestamp.fromDate(completedAt!)
+          : null,
       'rejectionReason': rejectionReason,
     };
   }

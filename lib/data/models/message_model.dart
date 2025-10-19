@@ -53,6 +53,7 @@ class MessageModel extends MessageEntity {
   }
 
   /// Convert to JSON for Firestore
+  @override
   Map<String, dynamic> toJson() {
     return {
       'conversationId': conversationId,
@@ -86,7 +87,7 @@ class MessageModel extends MessageEntity {
   /// Parse message type from string
   static MessageType _parseMessageType(dynamic typeValue) {
     if (typeValue == null) return MessageType.text;
-    
+
     final typeString = typeValue.toString().toLowerCase();
     switch (typeString) {
       case 'text':

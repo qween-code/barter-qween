@@ -31,7 +31,8 @@ class GetMatchingItemsUseCase {
       return await repository.getMatchingItems(condition, currentItemId);
     } catch (e) {
       return Left(
-          UnknownFailure('Failed to get matching items: ${e.toString()}'));
+        UnknownFailure('Failed to get matching items: ${e.toString()}'),
+      );
     }
   }
 }
@@ -57,7 +58,8 @@ class ValidateBarterMatchUseCase {
       // Validation: Aynı ilan olamaz
       if (offeredItemId == requestedItemId) {
         return Left(
-            ValidationFailure('Cannot validate match with the same item'));
+          ValidationFailure('Cannot validate match with the same item'),
+        );
       }
 
       return await repository.validateBarterMatch(
@@ -66,7 +68,8 @@ class ValidateBarterMatchUseCase {
       );
     } catch (e) {
       return Left(
-          UnknownFailure('Failed to validate barter match: ${e.toString()}'));
+        UnknownFailure('Failed to validate barter match: ${e.toString()}'),
+      );
     }
   }
 }
@@ -79,10 +82,7 @@ class CalculateCashDifferentialUseCase {
 
   CalculateCashDifferentialUseCase(this.repository);
 
-  Future<Either<Failure, double>> call(
-    String item1Id,
-    String item2Id,
-  ) async {
+  Future<Either<Failure, double>> call(String item1Id, String item2Id) async {
     try {
       // Validation: Item ID'ler boş olmamalı
       if (item1Id.isEmpty || item2Id.isEmpty) {
@@ -91,14 +91,18 @@ class CalculateCashDifferentialUseCase {
 
       // Validation: Aynı ilan olamaz
       if (item1Id == item2Id) {
-        return Left(ValidationFailure(
-            'Cannot calculate differential for the same item'));
+        return Left(
+          ValidationFailure('Cannot calculate differential for the same item'),
+        );
       }
 
       return await repository.calculateCashDifferential(item1Id, item2Id);
     } catch (e) {
-      return Left(UnknownFailure(
-          'Failed to calculate cash differential: ${e.toString()}'));
+      return Left(
+        UnknownFailure(
+          'Failed to calculate cash differential: ${e.toString()}',
+        ),
+      );
     }
   }
 }
@@ -128,8 +132,9 @@ class SuggestCashDifferentialUseCase {
 
       return await repository.suggestCashDifferential(item1Value, item2Value);
     } catch (e) {
-      return Left(UnknownFailure(
-          'Failed to suggest cash differential: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to suggest cash differential: ${e.toString()}'),
+      );
     }
   }
 }

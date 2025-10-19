@@ -4,10 +4,11 @@ import '../../../core/di/injection.dart';
 import '../../../core/services/recommendation_service.dart';
 import '../../../core/services/analytics_service.dart';
 import '../../../domain/entities/item_entity.dart';
-import '../../pages/items/item_detail_page.dart';
+import '../../../core/routes/app_router.dart';
+import '../../../core/widgets/item_card_frame.dart';
 
 /// Similar Items Carousel Widget
-/// 
+///
 /// Displays horizontally scrollable list of items similar to the current item
 /// Based on: category, price range, and location proximity
 class SimilarItemsCarousel extends StatefulWidget {
@@ -27,9 +28,10 @@ class SimilarItemsCarousel extends StatefulWidget {
 }
 
 class _SimilarItemsCarouselState extends State<SimilarItemsCarousel> {
-  final RecommendationService _recommendationService = getIt<RecommendationService>();
+  final RecommendationService _recommendationService =
+      getIt<RecommendationService>();
   final AnalyticsService _analytics = getIt<AnalyticsService>();
-  
+
   List<ItemEntity> _similarItems = [];
   bool _isLoading = true;
 
@@ -86,16 +88,16 @@ class _SimilarItemsCarouselState extends State<SimilarItemsCarousel> {
               const SizedBox(width: 8),
               Text(
                 'Similar Items',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               Text(
                 '${_similarItems.length} items',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -119,12 +121,7 @@ class _SimilarItemsCarouselState extends State<SimilarItemsCarousel> {
                   );
 
                   // Navigate to item detail
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemDetailPage(itemId: item.id),
-                    ),
-                  );
+                  AppRouter.toItemDetail(context, item.id);
                 },
               );
             },
@@ -139,118 +136,97 @@ class _SimilarItemCard extends StatelessWidget {
   final ItemEntity item;
   final VoidCallback onTap;
 
-  const _SimilarItemCard({
-    required this.item,
-    required this.onTap,
-  });
+  const _SimilarItemCard({required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 160,
-        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              child: item.images.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: item.images.first,
-                      height: 120,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey.shade200,
-                        child: const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image_not_supported, size: 40),
-                      ),
-                    )
-                  : Container(
-                      height: 120,
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.image, size: 40),
-                    ),
-            ),
-            
-            // Info
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    item.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  
-                  // Price
-                  Text(
-                    '₺${item.price?.toStringAsFixed(0) ?? '0'}',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  
-                  // Location
-                  if (item.city != null) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 2),
-                        Expanded(
-                          child: Text(
-                            item.city!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: SizedBox(
+          width: 160,
+          child: ItemCardFrame(
+            image: _buildMainImage(),
+            imageOverlays: const [],
+            contentPadding: const EdgeInsets.all(8),
+            backgroundColor: Colors.white,
+            borderRadius: 12,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
-            ),
-          ],
+            ],
+            contentBuilder: (ctx, layout) => _buildContent(ctx, layout),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMainImage() {
+    if (item.images.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: item.images.first,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          color: Colors.grey.shade200,
+          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+        errorWidget: (context, url, error) => Container(
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.image_not_supported, size: 40),
+        ),
+      );
+    }
+
+    return Container(
+      color: Colors.grey.shade200,
+      child: const Icon(Icons.image, size: 40),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, ItemCardContentLayout layout) {
+    final isCompact = layout.isCompact;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: isCompact ? 4 : 6),
+        Text(
+          '₺${item.price?.toStringAsFixed(0) ?? '0'}',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+        if (item.city != null && item.city!.isNotEmpty) ...[
+          SizedBox(height: isCompact ? 4 : 6),
+          Row(
+            children: [
+              Icon(Icons.location_on, size: 12, color: Colors.grey.shade600),
+              const SizedBox(width: 2),
+              Expanded(
+                child: Text(
+                  item.city!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }

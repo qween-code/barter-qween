@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart' show AuthAuthenticated;
@@ -20,7 +21,7 @@ import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
 import '../../widgets/user_avatar_widget.dart';
 import '../chat/chat_detail_page.dart';
-import '../items/item_detail_page.dart';
+import '../../../core/routes/app_router.dart';
 
 class UserProfilePage extends StatelessWidget {
   final String userId;
@@ -29,20 +30,20 @@ class UserProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    final viewerId = authState is AuthAuthenticated ? authState.user.uid : null;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => getIt<ProfileBloc>()
-            ..add(LoadProfile(userId))
+          create: (context) => ProfileBloc()
+            ..add(LoadProfile(userId, viewerId: viewerId))
             ..add(LoadUserStats(userId)),
         ),
         BlocProvider(
-          create: (context) => getIt<ItemBloc>()
-            ..add(LoadUserItems(userId)),
+          create: (context) => getIt<ItemBloc>()..add(LoadUserItems(userId)),
         ),
-        BlocProvider(
-          create: (context) => getIt<FavoriteBloc>(),
-        ),
+        BlocProvider.value(value: context.read<FavoriteBloc>()),
       ],
       child: const UserProfileView(),
     );
@@ -57,10 +58,7 @@ class UserProfileView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
-        slivers: [
-          _buildAppBar(context),
-          _buildProfileContent(context),
-        ],
+        slivers: [_buildAppBar(context), _buildProfileContent(context)],
       ),
     );
   }
@@ -73,9 +71,7 @@ class UserProfileView extends StatelessWidget {
       backgroundColor: AppColors.background,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-          ),
+          decoration: BoxDecoration(gradient: AppColors.primaryGradient),
           child: BlocBuilder<ProfileBloc, ProfileState>(
             builder: (context, state) {
               if (state is ProfileLoaded) {
@@ -144,37 +140,116 @@ class UserProfileView extends StatelessWidget {
   Widget _buildActionButtons(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        if (state is! ProfileLoaded) {
+        String? targetUserId;
+        int followersCount = 0;
+        int followingCount = 0;
+        bool isFollowing = false;
+
+        if (state is ProfileLoaded) {
+          targetUserId = state.user.uid;
+          followersCount = state.followersCount;
+          followingCount = state.followingCount;
+          isFollowing = state.isFollowing;
+        } else if (state is ProfileUpdated) {
+          targetUserId = state.user.uid;
+          followersCount = state.followersCount;
+          followingCount = state.followingCount;
+          isFollowing = state.isFollowing;
+        } else {
           return const SizedBox.shrink();
         }
 
-        final targetUserId = state.user.uid;
         final authState = context.read<AuthBloc>().state;
-        final currentUserId = authState is AuthAuthenticated ? authState.user.uid : '';
+        final currentUserId = authState is AuthAuthenticated
+            ? authState.user.uid
+            : '';
 
-        // Don't show message button for own profile
         if (targetUserId == currentUserId) {
           return const SizedBox.shrink();
         }
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => _startConversation(context, targetUserId, currentUserId),
-                  icon: const Icon(Icons.message),
-                  label: const Text('Send Message'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textOnPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        if (currentUserId.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Takip etmek için giriş yapmalısınız.',
+                              ),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                          return;
+                        }
+
+                        final profileBloc = context.read<ProfileBloc>();
+                        if (isFollowing) {
+                          profileBloc.add(
+                            UnfollowUserProfile(
+                              currentUserId: currentUserId,
+                              targetUserId: targetUserId!,
+                            ),
+                          );
+                        } else {
+                          profileBloc.add(
+                            FollowUserProfile(
+                              currentUserId: currentUserId,
+                              targetUserId: targetUserId!,
+                            ),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        isFollowing
+                            ? Icons.person_remove_alt_1
+                            : Icons.person_add_alt,
+                      ),
+                      label: Text(isFollowing ? 'Takibi bırak' : 'Takip et'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _startConversation(
+                        context,
+                        targetUserId!,
+                        currentUserId,
+                      ),
+                      icon: const Icon(Icons.message),
+                      label: const Text('Send Message'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.textOnPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '$followersCount takipçi · $followingCount takip',
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.textSecondary,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -183,12 +258,19 @@ class UserProfileView extends StatelessWidget {
     );
   }
 
-  void _startConversation(BuildContext context, String targetUserId, String currentUserId, {String? listingId}) {
-    print('🗨️ Starting conversation with user: $targetUserId, listing: $listingId');
-    
+  void _startConversation(
+    BuildContext context,
+    String targetUserId,
+    String currentUserId, {
+    String? listingId,
+  }) {
+    print(
+      '🗨️ Starting conversation with user: $targetUserId, listing: $listingId',
+    );
+
     // Create ChatBloc and get or create conversation
     final chatBloc = getIt<ChatBloc>();
-    
+
     // Show loading dialog first
     showDialog(
       context: context,
@@ -214,14 +296,19 @@ class UserProfileView extends StatelessWidget {
     );
 
     // Listen to ChatBloc stream
-    chatBloc.stream.listen((state) {
+    late final StreamSubscription<ChatState> subscription;
+    subscription = chatBloc.stream.listen((state) {
       print('💬 Chat state: ${state.runtimeType}');
-      
+
       if (state is ConversationRetrieved) {
-        // Close loading dialog
-        Navigator.of(context, rootNavigator: true).pop();
-        
-        // Navigate to chat with initial message if from listing
+        if (!context.mounted) {
+          subscription.cancel();
+          return;
+        }
+        if (Navigator.of(context, rootNavigator: true).canPop()) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -229,33 +316,41 @@ class UserProfileView extends StatelessWidget {
               value: chatBloc,
               child: ChatDetailPage(
                 conversation: state.conversation,
-                initialMessage: listingId != null 
+                initialMessage: listingId != null
                     ? 'Hi! I\'m interested in your item.'
                     : null,
               ),
             ),
           ),
         );
+        subscription.cancel();
       } else if (state is ChatError) {
-        // Close loading dialog
-        Navigator.of(context, rootNavigator: true).pop();
-        
-        // Show error
+        if (!context.mounted) {
+          subscription.cancel();
+          return;
+        }
+        if (Navigator.of(context, rootNavigator: true).canPop()) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to start conversation: ${state.message}'),
             backgroundColor: AppColors.error,
           ),
         );
+        subscription.cancel();
       }
     });
 
     // Trigger event after setting up listener
-    chatBloc.add(GetOrCreateConversation(
-      userId: currentUserId,
-      otherUserId: targetUserId,
-      listingId: listingId,
-    ));
+    chatBloc.add(
+      GetOrCreateConversation(
+        userId: currentUserId,
+        otherUserId: targetUserId,
+        listingId: listingId,
+      ),
+    );
   }
 
   Widget _buildStatsSection(BuildContext context) {
@@ -265,7 +360,15 @@ class UserProfileView extends StatelessWidget {
         int tradeCount = 0;
         double rating = 0.0;
 
-        if (state is UserStatsLoaded) {
+        if (state is ProfileLoaded) {
+          itemCount = state.itemCount;
+          tradeCount = state.tradeCount;
+          rating = state.averageRating;
+        } else if (state is ProfileUpdated) {
+          itemCount = state.itemCount;
+          tradeCount = state.tradeCount;
+          rating = state.averageRating;
+        } else if (state is UserStatsLoaded) {
           itemCount = state.itemCount;
           tradeCount = state.tradeCount;
           rating = state.averageRating;
@@ -287,21 +390,13 @@ class UserProfileView extends StatelessWidget {
                 label: 'Items',
                 value: '$itemCount',
               ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.borderDefault,
-              ),
+              Container(width: 1, height: 40, color: AppColors.borderDefault),
               _buildStatItem(
                 icon: Icons.swap_horiz,
                 label: 'Trades',
                 value: '$tradeCount',
               ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.borderDefault,
-              ),
+              Container(width: 1, height: 40, color: AppColors.borderDefault),
               _buildStatItem(
                 icon: Icons.star_outline,
                 label: 'Rating',
@@ -395,7 +490,7 @@ class UserProfileView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.75,
+                  childAspectRatio: 0.58,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
@@ -403,20 +498,7 @@ class UserProfileView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = state.items[index];
                   return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MultiBlocProvider(
-                            providers: [
-                              BlocProvider(create: (_) => getIt<ItemBloc>()),
-                              BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-                            ],
-                            child: ItemDetailPage(itemId: item.id),
-                          ),
-                        ),
-                      );
-                    },
+                    onTap: () => AppRouter.toItemDetail(context, item.id),
                     child: Container(
                       decoration: BoxDecoration(
                         color: AppColors.surface,
@@ -454,27 +536,36 @@ class UserProfileView extends StatelessWidget {
                                   right: 8,
                                   child: BlocBuilder<FavoriteBloc, FavoriteState>(
                                     builder: (context, favState) {
-                                      final favoriteBloc = context.read<FavoriteBloc>();
-                                      final isFavorited = favoriteBloc.isFavorited(item.id);
-                                      
+                                      final favoriteBloc = context
+                                          .read<FavoriteBloc>();
+                                      final isFavorited = favoriteBloc
+                                          .isFavorited(item.id);
+
                                       return Material(
                                         color: Colors.white.withOpacity(0.9),
                                         shape: const CircleBorder(),
                                         child: InkWell(
                                           onTap: () {
-                                            final authState = context.read<AuthBloc>().state;
-                                            if (authState is AuthAuthenticated) {
+                                            final authState = context
+                                                .read<AuthBloc>()
+                                                .state;
+                                            if (authState
+                                                is AuthAuthenticated) {
                                               favoriteBloc.add(
                                                 ToggleFavorite(item.id),
                                               );
-                                              ScaffoldMessenger.of(context).showSnackBar(
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
                                                 SnackBar(
                                                   content: Text(
                                                     isFavorited
                                                         ? 'Removed from favorites'
                                                         : 'Added to favorites',
                                                   ),
-                                                  duration: const Duration(seconds: 1),
+                                                  duration: const Duration(
+                                                    seconds: 1,
+                                                  ),
                                                 ),
                                               );
                                             }

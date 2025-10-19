@@ -15,10 +15,7 @@ class SearchItemsUseCase {
   /// Execute search with given parameters
   /// Returns a stream that emits search results in real-time
   Stream<Either<Failure, SearchResultEntity>> call(SearchItemsParams params) {
-    return repository.searchItems(
-      query: params.query,
-      filters: params.filters,
-    );
+    return repository.searchItems(query: params.query, filters: params.filters);
   }
 }
 
@@ -27,8 +24,5 @@ class SearchItemsParams {
   final String query;
   final SearchFilterEntity filters;
 
-  const SearchItemsParams({
-    required this.query,
-    required this.filters,
-  });
+  const SearchItemsParams({required this.query, required this.filters});
 }

@@ -17,10 +17,7 @@ import '../../domain/usecases/items/get_recent_items_usecase.dart';
 class GlobalBlocProviders extends StatelessWidget {
   final Widget child;
 
-  const GlobalBlocProviders({
-    super.key,
-    required this.child,
-  });
+  const GlobalBlocProviders({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -31,25 +28,22 @@ class GlobalBlocProviders extends StatelessWidget {
           create: (_) => AuthBloc()..add(AuthCheckRequested()),
           lazy: false,
         ),
-        
+
         // Favorite bloc - persist state across page visits
         BlocProvider<FavoriteBloc>(
           create: (_) => getIt<FavoriteBloc>(),
           lazy: false,
         ),
-        
+
         // Profile bloc - single instance for entire app
-        BlocProvider<ProfileBloc>(
-          create: (_) => ProfileBloc(),
-          lazy: false,
-        ),
-        
+        BlocProvider<ProfileBloc>(create: (_) => ProfileBloc(), lazy: false),
+
         // Search bloc - global search functionality
         BlocProvider<SearchBloc>(
           create: (_) => getIt<SearchBloc>(),
           lazy: false,
         ),
-        
+
         // Item bloc - global item management
         BlocProvider<ItemBloc>(
           create: (_) => ItemBloc(
@@ -60,12 +54,9 @@ class GlobalBlocProviders extends StatelessWidget {
           ),
           lazy: false,
         ),
-        
+
         // Home bloc - global home page management
-        BlocProvider<HomeBloc>(
-          create: (_) => getIt<HomeBloc>(),
-          lazy: false,
-        ),
+        BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>(), lazy: false),
       ],
       child: child,
     );

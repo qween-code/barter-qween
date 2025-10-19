@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,6 +8,7 @@ import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AuthBloc() : super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
@@ -25,8 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = _firebaseAuth.currentUser;
       if (user != null) {
-        final userEntity = _convertToUserEntity(user);
-        emit(AuthAuthenticated(userEntity));
+        emit(await _createAuthenticatedState(user));
       } else {
         emit(AuthUnauthenticated());
       }
@@ -46,8 +47,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
       if (credential.user != null) {
-        final userEntity = _convertToUserEntity(credential.user!);
-        emit(AuthAuthenticated(userEntity));
+        emit(await _createAuthenticatedState(credential.user!));
       } else {
         emit(AuthError('Login failed'));
       }
@@ -68,8 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       if (credential.user != null) {
         await credential.user!.updateDisplayName(event.displayName);
-        final userEntity = _convertToUserEntity(credential.user!);
-        emit(AuthAuthenticated(userEntity));
+        emit(await _createAuthenticatedState(credential.user!));
       } else {
         emit(AuthError('Registration failed'));
       }
@@ -99,23 +98,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         emit(AuthUnauthenticated());
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
-      
+      final UserCredential userCredential = await _firebaseAuth
+          .signInWithCredential(credential);
+
       if (userCredential.user != null) {
-        final userEntity = _convertToUserEntity(userCredential.user!);
-        emit(AuthAuthenticated(userEntity));
+        emit(await _createAuthenticatedState(userCredential.user!));
       } else {
         emit(AuthError('Google Sign In failed'));
       }
@@ -147,6 +147,63 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       isEmailVerified: firebaseUser.emailVerified,
       createdAt: firebaseUser.metadata.creationTime ?? DateTime.now(),
       trustScore: 5.0, // Default trust score
+    );
+  }
+
+  Future<AuthAuthenticated> _createAuthenticatedState(User firebaseUser) async {
+    final baseUser = _convertToUserEntity(firebaseUser);
+    Map<String, dynamic>? profileData;
+
+    try {
+      final doc = await _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get();
+      if (doc.exists) {
+        profileData = doc.data();
+      }
+    } catch (_) {
+      profileData = null;
+    }
+
+    final enrichedUser = profileData == null
+        ? baseUser
+        : baseUser.copyWith(
+            displayName: profileData['displayName'] ?? baseUser.displayName,
+            photoUrl: profileData['photoUrl'] ?? baseUser.photoUrl,
+            phoneNumber: profileData['phoneNumber'] ?? baseUser.phoneNumber,
+            bio: profileData['bio'] ?? baseUser.bio,
+            address: profileData['address'] ?? baseUser.address,
+            city: profileData['city'] ?? baseUser.city,
+            location: profileData['location'] ?? baseUser.location,
+            latitude:
+                (profileData['latitude'] as num?)?.toDouble() ??
+                baseUser.latitude,
+            longitude:
+                (profileData['longitude'] as num?)?.toDouble() ??
+                baseUser.longitude,
+            updatedAt: profileData['updatedAt'] is Timestamp
+                ? (profileData['updatedAt'] as Timestamp).toDate()
+                : baseUser.updatedAt,
+            trustScore:
+                (profileData['trustScore'] as num?)?.toDouble() ??
+                baseUser.trustScore,
+            stats:
+                (profileData['stats'] as Map?)?.cast<String, dynamic>() ??
+                baseUser.stats,
+            social:
+                (profileData['social'] as Map?)?.cast<String, dynamic>() ??
+                baseUser.social,
+          );
+
+    final stats = profileData?['stats'] as Map?;
+    final social = profileData?['social'] as Map?;
+
+    return AuthAuthenticated(
+      enrichedUser,
+      profileData: profileData,
+      stats: stats?.cast<String, dynamic>(),
+      social: social?.cast<String, dynamic>(),
     );
   }
 }

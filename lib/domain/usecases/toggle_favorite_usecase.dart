@@ -16,25 +16,22 @@ class ToggleFavoriteUseCase {
     if (user == null) {
       return Left(AuthFailure('User not authenticated'));
     }
-    
+
     // Check if already favorited
     final isFavResult = await repository.isFavorite(user.uid, itemId);
-    
-    return isFavResult.fold(
-      (failure) => Left(failure),
-      (isFavorite) async {
-        if (isFavorite) {
-          // Remove from favorites
-          return await repository.removeFavorite(user.uid, itemId);
-        } else {
-          // Add to favorites
-          final result = await repository.addFavorite(user.uid, itemId);
-          return result.fold(
-            (failure) => Left(failure),
-            (_) => const Right(null),
-          );
-        }
-      },
-    );
+
+    return isFavResult.fold((failure) => Left(failure), (isFavorite) async {
+      if (isFavorite) {
+        // Remove from favorites
+        return await repository.removeFavorite(user.uid, itemId);
+      } else {
+        // Add to favorites
+        final result = await repository.addFavorite(user.uid, itemId);
+        return result.fold(
+          (failure) => Left(failure),
+          (_) => const Right(null),
+        );
+      }
+    });
   }
 }

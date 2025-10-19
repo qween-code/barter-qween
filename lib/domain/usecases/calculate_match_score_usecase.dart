@@ -6,7 +6,7 @@ import '../entities/barter_match_entity.dart';
 import '../entities/item_entity.dart';
 
 /// Use case for calculating match score between two items
-/// 
+///
 /// Multi-factor scoring algorithm:
 /// - Category: 30% (same category = high score)
 /// - Price: 25% (similar price = high score)
@@ -33,7 +33,8 @@ class CalculateMatchScoreUsecase {
       final conditionScore = _calculateConditionScore(source, target);
 
       // Calculate weighted overall score
-      final matchScore = (categoryScore * 0.30) +
+      final matchScore =
+          (categoryScore * 0.30) +
           (priceScore * 0.25) +
           (locationScore * 0.20) +
           (trustScore * 0.15) +
@@ -67,7 +68,10 @@ class CalculateMatchScoreUsecase {
       final cashSuggestion = _calculateCashSuggestion(source, target);
 
       // Check conditions compatibility
-      final conditionsCompatible = _checkConditionsCompatibility(source, target);
+      final conditionsCompatible = _checkConditionsCompatibility(
+        source,
+        target,
+      );
 
       // Create match entity
       final match = BarterMatchEntity(
@@ -87,7 +91,11 @@ class CalculateMatchScoreUsecase {
         matchReasons: reasons,
         concerns: concerns.isNotEmpty ? concerns : null,
         distanceKm: distance,
-        locationDescription: _formatLocationDescription(source, target, distance),
+        locationDescription: _formatLocationDescription(
+          source,
+          target,
+          distance,
+        ),
         conditionsCompatible: conditionsCompatible,
         compatibilityNote: _generateCompatibilityNote(source, target),
         suggestedCashDifferential: cashSuggestion?['amount'] as double?,
@@ -106,9 +114,10 @@ class CalculateMatchScoreUsecase {
     if (source.category == target.category) {
       return 100.0; // Perfect match
     }
-    
+
     // Check if target accepts source's category
-    if (target.barterCondition?.acceptedCategories?.contains(source.category) ?? false) {
+    if (target.barterCondition?.acceptedCategories?.contains(source.category) ??
+        false) {
       return 80.0;
     }
 
@@ -161,12 +170,12 @@ class CalculateMatchScoreUsecase {
   double _calculateTrustScore(ItemEntity source, ItemEntity target) {
     // Based on seller ratings and verification
     // For now, use simple heuristics
-    
+
     double score = 50.0; // Base score
 
     // Boost for verified users
     // TODO: Add user verification status when available
-    
+
     // Could add: transaction history, rating, badges, etc.
     return score;
   }
@@ -178,7 +187,13 @@ class CalculateMatchScoreUsecase {
     }
 
     // Similar conditions
-    final conditions = ['yeni', 'sıfır ayarında', 'az kullanılmış', 'kullanılmış', 'hasarlı'];
+    final conditions = [
+      'yeni',
+      'sıfır ayarında',
+      'az kullanılmış',
+      'kullanılmış',
+      'hasarlı',
+    ];
     final sourceIndex = conditions.indexOf(source.condition ?? '');
     final targetIndex = conditions.indexOf(target.condition ?? '');
 
@@ -192,8 +207,10 @@ class CalculateMatchScoreUsecase {
 
   /// Calculate distance between items (km)
   double? _calculateDistance(ItemEntity source, ItemEntity target) {
-    if (source.latitude == null || source.longitude == null ||
-        target.latitude == null || target.longitude == null) {
+    if (source.latitude == null ||
+        source.longitude == null ||
+        target.latitude == null ||
+        target.longitude == null) {
       return null;
     }
 
@@ -204,7 +221,8 @@ class CalculateMatchScoreUsecase {
     final dLat = (target.latitude! - source.latitude!) * pi / 180;
     final dLon = (target.longitude! - source.longitude!) * pi / 180;
 
-    final a = sin(dLat / 2) * sin(dLat / 2) +
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) +
         cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
@@ -253,7 +271,10 @@ class CalculateMatchScoreUsecase {
   }
 
   /// Calculate cash differential suggestion
-  Map<String, dynamic>? _calculateCashSuggestion(ItemEntity source, ItemEntity target) {
+  Map<String, dynamic>? _calculateCashSuggestion(
+    ItemEntity source,
+    ItemEntity target,
+  ) {
     final sourcePrice = source.monetaryValue ?? source.price;
     final targetPrice = target.monetaryValue ?? target.price;
 
@@ -265,7 +286,8 @@ class CalculateMatchScoreUsecase {
     return {
       'amount': diff,
       'direction': sourcePrice > targetPrice
-          ? CashDirection.targetToSource // Target pays source
+          ? CashDirection
+                .targetToSource // Target pays source
           : CashDirection.sourceToTarget, // Source pays target
     };
   }
@@ -286,10 +308,12 @@ class CalculateMatchScoreUsecase {
     // Check value range
     final sourceValue = source.monetaryValue ?? source.price;
     if (sourceValue != null) {
-      if (targetCondition.minValue != null && sourceValue < targetCondition.minValue!) {
+      if (targetCondition.minValue != null &&
+          sourceValue < targetCondition.minValue!) {
         return false;
       }
-      if (targetCondition.maxValue != null && sourceValue > targetCondition.maxValue!) {
+      if (targetCondition.maxValue != null &&
+          sourceValue > targetCondition.maxValue!) {
         return false;
       }
     }
@@ -306,7 +330,11 @@ class CalculateMatchScoreUsecase {
   }
 
   /// Format location description
-  String? _formatLocationDescription(ItemEntity source, ItemEntity target, double? distance) {
+  String? _formatLocationDescription(
+    ItemEntity source,
+    ItemEntity target,
+    double? distance,
+  ) {
     if (source.city == target.city) {
       return 'Aynı şehir: ${target.city}';
     }
@@ -322,8 +350,5 @@ class CalculateScoreParams {
   final ItemEntity sourceItem;
   final ItemEntity targetItem;
 
-  CalculateScoreParams({
-    required this.sourceItem,
-    required this.targetItem,
-  });
+  CalculateScoreParams({required this.sourceItem, required this.targetItem});
 }

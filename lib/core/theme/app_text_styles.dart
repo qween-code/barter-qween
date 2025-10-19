@@ -55,26 +55,14 @@ class AppTextStyles {
     height: 1.1,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 20,
-        offset: Offset(-8, -8),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 20,
-        offset: Offset(8, 8),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 20, offset: Offset(-8, -8)),
+      Shadow(color: Color(0x00000000), blurRadius: 20, offset: Offset(8, 8)),
       Shadow(
         color: Color(0xFFFFFFFF),
         blurRadius: 40,
         offset: Offset(-12, -12),
       ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 40,
-        offset: Offset(12, 12),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 40, offset: Offset(12, 12)),
     ],
   );
 
@@ -92,16 +80,8 @@ class AppTextStyles {
         blurRadius: 25,
         offset: Offset(-10, -10),
       ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 25,
-        offset: Offset(10, 10),
-      ),
-      Shadow(
-        color: AppColors.primary,
-        blurRadius: 30,
-        offset: Offset(0, 0),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 25, offset: Offset(10, 10)),
+      Shadow(color: AppColors.primary, blurRadius: 30, offset: Offset(0, 0)),
     ],
   );
 
@@ -119,16 +99,8 @@ class AppTextStyles {
         blurRadius: 30,
         offset: Offset(-12, -12),
       ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 30,
-        offset: Offset(12, 12),
-      ),
-      Shadow(
-        color: AppColors.secondary,
-        blurRadius: 40,
-        offset: Offset(0, -5),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 30, offset: Offset(12, 12)),
+      Shadow(color: AppColors.secondary, blurRadius: 40, offset: Offset(0, -5)),
     ],
   );
 
@@ -176,26 +148,14 @@ class AppTextStyles {
     height: 1.2,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 15,
-        offset: Offset(-6, -6),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 15,
-        offset: Offset(6, 6),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 15, offset: Offset(-6, -6)),
+      Shadow(color: Color(0x00000000), blurRadius: 15, offset: Offset(6, 6)),
       Shadow(
         color: Color(0xFFFFFFFF),
         blurRadius: 30,
         offset: Offset(-10, -10),
       ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 30,
-        offset: Offset(10, 10),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 30, offset: Offset(10, 10)),
     ],
   );
 
@@ -208,21 +168,9 @@ class AppTextStyles {
     height: 1.3,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 20,
-        offset: Offset(-8, -8),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 20,
-        offset: Offset(8, 8),
-      ),
-      Shadow(
-        color: AppColors.primary,
-        blurRadius: 25,
-        offset: Offset(0, 0),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 20, offset: Offset(-8, -8)),
+      Shadow(color: Color(0x00000000), blurRadius: 20, offset: Offset(8, 8)),
+      Shadow(color: AppColors.primary, blurRadius: 25, offset: Offset(0, 0)),
     ],
   );
 
@@ -256,7 +204,7 @@ class AppTextStyles {
     height: 1.4,
     color: AppColors.textPrimary,
   );
-  
+
   /// Legacy h6 style for backward compatibility
   static const TextStyle h6 = titleSmall;
 
@@ -273,16 +221,8 @@ class AppTextStyles {
     height: 1.3,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 12,
-        offset: Offset(-4, -4),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 12,
-        offset: Offset(4, 4),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 12, offset: Offset(-4, -4)),
+      Shadow(color: Color(0x00000000), blurRadius: 12, offset: Offset(4, 4)),
     ],
   );
 
@@ -295,16 +235,8 @@ class AppTextStyles {
     height: 1.4,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 8,
-        offset: Offset(2, 2),
-      ),
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 8,
-        offset: Offset(-2, -2),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 8, offset: Offset(2, 2)),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 8, offset: Offset(-2, -2)),
     ],
   );
 
@@ -352,16 +284,8 @@ class AppTextStyles {
     height: 1.6,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 10,
-        offset: Offset(-3, -3),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 10,
-        offset: Offset(3, 3),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 10, offset: Offset(-3, -3)),
+      Shadow(color: Color(0x00000000), blurRadius: 10, offset: Offset(3, 3)),
     ],
   );
 
@@ -374,16 +298,8 @@ class AppTextStyles {
     height: 1.5,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 6,
-        offset: Offset(2, 2),
-      ),
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 6,
-        offset: Offset(-2, -2),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 6, offset: Offset(2, 2)),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 6, offset: Offset(-2, -2)),
     ],
   );
 
@@ -431,16 +347,8 @@ class AppTextStyles {
     height: 1.1,
     color: AppColors.textOnPrimary,
     shadows: [
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 8,
-        offset: Offset(2, 2),
-      ),
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 8,
-        offset: Offset(-2, -2),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 8, offset: Offset(2, 2)),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 8, offset: Offset(-2, -2)),
     ],
   );
 
@@ -453,21 +361,9 @@ class AppTextStyles {
     height: 1.2,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 15,
-        offset: Offset(-5, -5),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 15,
-        offset: Offset(5, 5),
-      ),
-      Shadow(
-        color: AppColors.primary,
-        blurRadius: 20,
-        offset: Offset(0, 0),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 15, offset: Offset(-5, -5)),
+      Shadow(color: Color(0x00000000), blurRadius: 15, offset: Offset(5, 5)),
+      Shadow(color: AppColors.primary, blurRadius: 20, offset: Offset(0, 0)),
     ],
   );
 
@@ -569,16 +465,8 @@ class AppTextStyles {
     height: 1.1,
     color: AppColors.textOnPrimary,
     shadows: [
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 6,
-        offset: Offset(2, 2),
-      ),
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 6,
-        offset: Offset(-2, -2),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 6, offset: Offset(2, 2)),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 6, offset: Offset(-2, -2)),
     ],
   );
 
@@ -591,26 +479,14 @@ class AppTextStyles {
     height: 1.1,
     color: AppColors.primary,
     shadows: [
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 20,
-        offset: Offset(-8, -8),
-      ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 20,
-        offset: Offset(8, 8),
-      ),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 20, offset: Offset(-8, -8)),
+      Shadow(color: Color(0x00000000), blurRadius: 20, offset: Offset(8, 8)),
       Shadow(
         color: Color(0xFFFFFFFF),
         blurRadius: 40,
         offset: Offset(-12, -12),
       ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 40,
-        offset: Offset(12, 12),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 40, offset: Offset(12, 12)),
     ],
   );
 
@@ -629,16 +505,8 @@ class AppTextStyles {
         blurRadius: 25,
         offset: Offset(-10, -10),
       ),
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 25,
-        offset: Offset(10, 10),
-      ),
-      Shadow(
-        color: AppColors.secondary,
-        blurRadius: 30,
-        offset: Offset(0, -5),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 25, offset: Offset(10, 10)),
+      Shadow(color: AppColors.secondary, blurRadius: 30, offset: Offset(0, -5)),
     ],
   );
 
@@ -651,16 +519,8 @@ class AppTextStyles {
     height: 1.4,
     color: AppColors.textPrimary,
     shadows: [
-      Shadow(
-        color: Color(0x00000000),
-        blurRadius: 4,
-        offset: Offset(1, 1),
-      ),
-      Shadow(
-        color: Color(0xFFFFFFFF),
-        blurRadius: 4,
-        offset: Offset(-1, -1),
-      ),
+      Shadow(color: Color(0x00000000), blurRadius: 4, offset: Offset(1, 1)),
+      Shadow(color: Color(0xFFFFFFFF), blurRadius: 4, offset: Offset(-1, -1)),
     ],
   );
 
@@ -744,89 +604,85 @@ class AppTextStyles {
   // ============================================
 
   /// Ultra primary color variant - Derinlikli primary renk
-  static TextStyle withUltraPrimaryColor(TextStyle style) =>
-      style.copyWith(
-        color: AppColors.primary,
-        shadows: [
-          Shadow(
-            color: const Color(0xFFFFFFFF).withOpacity(0.8),
-            blurRadius: 12,
-            offset: const Offset(-4, -4),
-          ),
-          Shadow(
-            color: const Color(0x00000000).withOpacity(0.6),
-            blurRadius: 12,
-            offset: const Offset(4, 4),
-          ),
-        ],
-      );
+  static TextStyle withUltraPrimaryColor(TextStyle style) => style.copyWith(
+    color: AppColors.primary,
+    shadows: [
+      Shadow(
+        color: const Color(0xFFFFFFFF).withOpacity(0.8),
+        blurRadius: 12,
+        offset: const Offset(-4, -4),
+      ),
+      Shadow(
+        color: const Color(0x00000000).withOpacity(0.6),
+        blurRadius: 12,
+        offset: const Offset(4, 4),
+      ),
+    ],
+  );
 
   /// Hover color variant - İnteraktif renk değişimi
-  static TextStyle withHoverColor(TextStyle style) =>
-      style.copyWith(
-        color: AppColors.primary,
-        shadows: [
-          Shadow(
-            color: const Color(0xFFFFFFFF).withOpacity(0.9),
-            blurRadius: 20,
-            offset: const Offset(-8, -8),
-          ),
-          Shadow(
-            color: const Color(0x00000000).withOpacity(0.8),
-            blurRadius: 20,
-            offset: const Offset(8, 8),
-          ),
-          Shadow(
-            color: AppColors.primary.withOpacity(0.4),
-            blurRadius: 25,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      );
+  static TextStyle withHoverColor(TextStyle style) => style.copyWith(
+    color: AppColors.primary,
+    shadows: [
+      Shadow(
+        color: const Color(0xFFFFFFFF).withOpacity(0.9),
+        blurRadius: 20,
+        offset: const Offset(-8, -8),
+      ),
+      Shadow(
+        color: const Color(0x00000000).withOpacity(0.8),
+        blurRadius: 20,
+        offset: const Offset(8, 8),
+      ),
+      Shadow(
+        color: AppColors.primary.withOpacity(0.4),
+        blurRadius: 25,
+        offset: const Offset(0, 0),
+      ),
+    ],
+  );
 
   /// Yüzen color variant - Navigasyon için
-  static TextStyle withFloatingColor(TextStyle style) =>
-      style.copyWith(
-        color: AppColors.primary,
-        shadows: [
-          Shadow(
-            color: const Color(0xFFFFFFFF).withOpacity(0.95),
-            blurRadius: 30,
-            offset: const Offset(-12, -12),
-          ),
-          Shadow(
-            color: const Color(0x00000000).withOpacity(0.9),
-            blurRadius: 30,
-            offset: const Offset(12, 12),
-          ),
-          Shadow(
-            color: AppColors.secondary.withOpacity(0.3),
-            blurRadius: 40,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      );
+  static TextStyle withFloatingColor(TextStyle style) => style.copyWith(
+    color: AppColors.primary,
+    shadows: [
+      Shadow(
+        color: const Color(0xFFFFFFFF).withOpacity(0.95),
+        blurRadius: 30,
+        offset: const Offset(-12, -12),
+      ),
+      Shadow(
+        color: const Color(0x00000000).withOpacity(0.9),
+        blurRadius: 30,
+        offset: const Offset(12, 12),
+      ),
+      Shadow(
+        color: AppColors.secondary.withOpacity(0.3),
+        blurRadius: 40,
+        offset: const Offset(0, -5),
+      ),
+    ],
+  );
 
   /// Sinematik color variant - Hero section için
-  static TextStyle withCinematicColor(TextStyle style) =>
-      style.copyWith(
-        color: AppColors.textPrimary,
-        shadows: [
-          Shadow(
-            color: const Color(0xFFFFFFFF).withOpacity(0.9),
-            blurRadius: 25,
-            offset: const Offset(-10, -10),
-          ),
-          Shadow(
-            color: const Color(0x00000000).withOpacity(0.8),
-            blurRadius: 25,
-            offset: const Offset(10, 10),
-          ),
-          Shadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 35,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      );
+  static TextStyle withCinematicColor(TextStyle style) => style.copyWith(
+    color: AppColors.textPrimary,
+    shadows: [
+      Shadow(
+        color: const Color(0xFFFFFFFF).withOpacity(0.9),
+        blurRadius: 25,
+        offset: const Offset(-10, -10),
+      ),
+      Shadow(
+        color: const Color(0x00000000).withOpacity(0.8),
+        blurRadius: 25,
+        offset: const Offset(10, 10),
+      ),
+      Shadow(
+        color: AppColors.primary.withOpacity(0.3),
+        blurRadius: 35,
+        offset: const Offset(0, 0),
+      ),
+    ],
+  );
 }

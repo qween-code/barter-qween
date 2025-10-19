@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/conversation_entity.dart';
 import '../../../domain/entities/message_entity.dart';
 import '../../blocs/chat/chat_bloc.dart';
@@ -47,7 +46,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _loadListingInfo();
     _loadMessages();
     _markAsRead();
-    
+
     // Set initial message if provided
     if (widget.initialMessage != null) {
       _messageController.text = widget.initialMessage!;
@@ -64,15 +63,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Future<void> _loadOtherUserInfo() async {
     if (_currentUserId == null) return;
-    
-    final otherUserId = widget.conversation.getOtherParticipantId(_currentUserId!);
-    
+
+    final otherUserId = widget.conversation.getOtherParticipantId(
+      _currentUserId!,
+    );
+
     try {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(otherUserId)
           .get();
-      
+
       if (userDoc.exists && mounted) {
         setState(() {
           _otherUserName = userDoc.data()?['displayName'] as String? ?? 'User';
@@ -91,19 +92,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Future<void> _loadListingInfo() async {
     if (widget.conversation.listingId == null) return;
-    
+
     try {
       final itemDoc = await FirebaseFirestore.instance
           .collection('items')
           .doc(widget.conversation.listingId)
           .get();
-      
+
       if (itemDoc.exists && mounted) {
         final data = itemDoc.data();
         setState(() {
           _listingTitle = data?['title'] as String?;
-          _listingImage = (data?['images'] as List?)?.isNotEmpty == true 
-              ? data!['images'][0] as String? 
+          _listingImage = (data?['images'] as List?)?.isNotEmpty == true
+              ? data!['images'][0] as String?
               : null;
         });
       }
@@ -118,10 +119,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   void _markAsRead() {
     if (_currentUserId != null) {
-      context.read<ChatBloc>().add(MarkMessagesAsRead(
-            conversationId: widget.conversation.id,
-            userId: _currentUserId!,
-          ));
+      context.read<ChatBloc>().add(
+        MarkMessagesAsRead(
+          conversationId: widget.conversation.id,
+          userId: _currentUserId!,
+        ),
+      );
     }
   }
 
@@ -131,16 +134,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       return;
     }
 
-    context.read<ChatBloc>().add(SendMessage(
-          conversationId: widget.conversation.id,
-          senderId: _currentUserId!,
-          senderName: _currentUserName!,
-          text: text,
-        ));
+    context.read<ChatBloc>().add(
+      SendMessage(
+        conversationId: widget.conversation.id,
+        senderId: _currentUserId!,
+        senderName: _currentUserName!,
+        text: text,
+      ),
+    );
 
     // Analytics
     try {
-      getIt<AnalyticsService>().logMessageSent(conversationId: widget.conversation.id);
+      getIt<AnalyticsService>().logMessageSent(
+        conversationId: widget.conversation.id,
+      );
     } catch (_) {}
 
     _messageController.clear();
@@ -188,7 +195,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         children: [
           // Listing info banner (if conversation is about an item)
           if (_listingTitle != null) _buildListingBanner(),
-          
+
           // Messages list
           Expanded(
             child: BlocConsumer<ChatBloc, ChatState>(
@@ -202,7 +209,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 if (state is MessagesLoaded) {
                   _lastLoadedMessages = state.messages;
                 }
-                
+
                 // Show loading only if we don't have cached messages
                 if (state is ChatLoading && _lastLoadedMessages == null) {
                   return const Center(child: CircularProgressIndicator());
@@ -213,8 +220,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline,
-                            size: 64, color: AppColors.textTertiary),
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: AppColors.textTertiary,
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Error loading messages',
@@ -238,17 +248,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 }
 
                 // Display messages (from current state or cache)
-                final messages = (state is MessagesLoaded) 
-                    ? state.messages 
+                final messages = (state is MessagesLoaded)
+                    ? state.messages
                     : _lastLoadedMessages;
-                    
+
                 if (messages == null || messages.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.chat_bubble_outline,
-                            size: 80, color: AppColors.textTertiary),
+                        Icon(
+                          Icons.chat_bubble_outline,
+                          size: 80,
+                          color: AppColors.textTertiary,
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'No messages yet',
@@ -298,8 +311,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment:
-            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
@@ -316,8 +330,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment:
-                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isMe
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -425,10 +440,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     vertical: 12,
                   ),
                 ),
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 15,
-                ),
+                style: TextStyle(color: AppColors.textPrimary, fontSize: 15),
                 maxLines: null,
                 textCapitalization: TextCapitalization.sentences,
                 onSubmitted: (_) => _sendMessage(),
@@ -442,10 +454,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: Icon(
-                Icons.send,
-                color: AppColors.textOnPrimary,
-              ),
+              icon: Icon(Icons.send, color: AppColors.textOnPrimary),
               onPressed: _sendMessage,
             ),
           ),
@@ -475,10 +484,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       decoration: BoxDecoration(
         color: AppColors.primaryLight.withOpacity(0.1),
         border: Border(
-          bottom: BorderSide(
-            color: AppColors.borderDefault,
-            width: 1,
-          ),
+          bottom: BorderSide(color: AppColors.borderDefault, width: 1),
         ),
       ),
       child: Row(
@@ -504,7 +510,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               ),
             ),
           if (_listingImage != null) const SizedBox(width: 12),
-          
+
           // Item info
           Expanded(
             child: Column(
@@ -531,7 +537,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               ],
             ),
           ),
-          
+
           // View button
           Icon(
             Icons.arrow_forward_ios,

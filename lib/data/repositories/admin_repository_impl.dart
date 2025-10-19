@@ -25,7 +25,8 @@ class AdminRepositoryImpl implements AdminRepository {
     ModerationPriority? priority,
   }) async {
     try {
-      Query query = _firestore.collection('moderationRequests')
+      Query query = _firestore
+          .collection('moderationRequests')
           .where('status', isEqualTo: 'pending')
           .orderBy('submittedAt', descending: true);
 
@@ -33,9 +34,7 @@ class AdminRepositoryImpl implements AdminRepository {
         query = query.where('priority', isEqualTo: priority.name);
       }
 
-      final snapshot = await query
-          .limit(limit)
-          .get();
+      final snapshot = await query.limit(limit).get();
 
       final requests = await Future.wait(
         snapshot.docs.map((doc) async {
@@ -69,7 +68,8 @@ class AdminRepositoryImpl implements AdminRepository {
               (p) => p.name == (data['priority'] ?? 'medium'),
               orElse: () => ModerationPriority.medium,
             ),
-            submittedAt: (data['submittedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+            submittedAt:
+                (data['submittedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
             suggestedTier: data['suggestedTier'] != null
                 ? ItemTier.values.firstWhere(
                     (t) => t.name == data['suggestedTier'],
@@ -81,11 +81,15 @@ class AdminRepositoryImpl implements AdminRepository {
       );
 
       // Filter out null values
-      final validRequests = requests.whereType<ModerationRequestEntity>().toList();
+      final validRequests = requests
+          .whereType<ModerationRequestEntity>()
+          .toList();
 
       return Right(validRequests);
     } catch (e) {
-      return Left(ServerFailure('Failed to get pending items: ${e.toString()}'));
+      return Left(
+        ServerFailure('Failed to get pending items: ${e.toString()}'),
+      );
     }
   }
 
@@ -132,7 +136,7 @@ class AdminRepositoryImpl implements AdminRepository {
       }
 
       await batch.commit();
-      return Right(unit);
+      return const Right<Failure, void>(null);
     } catch (e) {
       return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
@@ -177,7 +181,7 @@ class AdminRepositoryImpl implements AdminRepository {
       }
 
       await batch.commit();
-      return Right(unit);
+      return const Right<Failure, void>(null);
     } catch (e) {
       return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
@@ -199,14 +203,20 @@ class AdminRepositoryImpl implements AdminRepository {
       final approvedSnapshot = await _firestore
           .collection('moderationRequests')
           .where('status', isEqualTo: 'approved')
-          .where('reviewedAt', isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+          .where(
+            'reviewedAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart),
+          )
           .get();
 
       // Get today's rejected items
       final rejectedSnapshot = await _firestore
           .collection('moderationRequests')
           .where('status', isEqualTo: 'rejected')
-          .where('reviewedAt', isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+          .where(
+            'reviewedAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart),
+          )
           .get();
 
       // Get user reports count
@@ -219,7 +229,10 @@ class AdminRepositoryImpl implements AdminRepository {
       final completedRequests = await _firestore
           .collection('moderationRequests')
           .where('status', whereIn: ['approved', 'rejected'])
-          .where('reviewedAt', isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+          .where(
+            'reviewedAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart),
+          )
           .get();
 
       double averageReviewTime = 0.0;
@@ -287,23 +300,30 @@ class AdminRepositoryImpl implements AdminRepository {
       }
 
       final data = adminDoc.data()!;
-      final permissions = (data['permissions'] as List<dynamic>?)
-          ?.map((p) => AdminPermission.values.firstWhere(
-              (perm) => perm.name == p,
-              orElse: () => AdminPermission.viewReports))
-          .toList() ?? [AdminPermission.viewReports];
+      final permissions =
+          (data['permissions'] as List<dynamic>?)
+              ?.map(
+                (p) => AdminPermission.values.firstWhere(
+                  (perm) => perm.name == p,
+                  orElse: () => AdminPermission.viewReports,
+                ),
+              )
+              .toList() ??
+          [AdminPermission.viewReports];
 
-      return Right(AdminUserEntity(
-        id: adminDoc.id,
-        email: data['email'] as String,
-        name: data['name'] as String,
-        role: AdminRole.values.firstWhere(
-          (role) => role.name == (data['role'] ?? 'moderator'),
+      return Right(
+        AdminUserEntity(
+          id: adminDoc.id,
+          email: data['email'] as String,
+          name: data['name'] as String,
+          role: AdminRole.values.firstWhere(
+            (role) => role.name == (data['role'] ?? 'moderator'),
+          ),
+          permissions: permissions,
+          createdAt: (data['createdAt'] as Timestamp).toDate(),
+          isActive: data['isActive'] as bool? ?? true,
         ),
-        permissions: permissions,
-        createdAt: (data['createdAt'] as Timestamp).toDate(),
-        isActive: data['isActive'] as bool? ?? true,
-      ));
+      );
     } catch (e) {
       return Left(ServerFailure('Failed to process request: ${e.toString()}'));
     }
@@ -319,7 +339,11 @@ class AdminRepositoryImpl implements AdminRepository {
       category: data['category'] as String? ?? '',
       price: (data['price'] as num?)?.toDouble() ?? 0.0,
       condition: data['condition'] as String? ?? 'used',
-      images: (data['imageUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
+      images:
+          (data['imageUrls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
       ownerId: data['ownerId'] as String? ?? '',
       ownerName: data['ownerName'] as String? ?? 'Unknown',
       status: _parseItemStatus(data['status'] as String?),

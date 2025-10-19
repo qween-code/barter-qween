@@ -1,13 +1,13 @@
-/// World-Class Item Categories
-/// Based on Depop, Vinted, Poshmark, OfferUp, Mercari, Facebook Marketplace
-/// 
-/// 24 Main Categories | 200+ Subcategories | Size Systems | Measurement Types
+// World-Class Item Categories
+// Based on Depop, Vinted, Poshmark, OfferUp, Mercari, Facebook Marketplace
+//
+// 24 Main Categories | 200+ Subcategories | Size Systems | Measurement Types
 
 class ItemCategory {
   // ========================================
   // MAIN CATEGORIES (24 Categories)
   // ========================================
-  
+
   static const String womensFashion = "Women's Fashion";
   static const String mensFashion = "Men's Fashion";
   static const String shoes = 'Shoes';
@@ -34,36 +34,36 @@ class ItemCategory {
   static const String freeStuff = 'Free Stuff';
 
   static List<String> get all => [
-        womensFashion,
-        mensFashion,
-        shoes,
-        bagsAccessories,
-        jewelryWatches,
-        beauty,
-        electronics,
-        homeLiving,
-        kidsBaby,
-        sportsOutdoors,
-        entertainment,
-        hobbiesCrafts,
-        pets,
-        automotive,
-        vintageCollectibles,
-        handmade,
-        officeStationery,
-        healthWellness,
-        gardenOutdoor,
-        partyEvents,
-        foodBeverage,
-        travelLuggage,
-        services,
-        freeStuff,
-      ];
+    womensFashion,
+    mensFashion,
+    shoes,
+    bagsAccessories,
+    jewelryWatches,
+    beauty,
+    electronics,
+    homeLiving,
+    kidsBaby,
+    sportsOutdoors,
+    entertainment,
+    hobbiesCrafts,
+    pets,
+    automotive,
+    vintageCollectibles,
+    handmade,
+    officeStationery,
+    healthWellness,
+    gardenOutdoor,
+    partyEvents,
+    foodBeverage,
+    travelLuggage,
+    services,
+    freeStuff,
+  ];
 
   // ========================================
   // CATEGORY ICONS
   // ========================================
-  
+
   static const Map<String, String> icons = {
     womensFashion: '👗',
     mensFashion: '👔',
@@ -94,7 +94,7 @@ class ItemCategory {
   // ========================================
   // SUBCATEGORIES (200+ Subcategories)
   // ========================================
-  
+
   static const Map<String, List<String>> subcategories = {
     womensFashion: [
       // Tops
@@ -160,7 +160,7 @@ class ItemCategory {
       'Vintage',
       'Plus Size',
     ],
-    
+
     mensFashion: [
       // Tops
       'T-Shirts',
@@ -208,7 +208,7 @@ class ItemCategory {
       'Big & Tall',
       'Vintage',
     ],
-    
+
     shoes: [
       // Women's
       "Women's Sneakers",
@@ -245,7 +245,7 @@ class ItemCategory {
       'Vintage Sneakers',
       'Y2K Shoes',
     ],
-    
+
     bagsAccessories: [
       // Bags
       'Shoulder Bags',
@@ -274,7 +274,7 @@ class ItemCategory {
       'Phone Cases',
       'Tech Accessories',
     ],
-    
+
     jewelryWatches: [
       // Jewelry
       'Necklaces',
@@ -298,7 +298,7 @@ class ItemCategory {
       'Sports Watches',
       'Watch Bands & Straps',
     ],
-    
+
     beauty: [
       // Makeup
       'Face Makeup',
@@ -338,7 +338,7 @@ class ItemCategory {
       "Men's Skincare",
       "Men's Fragrance",
     ],
-    
+
     electronics: [
       // Phones & Tablets
       'Smartphones',
@@ -394,7 +394,7 @@ class ItemCategory {
       'Chargers & Cables',
       'Storage Devices',
     ],
-    
+
     homeLiving: [
       // Furniture
       'Sofas & Couches',
@@ -446,7 +446,7 @@ class ItemCategory {
       'Laundry Baskets',
       'Closet Organizers',
     ],
-    
+
     kidsBaby: [
       // Baby Clothing (0-24 months)
       'Baby Bodysuits',
@@ -503,7 +503,7 @@ class ItemCategory {
       'Maternity Clothing',
       'Nursing & Feeding',
     ],
-    
+
     sportsOutdoors: [
       // Athletic Wear
       'Athletic Tops',
@@ -546,7 +546,7 @@ class ItemCategory {
       'Gym Accessories',
       'Sports Memorabilia',
     ],
-    
+
     entertainment: [
       // Books
       'Fiction',
@@ -577,7 +577,7 @@ class ItemCategory {
       'Lifestyle Magazines',
       'Tech Magazines',
     ],
-    
+
     hobbiesCrafts: [
       // Art Supplies
       'Painting Supplies',
@@ -603,7 +603,7 @@ class ItemCategory {
       'Photography',
       'DIY & Tools',
     ],
-    
+
     pets: [
       // Dogs
       'Dog Food & Treats',
@@ -629,7 +629,7 @@ class ItemCategory {
       'Pet Carriers & Travel',
       'Pet Clothing & Costumes',
     ],
-    
+
     automotive: [
       // Car Parts
       'Tires & Wheels',
@@ -646,7 +646,7 @@ class ItemCategory {
       // Other
       'Bicycle Parts & Accessories',
     ],
-    
+
     vintageCollectibles: [
       'Vintage Clothing',
       'Vintage Accessories',
@@ -660,7 +660,7 @@ class ItemCategory {
       'Art & Prints',
       'Vintage Kitchenware',
     ],
-    
+
     handmade: [
       'Handmade Clothing',
       'Handmade Jewelry',
@@ -671,7 +671,7 @@ class ItemCategory {
       'Upcycled Items',
       'Custom Orders',
     ],
-    
+
     officeStationery: [
       'Desk Accessories',
       'Office Furniture',
@@ -684,7 +684,7 @@ class ItemCategory {
       'Printers & Scanners',
       'Office Electronics',
     ],
-    
+
     healthWellness: [
       'Vitamins & Supplements',
       'Fitness Equipment',
@@ -695,7 +695,7 @@ class ItemCategory {
       'First Aid',
       'Personal Care',
     ],
-    
+
     gardenOutdoor: [
       'Garden Tools',
       'Plants & Seeds',
@@ -707,7 +707,7 @@ class ItemCategory {
       'Outdoor Lighting',
       'Greenhouses & Grow Tents',
     ],
-    
+
     partyEvents: [
       'Party Decorations',
       'Costumes',
@@ -718,7 +718,7 @@ class ItemCategory {
       'Wedding Supplies',
       'Birthday Decorations',
     ],
-    
+
     foodBeverage: [
       'Coffee & Tea',
       'Snacks & Treats',
@@ -727,7 +727,7 @@ class ItemCategory {
       'Protein & Fitness Foods',
       'Baby Food',
     ],
-    
+
     travelLuggage: [
       'Suitcases',
       'Backpacks & Daypacks',
@@ -737,7 +737,7 @@ class ItemCategory {
       'Passport Holders',
       'Toiletry Bags',
     ],
-    
+
     services: [
       'Cleaning Services',
       'Tutoring',
@@ -748,7 +748,7 @@ class ItemCategory {
       'Photography',
       'Graphic Design',
     ],
-    
+
     freeStuff: [
       'Free Clothing',
       'Free Furniture',
@@ -763,15 +763,16 @@ class ItemCategory {
   static List<String> getSubcategories(String category) {
     return subcategories[category] ?? [];
   }
-  
+
   static String? getIcon(String category) {
     return icons[category];
   }
-  
+
   static bool hasSubcategories(String category) {
-    return subcategories.containsKey(category) && subcategories[category]!.isNotEmpty;
+    return subcategories.containsKey(category) &&
+        subcategories[category]!.isNotEmpty;
   }
-  
+
   static int getSubcategoryCount(String category) {
     return subcategories[category]?.length ?? 0;
   }
@@ -788,7 +789,7 @@ class SizeSystem {
   static const String it = 'IT';
   static const String fr = 'FR';
   static const String oneSize = 'One Size';
-  
+
   static List<String> get all => [us, eu, uk, it, fr, oneSize];
 }
 
@@ -797,9 +798,56 @@ class SizeSystem {
 // ========================================
 
 class WomensSizes {
-  static const List<String> us = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '0', '2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22', '24'];
-  static const List<String> eu = ['30', '32', '34', '36', '38', '40', '42', '44', '46', '48', '50', '52'];
-  static const List<String> uk = ['2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22', '24'];
+  static const List<String> us = [
+    'XXS',
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    'XXL',
+    '0',
+    '2',
+    '4',
+    '6',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+    '18',
+    '20',
+    '22',
+    '24',
+  ];
+  static const List<String> eu = [
+    '30',
+    '32',
+    '34',
+    '36',
+    '38',
+    '40',
+    '42',
+    '44',
+    '46',
+    '48',
+    '50',
+    '52',
+  ];
+  static const List<String> uk = [
+    '2',
+    '4',
+    '6',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+    '18',
+    '20',
+    '22',
+    '24',
+  ];
   static const List<String> plus = ['1X', '2X', '3X', '4X', '5X'];
   static const List<String> oneSize = ['One Size', 'Fits Most', 'OS'];
 }
@@ -809,11 +857,59 @@ class WomensSizes {
 // ========================================
 
 class MensSizes {
-  static const List<String> us = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-  static const List<String> eu = ['44', '46', '48', '50', '52', '54', '56', '58', '60'];
-  static const List<String> uk = ['32', '34', '36', '38', '40', '42', '44', '46'];
-  static const List<String> neck = ['14', '14.5', '15', '15.5', '16', '16.5', '17', '17.5', '18'];
-  static const List<String> waist = ['28', '30', '32', '34', '36', '38', '40', '42', '44'];
+  static const List<String> us = [
+    'XXS',
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    'XXL',
+    'XXXL',
+  ];
+  static const List<String> eu = [
+    '44',
+    '46',
+    '48',
+    '50',
+    '52',
+    '54',
+    '56',
+    '58',
+    '60',
+  ];
+  static const List<String> uk = [
+    '32',
+    '34',
+    '36',
+    '38',
+    '40',
+    '42',
+    '44',
+    '46',
+  ];
+  static const List<String> neck = [
+    '14',
+    '14.5',
+    '15',
+    '15.5',
+    '16',
+    '16.5',
+    '17',
+    '17.5',
+    '18',
+  ];
+  static const List<String> waist = [
+    '28',
+    '30',
+    '32',
+    '34',
+    '36',
+    '38',
+    '40',
+    '42',
+    '44',
+  ];
   static const List<String> inseam = ['28', '30', '32', '34', '36'];
 }
 
@@ -823,19 +919,124 @@ class MensSizes {
 
 class ShoeSizes {
   // Women's Shoes
-  static const List<String> womenUS = ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'];
-  static const List<String> womenEU = ['35', '35.5', '36', '36.5', '37', '37.5', '38', '38.5', '39', '39.5', '40', '40.5', '41', '41.5', '42'];
-  static const List<String> womenUK = ['3', '3.5', '4', '4.5', '5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9'];
-  
+  static const List<String> womenUS = [
+    '5',
+    '5.5',
+    '6',
+    '6.5',
+    '7',
+    '7.5',
+    '8',
+    '8.5',
+    '9',
+    '9.5',
+    '10',
+    '10.5',
+    '11',
+    '11.5',
+    '12',
+  ];
+  static const List<String> womenEU = [
+    '35',
+    '35.5',
+    '36',
+    '36.5',
+    '37',
+    '37.5',
+    '38',
+    '38.5',
+    '39',
+    '39.5',
+    '40',
+    '40.5',
+    '41',
+    '41.5',
+    '42',
+  ];
+  static const List<String> womenUK = [
+    '3',
+    '3.5',
+    '4',
+    '4.5',
+    '5',
+    '5.5',
+    '6',
+    '6.5',
+    '7',
+    '7.5',
+    '8',
+    '8.5',
+    '9',
+  ];
+
   // Men's Shoes
-  static const List<String> menUS = ['6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '12.5', '13', '14', '15'];
-  static const List<String> menEU = ['38', '39', '40', '40.5', '41', '42', '42.5', '43', '44', '44.5', '45', '46', '47', '48'];
-  static const List<String> menUK = ['5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '12', '13'];
-  
+  static const List<String> menUS = [
+    '6',
+    '6.5',
+    '7',
+    '7.5',
+    '8',
+    '8.5',
+    '9',
+    '9.5',
+    '10',
+    '10.5',
+    '11',
+    '11.5',
+    '12',
+    '12.5',
+    '13',
+    '14',
+    '15',
+  ];
+  static const List<String> menEU = [
+    '38',
+    '39',
+    '40',
+    '40.5',
+    '41',
+    '42',
+    '42.5',
+    '43',
+    '44',
+    '44.5',
+    '45',
+    '46',
+    '47',
+    '48',
+  ];
+  static const List<String> menUK = [
+    '5',
+    '6',
+    '6.5',
+    '7',
+    '7.5',
+    '8',
+    '8.5',
+    '9',
+    '9.5',
+    '10',
+    '10.5',
+    '11',
+    '12',
+    '13',
+  ];
+
   // Kids Shoes
   static const List<String> baby = ['0', '1', '2', '3', '4', '5'];
   static const List<String> toddler = ['6', '7', '8', '9', '10'];
-  static const List<String> youth = ['11', '12', '13', '1', '2', '3', '4', '5', '6', '7'];
+  static const List<String> youth = [
+    '11',
+    '12',
+    '13',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+  ];
 }
 
 // ========================================
@@ -843,9 +1044,27 @@ class ShoeSizes {
 // ========================================
 
 class KidsSizes {
-  static const List<String> baby = ['Newborn', '0-3M', '3-6M', '6-9M', '9-12M', '12-18M', '18-24M'];
+  static const List<String> baby = [
+    'Newborn',
+    '0-3M',
+    '3-6M',
+    '6-9M',
+    '9-12M',
+    '12-18M',
+    '18-24M',
+  ];
   static const List<String> toddler = ['2T', '3T', '4T'];
-  static const List<String> kids = ['4', '5', '6', '7', '8', '10', '12', '14', '16'];
+  static const List<String> kids = [
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+  ];
 }
 
 // ========================================
@@ -853,11 +1072,24 @@ class KidsSizes {
 // ========================================
 
 class MeasurementTypes {
-  static const List<String> clothing = ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves', 'inseam'];
+  static const List<String> clothing = [
+    'chest',
+    'waist',
+    'hips',
+    'length',
+    'shoulders',
+    'sleeves',
+    'inseam',
+  ];
   static const List<String> shoes = ['insoleLength', 'width', 'heelHeight'];
   static const List<String> bags = ['height', 'width', 'depth', 'strapDrop'];
-  static const List<String> furniture = ['height', 'width', 'depth', 'diameter'];
-  
+  static const List<String> furniture = [
+    'height',
+    'width',
+    'depth',
+    'diameter',
+  ];
+
   static List<String> getForCategory(String category) {
     if (category.contains('Fashion') || category.contains('fashion')) {
       return clothing;
@@ -883,7 +1115,7 @@ class GenderOptions {
   static const String boys = 'Boys';
   static const String girls = 'Girls';
   static const String kids = 'Kids';
-  
+
   static List<String> get all => [men, women, unisex, boys, girls, kids];
 }
 
@@ -900,8 +1132,17 @@ class FitTypes {
   static const String petite = 'Petite';
   static const String curvy = 'Curvy';
   static const String tall = 'Tall';
-  
-  static List<String> get all => [slim, regular, oversized, relaxed, athletic, petite, curvy, tall];
+
+  static List<String> get all => [
+    slim,
+    regular,
+    oversized,
+    relaxed,
+    athletic,
+    petite,
+    curvy,
+    tall,
+  ];
 }
 
 // ========================================
@@ -912,7 +1153,7 @@ class SeasonOptions {
   static const String springSummer = 'Spring/Summer';
   static const String autumnWinter = 'Autumn/Winter';
   static const String allSeason = 'All Season';
-  
+
   static List<String> get all => [springSummer, autumnWinter, allSeason];
 }
 
@@ -929,8 +1170,17 @@ class OccasionOptions {
   static const String beach = 'Beach';
   static const String wedding = 'Wedding';
   static const String everyday = 'Everyday';
-  
-  static List<String> get all => [casual, formal, party, sport, work, beach, wedding, everyday];
+
+  static List<String> get all => [
+    casual,
+    formal,
+    party,
+    sport,
+    work,
+    beach,
+    wedding,
+    everyday,
+  ];
 }
 
 // ========================================
@@ -948,6 +1198,17 @@ class StyleOptions {
   static const String classic = 'Classic';
   static const String modern = 'Modern';
   static const String retro = 'Retro';
-  
-  static List<String> get all => [vintage, y2k, minimalist, streetwear, bohemian, grunge, preppy, classic, modern, retro];
+
+  static List<String> get all => [
+    vintage,
+    y2k,
+    minimalist,
+    streetwear,
+    bohemian,
+    grunge,
+    preppy,
+    classic,
+    modern,
+    retro,
+  ];
 }

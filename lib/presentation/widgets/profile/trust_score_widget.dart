@@ -46,10 +46,7 @@ class TrustScoreWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _getColor().withOpacity(0.1),
-                border: Border.all(
-                  color: _getColor(),
-                  width: 3,
-                ),
+                border: Border.all(color: _getColor(), width: 3),
               ),
               child: Center(
                 child: Text(
@@ -62,9 +59,9 @@ class TrustScoreWidget extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(width: 16),
-            
+
             // Score info
             Expanded(
               child: Column(
@@ -72,10 +69,7 @@ class TrustScoreWidget extends StatelessWidget {
                 children: [
                   Text(
                     'Trust Score',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -88,20 +82,14 @@ class TrustScoreWidget extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     _getDescription(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ),
             ),
-            
+
             if (onTap != null)
-              Icon(
-                Icons.info_outline,
-                color: Colors.grey.shade400,
-              ),
+              Icon(Icons.info_outline, color: Colors.grey.shade400),
           ],
         ),
       ),
@@ -128,24 +116,17 @@ class TrustScoreWidget extends StatelessWidget {
           // Header
           Row(
             children: [
-              Icon(
-                Icons.shield,
-                color: _getColor(),
-                size: 28,
-              ),
+              Icon(Icons.shield, color: _getColor(), size: 28),
               const SizedBox(width: 12),
               const Text(
                 'Trust Score Explained',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Score circle (large)
           Container(
             width: 120,
@@ -153,10 +134,7 @@ class TrustScoreWidget extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: _getColor().withOpacity(0.1),
-              border: Border.all(
-                color: _getColor(),
-                width: 4,
-              ),
+              border: Border.all(color: _getColor(), width: 4),
             ),
             child: Center(
               child: Column(
@@ -182,33 +160,27 @@ class TrustScoreWidget extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Description
           Text(
             _getDescription(),
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade700,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
           ),
-          
+
           const SizedBox(height: 24),
           const Divider(height: 1),
           const SizedBox(height: 16),
-          
+
           // Factors
           const Text(
             'Score Based On:',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
-          
+
           _buildFactorItem(Icons.verified, 'Identity Verification', '40%'),
           _buildFactorItem(Icons.shopping_bag, 'Sales History', '20%'),
           _buildFactorItem(Icons.star, 'Ratings & Reviews', '20%'),
@@ -226,12 +198,7 @@ class TrustScoreWidget extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: Colors.grey.shade600),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 13))),
           Text(
             weight,
             style: TextStyle(

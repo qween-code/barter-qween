@@ -66,20 +66,20 @@ class BarterConditionEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        type,
-        cashDifferential,
-        paymentDirection,
-        acceptedCategories,
-        specificItemRequest,
-        minValue,
-        maxValue,
-        description,
-        createdAt,
-        categories,
-        condition,
-        maxCashDifferential,
-      ];
+    id,
+    type,
+    cashDifferential,
+    paymentDirection,
+    acceptedCategories,
+    specificItemRequest,
+    minValue,
+    maxValue,
+    description,
+    createdAt,
+    categories,
+    condition,
+    maxCashDifferential,
+  ];
 
   @override
   String toString() {

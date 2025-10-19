@@ -115,8 +115,7 @@ class TradeOfferEntity extends Equatable {
       cashDifferential: cashDifferential ?? this.cashDifferential,
       paymentDirection: paymentDirection ?? this.paymentDirection,
       conditionNotes: conditionNotes ?? this.conditionNotes,
-      meetsBarterCondition:
-          meetsBarterCondition ?? this.meetsBarterCondition,
+      meetsBarterCondition: meetsBarterCondition ?? this.meetsBarterCondition,
       offeredItemValue: offeredItemValue ?? this.offeredItemValue,
       requestedItemValue: requestedItemValue ?? this.requestedItemValue,
     );
@@ -145,43 +144,43 @@ class TradeOfferEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        fromUserId,
-        fromUserName,
-        fromUserPhotoUrl,
-        toUserId,
-        toUserName,
-        toUserPhotoUrl,
-        offeredItemId,
-        offeredItemTitle,
-        offeredItemImages,
-        requestedItemId,
-        requestedItemTitle,
-        requestedItemImages,
-        status,
-        message,
-        responseMessage,
-        createdAt,
-        respondedAt,
-        completedAt,
-        rejectionReason,
-        cashDifferential,
-        paymentDirection,
-        conditionNotes,
-        meetsBarterCondition,
-        offeredItemValue,
-        requestedItemValue,
-      ];
+    id,
+    fromUserId,
+    fromUserName,
+    fromUserPhotoUrl,
+    toUserId,
+    toUserName,
+    toUserPhotoUrl,
+    offeredItemId,
+    offeredItemTitle,
+    offeredItemImages,
+    requestedItemId,
+    requestedItemTitle,
+    requestedItemImages,
+    status,
+    message,
+    responseMessage,
+    createdAt,
+    respondedAt,
+    completedAt,
+    rejectionReason,
+    cashDifferential,
+    paymentDirection,
+    conditionNotes,
+    meetsBarterCondition,
+    offeredItemValue,
+    requestedItemValue,
+  ];
 }
 
 /// Trade Status Enum
 enum TradeStatus {
-  pending,    // Waiting for response
-  accepted,   // Offer accepted, trade in progress
-  rejected,   // Offer rejected
-  completed,  // Trade completed successfully
-  cancelled,  // Cancelled by sender
-  expired,    // Expired after 7 days of no response
+  pending, // Waiting for response
+  accepted, // Offer accepted, trade in progress
+  rejected, // Offer rejected
+  completed, // Trade completed successfully
+  cancelled, // Cancelled by sender
+  expired, // Expired after 7 days of no response
 }
 
 /// Extension for TradeStatus display
@@ -220,7 +219,8 @@ extension TradeStatusExtension on TradeStatus {
     }
   }
 
-  bool get isActive => this == TradeStatus.pending || this == TradeStatus.accepted;
+  bool get isActive =>
+      this == TradeStatus.pending || this == TradeStatus.accepted;
   bool get isPending => this == TradeStatus.pending;
   bool get isAccepted => this == TradeStatus.accepted;
   bool get isRejected => this == TradeStatus.rejected;

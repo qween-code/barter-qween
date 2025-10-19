@@ -53,13 +53,10 @@ class UserStatsWidget extends StatelessWidget {
         children: [
           const Text(
             'Seller Stats',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          
+
           // Main stats row
           Row(
             children: [
@@ -90,9 +87,9 @@ class UserStatsWidget extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Secondary stats row
           Row(
             children: [
@@ -117,21 +114,17 @@ class UserStatsWidget extends StatelessWidget {
                 ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
           const Divider(height: 1),
           const SizedBox(height: 12),
-          
+
           // Social stats
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildSocialStat('Followers', followersCount),
-              Container(
-                width: 1,
-                height: 30,
-                color: Colors.grey.shade300,
-              ),
+              Container(width: 1, height: 30, color: Colors.grey.shade300),
               _buildSocialStat('Following', followingCount),
             ],
           ),
@@ -188,19 +181,13 @@ class UserStatsWidget extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 2),
           Text(
             subtitle,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey.shade500,
-            ),
+            style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
           ),
         ],
       ],
@@ -221,10 +208,7 @@ class UserStatsWidget extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
         ),
       ],
     );
@@ -241,17 +225,11 @@ class UserStatsWidget extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
         ),
       ],
     );

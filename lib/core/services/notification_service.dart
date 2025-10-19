@@ -20,16 +20,16 @@ class NotificationService {
       if (kDebugMode) {
         print('User granted permission for notifications');
       }
-      
+
       // Get FCM token
       String? token = await _firebaseMessaging.getToken();
       if (kDebugMode) {
         print('FCM Token: $token');
       }
-      
+
       // Save token to Firestore for this user
       // TODO: Implement saving token to user document
-      
+
       // Handle foreground messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         if (kDebugMode) {
@@ -39,7 +39,9 @@ class NotificationService {
 
         if (message.notification != null) {
           if (kDebugMode) {
-            print('Message also contained a notification: ${message.notification}');
+            print(
+              'Message also contained a notification: ${message.notification}',
+            );
           }
           // TODO: Show local notification
         }
@@ -53,11 +55,11 @@ class NotificationService {
         // TODO: Navigate to appropriate screen
         _handleNotificationTap(message);
       });
-      
+
       // Check if app was opened from a terminated state by tapping notification
-      RemoteMessage? initialMessage = 
-          await FirebaseMessaging.instance.getInitialMessage();
-      
+      RemoteMessage? initialMessage = await FirebaseMessaging.instance
+          .getInitialMessage();
+
       if (initialMessage != null) {
         _handleNotificationTap(initialMessage);
       }

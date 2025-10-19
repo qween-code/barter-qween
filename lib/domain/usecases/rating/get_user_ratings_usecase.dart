@@ -10,5 +10,6 @@ class GetUserRatingsUseCase {
   final RatingRepository repository;
   GetUserRatingsUseCase(this.repository);
 
-  Future<Either<Failure, List<RatingEntity>>> call(String userId) => repository.getUserRatings(userId);
+  Future<Either<Failure, List<RatingEntity>>> call(String userId) =>
+      repository.getUserRatings(userId);
 }

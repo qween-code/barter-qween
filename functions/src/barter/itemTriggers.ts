@@ -12,33 +12,118 @@ export const onItemCreated = functions.firestore
   .onCreate(async (snap, context) => {
     const itemData = snap.data();
     const itemId = context.params.itemId;
+    const ownerId = itemData.ownerId;
     
     // Only process items with barter conditions
     if (!itemData.barterCondition) {
       functions.logger.info(`Item ${itemId} has no barter conditions, skipping match calculation`);
-      return;
+      // Still trigger new item notification for followers even without barter conditions
     }
 
     try {
-      functions.logger.info(`Processing new item ${itemId} for barter matches`);
+      functions.logger.info(`Processing new item ${itemId} for barter matches and follower notifications`);
       
-      // Find potential matches
-      const potentialMatches = await findPotentialMatches(itemId, itemData);
+      // Find and notify followers of the item owner
+      await notifyFollowersOfNewItem(ownerId, itemId, itemData);
       
-      // Calculate match scores and create barter matches
-      for (const targetItem of potentialMatches) {
-        const matchScore = await calculateMatchScore(itemData, targetItem.data());
+      // Only process barter matches if item has barter conditions
+      if (itemData.barterCondition) {
+        // Find potential matches
+        const potentialMatches = await findPotentialMatches(itemId, itemData);
         
-        if (matchScore.matchScore >= 40) { // Only create matches with score >= 40%
-          await createBarterMatch(itemId, targetItem.id, itemData, targetItem.data(), matchScore);
+        // Calculate match scores and create barter matches
+        for (const targetItem of potentialMatches) {
+          const matchScore = await calculateMatchScore(itemData, targetItem.data());
+          
+          if (matchScore.matchScore >= 40) { // Only create matches with score >= 40%
+            await createBarterMatch(itemId, targetItem.id, itemData, targetItem.data(), matchScore);
+          }
         }
+        
+        functions.logger.info(`Created barter matches for item ${itemId}`);
+      } else {
+        functions.logger.info(`Item ${itemId} has no barter conditions, skipped match calculation`);
       }
-      
-      functions.logger.info(`Created barter matches for item ${itemId}`);
     } catch (error) {
       functions.logger.error(`Error processing item ${itemId}:`, error);
     }
   });
+
+/**
+ * Notify users who follow the item owner about the new item
+ */
+async function notifyFollowersOfNewItem(ownerId: string, itemId: string, itemData: any) {
+  try {
+    // Get the owner's document to fetch followers
+    const ownerDoc = await db.collection('users').doc(ownerId).get();
+    if (!ownerDoc.exists) {
+      functions.logger.error(`Owner document does not exist for ID: ${ownerId}`);
+      return;
+    }
+
+    const ownerData = ownerDoc.data();
+    const followers = ownerData?.social?.followers || [];
+    
+    if (!followers || followers.length === 0) {
+      functions.logger.info(`No followers to notify for user ${ownerId}`);
+      return;
+    }
+
+    functions.logger.info(`Notifying ${followers.length} followers about new item from user ${ownerId}`);
+
+    // Get item details for the notification
+    const itemTitle = itemData.title || 'Yeni Ürün';
+    const itemImageUrl = itemData.images?.[0] || null; // Use first image if available
+    const itemOwnerName = ownerData?.displayName || ownerData?.email?.split('@')[0] || 'Bir kullanıcı';
+
+    // Send notification to each follower
+    for (const followerId of followers) {
+      try {
+        // Check if the follower has notifications enabled
+        const followerDoc = await db.collection('users').doc(followerId).get();
+        if (!followerDoc.exists) {
+          functions.logger.info(`Follower document does not exist for ID: ${followerId}, skipping`);
+          continue;
+        }
+
+        const followerData = followerDoc.data();
+        const notificationsEnabled = followerData?.notificationsEnabled ?? true;
+
+        if (!notificationsEnabled) {
+          functions.logger.info(`Notifications disabled for user ${followerId}, skipping`);
+          continue;
+        }
+
+        // Create notification in the follower's notification collection
+        const notificationId = `${followerId}_new_item_${itemId}_${Date.now()}`;
+        const notificationRef = db.collection('users').doc(followerId).collection('notifications').doc(notificationId);
+
+        await notificationRef.set({
+          userId: followerId,
+          type: 'new_item_from_vendor',
+          title: 'Takip ettiğin bir satıcı yeni ürün yükledi!',
+          body: `${itemOwnerName}, "${itemTitle}" başlıklı yeni bir ürün yükledi.`,
+          imageUrl: itemImageUrl,
+          isRead: false,
+          relatedEntityId: itemId,
+          data: {
+            ownerId: ownerId,
+            itemTitle: itemTitle,
+            itemOwnerName: itemOwnerName,
+          },
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          entityId: itemId // For FCM data payload
+        });
+
+        functions.logger.info(`Notification created for follower ${followerId} about item ${itemId}`);
+      } catch (error) {
+        functions.logger.error(`Error notifying follower ${followerId} about item ${itemId}:`, error);
+      }
+    }
+  } catch (error) {
+    functions.logger.error(`Error in notifyFollowersOfNewItem function:`, error);
+  }
+}
 
 /**
  * Trigger: When an item is updated

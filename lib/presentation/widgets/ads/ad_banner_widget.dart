@@ -7,13 +7,13 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 enum AdPlacement { top, bottom, inline, large }
 
 /// Reusable Ad Banner Widget (Placeholder for Phase 4)
-/// 
+///
 /// Features:
 /// - Automatic loading and disposal
 /// - Error handling with placeholder
 /// - Loading state
 /// - Adaptive sizing
-/// 
+///
 /// Usage:
 /// ```dart
 /// AdBannerWidget(
@@ -23,7 +23,7 @@ enum AdPlacement { top, bottom, inline, large }
 class AdBannerWidget extends StatefulWidget {
   final AdPlacement placement;
   final bool showPlaceholder;
-  
+
   const AdBannerWidget({
     Key? key,
     this.placement = AdPlacement.bottom,
@@ -60,7 +60,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         _isError = false;
       });
     }
-    
+
     /* Original code - will be restored in Phase 4:
     _bannerAd = AdMobService.instance.createBannerAd(
       size: _getAdSize(),
@@ -126,7 +126,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     if (_bannerAd == null) return const SizedBox.shrink();
 
     final adSize = _getAdSize();
-    
+
     return Container(
       width: adSize.width.toDouble(),
       height: adSize.height.toDouble(),
@@ -141,7 +141,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   Widget _buildLoadingPlaceholder() {
     final adSize = _getAdSize();
-    
+
     return Container(
       width: adSize.width.toDouble(),
       height: adSize.height.toDouble(),
@@ -164,10 +164,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
           const SizedBox(height: 8),
           Text(
             'Reklam yükleniyor...',
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 11, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -180,7 +177,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     }
 
     final adSize = _getAdSize();
-    
+
     return Container(
       width: adSize.width.toDouble(),
       height: adSize.height.toDouble(),
@@ -189,11 +186,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         color: Colors.grey[100],
         border: Border.all(color: Colors.grey[200]!),
       ),
-      child: Icon(
-        Icons.info_outline,
-        color: Colors.grey[400],
-        size: 24,
-      ),
+      child: Icon(Icons.info_outline, color: Colors.grey[400], size: 24),
     );
   }
 }
@@ -202,7 +195,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 class SmartAdBanner extends StatelessWidget {
   final AdPlacement placement;
   final bool isFreePlan;
-  
+
   const SmartAdBanner({
     Key? key,
     this.placement = AdPlacement.bottom,
@@ -222,11 +215,8 @@ class SmartAdBanner extends StatelessWidget {
 /// List Ad Banner - Appears between list items
 class ListAdBanner extends StatelessWidget {
   final bool isFreePlan;
-  
-  const ListAdBanner({
-    Key? key,
-    required this.isFreePlan,
-  }) : super(key: key);
+
+  const ListAdBanner({Key? key, required this.isFreePlan}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -236,9 +226,7 @@ class ListAdBanner extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 16),
-      child: const AdBannerWidget(
-        placement: AdPlacement.inline,
-      ),
+      child: const AdBannerWidget(placement: AdPlacement.inline),
     );
   }
 }
@@ -246,11 +234,9 @@ class ListAdBanner extends StatelessWidget {
 /// Bottom Sheet Ad Banner - For bottom sheets
 class BottomSheetAdBanner extends StatelessWidget {
   final bool isFreePlan;
-  
-  const BottomSheetAdBanner({
-    Key? key,
-    required this.isFreePlan,
-  }) : super(key: key);
+
+  const BottomSheetAdBanner({Key? key, required this.isFreePlan})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -260,9 +246,7 @@ class BottomSheetAdBanner extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
-      child: const AdBannerWidget(
-        placement: AdPlacement.large,
-      ),
+      child: const AdBannerWidget(placement: AdPlacement.large),
     );
   }
 }
@@ -284,11 +268,7 @@ class AdFreeBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: const [
-          Icon(
-            Icons.block,
-            color: Colors.white,
-            size: 16,
-          ),
+          Icon(Icons.block, color: Colors.white, size: 16),
           SizedBox(width: 6),
           Text(
             'Reklamsız',

@@ -32,7 +32,9 @@ class TradeDeepLinkPage extends StatelessWidget {
           if (state is TradeError) {
             return Scaffold(
               appBar: AppBar(title: const Text('Trade')),
-              body: Center(child: Text('Failed to load trade: ${state.message}')),
+              body: Center(
+                child: Text('Failed to load trade: ${state.message}'),
+              ),
             );
           }
           return const Scaffold(

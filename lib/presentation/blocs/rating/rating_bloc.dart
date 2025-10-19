@@ -22,19 +22,16 @@ class RatingBloc extends Bloc<RatingEvent, RatingState> {
       rating: e.rating,
       comment: e.comment,
     );
-    res.fold(
-      (f) => emit(RatingError(f.message)),
-      (r) {
-        // Log analytics
-        try {
-          getIt<AnalyticsService>().logUserRated(
-            ratedUserId: e.toUserId,
-            rating: e.rating,
-          );
-        } catch (_) {}
-        
-        emit(RatingSubmitted(r));
-      },
-    );
+    res.fold((f) => emit(RatingError(f.message)), (r) {
+      // Log analytics
+      try {
+        getIt<AnalyticsService>().logUserRated(
+          ratedUserId: e.toUserId,
+          rating: e.rating,
+        );
+      } catch (_) {}
+
+      emit(RatingSubmitted(r));
+    });
   }
 }

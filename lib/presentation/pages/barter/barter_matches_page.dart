@@ -20,10 +20,7 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
       appBar: AppBar(
         title: const Text('Barter Matches'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.tune),
-            onPressed: _showFilters,
-          ),
+          IconButton(icon: const Icon(Icons.tune), onPressed: _showFilters),
         ],
       ),
       body: Column(
@@ -106,7 +103,7 @@ class _BarterMatchesPageState extends State<BarterMatchesPage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            
+
             // Match Score Threshold
             const Text('Minimum Match Score'),
             Slider(

@@ -148,7 +148,9 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Future<Either<Failure, List<ItemEntity>>> getFeaturedItems({int limit = 10}) async {
+  Future<Either<Failure, List<ItemEntity>>> getFeaturedItems({
+    int limit = 10,
+  }) async {
     try {
       final result = await remoteDataSource.getFeaturedItems(limit: limit);
       return Right(result.map((model) => model.toEntity()).toList());
@@ -175,6 +177,28 @@ class ItemRepositoryImpl implements ItemRepository {
   Future<Either<Failure, List<ItemEntity>>> getTrendingItems() async {
     try {
       final result = await remoteDataSource.getTrendingItems();
+      return Right(result.map((model) => model.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ItemEntity>>> getRecommendedItems({
+    required String userId,
+    String? city,
+    double? latitude,
+    double? longitude,
+  }) async {
+    try {
+      final result = await remoteDataSource.getRecommendedItems(
+        userId: userId,
+        city: city,
+        latitude: latitude,
+        longitude: longitude,
+      );
       return Right(result.map((model) => model.toEntity()).toList());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

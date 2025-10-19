@@ -41,10 +41,7 @@ class SaveRecentSearchUseCase {
     required String query,
     required int resultCount,
   }) {
-    return repository.saveRecentSearch(
-      query: query,
-      resultCount: resultCount,
-    );
+    return repository.saveRecentSearch(query: query, resultCount: resultCount);
   }
 }
 
@@ -83,9 +80,6 @@ class GetPopularSearchesUseCase {
     String? category,
     int limit = 10,
   }) {
-    return repository.getPopularSearches(
-      category: category,
-      limit: limit,
-    );
+    return repository.getPopularSearches(category: category, limit: limit);
   }
 }

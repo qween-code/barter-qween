@@ -50,12 +50,16 @@ class WatchUnreadCount extends NotificationEvent {
 
 /// Mark notification as read
 class MarkNotificationAsRead extends NotificationEvent {
+  final String userId;
   final String notificationId;
 
-  const MarkNotificationAsRead(this.notificationId);
+  const MarkNotificationAsRead({
+    required this.userId,
+    required this.notificationId,
+  });
 
   @override
-  List<Object?> get props => [notificationId];
+  List<Object?> get props => [userId, notificationId];
 }
 
 /// Mark all notifications as read
@@ -70,12 +74,16 @@ class MarkAllNotificationsAsRead extends NotificationEvent {
 
 /// Delete notification
 class DeleteNotification extends NotificationEvent {
+  final String userId;
   final String notificationId;
 
-  const DeleteNotification(this.notificationId);
+  const DeleteNotification({
+    required this.userId,
+    required this.notificationId,
+  });
 
   @override
-  List<Object?> get props => [notificationId];
+  List<Object?> get props => [userId, notificationId];
 }
 
 /// Delete all notifications

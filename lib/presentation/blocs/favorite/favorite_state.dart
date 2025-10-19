@@ -36,9 +36,15 @@ class FavoritesLoaded extends FavoriteState {
 
 class FavoriteToggled extends FavoriteState {
   final String itemId;
+  final bool isFavorited;
+  final List<ItemEntity> favorites;
 
-  const FavoriteToggled({required this.itemId});
+  const FavoriteToggled({
+    required this.itemId,
+    required this.isFavorited,
+    required this.favorites,
+  });
 
   @override
-  List<Object?> get props => [itemId];
+  List<Object?> get props => [itemId, isFavorited, favorites];
 }

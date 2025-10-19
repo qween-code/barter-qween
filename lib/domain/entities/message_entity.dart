@@ -59,18 +59,18 @@ class MessageEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        conversationId,
-        senderId,
-        senderName,
-        text,
-        receiverId,
-        timestamp,
-        type,
-        createdAt,
-        isRead,
-        imageUrl,
-      ];
+    id,
+    conversationId,
+    senderId,
+    senderName,
+    text,
+    receiverId,
+    timestamp,
+    type,
+    createdAt,
+    isRead,
+    imageUrl,
+  ];
 
   Map<String, dynamic> toJson() {
     return {
@@ -96,12 +96,16 @@ class MessageEntity extends Equatable {
       senderName: json['senderName'] ?? '',
       text: json['text'] ?? '',
       receiverId: json['receiverId'] ?? '',
-      timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toIso8601String()),
+      timestamp: DateTime.parse(
+        json['timestamp'] ?? DateTime.now().toIso8601String(),
+      ),
       type: MessageType.values.firstWhere(
         (e) => e.toString() == 'MessageType.${json['type']}',
         orElse: () => MessageType.text,
       ),
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
       isRead: json['isRead'] ?? false,
       imageUrl: json['imageUrl'],
     );

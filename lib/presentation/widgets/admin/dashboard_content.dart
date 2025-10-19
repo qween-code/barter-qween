@@ -16,9 +16,9 @@ class DashboardContent extends StatelessWidget {
           // Başlık
           Text(
             'Dashboard Özeti',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 8),
@@ -80,11 +80,7 @@ class DashboardContent extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.report_problem,
-                      color: Colors.amber,
-                      size: 24,
-                    ),
+                    Icon(Icons.report_problem, color: Colors.amber, size: 24),
                     const SizedBox(width: 12),
                     Text(
                       '${stats.userReportsCount} adet kullanıcı raporu bekliyor',
@@ -120,11 +116,7 @@ class DashboardContent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 32,
-              color: color,
-            ),
+            Icon(icon, size: 32, color: color),
             const SizedBox(height: 8),
             Text(
               value,

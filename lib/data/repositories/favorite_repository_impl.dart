@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../core/errors/exceptions.dart';
+import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/favorite_entity.dart';
 import '../../domain/entities/item_entity.dart';
@@ -14,7 +14,10 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   FavoriteRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, FavoriteEntity>> addFavorite(String userId, String itemId) async {
+  Future<Either<Failure, FavoriteEntity>> addFavorite(
+    String userId,
+    String itemId,
+  ) async {
     try {
       final favorite = await remoteDataSource.addFavorite(userId, itemId);
       return Right(favorite.toEntity());
@@ -26,7 +29,10 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   }
 
   @override
-  Future<Either<Failure, void>> removeFavorite(String userId, String itemId) async {
+  Future<Either<Failure, void>> removeFavorite(
+    String userId,
+    String itemId,
+  ) async {
     try {
       await remoteDataSource.removeFavorite(userId, itemId);
       return const Right(null);
@@ -38,7 +44,9 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   }
 
   @override
-  Future<Either<Failure, List<ItemEntity>>> getFavoriteItems(String userId) async {
+  Future<Either<Failure, List<ItemEntity>>> getFavoriteItems(
+    String userId,
+  ) async {
     try {
       final items = await remoteDataSource.getFavoriteItems(userId);
       return Right(items.map((item) => item.toEntity()).toList());

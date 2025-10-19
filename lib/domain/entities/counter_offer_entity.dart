@@ -1,20 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-enum CounterOfferType {
-  cash,
-  terms,
-  itemSwap,
-  location,
-  time,
-  full,
-}
+enum CounterOfferType { cash, terms, itemSwap, location, time, full }
 
-enum CounterOfferStatus {
-  pending,
-  accepted,
-  rejected,
-  expired,
-}
+enum CounterOfferStatus { pending, accepted, rejected, expired }
 
 class CounterOfferEntity extends Equatable {
   final String id;
@@ -75,50 +63,61 @@ class CounterOfferEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        offerId,
-        negotiationId,
-        offererId,
-        targetUserId,
-        sourceItemId,
-        targetItemId,
-        type,
-        offerType,
-        offeredAmount,
-        proposedCash,
-        terms,
-        offeredItemId,
-        requestedItemId,
-        proposedPaymentDirection,
-        proposedMeetupLocation,
-        proposedMeetupTime,
-        message,
-        status,
-        createdAt,
-        expiresAt,
-        respondedAt,
-        responseMessage,
-        isAccepted,
-        isRejected,
-        isExpired,
-      ];
+    id,
+    offerId,
+    negotiationId,
+    offererId,
+    targetUserId,
+    sourceItemId,
+    targetItemId,
+    type,
+    offerType,
+    offeredAmount,
+    proposedCash,
+    terms,
+    offeredItemId,
+    requestedItemId,
+    proposedPaymentDirection,
+    proposedMeetupLocation,
+    proposedMeetupTime,
+    message,
+    status,
+    createdAt,
+    expiresAt,
+    respondedAt,
+    responseMessage,
+    isAccepted,
+    isRejected,
+    isExpired,
+  ];
 
   CounterOfferEntity copyWith({
     String? id,
+    String? offerId,
     String? negotiationId,
     String? offererId,
     String? targetUserId,
     String? sourceItemId,
     String? targetItemId,
+    CounterOfferType? type,
     CounterOfferType? offerType,
     double? offeredAmount,
+    double? proposedCash,
     String? terms,
     String? offeredItemId,
     String? requestedItemId,
+    String? proposedPaymentDirection,
+    String? proposedMeetupLocation,
+    DateTime? proposedMeetupTime,
+    String? message,
+    CounterOfferStatus? status,
     DateTime? createdAt,
     DateTime? expiresAt,
+    DateTime? respondedAt,
+    String? responseMessage,
     bool? isAccepted,
     bool? isRejected,
+    bool? isExpired,
   }) {
     return CounterOfferEntity(
       id: id ?? this.id,
@@ -135,8 +134,10 @@ class CounterOfferEntity extends Equatable {
       terms: terms ?? this.terms,
       offeredItemId: offeredItemId ?? this.offeredItemId,
       requestedItemId: requestedItemId ?? this.requestedItemId,
-      proposedPaymentDirection: proposedPaymentDirection ?? this.proposedPaymentDirection,
-      proposedMeetupLocation: proposedMeetupLocation ?? this.proposedMeetupLocation,
+      proposedPaymentDirection:
+          proposedPaymentDirection ?? this.proposedPaymentDirection,
+      proposedMeetupLocation:
+          proposedMeetupLocation ?? this.proposedMeetupLocation,
       proposedMeetupTime: proposedMeetupTime ?? this.proposedMeetupTime,
       message: message ?? this.message,
       status: status ?? this.status,

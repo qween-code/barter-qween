@@ -9,11 +9,8 @@ class FilterBottomSheet extends StatefulWidget {
   final SearchFilterEntity? currentFilter;
   final Function(SearchFilterEntity) onApply;
 
-  const FilterBottomSheet({
-    Key? key,
-    this.currentFilter,
-    required this.onApply,
-  }) : super(key: key);
+  const FilterBottomSheet({Key? key, this.currentFilter, required this.onApply})
+    : super(key: key);
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
@@ -58,10 +55,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
             child: Row(
               children: [
-                const Text(
-                  'Filters',
-                  style: AppTextStyles.titleLarge,
-                ),
+                const Text('Filters', style: AppTextStyles.titleLarge),
                 const Spacer(),
                 TextButton(
                   onPressed: _resetFilters,
@@ -101,9 +95,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           Container(
             padding: const EdgeInsets.all(AppDimensions.spacing16),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: AppColors.borderDefault),
-              ),
+              border: Border(top: BorderSide(color: AppColors.borderDefault)),
             ),
             child: SizedBox(
               width: double.infinity,
@@ -113,15 +105,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusMedium,
+                    ),
                   ),
                 ),
                 child: const Text(
                   'Apply Filters',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -189,10 +180,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               style: AppTextStyles.bodyMedium,
             ),
             const Spacer(),
-            Text(
-              '₺${priceRange.end.toInt()}',
-              style: AppTextStyles.bodyMedium,
-            ),
+            Text('₺${priceRange.end.toInt()}', style: AppTextStyles.bodyMedium),
           ],
         ),
         RangeSlider(
@@ -254,10 +242,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           children: [
             const Text('Distance', style: AppTextStyles.titleMedium),
             const Spacer(),
-            Text(
-              '${radiusKm.toInt()} km',
-              style: AppTextStyles.bodyMedium,
-            ),
+            Text('${radiusKm.toInt()} km', style: AppTextStyles.bodyMedium),
           ],
         ),
         Slider(
@@ -320,7 +305,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       radiusKm: radiusKm == 50 ? null : radiusKm,
       sortBy: sortBy,
     );
-    
+
     widget.onApply(filter);
     Navigator.pop(context);
   }

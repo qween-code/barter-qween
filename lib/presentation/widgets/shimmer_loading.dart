@@ -181,10 +181,7 @@ class ItemListShimmer extends StatelessWidget {
 class ShimmerGridLoader extends StatelessWidget {
   final int itemCount;
 
-  const ShimmerGridLoader({
-    super.key,
-    this.itemCount = 6,
-  });
+  const ShimmerGridLoader({super.key, this.itemCount = 6});
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +189,7 @@ class ShimmerGridLoader extends StatelessWidget {
       padding: EdgeInsets.all(16),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.58,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),
@@ -206,10 +203,7 @@ class ShimmerGridLoader extends StatelessWidget {
 class ShimmerListLoader extends StatelessWidget {
   final int itemCount;
 
-  const ShimmerListLoader({
-    super.key,
-    this.itemCount = 6,
-  });
+  const ShimmerListLoader({super.key, this.itemCount = 6});
 
   @override
   Widget build(BuildContext context) {
@@ -225,10 +219,7 @@ class ShimmerListLoader extends StatelessWidget {
 class DetailImageShimmer extends StatelessWidget {
   final double height;
 
-  const DetailImageShimmer({
-    super.key,
-    this.height = 300,
-  });
+  const DetailImageShimmer({super.key, this.height = 300});
 
   @override
   Widget build(BuildContext context) {

@@ -21,7 +21,9 @@ class CashDifferentialWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isReceiving = direction == CashPaymentDirection.toMe;
-    final color = isReceiving ? const Color(0xFF4CAF50) : const Color(0xFFFF9800);
+    final color = isReceiving
+        ? const Color(0xFF4CAF50)
+        : const Color(0xFFFF9800);
     final icon = isReceiving ? Icons.arrow_downward : Icons.arrow_upward;
     final label = isReceiving ? 'Alacağınız' : 'Ödeyeceğiniz';
 
@@ -70,10 +72,7 @@ class CashDifferentialWidget extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Icon(icon, size: 20, color: Colors.white),
           ),
           const SizedBox(width: AppDimensions.spacing12),
@@ -149,7 +148,7 @@ class CashDifferentialCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppDimensions.spacing16),
-          
+
           // Item values comparison
           Row(
             children: [
@@ -172,17 +171,17 @@ class CashDifferentialCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppDimensions.spacing16),
           const Divider(),
           const SizedBox(height: AppDimensions.spacing16),
-          
+
           // Cash differential
           CashDifferentialWidget(
             amount: suggestedCash ?? differential,
             direction: direction,
           ),
-          
+
           if (suggestedCash != null && suggestedCash != differential) ...[
             const SizedBox(height: AppDimensions.spacing8),
             Text(

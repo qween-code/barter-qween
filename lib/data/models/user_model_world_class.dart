@@ -229,7 +229,7 @@ class UserModelWorldClass {
   /// From Firestore DocumentSnapshot
   factory UserModelWorldClass.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    
+
     return UserModelWorldClass(
       uid: doc.id,
       email: data['email'] ?? '',
@@ -239,7 +239,7 @@ class UserModelWorldClass {
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
       isEmailVerified: data['isEmailVerified'] ?? false,
-      
+
       // Profile
       bio: data['bio'],
       address: data['address'],
@@ -253,7 +253,7 @@ class UserModelWorldClass {
       socialMediaLinks: data['socialMediaLinks'] != null
           ? List<String>.from(data['socialMediaLinks'])
           : null,
-      
+
       // Verification
       isPhoneVerified: data['isPhoneVerified'] ?? false,
       isEmailVerifiedManual: data['isEmailVerifiedManual'] ?? false,
@@ -263,7 +263,7 @@ class UserModelWorldClass {
       isGoogleConnected: data['isGoogleConnected'] ?? false,
       verifiedAt: (data['verifiedAt'] as Timestamp?)?.toDate(),
       verificationLevel: data['verificationLevel'] ?? 'none',
-      
+
       // Seller Stats
       totalSales: data['totalSales'] ?? 0,
       totalPurchases: data['totalPurchases'] ?? 0,
@@ -273,7 +273,7 @@ class UserModelWorldClass {
       totalListings: data['totalListings'] ?? 0,
       firstSaleDate: (data['firstSaleDate'] as Timestamp?)?.toDate(),
       lastSaleDate: (data['lastSaleDate'] as Timestamp?)?.toDate(),
-      
+
       // Ratings & Reviews
       averageRating: data['averageRating']?.toDouble() ?? 0.0,
       totalReviews: data['totalReviews'] ?? 0,
@@ -286,7 +286,7 @@ class UserModelWorldClass {
       friendlyCount: data['friendlyCount'] ?? 0,
       reliableCount: data['reliableCount'] ?? 0,
       asDescribedCount: data['asDescribedCount'] ?? 0,
-      
+
       // Response & Shipping
       responseTimeCategory: data['responseTimeCategory'] ?? 'notAvailable',
       averageResponseTime: data['averageResponseTime'],
@@ -299,7 +299,7 @@ class UserModelWorldClass {
       itemsShippedOnTime: data['itemsShippedOnTime'] ?? 0,
       totalItemsShipped: data['totalItemsShipped'] ?? 0,
       fastShipper: data['fastShipper'] ?? false,
-      
+
       // Social
       followersCount: data['followersCount'] ?? 0,
       followingCount: data['followingCount'] ?? 0,
@@ -309,7 +309,7 @@ class UserModelWorldClass {
       following: data['following'] != null
           ? List<String>.from(data['following'])
           : null,
-      
+
       // Badges
       isTopSeller: data['isTopSeller'] ?? false,
       isTrustedSeller: data['isTrustedSeller'] ?? false,
@@ -317,20 +317,20 @@ class UserModelWorldClass {
       hasReplyRateBadge: data['hasReplyRateBadge'] ?? false,
       hasFastShipperBadge: data['hasFastShipperBadge'] ?? false,
       hasTopRatedBadge: data['hasTopRatedBadge'] ?? false,
-      badges: data['badges'] != null
-          ? List<String>.from(data['badges'])
-          : [],
+      badges: data['badges'] != null ? List<String>.from(data['badges']) : [],
       trustScore: data['trustScore'] ?? 'new',
-      
+
       // Subscription
       isPremium: data['isPremium'] ?? false,
       subscriptionPlan: data['subscriptionPlan'],
-      subscriptionStartDate: (data['subscriptionStartDate'] as Timestamp?)?.toDate(),
-      subscriptionEndDate: (data['subscriptionEndDate'] as Timestamp?)?.toDate(),
+      subscriptionStartDate: (data['subscriptionStartDate'] as Timestamp?)
+          ?.toDate(),
+      subscriptionEndDate: (data['subscriptionEndDate'] as Timestamp?)
+          ?.toDate(),
       hasAutoRelist: data['hasAutoRelist'] ?? false,
       hasPromotedListings: data['hasPromotedListings'] ?? false,
       hasPrioritySupport: data['hasPrioritySupport'] ?? false,
-      
+
       // Activity
       lastActiveAt: (data['lastActiveAt'] as Timestamp?)?.toDate(),
       totalFavoritesReceived: data['totalFavoritesReceived'] ?? 0,
@@ -339,7 +339,7 @@ class UserModelWorldClass {
       totalSharesReceived: data['totalSharesReceived'] ?? 0,
       totalOffersSent: data['totalOffersSent'] ?? 0,
       totalOffersReceived: data['totalOffersReceived'] ?? 0,
-      
+
       // Preferences
       interests: data['interests'] != null
           ? List<String>.from(data['interests'])
@@ -352,7 +352,7 @@ class UserModelWorldClass {
       smsNotificationsEnabled: data['smsNotificationsEnabled'] ?? false,
       preferredLanguage: data['preferredLanguage'],
       preferredCurrency: data['preferredCurrency'],
-      
+
       // Safety
       isSuspended: data['isSuspended'] ?? false,
       isBanned: data['isBanned'] ?? false,
@@ -374,7 +374,7 @@ class UserModelWorldClass {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
       'isEmailVerified': isEmailVerified,
-      
+
       // Profile
       'bio': bio,
       'address': address,
@@ -386,7 +386,7 @@ class UserModelWorldClass {
       'coverPhotoUrl': coverPhotoUrl,
       'website': website,
       'socialMediaLinks': socialMediaLinks,
-      
+
       // Verification
       'isPhoneVerified': isPhoneVerified,
       'isEmailVerifiedManual': isEmailVerifiedManual,
@@ -396,7 +396,7 @@ class UserModelWorldClass {
       'isGoogleConnected': isGoogleConnected,
       'verifiedAt': verifiedAt != null ? Timestamp.fromDate(verifiedAt!) : null,
       'verificationLevel': verificationLevel,
-      
+
       // Seller Stats
       'totalSales': totalSales,
       'totalPurchases': totalPurchases,
@@ -404,9 +404,13 @@ class UserModelWorldClass {
       'activeListings': activeListings,
       'soldListings': soldListings,
       'totalListings': totalListings,
-      'firstSaleDate': firstSaleDate != null ? Timestamp.fromDate(firstSaleDate!) : null,
-      'lastSaleDate': lastSaleDate != null ? Timestamp.fromDate(lastSaleDate!) : null,
-      
+      'firstSaleDate': firstSaleDate != null
+          ? Timestamp.fromDate(firstSaleDate!)
+          : null,
+      'lastSaleDate': lastSaleDate != null
+          ? Timestamp.fromDate(lastSaleDate!)
+          : null,
+
       // Ratings & Reviews
       'averageRating': averageRating,
       'totalReviews': totalReviews,
@@ -419,7 +423,7 @@ class UserModelWorldClass {
       'friendlyCount': friendlyCount,
       'reliableCount': reliableCount,
       'asDescribedCount': asDescribedCount,
-      
+
       // Response & Shipping
       'responseTimeCategory': responseTimeCategory,
       'averageResponseTime': averageResponseTime,
@@ -432,13 +436,13 @@ class UserModelWorldClass {
       'itemsShippedOnTime': itemsShippedOnTime,
       'totalItemsShipped': totalItemsShipped,
       'fastShipper': fastShipper,
-      
+
       // Social
       'followersCount': followersCount,
       'followingCount': followingCount,
       'followers': followers,
       'following': following,
-      
+
       // Badges
       'isTopSeller': isTopSeller,
       'isTrustedSeller': isTrustedSeller,
@@ -448,27 +452,31 @@ class UserModelWorldClass {
       'hasTopRatedBadge': hasTopRatedBadge,
       'badges': badges,
       'trustScore': trustScore,
-      
+
       // Subscription
       'isPremium': isPremium,
       'subscriptionPlan': subscriptionPlan,
-      'subscriptionStartDate': subscriptionStartDate != null 
-          ? Timestamp.fromDate(subscriptionStartDate!) : null,
-      'subscriptionEndDate': subscriptionEndDate != null 
-          ? Timestamp.fromDate(subscriptionEndDate!) : null,
+      'subscriptionStartDate': subscriptionStartDate != null
+          ? Timestamp.fromDate(subscriptionStartDate!)
+          : null,
+      'subscriptionEndDate': subscriptionEndDate != null
+          ? Timestamp.fromDate(subscriptionEndDate!)
+          : null,
       'hasAutoRelist': hasAutoRelist,
       'hasPromotedListings': hasPromotedListings,
       'hasPrioritySupport': hasPrioritySupport,
-      
+
       // Activity
-      'lastActiveAt': lastActiveAt != null ? Timestamp.fromDate(lastActiveAt!) : null,
+      'lastActiveAt': lastActiveAt != null
+          ? Timestamp.fromDate(lastActiveAt!)
+          : null,
       'totalFavoritesReceived': totalFavoritesReceived,
       'totalFavoritesGiven': totalFavoritesGiven,
       'totalViewsReceived': totalViewsReceived,
       'totalSharesReceived': totalSharesReceived,
       'totalOffersSent': totalOffersSent,
       'totalOffersReceived': totalOffersReceived,
-      
+
       // Preferences
       'interests': interests,
       'preferredCategories': preferredCategories,
@@ -477,12 +485,14 @@ class UserModelWorldClass {
       'smsNotificationsEnabled': smsNotificationsEnabled,
       'preferredLanguage': preferredLanguage,
       'preferredCurrency': preferredCurrency,
-      
+
       // Safety
       'isSuspended': isSuspended,
       'isBanned': isBanned,
       'suspensionReason': suspensionReason,
-      'suspendedUntil': suspendedUntil != null ? Timestamp.fromDate(suspendedUntil!) : null,
+      'suspendedUntil': suspendedUntil != null
+          ? Timestamp.fromDate(suspendedUntil!)
+          : null,
       'warningsCount': warningsCount,
       'reportedCount': reportedCount,
       'reportsFiledCount': reportsFiledCount,
@@ -490,7 +500,7 @@ class UserModelWorldClass {
 
     // Remove null values
     map.removeWhere((key, value) => value == null);
-    
+
     return map;
   }
 

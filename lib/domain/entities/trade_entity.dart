@@ -1,25 +1,26 @@
 import 'package:equatable/equatable.dart';
 
 /// Trade entity representing a completed or ongoing barter trade
-/// 
+///
 /// A trade is created when both parties agree to exchange items.
 /// It tracks the full lifecycle from agreement to completion.
 class TradeEntity extends Equatable {
   final String id;
-  final String offerId; // Reference to TradeOfferEntity that initiated this trade
-  
+  final String
+  offerId; // Reference to TradeOfferEntity that initiated this trade
+
   // Parties involved
   final String initiatorId; // User who made the offer
   final String initiatorItemId; // Item offered by initiator
   final String receiverId; // User who accepted the offer
   final String receiverItemId; // Item offered by receiver
-  
+
   // Trade details
   final TradeStatus status;
   final double? cashDifferential; // If one party pays extra cash
   final CashPaymentDirection? paymentDirection; // Who pays the cash
   final String? paymentMethod; // How cash is paid (if applicable)
-  
+
   // Meetup details
   final String? meetupLocation; // Agreed meetup location
   final String? meetupAddress; // Full address
@@ -27,33 +28,33 @@ class TradeEntity extends Equatable {
   final double? meetupLongitude;
   final DateTime? scheduledMeetupTime;
   final String? meetupNotes; // Additional meetup instructions
-  
+
   // Trade progression
   final DateTime agreedAt; // When both parties agreed
   final DateTime? completedAt; // When trade was marked complete
   final DateTime? cancelledAt; // When trade was cancelled
   final String? cancellationReason;
   final String? cancelledBy; // User ID who cancelled
-  
+
   // Verification
   final bool initiatorConfirmed; // Initiator confirmed receiving item
   final bool receiverConfirmed; // Receiver confirmed receiving item
   final DateTime? initiatorConfirmedAt;
   final DateTime? receiverConfirmedAt;
-  
+
   // Ratings (after completion)
   final double? initiatorRating; // Rating given to receiver
   final double? receiverRating; // Rating given to initiator
   final String? initiatorReview;
   final String? receiverReview;
-  
+
   // Issues & disputes
   final bool hasIssues; // If there are any reported issues
   final String? issueDescription;
   final DateTime? issueReportedAt;
   final String? issueReportedBy;
   final DisputeStatus? disputeStatus;
-  
+
   // Metadata
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -213,44 +214,44 @@ class TradeEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        offerId,
-        initiatorId,
-        initiatorItemId,
-        receiverId,
-        receiverItemId,
-        status,
-        cashDifferential,
-        paymentDirection,
-        paymentMethod,
-        meetupLocation,
-        meetupAddress,
-        meetupLatitude,
-        meetupLongitude,
-        scheduledMeetupTime,
-        meetupNotes,
-        agreedAt,
-        completedAt,
-        cancelledAt,
-        cancellationReason,
-        cancelledBy,
-        initiatorConfirmed,
-        receiverConfirmed,
-        initiatorConfirmedAt,
-        receiverConfirmedAt,
-        initiatorRating,
-        receiverRating,
-        initiatorReview,
-        receiverReview,
-        hasIssues,
-        issueDescription,
-        issueReportedAt,
-        issueReportedBy,
-        disputeStatus,
-        createdAt,
-        updatedAt,
-        metadata,
-      ];
+    id,
+    offerId,
+    initiatorId,
+    initiatorItemId,
+    receiverId,
+    receiverItemId,
+    status,
+    cashDifferential,
+    paymentDirection,
+    paymentMethod,
+    meetupLocation,
+    meetupAddress,
+    meetupLatitude,
+    meetupLongitude,
+    scheduledMeetupTime,
+    meetupNotes,
+    agreedAt,
+    completedAt,
+    cancelledAt,
+    cancellationReason,
+    cancelledBy,
+    initiatorConfirmed,
+    receiverConfirmed,
+    initiatorConfirmedAt,
+    receiverConfirmedAt,
+    initiatorRating,
+    receiverRating,
+    initiatorReview,
+    receiverReview,
+    hasIssues,
+    issueDescription,
+    issueReportedAt,
+    issueReportedBy,
+    disputeStatus,
+    createdAt,
+    updatedAt,
+    metadata,
+  ];
 
   @override
   String toString() {
@@ -318,8 +319,10 @@ extension TradeStatusExtension on TradeStatus {
     }
   }
 
-  bool get isActive => this == TradeStatus.inProgress || this == TradeStatus.scheduled;
-  bool get isFinal => this == TradeStatus.completed || this == TradeStatus.cancelled;
+  bool get isActive =>
+      this == TradeStatus.inProgress || this == TradeStatus.scheduled;
+  bool get isFinal =>
+      this == TradeStatus.completed || this == TradeStatus.cancelled;
 }
 
 extension DisputeStatusExtension on DisputeStatus {

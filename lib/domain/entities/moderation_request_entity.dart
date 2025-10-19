@@ -32,9 +32,19 @@ class ModerationRequestEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id, itemId, item, userId, status, priority, submittedAt,
-        reviewedAt, reviewedBy, reviewNotes, suggestedTier, flagReasons
-      ];
+    id,
+    itemId,
+    item,
+    userId,
+    status,
+    priority,
+    submittedAt,
+    reviewedAt,
+    reviewedBy,
+    reviewNotes,
+    suggestedTier,
+    flagReasons,
+  ];
 
   ModerationRequestEntity copyWith({
     String? id,
@@ -67,9 +77,4 @@ class ModerationRequestEntity extends Equatable {
   }
 }
 
-enum ModerationPriority {
-  low,
-  medium,
-  high,
-  urgent,
-}
+enum ModerationPriority { low, medium, high, urgent }

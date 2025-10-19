@@ -6,12 +6,10 @@ import '../../../domain/entities/item_entity.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
-import '../items/item_detail_page.dart';
-import 'dart:ui' as ui;
-import 'package:flutter/services.dart';
+import '../../../core/routes/app_router.dart';
 
 /// 🗺️ WORLD-CLASS MAP VIEW PAGE
-/// 
+///
 /// Features:
 /// - Google Maps with item markers
 /// - Nearby items display
@@ -58,10 +56,11 @@ class _MapViewPageState extends State<MapViewPage> {
       }
 
       Position position = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
       setState(() {
         _currentLocation = LatLng(position.latitude, position.longitude);
       });
-      
+
       _mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(_currentLocation, 12),
       );
@@ -74,61 +73,19 @@ class _MapViewPageState extends State<MapViewPage> {
     context.read<ItemBloc>().add(const LoadAllItems());
   }
 
-  Future<BitmapDescriptor> _createCustomMarker(double price) async {
-    final pictureRecorder = ui.PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
-    const size = Size(120, 50);
-
-    // Draw background
-    final paint = Paint()
-      ..color = const Color(0xFFFF6B35)
-      ..style = PaintingStyle.fill;
-
-    final rrect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      const Radius.circular(25),
-    );
-    canvas.drawRRect(rrect, paint);
-
-    // Draw text
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: '₺${price.toInt()}',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-    textPainter.paint(
-      canvas,
-      Offset(
-        (size.width - textPainter.width) / 2,
-        (size.height - textPainter.height) / 2,
-      ),
-    );
-
-    final picture = pictureRecorder.endRecording();
-    final image = await picture.toImage(size.width.toInt(), size.height.toInt());
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-
-    return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
-  }
-
   Future<void> _updateMarkers(List<ItemEntity> items) async {
     final Set<Marker> markers = {};
 
     for (var item in items) {
       if (item.latitude != null && item.longitude != null) {
-        final distance = Geolocator.distanceBetween(
-          _currentLocation.latitude,
-          _currentLocation.longitude,
-          item.latitude!,
-          item.longitude!,
-        ) / 1000; // Convert to km
+        final distance =
+            Geolocator.distanceBetween(
+              _currentLocation.latitude,
+              _currentLocation.longitude,
+              item.latitude!,
+              item.longitude!,
+            ) /
+            1000; // Convert to km
 
         if (distance <= _radiusKm) {
           markers.add(
@@ -150,6 +107,7 @@ class _MapViewPageState extends State<MapViewPage> {
       }
     }
 
+    if (!mounted) return;
     setState(() {
       _markers.clear();
       _markers.addAll(markers);
@@ -162,6 +120,7 @@ class _MapViewPageState extends State<MapViewPage> {
       body: BlocListener<ItemBloc, ItemState>(
         listener: (context, state) {
           if (state is ItemsLoaded) {
+            if (!mounted) return;
             setState(() {
               _items = state.items;
             });
@@ -248,17 +207,11 @@ class _MapViewPageState extends State<MapViewPage> {
                 children: [
                   const Text(
                     'Harita Görünümü',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     '${_markers.length} ürün gösteriliyor',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -335,26 +288,17 @@ class _MapViewPageState extends State<MapViewPage> {
 
   Widget _buildItemBottomSheet() {
     final item = _selectedItem!;
-    
+
     return Positioned(
       bottom: 0,
       left: 0,
       right: 0,
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ItemDetailPage(itemId: item.id),
-            ),
-          );
-        },
+        onTap: () => AppRouter.toItemDetail(context, item.id),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -378,7 +322,7 @@ class _MapViewPageState extends State<MapViewPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Item Info
                 Row(
                   children: [
@@ -407,7 +351,7 @@ class _MapViewPageState extends State<MapViewPage> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    
+
                     // Details
                     Expanded(
                       child: Column(
@@ -464,7 +408,7 @@ class _MapViewPageState extends State<MapViewPage> {
                         ],
                       ),
                     ),
-                    
+
                     // Arrow
                     const Icon(
                       Icons.arrow_forward_ios,

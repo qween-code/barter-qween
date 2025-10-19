@@ -106,3 +106,20 @@ class LoadTrendingItems extends ItemEvent {
   @override
   List<Object?> get props => [];
 }
+
+class LoadRecommendedItems extends ItemEvent {
+  final String userId;
+  final String? city;
+  final double? latitude;
+  final double? longitude;
+
+  const LoadRecommendedItems({
+    required this.userId,
+    this.city,
+    this.latitude,
+    this.longitude,
+  });
+
+  @override
+  List<Object?> get props => [userId, city, latitude, longitude];
+}

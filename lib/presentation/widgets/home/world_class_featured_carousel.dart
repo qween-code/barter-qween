@@ -3,7 +3,7 @@ import '../../../core/theme/world_class_design_system.dart';
 import '../../../domain/entities/item_entity.dart';
 
 /// 🌟 WORLD-CLASS FEATURED CAROUSEL
-/// 
+///
 /// Features:
 /// - Horizontal scroll
 /// - Item cards
@@ -24,7 +24,9 @@ class WorldClassFeaturedCarousel extends StatelessWidget {
     if (items.isEmpty) {
       return Container(
         height: 200,
-        margin: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+        margin: const EdgeInsets.symmetric(
+          horizontal: WorldClassDesignSystem.spacingM,
+        ),
         decoration: WorldClassDesignSystem.cardDecoration,
         child: Center(
           child: Column(
@@ -52,7 +54,9 @@ class WorldClassFeaturedCarousel extends StatelessWidget {
       height: 280,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+        padding: const EdgeInsets.symmetric(
+          horizontal: WorldClassDesignSystem.spacingM,
+        ),
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
@@ -108,11 +112,13 @@ class WorldClassFeaturedCarousel extends StatelessWidget {
                         ),
                 ),
               ),
-              
+
               // Content
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
+                  padding: const EdgeInsets.all(
+                    WorldClassDesignSystem.spacingM,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -126,9 +132,9 @@ class WorldClassFeaturedCarousel extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      
+
                       const SizedBox(height: WorldClassDesignSystem.spacingXS),
-                      
+
                       // Category
                       Text(
                         item.category,
@@ -136,9 +142,9 @@ class WorldClassFeaturedCarousel extends StatelessWidget {
                           color: WorldClassDesignSystem.secondaryText,
                         ),
                       ),
-                      
+
                       const Spacer(),
-                      
+
                       // Price
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

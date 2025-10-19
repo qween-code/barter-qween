@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS HERO SECTION
-/// 
+///
 /// Features:
 /// - Welcome message
 /// - Quick stats
@@ -11,10 +11,8 @@ import '../../../core/theme/world_class_design_system.dart';
 class WorldClassHeroSection extends StatelessWidget {
   final Function(String) onActionTap;
 
-  const WorldClassHeroSection({
-    Key? key,
-    required this.onActionTap,
-  }) : super(key: key);
+  const WorldClassHeroSection({Key? key, required this.onActionTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +31,18 @@ class WorldClassHeroSection extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          
+
           const SizedBox(height: WorldClassDesignSystem.spacingS),
-          
+
           Text(
             'Discover amazing items to trade',
             style: WorldClassDesignSystem.bodyLarge.copyWith(
               color: WorldClassDesignSystem.secondaryText,
             ),
           ),
-          
+
           const SizedBox(height: WorldClassDesignSystem.spacingL),
-          
+
           // Quick Stats
           Row(
             children: [
@@ -92,17 +90,11 @@ class WorldClassHeroSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusM),
-        border: Border.all(
-          color: color.withOpacity(0.2),
-        ),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: WorldClassDesignSystem.iconM,
-          ),
+          Icon(icon, color: color, size: WorldClassDesignSystem.iconM),
           const SizedBox(height: WorldClassDesignSystem.spacingXS),
           Text(
             value,

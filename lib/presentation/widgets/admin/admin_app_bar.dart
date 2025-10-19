@@ -25,9 +25,9 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
           Expanded(
             child: Text(
               'Admin Dashboard',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
 
@@ -89,10 +89,7 @@ class AdminAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: CircleAvatar(
                   radius: 20,
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.person, color: Colors.white),
                 ),
               ),
             ],

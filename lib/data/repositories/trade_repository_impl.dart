@@ -14,7 +14,9 @@ class TradeRepositoryImpl implements TradeRepository {
   TradeRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, TradeOfferEntity>> sendTradeOffer(TradeOfferEntity offer) async {
+  Future<Either<Failure, TradeOfferEntity>> sendTradeOffer(
+    TradeOfferEntity offer,
+  ) async {
     try {
       final model = TradeOfferModel.fromEntity(offer);
       final result = await remoteDataSource.sendTradeOffer(model);
@@ -34,7 +36,10 @@ class TradeRepositoryImpl implements TradeRepository {
     String? responseMessage,
   ) async {
     try {
-      final result = await remoteDataSource.acceptTradeOffer(offerId, responseMessage);
+      final result = await remoteDataSource.acceptTradeOffer(
+        offerId,
+        responseMessage,
+      );
       return Right(result);
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
@@ -51,7 +56,10 @@ class TradeRepositoryImpl implements TradeRepository {
     String? rejectionReason,
   ) async {
     try {
-      final result = await remoteDataSource.rejectTradeOffer(offerId, rejectionReason);
+      final result = await remoteDataSource.rejectTradeOffer(
+        offerId,
+        rejectionReason,
+      );
       return Right(result);
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
@@ -75,7 +83,9 @@ class TradeRepositoryImpl implements TradeRepository {
   }
 
   @override
-  Future<Either<Failure, TradeOfferEntity>> completeTrade(String offerId) async {
+  Future<Either<Failure, TradeOfferEntity>> completeTrade(
+    String offerId,
+  ) async {
     try {
       final result = await remoteDataSource.completeTrade(offerId);
       return Right(result);
@@ -89,7 +99,9 @@ class TradeRepositoryImpl implements TradeRepository {
   }
 
   @override
-  Future<Either<Failure, TradeOfferEntity>> getTradeOffer(String offerId) async {
+  Future<Either<Failure, TradeOfferEntity>> getTradeOffer(
+    String offerId,
+  ) async {
     try {
       final result = await remoteDataSource.getTradeOffer(offerId);
       return Right(result);
@@ -103,7 +115,9 @@ class TradeRepositoryImpl implements TradeRepository {
   }
 
   @override
-  Future<Either<Failure, List<TradeOfferEntity>>> getUserTradeOffers(String userId) async {
+  Future<Either<Failure, List<TradeOfferEntity>>> getUserTradeOffers(
+    String userId,
+  ) async {
     try {
       final result = await remoteDataSource.getUserTradeOffers(userId);
       return Right(result);
@@ -115,7 +129,9 @@ class TradeRepositoryImpl implements TradeRepository {
   }
 
   @override
-  Future<Either<Failure, List<TradeOfferEntity>>> getSentTradeOffers(String userId) async {
+  Future<Either<Failure, List<TradeOfferEntity>>> getSentTradeOffers(
+    String userId,
+  ) async {
     try {
       final result = await remoteDataSource.getSentTradeOffers(userId);
       return Right(result);
@@ -127,7 +143,9 @@ class TradeRepositoryImpl implements TradeRepository {
   }
 
   @override
-  Future<Either<Failure, List<TradeOfferEntity>>> getReceivedTradeOffers(String userId) async {
+  Future<Either<Failure, List<TradeOfferEntity>>> getReceivedTradeOffers(
+    String userId,
+  ) async {
     try {
       final result = await remoteDataSource.getReceivedTradeOffers(userId);
       return Right(result);
@@ -144,7 +162,10 @@ class TradeRepositoryImpl implements TradeRepository {
     TradeStatus status,
   ) async {
     try {
-      final result = await remoteDataSource.getTradeOffersByStatus(userId, status);
+      final result = await remoteDataSource.getTradeOffersByStatus(
+        userId,
+        status,
+      );
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -154,7 +175,9 @@ class TradeRepositoryImpl implements TradeRepository {
   }
 
   @override
-  Future<Either<Failure, List<TradeOfferEntity>>> getItemTradeHistory(String itemId) async {
+  Future<Either<Failure, List<TradeOfferEntity>>> getItemTradeHistory(
+    String itemId,
+  ) async {
     try {
       final result = await remoteDataSource.getItemTradeHistory(itemId);
       return Right(result);

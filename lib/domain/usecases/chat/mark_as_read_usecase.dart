@@ -8,10 +8,7 @@ class MarkAsReadParams {
   final String conversationId;
   final String userId;
 
-  MarkAsReadParams({
-    required this.conversationId,
-    required this.userId,
-  });
+  MarkAsReadParams({required this.conversationId, required this.userId});
 }
 
 /// Use case for marking messages as read

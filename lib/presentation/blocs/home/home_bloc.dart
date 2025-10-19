@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../domain/entities/item_entity.dart';
 import '../../../domain/usecases/item/item_usecases.dart';
 import '../../../domain/usecases/items/get_recent_items_usecase.dart';
 import '../../../domain/usecases/items/get_trending_items_usecase.dart';
@@ -53,17 +52,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(const HomeLoading());
-    
+
     try {
       // Load featured items
       add(const LoadFeaturedItems());
-      
+
       // Load recent items
       add(const LoadRecentItems());
-      
+
       // Load trending items
       add(const LoadTrendingItems());
-      
+
       emit(const HomeDataLoaded());
     } catch (e) {
       emit(HomeError('Failed to load home data: $e'));
@@ -75,9 +74,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     final result = await getFeaturedItemsUseCase();
-    
+
     result.fold(
-      (failure) => emit(HomeError('Failed to load featured items: ${failure.message}')),
+      (failure) =>
+          emit(HomeError('Failed to load featured items: ${failure.message}')),
       (items) => emit(HomeFeaturedItemsLoaded(items)),
     );
   }
@@ -87,9 +87,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     final result = await getRecentItemsUseCase(NoParams());
-    
+
     result.fold(
-      (failure) => emit(HomeError('Failed to load recent items: ${failure.message}')),
+      (failure) =>
+          emit(HomeError('Failed to load recent items: ${failure.message}')),
       (items) => emit(HomeRecentItemsLoaded(items)),
     );
   }
@@ -99,9 +100,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     final result = await getTrendingItemsUseCase(NoParams());
-    
+
     result.fold(
-      (failure) => emit(HomeError('Failed to load trending items: ${failure.message}')),
+      (failure) =>
+          emit(HomeError('Failed to load trending items: ${failure.message}')),
       (items) => emit(HomeTrendingItemsLoaded(items)),
     );
   }
@@ -113,7 +115,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(const HomeRefreshing());
     add(const LoadHomeData());
   }
-
 
   Future<void> _onCategorySelected(
     CategorySelected event,

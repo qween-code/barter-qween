@@ -12,21 +12,21 @@ class CreateItemUseCase {
 
   CreateItemUseCase(this.repository);
 
-  Future<Either<Failure, ItemEntity>> call(ItemEntity item, List<File>? images) async {
+  Future<Either<Failure, ItemEntity>> call(
+    ItemEntity item,
+    List<File>? images,
+  ) async {
     // First upload images if provided
     if (images != null && images.isNotEmpty) {
       final uploadResult = await repository.uploadItemImages(item.id, images);
-      
-      return uploadResult.fold(
-        (failure) => Left(failure),
-        (imageUrls) async {
-          // Create item with uploaded image URLs
-          final itemWithImages = item.copyWith(images: imageUrls);
-          return await repository.createItem(itemWithImages);
-        },
-      );
+
+      return uploadResult.fold((failure) => Left(failure), (imageUrls) async {
+        // Create item with uploaded image URLs
+        final itemWithImages = item.copyWith(images: imageUrls);
+        return await repository.createItem(itemWithImages);
+      });
     }
-    
+
     // Create item without images
     return await repository.createItem(item);
   }
@@ -39,22 +39,27 @@ class UpdateItemUseCase {
 
   UpdateItemUseCase(this.repository);
 
-  Future<Either<Failure, ItemEntity>> call(ItemEntity item, [List<File>? newImages]) async {
+  Future<Either<Failure, ItemEntity>> call(
+    ItemEntity item, [
+    List<File>? newImages,
+  ]) async {
     // First upload new images if provided
     if (newImages != null && newImages.isNotEmpty) {
-      final uploadResult = await repository.uploadItemImages(item.id, newImages);
-      
-      return uploadResult.fold(
-        (failure) => Left(failure),
-        (newImageUrls) async {
-          // Combine existing images with new uploaded image URLs
-          final allImages = [...item.images, ...newImageUrls];
-          final itemWithImages = item.copyWith(images: allImages);
-          return await repository.updateItem(itemWithImages);
-        },
+      final uploadResult = await repository.uploadItemImages(
+        item.id,
+        newImages,
       );
+
+      return uploadResult.fold((failure) => Left(failure), (
+        newImageUrls,
+      ) async {
+        // Combine existing images with new uploaded image URLs
+        final allImages = [...item.images, ...newImageUrls];
+        final itemWithImages = item.copyWith(images: allImages);
+        return await repository.updateItem(itemWithImages);
+      });
     }
-    
+
     // Update item without new images
     return await repository.updateItem(item);
   }
@@ -154,7 +159,10 @@ class UploadItemImagesUseCase {
 
   UploadItemImagesUseCase(this.repository);
 
-  Future<Either<Failure, List<String>>> call(String itemId, List<File> images) async {
+  Future<Either<Failure, List<String>>> call(
+    String itemId,
+    List<File> images,
+  ) async {
     return await repository.uploadItemImages(itemId, images);
   }
 }

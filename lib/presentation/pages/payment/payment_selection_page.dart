@@ -4,14 +4,14 @@ import '../../../domain/entities/payment_entity.dart';
 import '../../../domain/entities/subscription_entity.dart';
 
 /// World-Class Payment Selection Page
-/// 
+///
 /// Features:
 /// - Modern payment method cards
 /// - Platform-specific payment options (iOS/Android)
 /// - Animated selection
 /// - Secure payment indicators
 /// - Order summary
-/// 
+///
 /// Inspired by:
 /// - Uber payment selection
 /// - Airbnb checkout
@@ -22,7 +22,7 @@ class PaymentSelectionPage extends StatefulWidget {
   final PaymentType paymentType;
   final SubscriptionFeatures? subscriptionPlan;
   final bool? isYearly;
-  
+
   const PaymentSelectionPage({
     Key? key,
     required this.amount,
@@ -67,9 +67,9 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                 children: [
                   // Order Summary
                   _buildOrderSummary(),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Payment Methods
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -85,7 +85,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Show platform-specific payment methods
                         if (Platform.isIOS) ...[
                           _buildPaymentMethodCard(
@@ -97,7 +97,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                           ),
                           const SizedBox(height: 12),
                         ],
-                        
+
                         if (Platform.isAndroid) ...[
                           _buildPaymentMethodCard(
                             PaymentMethod.googlePay,
@@ -108,7 +108,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                           ),
                           const SizedBox(height: 12),
                         ],
-                        
+
                         // In-App Purchase (available on both platforms)
                         _buildPaymentMethodCard(
                           PaymentMethod.inAppPurchase,
@@ -117,9 +117,9 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                           Icons.store,
                           const Color(0xFFFF6B35),
                         ),
-                        
+
                         const SizedBox(height: 12),
-                        
+
                         // Credit Card (Coming Soon)
                         _buildPaymentMethodCard(
                           PaymentMethod.creditCard,
@@ -132,18 +132,18 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Security Badge
                   _buildSecurityBadge(),
-                  
+
                   const SizedBox(height: 32),
                 ],
               ),
             ),
           ),
-          
+
           // Pay Button
           _buildPayButton(),
         ],
@@ -201,25 +201,19 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                     const SizedBox(height: 4),
                     Text(
                       widget.description ?? widget.paymentType.description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          
+
           if (widget.subscriptionPlan != null) ...[
             const SizedBox(height: 20),
             const Divider(),
             const SizedBox(height: 20),
-            _buildSummaryRow(
-              'Plan',
-              widget.subscriptionPlan!.displayName,
-            ),
+            _buildSummaryRow('Plan', widget.subscriptionPlan!.displayName),
             const SizedBox(height: 12),
             _buildSummaryRow(
               'Fatura Dönemi',
@@ -234,11 +228,11 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
               ),
             ],
           ],
-          
+
           const SizedBox(height: 20),
           const Divider(),
           const SizedBox(height: 20),
-          
+
           // Total
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -266,23 +260,23 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, {bool isHighlight = false}) {
+  Widget _buildSummaryRow(
+    String label,
+    String value, {
+    bool isHighlight = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[700],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey[700])),
         Text(
           value,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isHighlight ? const Color(0xFFFF6B35) : const Color(0xFF2D3142),
+            color: isHighlight
+                ? const Color(0xFFFF6B35)
+                : const Color(0xFF2D3142),
           ),
         ),
       ],
@@ -298,7 +292,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
     bool isDisabled = false,
   }) {
     final isSelected = _selectedMethod == method;
-    
+
     return GestureDetector(
       onTap: isDisabled
           ? null
@@ -317,8 +311,8 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
             color: isSelected
                 ? const Color(0xFFFF6B35)
                 : isDisabled
-                    ? Colors.grey[300]!
-                    : Colors.grey[200]!,
+                ? Colors.grey[300]!
+                : Colors.grey[200]!,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: isSelected
@@ -380,11 +374,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                   color: Color(0xFFFF6B35),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                child: const Icon(Icons.check, color: Colors.white, size: 20),
               ),
           ],
         ),
@@ -431,10 +421,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
                 const SizedBox(height: 4),
                 Text(
                   'Tüm ödemeleriniz 256-bit SSL ile şifrelenir',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                 ),
               ],
             ),
@@ -489,10 +476,7 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.payment,
-                      color: Colors.white,
-                    ),
+                    const Icon(Icons.payment, color: Colors.white),
                     const SizedBox(width: 12),
                     Text(
                       'Ödeme Yap (₺${widget.amount.toStringAsFixed(2)})',
@@ -528,16 +512,16 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
 
   Future<void> _handlePayment() async {
     if (_selectedMethod == null) return;
-    
+
     setState(() => _isProcessing = true);
-    
+
     try {
       // TODO: Implement actual payment processing
       // await paymentService.processPayment(...)
-      
+
       // Simulate payment processing
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         // Navigate to success page
         Navigator.pushReplacementNamed(

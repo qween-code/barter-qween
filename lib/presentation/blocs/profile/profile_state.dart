@@ -31,6 +31,9 @@ class ProfileLoaded extends ProfileState {
   final int tradeCount;
   final double averageRating;
   final int ratingCount;
+  final int followersCount;
+  final int followingCount;
+  final bool isFollowing;
 
   const ProfileLoaded({
     required this.user,
@@ -38,10 +41,22 @@ class ProfileLoaded extends ProfileState {
     this.tradeCount = 0,
     this.averageRating = 0.0,
     this.ratingCount = 0,
+    this.followersCount = 0,
+    this.followingCount = 0,
+    this.isFollowing = false,
   });
 
   @override
-  List<Object?> get props => [user, itemCount, tradeCount, averageRating, ratingCount];
+  List<Object?> get props => [
+    user,
+    itemCount,
+    tradeCount,
+    averageRating,
+    ratingCount,
+    followersCount,
+    followingCount,
+    isFollowing,
+  ];
 }
 
 class ProfileUpdated extends ProfileState {
@@ -50,6 +65,9 @@ class ProfileUpdated extends ProfileState {
   final int tradeCount;
   final double averageRating;
   final int ratingCount;
+  final int followersCount;
+  final int followingCount;
+  final bool isFollowing;
 
   const ProfileUpdated({
     required this.user,
@@ -57,10 +75,22 @@ class ProfileUpdated extends ProfileState {
     this.tradeCount = 0,
     this.averageRating = 0.0,
     this.ratingCount = 0,
+    this.followersCount = 0,
+    this.followingCount = 0,
+    this.isFollowing = false,
   });
 
   @override
-  List<Object?> get props => [user, itemCount, tradeCount, averageRating, ratingCount];
+  List<Object?> get props => [
+    user,
+    itemCount,
+    tradeCount,
+    averageRating,
+    ratingCount,
+    followersCount,
+    followingCount,
+    isFollowing,
+  ];
 }
 
 // Avatar uploaded state for profile picture updates
@@ -88,5 +118,10 @@ class UserStatsLoaded extends ProfileState {
   });
 
   @override
-  List<Object?> get props => [itemCount, tradeCount, averageRating, ratingCount];
+  List<Object?> get props => [
+    itemCount,
+    tradeCount,
+    averageRating,
+    ratingCount,
+  ];
 }

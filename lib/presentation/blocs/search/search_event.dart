@@ -33,10 +33,7 @@ class SearchWithFilters extends SearchEvent {
   final String query;
   final SearchFilterEntity filters;
 
-  const SearchWithFilters({
-    required this.query,
-    required this.filters,
-  });
+  const SearchWithFilters({required this.query, required this.filters});
 
   @override
   List<Object?> get props => [query, filters];

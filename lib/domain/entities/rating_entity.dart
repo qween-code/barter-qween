@@ -21,14 +21,14 @@ class RatingEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        fromUserId,
-        toUserId,
-        tradeId,
-        rating,
-        comment,
-        createdAt,
-      ];
+    id,
+    fromUserId,
+    toUserId,
+    tradeId,
+    rating,
+    comment,
+    createdAt,
+  ];
 }
 
 class UserRatingStats extends Equatable {
@@ -46,9 +46,9 @@ class UserRatingStats extends Equatable {
 
   @override
   List<Object?> get props => [
-        userId,
-        averageRating,
-        totalRatings,
-        ratingDistribution,
-      ];
+    userId,
+    averageRating,
+    totalRatings,
+    ratingDistribution,
+  ];
 }

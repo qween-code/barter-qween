@@ -5,7 +5,7 @@ import '../entities/negotiation_entity.dart';
 import '../entities/trade_offer_entity.dart';
 
 /// Use case for creating a negotiation thread
-/// 
+///
 /// Starts a negotiation when offer recipient wants to negotiate terms
 /// instead of accepting/rejecting outright
 @lazySingleton
@@ -13,7 +13,7 @@ class CreateNegotiationUsecase {
   CreateNegotiationUsecase();
 
   /// Execute the use case
-  /// 
+  ///
   /// Creates a negotiation thread for a trade offer
   Future<Either<Failure, NegotiationEntity>> call(
     CreateNegotiationParams params,
@@ -27,7 +27,7 @@ class CreateNegotiationUsecase {
 
       // TODO: Verify trade offer exists and is in correct state
       // TODO: Check that negotiation doesn't already exist
-      
+
       final now = DateTime.now();
       final negotiation = NegotiationEntity(
         id: '', // Firestore will generate
@@ -62,7 +62,7 @@ class CreateNegotiationUsecase {
       // TODO: Update trade offer status to 'negotiating'
       // TODO: Send notification to responder
       // TODO: Create first negotiation round
-      
+
       return Right(negotiation);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -138,16 +138,17 @@ class CreateNegotiationUsecase {
 /// Parameters for creating negotiation
 class CreateNegotiationParams {
   final String tradeOfferId; // Original offer to negotiate
-  final String initiatorId; // User starting negotiation (usually offer recipient)
+  final String
+  initiatorId; // User starting negotiation (usually offer recipient)
   final String responderId; // User responding (usually offer sender)
-  
+
   // Initial negotiation terms (optional - can start with original offer terms)
   final double? initialCashOffer;
   final String? initialPaymentDirection;
   final String? initialMeetupLocation;
   final DateTime? initialMeetupTime;
   final String? initialMessage;
-  
+
   // Settings
   final int? expirationDays; // Default: 7 days
 

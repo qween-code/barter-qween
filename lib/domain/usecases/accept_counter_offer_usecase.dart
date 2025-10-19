@@ -6,7 +6,7 @@ import '../entities/negotiation_entity.dart';
 import '../entities/trade_entity.dart';
 
 /// Use case for accepting a counter-offer
-/// 
+///
 /// Validates acceptance permissions, updates negotiation state,
 /// and potentially creates a trade if terms are finalized
 @lazySingleton
@@ -14,7 +14,7 @@ class AcceptCounterOfferUsecase {
   AcceptCounterOfferUsecase();
 
   /// Execute the use case
-  /// 
+  ///
   /// Accepts the counter-offer and updates negotiation/trade state
   Future<Either<Failure, AcceptCounterOfferResult>> call(
     AcceptCounterOfferParams params,
@@ -31,9 +31,9 @@ class AcceptCounterOfferUsecase {
       // TODO: Get counter-offer from repository
       // TODO: Validate user can accept (must be target user)
       // TODO: Validate counter-offer is still valid (not expired)
-      
+
       final now = DateTime.now();
-      
+
       // Create result placeholder
       // In real implementation, this would:
       // 1. Update counter-offer status to 'accepted'
@@ -41,7 +41,7 @@ class AcceptCounterOfferUsecase {
       // 3. Mark negotiation as 'agreed'
       // 4. Optionally create Trade entity
       // 5. Send notification to other party
-      
+
       final result = AcceptCounterOfferResult(
         counterOfferId: params.counterOfferId,
         negotiationId: '', // TODO: Get from counter-offer
@@ -61,7 +61,7 @@ class AcceptCounterOfferUsecase {
   TradeEntity? _createTradeFromAcceptance(AcceptCounterOfferParams params) {
     // TODO: Get actual offer/negotiation data
     // This is placeholder - real implementation would get data from repository
-    
+
     final now = DateTime.now();
     return TradeEntity(
       id: '',

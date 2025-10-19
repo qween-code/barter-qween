@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS REGISTER PAGE
-/// 
+///
 /// Features:
 /// - Multi-step registration
 /// - Form validation

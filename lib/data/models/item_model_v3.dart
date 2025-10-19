@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/item_entity.dart';
-import '../../domain/entities/barter_condition_entity.dart';
 import 'barter_condition_model.dart';
 
 /// ItemModel V3 - Complete implementation with all Sprint 1-4 features
@@ -27,30 +26,30 @@ class ItemModelV3 {
   final List<String>? tags;
   final bool isFeatured;
   final String? tradePreference;
-  
+
   // Sprint 1: Barter System
   final double? monetaryValue;
   final Map<String, dynamic>? barterCondition;
   final String? tier;
-  
+
   // Sprint 1: Moderation
   final String moderationStatus;
   final String? adminNotes;
   final Timestamp? approvedAt;
   final String? approvedBy;
-  
+
   // Sprint 1: Media
   final List<String>? videoUrls;
-  
+
   // Sprint 1: Delivery
   final bool requiresDelivery;
   final String? deliveryInfo;
-  
+
   // Sprint 1: Location
   final double? latitude;
   final double? longitude;
   final String? fullAddress;
-  
+
   // Sprint 4: Specifications
   final Map<String, dynamic>? specifications;
 
@@ -120,7 +119,7 @@ class ItemModelV3 {
       isFeatured: data['isFeatured'] ?? false,
       tradePreference: data['tradePreference'],
       monetaryValue: data['monetaryValue']?.toDouble(),
-      barterCondition: data['barterCondition'] != null 
+      barterCondition: data['barterCondition'] != null
           ? Map<String, dynamic>.from(data['barterCondition'])
           : null,
       tier: data['tier'],
@@ -128,15 +127,15 @@ class ItemModelV3 {
       adminNotes: data['adminNotes'],
       approvedAt: data['approvedAt'],
       approvedBy: data['approvedBy'],
-      videoUrls: data['videoUrls'] != null 
-          ? List<String>.from(data['videoUrls']) 
+      videoUrls: data['videoUrls'] != null
+          ? List<String>.from(data['videoUrls'])
           : null,
       requiresDelivery: data['requiresDelivery'] ?? false,
       deliveryInfo: data['deliveryInfo'],
       latitude: data['latitude']?.toDouble(),
       longitude: data['longitude']?.toDouble(),
       fullAddress: data['fullAddress'],
-      specifications: data['specifications'] != null 
+      specifications: data['specifications'] != null
           ? Map<String, dynamic>.from(data['specifications'])
           : null,
     );
@@ -202,8 +201,8 @@ class ItemModelV3 {
       city: entity.city,
       status: _statusToString(entity.status),
       createdAt: Timestamp.fromDate(entity.createdAt),
-      updatedAt: entity.updatedAt != null 
-          ? Timestamp.fromDate(entity.updatedAt!) 
+      updatedAt: entity.updatedAt != null
+          ? Timestamp.fromDate(entity.updatedAt!)
           : null,
       viewCount: entity.viewCount,
       favoriteCount: entity.favoriteCount,
@@ -211,14 +210,14 @@ class ItemModelV3 {
       isFeatured: entity.isFeatured,
       tradePreference: entity.tradePreference,
       monetaryValue: entity.monetaryValue,
-      barterCondition: entity.barterCondition != null 
+      barterCondition: entity.barterCondition != null
           ? BarterConditionModel.fromEntity(entity.barterCondition!).toJson()
           : null,
       tier: entity.tier != null ? _tierToString(entity.tier!) : null,
       moderationStatus: _moderationStatusToString(entity.moderationStatus),
       adminNotes: entity.adminNotes,
-      approvedAt: entity.approvedAt != null 
-          ? Timestamp.fromDate(entity.approvedAt!) 
+      approvedAt: entity.approvedAt != null
+          ? Timestamp.fromDate(entity.approvedAt!)
           : null,
       approvedBy: entity.approvedBy,
       videoUrls: entity.videoUrls,
@@ -257,7 +256,7 @@ class ItemModelV3 {
       isFeatured: isFeatured,
       tradePreference: tradePreference,
       monetaryValue: monetaryValue,
-      barterCondition: barterCondition != null 
+      barterCondition: barterCondition != null
           ? BarterConditionModel.fromJson(barterCondition!).toEntity()
           : null,
       tier: tier != null ? _stringToTier(tier!) : null,

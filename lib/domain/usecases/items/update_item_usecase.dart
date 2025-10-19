@@ -13,9 +13,9 @@ class UpdateItemUseCase {
   UpdateItemUseCase(this.repository);
 
   /// Execute the use case
-  /// 
-  /// Updates an item with new data
-  /// Returns Either<Failure, ItemEntity>
+  ///
+  /// Updates an item with new data.
+  /// Returns an Either with a Failure on error or the updated item on success.
   Future<Either<Failure, ItemEntity>> call(ItemEntity item) async {
     try {
       return await repository.updateItem(item);

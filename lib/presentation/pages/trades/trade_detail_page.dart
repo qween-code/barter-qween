@@ -153,10 +153,7 @@ class TradeDetailPage extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Trade ID: ${offer.id.substring(0, 8)}...',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -183,22 +180,25 @@ class TradeDetailPage extends StatelessWidget {
         children: [
           const Text(
             'Trade Overview',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
             icon: Icons.person_outline,
             label: 'From',
-            value: offer.fromUserName,
+            value: _resolveParticipantName(
+              offer.fromUserName,
+              fallback: 'Satıcı',
+            ),
           ),
           const SizedBox(height: 12),
           _buildInfoRow(
             icon: Icons.person,
             label: 'To',
-            value: offer.toUserName,
+            value: _resolveParticipantName(
+              offer.toUserName,
+              fallback: 'Alıcı',
+            ),
           ),
           const SizedBox(height: 12),
           _buildInfoRow(
@@ -231,10 +231,7 @@ class TradeDetailPage extends StatelessWidget {
         children: [
           const Text(
             'Items in Trade',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           // Offered Item
@@ -297,10 +294,15 @@ class TradeDetailPage extends StatelessWidget {
                   ? Image.network(
                       images.first,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.inventory_2_outlined, color: Colors.grey.shade400),
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.inventory_2_outlined,
+                        color: Colors.grey.shade400,
+                      ),
                     )
-                  : Icon(Icons.inventory_2_outlined, color: Colors.grey.shade400),
+                  : Icon(
+                      Icons.inventory_2_outlined,
+                      color: Colors.grey.shade400,
+                    ),
             ),
           ),
           const SizedBox(width: 12),
@@ -309,7 +311,10 @@ class TradeDetailPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -361,14 +366,15 @@ class TradeDetailPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.message, size: 20, color: Theme.of(context).primaryColor),
+              Icon(
+                Icons.message,
+                size: 20,
+                color: Theme.of(context).primaryColor,
+              ),
               const SizedBox(width: 8),
               const Text(
                 'Message',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -414,10 +420,7 @@ class TradeDetailPage extends StatelessWidget {
         children: [
           const Text(
             'Timeline',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           _buildTimelineItem(
@@ -473,7 +476,9 @@ class TradeDetailPage extends StatelessWidget {
                     fromUserId = auth.user.uid;
                   }
                   // Determine the other user
-                  toUserId = (fromUserId == offer.fromUserId) ? offer.toUserId : offer.fromUserId;
+                  toUserId = (fromUserId == offer.fromUserId)
+                      ? offer.toUserId
+                      : offer.fromUserId;
 
                   await showDialog(
                     context: context,
@@ -481,13 +486,15 @@ class TradeDetailPage extends StatelessWidget {
                       userName: offer.toUserName,
                       onSubmit: (rating, comment) {
                         if (fromUserId != null) {
-                          context.read<RatingBloc>().add(SubmitRating(
-                                fromUserId: fromUserId,
-                                toUserId: toUserId,
-                                tradeId: offer.id,
-                                rating: rating,
-                                comment: comment,
-                              ));
+                          context.read<RatingBloc>().add(
+                            SubmitRating(
+                              fromUserId: fromUserId,
+                              toUserId: toUserId,
+                              tradeId: offer.id,
+                              rating: rating,
+                              comment: comment,
+                            ),
+                          );
                         }
                       },
                     ),
@@ -499,7 +506,9 @@ class TradeDetailPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.amber,
                   foregroundColor: Colors.black87,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -523,8 +532,8 @@ class TradeDetailPage extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isCompleted 
-                  ? Colors.green.withValues(alpha: 0.1) 
+              color: isCompleted
+                  ? Colors.green.withValues(alpha: 0.1)
                   : Colors.grey.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
@@ -548,10 +557,7 @@ class TradeDetailPage extends StatelessWidget {
                 ),
                 Text(
                   _formatDateTime(time),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
             ),
@@ -574,7 +580,7 @@ class TradeDetailPage extends StatelessWidget {
                 try {
                   getIt<AnalyticsService>().logTradeAccepted(tradeId: offer.id);
                 } catch (_) {}
-                
+
                 context.read<TradeBloc>().add(AcceptTradeOffer(offer.id));
               },
               icon: const Icon(Icons.check),
@@ -615,7 +621,9 @@ class TradeDetailPage extends StatelessWidget {
                   onPressed: () {
                     // TODO: Open chat with user
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Chat feature coming soon!')),
+                      const SnackBar(
+                        content: Text('Chat feature coming soon!'),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.chat_bubble_outline),
@@ -635,6 +643,14 @@ class TradeDetailPage extends StatelessWidget {
     );
   }
 
+  String _resolveParticipantName(String name, {required String fallback}) {
+    final sanitized = name.trim();
+    if (sanitized.isEmpty || sanitized.toLowerCase() == 'unknown') {
+      return fallback;
+    }
+    return sanitized;
+  }
+
   Widget _buildInfoRow({
     required IconData icon,
     required String label,
@@ -650,10 +666,7 @@ class TradeDetailPage extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
               Text(
                 value,
@@ -674,7 +687,9 @@ class TradeDetailPage extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Reject Trade'),
-        content: const Text('Are you sure you want to reject this trade offer?'),
+        content: const Text(
+          'Are you sure you want to reject this trade offer?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
@@ -686,7 +701,7 @@ class TradeDetailPage extends StatelessWidget {
               try {
                 getIt<AnalyticsService>().logTradeRejected(tradeId: offer.id);
               } catch (_) {}
-              
+
               context.read<TradeBloc>().add(RejectTradeOffer(offer.id));
               Navigator.pop(dialogContext);
             },
@@ -737,7 +752,9 @@ class TradeDetailPage extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Cancel Trade'),
-        content: const Text('Are you sure you want to cancel this trade offer?'),
+        content: const Text(
+          'Are you sure you want to cancel this trade offer?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),

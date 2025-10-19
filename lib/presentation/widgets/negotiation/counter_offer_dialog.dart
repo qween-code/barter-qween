@@ -47,35 +47,23 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
-    _slideAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.elasticOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.elasticOut),
+    );
 
-    _pulseAnimation = Tween<double>(
-      begin: 0.95,
-      end: 1.05,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
+    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
 
     _slideController.forward();
     _pulseController.repeat(reverse: true);
@@ -110,11 +98,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildHeader(),
-                    _buildContent(),
-                    _buildActions(),
-                  ],
+                  children: [_buildHeader(), _buildContent(), _buildActions()],
                 ),
               ),
             ),
@@ -223,9 +207,9 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
             ),
             const SizedBox(height: 12),
             _buildOfferTypeSelector(),
-            
+
             const SizedBox(height: 24),
-            
+
             // Cash Amount Input (if cash type selected)
             if (_selectedType == CounterOfferType.cash) ...[
               Text(
@@ -240,7 +224,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
               _buildCashAmountInput(),
               const SizedBox(height: 24),
             ],
-            
+
             // Message Input
             Text(
               'Message (Optional)',
@@ -300,7 +284,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
     required String label,
   }) {
     final isSelected = _selectedType == type;
-    
+
     return GestureDetector(
       onTap: () => setState(() => _selectedType = type),
       child: AnimatedContainer(
@@ -351,18 +335,11 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
       child: TextFormField(
         controller: _cashAmountController,
         keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
-        style: TextStyle(
-          color: MinimalDesignSystem.ultraDark,
-          fontSize: 16,
-        ),
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        style: TextStyle(color: MinimalDesignSystem.ultraDark, fontSize: 16),
         decoration: InputDecoration(
           hintText: 'Enter cash amount',
-          hintStyle: TextStyle(
-            color: MinimalDesignSystem.lightShadow,
-          ),
+          hintStyle: TextStyle(color: MinimalDesignSystem.lightShadow),
           prefixIcon: Icon(
             Icons.attach_money,
             color: MinimalDesignSystem.softDark,
@@ -374,7 +351,7 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
           ),
         ),
         validator: (value) {
-          if (_selectedType == CounterOfferType.cash && 
+          if (_selectedType == CounterOfferType.cash &&
               (value == null || value.isEmpty)) {
             return 'Please enter cash amount';
           }
@@ -394,15 +371,10 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
       child: TextFormField(
         controller: _messageController,
         maxLines: 3,
-        style: TextStyle(
-          color: MinimalDesignSystem.ultraDark,
-          fontSize: 16,
-        ),
+        style: TextStyle(color: MinimalDesignSystem.ultraDark, fontSize: 16),
         decoration: InputDecoration(
           hintText: 'Add a message to your counter offer...',
-          hintStyle: TextStyle(
-            color: MinimalDesignSystem.lightShadow,
-          ),
+          hintStyle: TextStyle(color: MinimalDesignSystem.lightShadow),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(16),
         ),
@@ -514,4 +486,3 @@ class _CounterOfferDialogState extends State<CounterOfferDialog>
     });
   }
 }
-

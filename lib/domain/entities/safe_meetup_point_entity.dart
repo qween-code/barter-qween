@@ -27,17 +27,17 @@ class SafeMeetupPoint extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        address,
-        latitude,
-        longitude,
-        type,
-        safetyScore,
-        is24Hours,
-        description,
-        createdAt,
-      ];
+    id,
+    name,
+    address,
+    latitude,
+    longitude,
+    type,
+    safetyScore,
+    is24Hours,
+    description,
+    createdAt,
+  ];
 
   SafeMeetupPoint copyWith({
     String? id,

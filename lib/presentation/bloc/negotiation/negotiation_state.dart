@@ -94,11 +94,7 @@ class NegotiationCompleted extends NegotiationState {
   final String message;
   final dynamic trade; // TradeEntity
 
-  const NegotiationCompleted(
-    this.negotiation,
-    this.message, {
-    this.trade,
-  });
+  const NegotiationCompleted(this.negotiation, this.message, {this.trade});
 
   @override
   List<Object?> get props => [negotiation, message, trade];

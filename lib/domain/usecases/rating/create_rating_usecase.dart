@@ -17,10 +17,10 @@ class CreateRatingUseCase {
     required int rating,
     String? comment,
   }) => repository.createRating(
-        fromUserId: fromUserId,
-        toUserId: toUserId,
-        tradeId: tradeId,
-        rating: rating,
-        comment: comment,
-      );
+    fromUserId: fromUserId,
+    toUserId: toUserId,
+    tradeId: tradeId,
+    rating: rating,
+    comment: comment,
+  );
 }

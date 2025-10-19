@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 /// Professional video player widget with controls and fullscreen support
-/// 
+///
 /// Features:
 /// - Auto-play option
 /// - Fullscreen mode
@@ -71,11 +71,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 64,
-                ),
+                const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 Text(
                   'Video failed to load',
@@ -88,10 +84,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 const SizedBox(height: 8),
                 Text(
                   errorMessage,
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -140,11 +133,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 64,
-                ),
+                const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 const Text(
                   'Failed to load video',
@@ -206,10 +195,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 SizedBox(height: 16),
                 Text(
                   'Loading video...',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -220,9 +206,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
     return AspectRatio(
       aspectRatio: widget.aspectRatio,
-      child: Chewie(
-        controller: _chewieController!,
-      ),
+      child: Chewie(controller: _chewieController!),
     );
   }
 }
@@ -247,30 +231,32 @@ class VideoThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ?? () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => Scaffold(
-              backgroundColor: Colors.black,
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.pop(context),
+      onTap:
+          onTap ??
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => Scaffold(
+                  backgroundColor: Colors.black,
+                  appBar: AppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    leading: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  body: Center(
+                    child: VideoPlayerWidget(
+                      videoUrl: videoUrl,
+                      autoPlay: true,
+                    ),
+                  ),
                 ),
               ),
-              body: Center(
-                child: VideoPlayerWidget(
-                  videoUrl: videoUrl,
-                  autoPlay: true,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+            );
+          },
       child: Stack(
         children: [
           // Thumbnail or placeholder
@@ -323,10 +309,7 @@ class VideoThumbnail extends StatelessWidget {
             bottom: 12,
             right: 12,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.7),
                 borderRadius: BorderRadius.circular(4),
@@ -334,11 +317,7 @@ class VideoThumbnail extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.videocam,
-                    size: 14,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.videocam, size: 14, color: Colors.white),
                   SizedBox(width: 4),
                   Text(
                     'VIDEO',

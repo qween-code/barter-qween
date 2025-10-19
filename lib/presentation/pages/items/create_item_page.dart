@@ -39,12 +39,12 @@ class _CreateItemViewState extends State<CreateItemView> {
   final _descriptionController = TextEditingController();
   final _tradePreferenceController = TextEditingController();
   final _picker = ImagePicker();
-  
+
   List<File> _selectedImages = [];
   String? _selectedCategory;
   String? _selectedCondition;
   bool _isLoading = false;
-  
+
   // Barter fields
   ItemTier _selectedTier = ItemTier.medium;
   double? _estimatedValue;
@@ -67,11 +67,26 @@ class _CreateItemViewState extends State<CreateItemView> {
       imageQuality: 85,
     );
 
-    if (pickedFiles != null) {
-      setState(() {
-        _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
-      });
-    }
+    if (pickedFiles.isEmpty) return;
+
+    setState(() {
+      _selectedImages = pickedFiles.map((file) => File(file.path)).toList();
+    });
+  }
+
+  Future<void> _captureImage() async {
+    final captured = await _picker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
+    );
+
+    if (captured == null) return;
+
+    setState(() {
+      _selectedImages = [..._selectedImages, File(captured.path)];
+    });
   }
 
   void _removeImage(int index) {
@@ -106,9 +121,11 @@ class _CreateItemViewState extends State<CreateItemView> {
       paymentDirection: _barterConditionType == BarterConditionType.cashPlus
           ? CashPaymentDirection.fromMe
           : _barterConditionType == BarterConditionType.cashMinus
-              ? CashPaymentDirection.toMe
-              : null,
-      acceptedCategories: _acceptedCategories.isNotEmpty ? _acceptedCategories : null,
+          ? CashPaymentDirection.toMe
+          : null,
+      acceptedCategories: _acceptedCategories.isNotEmpty
+          ? _acceptedCategories
+          : null,
       createdAt: DateTime.now(),
     );
 
@@ -184,9 +201,9 @@ class _CreateItemViewState extends State<CreateItemView> {
                   ),
                 ),
                 const SizedBox(height: AppDimensions.spacing12),
-                
+
                 _buildImagePicker(),
-                
+
                 const SizedBox(height: AppDimensions.spacing24),
 
                 // Title
@@ -212,13 +229,18 @@ class _CreateItemViewState extends State<CreateItemView> {
                     labelText: 'Category',
                     prefixIcon: const Icon(Icons.category_outlined),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMedium,
+                      ),
                     ),
                   ),
                   items: ItemCategory.all
-                      .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
+                      .map(
+                        (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                      )
                       .toList(),
-                  onChanged: (value) => setState(() => _selectedCategory = value),
+                  onChanged: (value) =>
+                      setState(() => _selectedCategory = value),
                   validator: (value) {
                     if (value == null) return 'Please select a category';
                     return null;
@@ -234,13 +256,19 @@ class _CreateItemViewState extends State<CreateItemView> {
                     labelText: 'Condition',
                     prefixIcon: const Icon(Icons.star_outline),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMedium,
+                      ),
                     ),
                   ),
                   items: ItemCondition.all
-                      .map((cond) => DropdownMenuItem(value: cond, child: Text(cond)))
+                      .map(
+                        (cond) =>
+                            DropdownMenuItem(value: cond, child: Text(cond)),
+                      )
                       .toList(),
-                  onChanged: (value) => setState(() => _selectedCondition = value),
+                  onChanged: (value) =>
+                      setState(() => _selectedCondition = value),
                 ),
 
                 const SizedBox(height: AppDimensions.spacing16),
@@ -339,46 +367,72 @@ class _CreateItemViewState extends State<CreateItemView> {
       child: Column(
         children: [
           if (_selectedImages.isEmpty)
-            InkWell(
-              onTap: _pickImages,
-              child: Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                  border: Border.all(
-                    color: AppColors.borderLight,
-                    style: BorderStyle.solid,
-                    width: 2,
+            Column(
+              children: [
+                InkWell(
+                  onTap: _pickImages,
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusMedium),
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceVariant,
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMedium,
+                      ),
+                      border: Border.all(
+                        color: AppColors.borderLight,
+                        style: BorderStyle.solid,
+                        width: 2,
+                      ),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_photo_alternate_outlined,
+                            size: 64,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(height: AppDimensions.spacing12),
+                          Text(
+                            'Galeriden Seç',
+                            style: AppTextStyles.titleMedium.copyWith(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(height: AppDimensions.spacing4),
+                          Text(
+                            'Cihazınızdan birden fazla fotoğraf ekleyin',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate_outlined,
-                        size: 64,
-                        color: AppColors.primary,
+                const SizedBox(height: AppDimensions.spacing16),
+                OutlinedButton.icon(
+                  onPressed: _captureImage,
+                  icon: const Icon(Icons.photo_camera_outlined),
+                  label: const Text('Kamera ile fotoğraf çek'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppDimensions.spacing12,
+                      horizontal: AppDimensions.spacing16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusMedium,
                       ),
-                      const SizedBox(height: AppDimensions.spacing12),
-                      Text(
-                        'Add Photos',
-                        style: AppTextStyles.titleMedium.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: AppDimensions.spacing4),
-                      Text(
-                        'Tap to select images',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             )
           else
             Column(
@@ -428,10 +482,24 @@ class _CreateItemViewState extends State<CreateItemView> {
                   },
                 ),
                 const SizedBox(height: AppDimensions.spacing12),
-                OutlinedButton.icon(
-                  onPressed: _pickImages,
-                  icon: const Icon(Icons.add_photo_alternate_outlined),
-                  label: const Text('Add More Photos'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _pickImages,
+                        icon: const Icon(Icons.add_photo_alternate_outlined),
+                        label: const Text('Galeriden ekle'),
+                      ),
+                    ),
+                    const SizedBox(width: AppDimensions.spacing12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _captureImage,
+                        icon: const Icon(Icons.photo_camera_outlined),
+                        label: const Text('Kameradan ekle'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -485,7 +553,9 @@ class _CreateItemViewState extends State<CreateItemView> {
                     color: isSelected
                         ? AppColors.primary.withValues(alpha: 0.1)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                    borderRadius: BorderRadius.circular(
+                      AppDimensions.radiusSmall,
+                    ),
                     border: Border.all(
                       color: isSelected
                           ? AppColors.primary

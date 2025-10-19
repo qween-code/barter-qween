@@ -2,9 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// World-class advanced image gallery with fullscreen, pinch-to-zoom, and hero animations
-/// 
+///
 /// Features:
 /// - Hero animations for smooth transitions
 /// - Pinch-to-zoom functionality
@@ -79,7 +80,7 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
               },
               builder: (context, index) {
                 final imageUrl = widget.imageUrls[index];
-                
+
                 return PhotoViewGalleryPageOptions(
                   imageProvider: CachedNetworkImageProvider(imageUrl),
                   initialScale: PhotoViewComputedScale.contained,
@@ -101,7 +102,9 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
                           const SizedBox(height: 16),
                           Text(
                             'Failed to load image',
-                            style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                            ),
                           ),
                         ],
                       ),
@@ -117,16 +120,19 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
                     ),
                   );
                 }
-                final value = event.cumulativeBytesLoaded / 
-                              (event.expectedTotalBytes ?? 1);
-                
+                final value =
+                    event.cumulativeBytesLoaded /
+                    (event.expectedTotalBytes ?? 1);
+
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(
                         value: value,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -180,9 +186,9 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
                               ),
                             ),
                           ),
-                          
+
                           const Spacer(),
-                          
+
                           // Image Counter
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -202,13 +208,22 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
                               ),
                             ),
                           ),
-                          
+
                           const Spacer(),
-                          
+
                           // Action Buttons
                           if (widget.showShareButton)
                             IconButton(
-                              onPressed: widget.onShare,
+                              onPressed: widget.onShare ?? () {
+                                if (widget.imageUrls.isEmpty) {
+                                  return;
+                                }
+                                final currentUrl = widget.imageUrls[_currentIndex];
+                                if (currentUrl.isEmpty) {
+                                  return;
+                                }
+                                Share.share(currentUrl);
+                              },
                               icon: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
@@ -222,14 +237,16 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
                                 ),
                               ),
                             ),
-                          
+
                           if (widget.showDownloadButton)
                             IconButton(
                               onPressed: () {
                                 // TODO: Implement download functionality
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Download functionality coming soon'),
+                                    content: Text(
+                                      'Download functionality coming soon',
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -294,8 +311,8 @@ class _AdvancedImageGalleryState extends State<AdvancedImageGallery> {
               ),
 
             // Swipe Hint (shows only on first view)
-            if (_showControls && 
-                widget.imageUrls.length > 1 && 
+            if (_showControls &&
+                widget.imageUrls.length > 1 &&
                 _currentIndex == 0)
               Positioned(
                 bottom: 100,
@@ -384,17 +401,19 @@ class CompactImageGallery extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: onTap ?? () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AdvancedImageGallery(
-              imageUrls: imageUrls,
-              heroTag: heroTagPrefix,
-            ),
-          ),
-        );
-      },
+      onTap:
+          onTap ??
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AdvancedImageGallery(
+                  imageUrls: imageUrls,
+                  heroTag: heroTagPrefix,
+                ),
+              ),
+            );
+          },
       child: Hero(
         tag: heroTagPrefix != null ? '${heroTagPrefix}_0' : imageUrls.first,
         child: ClipRRect(

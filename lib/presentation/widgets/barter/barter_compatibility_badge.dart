@@ -38,11 +38,7 @@ class BarterCompatibilityBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _getIconForScore(score),
-            size: iconSize,
-            color: color,
-          ),
+          Icon(_getIconForScore(score), size: iconSize, color: color),
           if (showPercentage) ...[
             const SizedBox(width: 4),
             Text(
@@ -153,14 +149,8 @@ class BarterCompatibilityCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Uyumluluk Skoru',
-                style: AppTextStyles.titleMedium,
-              ),
-              BarterCompatibilityBadge(
-                score: score,
-                showLabel: true,
-              ),
+              Text('Uyumluluk Skoru', style: AppTextStyles.titleMedium),
+              BarterCompatibilityBadge(score: score, showLabel: true),
             ],
           ),
           const SizedBox(height: AppDimensions.spacing12),

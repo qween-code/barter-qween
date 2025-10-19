@@ -23,7 +23,9 @@ class BarterMatchCubit extends Cubit<BarterMatchState> {
   Future<void> loadBarterMatches(String itemId) async {
     emit(BarterMatchLoading());
 
-    final result = await _getBarterMatchesUsecase(GetBarterMatchesParams(itemId: itemId));
+    final result = await _getBarterMatchesUsecase(
+      GetBarterMatchesParams(itemId: itemId),
+    );
 
     result.fold(
       (failure) => emit(BarterMatchError(failure.message)),
@@ -36,15 +38,16 @@ class BarterMatchCubit extends Cubit<BarterMatchState> {
     final currentState = state;
     if (currentState is! BarterMatchLoaded) return;
 
-    final result = await _dismissBarterMatchUsecase(DismissBarterMatchParams(matchId: matchId));
-
-    result.fold(
-      (failure) => emit(BarterMatchError(failure.message)),
-      (_) {
-        final updatedMatches = currentState.matches.where((match) => match.id != matchId).toList();
-        emit(BarterMatchLoaded(updatedMatches));
-      },
+    final result = await _dismissBarterMatchUsecase(
+      DismissBarterMatchParams(matchId: matchId),
     );
+
+    result.fold((failure) => emit(BarterMatchError(failure.message)), (_) {
+      final updatedMatches = currentState.matches
+          .where((match) => match.id != matchId)
+          .toList();
+      emit(BarterMatchLoaded(updatedMatches));
+    });
   }
 
   /// Add event handler for BLoC compatibility

@@ -22,14 +22,7 @@ enum TextFieldSize {
   final double padding;
 }
 
-enum TextFieldState {
-  normal,
-  focused,
-  error,
-  disabled,
-  loading,
-  success,
-}
+enum TextFieldState { normal, focused, error, disabled, loading, success }
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
@@ -88,8 +81,6 @@ class _CustomTextFieldState extends State<CustomTextField>
 
   late Animation<double> _focusScaleAnimation;
   late Animation<double> _hoverScaleAnimation;
-  late Animation<double> _borderAnimation;
-  late Animation<List<BoxShadow>> _shadowAnimation;
   late Animation<double> _shakeAnimation;
 
   final FocusNode _focusNode = FocusNode();
@@ -121,34 +112,6 @@ class _CustomTextFieldState extends State<CustomTextField>
       CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
     );
 
-    // Border animasyonu
-    _borderAnimation = Tween<double>(
-      begin: AppDimensions.inputBorderWidth1,
-      end: AppDimensions.inputBorderWidth3,
-    ).animate(
-      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
-    );
-
-    // Shadow animasyonu
-    _shadowAnimation = TweenSequence<List<BoxShadow>>([
-      TweenSequenceItem(
-        tween: Tween<List<BoxShadow>>(
-          begin: MinimalDesignSystem.neumorphismUltraOutsetShadow,
-          end: MinimalDesignSystem.neumorphismHoverShadow,
-        ),
-        weight: 50,
-      ),
-      TweenSequenceItem(
-        tween: Tween<List<BoxShadow>>(
-          begin: MinimalDesignSystem.neumorphismHoverShadow,
-          end: MinimalDesignSystem.neumorphismUltraOutsetShadow,
-        ),
-        weight: 50,
-      ),
-    ]).animate(
-      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
-    );
-
     // Loading animasyonu
     _loadingController = AnimationController(
       duration: const Duration(seconds: 2),
@@ -160,12 +123,27 @@ class _CustomTextFieldState extends State<CustomTextField>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _shakeAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween<double>(begin: 0, end: -10), weight: 25),
-      TweenSequenceItem(tween: Tween<double>(begin: -10, end: 10), weight: 25),
-      TweenSequenceItem(tween: Tween<double>(begin: 10, end: -5), weight: 25),
-      TweenSequenceItem(tween: Tween<double>(begin: -5, end: 0), weight: 25),
-    ]).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut));
+    _shakeAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(
+            tween: Tween<double>(begin: 0, end: -10),
+            weight: 25,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(begin: -10, end: 10),
+            weight: 25,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(begin: 10, end: -5),
+            weight: 25,
+          ),
+          TweenSequenceItem(
+            tween: Tween<double>(begin: -5, end: 0),
+            weight: 25,
+          ),
+        ]).animate(
+          CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut),
+        );
   }
 
   void _disposeAnimations() {
@@ -184,7 +162,9 @@ class _CustomTextFieldState extends State<CustomTextField>
           // _focusController.forward();
           widget.onFocus?.call();
         } else {
-          _currentState = _hasError ? TextFieldState.error : TextFieldState.normal;
+          _currentState = _hasError
+              ? TextFieldState.error
+              : TextFieldState.normal;
           // _focusController.reverse();
           widget.onBlur?.call();
         }
@@ -236,10 +216,7 @@ class _CustomTextFieldState extends State<CustomTextField>
         builder: (context, child) {
           return Transform.translate(
             offset: Offset(_shakeAnimation.value, 0),
-            child: Transform.scale(
-              scale: _getCurrentScale(),
-              child: child,
-            ),
+            child: Transform.scale(scale: _getCurrentScale(), child: child),
           );
         },
         child: Container(
@@ -278,7 +255,11 @@ class _CustomTextFieldState extends State<CustomTextField>
             onChanged: (value) {
               if (_hasError && widget.validator?.call(value) == null) {
                 _hasError = false;
-                _updateState(_focusNode.hasFocus ? TextFieldState.focused : TextFieldState.normal);
+                _updateState(
+                  _focusNode.hasFocus
+                      ? TextFieldState.focused
+                      : TextFieldState.normal,
+                );
               }
               widget.onChanged?.call(value);
             },
@@ -292,7 +273,7 @@ class _CustomTextFieldState extends State<CustomTextField>
                       duration: AppDimensions.animation4,
                       child: Icon(
                         widget.prefixIcon,
-                        key: ValueKey('${widget.prefixIcon}_${_currentState}'),
+                        key: ValueKey('${widget.prefixIcon}_$_currentState'),
                         color: _getIconColor(),
                         size: _getIconSize(),
                       ),
@@ -312,7 +293,9 @@ class _CustomTextFieldState extends State<CustomTextField>
               disabledBorder: InputBorder.none,
               labelStyle: _getLabelStyle(),
               hintStyle: _getHintStyle(),
-              errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
+              errorStyle: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.error,
+              ),
             ),
           ),
         ),
@@ -378,9 +361,7 @@ class _CustomTextFieldState extends State<CustomTextField>
     }
 
     if (widget.enableCinematicMode) {
-      return [
-        ...MinimalDesignSystem.cardShadow,
-      ];
+      return [...MinimalDesignSystem.cardShadow];
     }
 
     return AppColors.neumorphismOutsetShadow;

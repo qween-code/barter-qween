@@ -14,7 +14,13 @@ class UserModel extends UserEntity {
     super.bio,
     super.address,
     super.city,
+    super.location,
+    super.latitude,
+    super.longitude,
     super.updatedAt,
+    super.trustScore,
+    super.stats,
+    super.social,
   });
 
   /// From Firebase User
@@ -45,9 +51,15 @@ class UserModel extends UserEntity {
       bio: data['bio'],
       address: data['address'],
       city: data['city'],
-      updatedAt: data['updatedAt'] != null 
-          ? (data['updatedAt'] as Timestamp).toDate() 
+      location: data['location'],
+      latitude: (data['latitude'] as num?)?.toDouble(),
+      longitude: (data['longitude'] as num?)?.toDouble(),
+      updatedAt: data['updatedAt'] != null
+          ? (data['updatedAt'] as Timestamp).toDate()
           : null,
+      trustScore: (data['trustScore'] as num?)?.toDouble(),
+      stats: (data['stats'] as Map?)?.cast<String, dynamic>(),
+      social: (data['social'] as Map?)?.cast<String, dynamic>(),
     );
   }
 
@@ -63,7 +75,13 @@ class UserModel extends UserEntity {
       'bio': bio,
       'address': address,
       'city': city,
+      'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
+      'trustScore': trustScore,
+      'stats': stats,
+      'social': social,
     };
   }
 
@@ -80,7 +98,13 @@ class UserModel extends UserEntity {
       bio: bio,
       address: address,
       city: city,
+      location: location,
+      latitude: latitude,
+      longitude: longitude,
       updatedAt: updatedAt,
+      trustScore: trustScore,
+      stats: stats,
+      social: social,
     );
   }
 }

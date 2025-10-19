@@ -18,14 +18,14 @@ class DefaultFirebaseOptions {
         return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for linux - '
-        'you can reconfigure this by running the FlutterFire CLI command for your platform',
-      );
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI command for your platform',
+        );
       case TargetPlatform.fuchsia:
         throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for fuchsia - '
-        'you can reconfigure this by running the FlutterFire CLI command for your platform',
-      );
+          'DefaultFirebaseOptions have not been configured for fuchsia - '
+          'you can reconfigure this by running the FlutterFire CLI command for your platform',
+        );
     }
   }
 
@@ -36,6 +36,7 @@ class DefaultFirebaseOptions {
     projectId: 'bogazici-barter',
     authDomain: 'bogazici-barter.firebaseapp.com',
     storageBucket: 'bogazici-barter.firebasestorage.app',
+    measurementId: 'G-GCXH7TPZFC',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -48,11 +49,15 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDa8VHIPrCDODjeGnz9jLSZTWix0LEUXRQ',
-    appId: '1:229577295263:ios:4cb5aeb53a8937540529aa',
+    appId: '1:229577295263:ios:6642f9c9f05408530529aa',
     messagingSenderId: '229577295263',
     projectId: 'bogazici-barter',
     storageBucket: 'bogazici-barter.firebasestorage.app',
-    iosBundleId: 'com.bogazici.bogaziciBarter',
+    androidClientId:
+        '229577295263-bglejqrhd6fg18e70jmeu36m4as15p6p.apps.googleusercontent.com',
+    iosClientId:
+        '229577295263-9efl3o1jk1uufrhq2vtoc57k7rkt6b12.apps.googleusercontent.com',
+    iosBundleId: 'com.bogazicibarter.barterQween',
   );
 
   static const FirebaseOptions macOS = FirebaseOptions(

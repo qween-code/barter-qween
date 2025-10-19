@@ -4,7 +4,7 @@ import '../../../core/theme/world_class_design_system.dart';
 import '../auth/login_page.dart';
 
 /// 🌟 WORLD-CLASS ONBOARDING PAGE
-/// 
+///
 /// Features:
 /// - 3-step introduction slides
 /// - Smooth page transitions
@@ -24,28 +24,31 @@ class _OnboardingPageState extends State<OnboardingPage>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   int _currentPage = 0;
-  
+
   final List<OnboardingSlide> _slides = [
     OnboardingSlide(
       icon: Icons.swap_horiz_rounded,
       title: 'Welcome to Barter Queen',
-      description: 'Trade items you no longer need with people nearby. Give your unused items a second life!',
+      description:
+          'Trade items you no longer need with people nearby. Give your unused items a second life!',
       color: WorldClassDesignSystem.primaryColor,
       features: ['Smart Matching', 'Safe Trading', 'Real-time Chat'],
     ),
     OnboardingSlide(
       icon: Icons.favorite_rounded,
       title: 'Find What You Want',
-      description: 'Browse thousands of items, save your favorites, and chat with owners to make great trades.',
+      description:
+          'Browse thousands of items, save your favorites, and chat with owners to make great trades.',
       color: WorldClassDesignSystem.secondaryColor,
       features: ['Advanced Search', 'Smart Filters', 'Location-based'],
     ),
     OnboardingSlide(
       icon: Icons.handshake_rounded,
       title: 'Trade Safely',
-      description: 'Make offers, negotiate, and complete trades with confidence. Build your reputation and join our community.',
+      description:
+          'Make offers, negotiate, and complete trades with confidence. Build your reputation and join our community.',
       color: WorldClassDesignSystem.accentColor,
       features: ['Secure Payments', 'Rating System', 'Dispute Resolution'],
     ),
@@ -59,23 +62,16 @@ class _OnboardingPageState extends State<OnboardingPage>
       duration: WorldClassDesignSystem.animationNormal,
       vsync: this,
     );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-    
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+        );
+
     _animationController.forward();
   }
 
@@ -93,12 +89,10 @@ class _OnboardingPageState extends State<OnboardingPage>
     if (mounted) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const LoginPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: WorldClassDesignSystem.animationNormal,
         ),
@@ -146,7 +140,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                 ],
               ),
             ),
-            
+
             // Page View
             Expanded(
               child: PageView.builder(
@@ -164,7 +158,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                 },
               ),
             ),
-            
+
             // Progress Indicator
             Padding(
               padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
@@ -188,7 +182,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                 ),
               ),
             ),
-            
+
             // Action Buttons
             Padding(
               padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
@@ -207,16 +201,18 @@ class _OnboardingPageState extends State<OnboardingPage>
                         child: const Text('Previous'),
                       ),
                     ),
-                  
+
                   if (_currentPage > 0)
                     const SizedBox(width: WorldClassDesignSystem.spacingM),
-                  
+
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _nextPage,
                       style: WorldClassDesignSystem.primaryButtonStyle,
                       child: Text(
-                        _currentPage == _slides.length - 1 ? 'Get Started' : 'Next',
+                        _currentPage == _slides.length - 1
+                            ? 'Get Started'
+                            : 'Next',
                       ),
                     ),
                   ),
@@ -247,12 +243,11 @@ class _OnboardingPageState extends State<OnboardingPage>
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      slide.color,
-                      slide.color.withOpacity(0.8),
-                    ],
+                    colors: [slide.color, slide.color.withOpacity(0.8)],
                   ),
-                  borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusXXL),
+                  borderRadius: BorderRadius.circular(
+                    WorldClassDesignSystem.radiusXXL,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: slide.color.withOpacity(0.3),
@@ -267,9 +262,9 @@ class _OnboardingPageState extends State<OnboardingPage>
                   color: WorldClassDesignSystem.primaryWhite,
                 ),
               ),
-              
+
               const SizedBox(height: WorldClassDesignSystem.spacingXXL),
-              
+
               // Title
               Text(
                 slide.title,
@@ -279,9 +274,9 @@ class _OnboardingPageState extends State<OnboardingPage>
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: WorldClassDesignSystem.spacingL),
-              
+
               // Description
               Text(
                 slide.description,
@@ -291,31 +286,33 @@ class _OnboardingPageState extends State<OnboardingPage>
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: WorldClassDesignSystem.spacingXL),
-              
+
               // Features
-              ...slide.features.map((feature) => Padding(
-                padding: const EdgeInsets.only(
-                  bottom: WorldClassDesignSystem.spacingM,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: WorldClassDesignSystem.successColor,
-                      size: WorldClassDesignSystem.iconM,
-                    ),
-                    const SizedBox(width: WorldClassDesignSystem.spacingM),
-                    Text(
-                      feature,
-                      style: WorldClassDesignSystem.bodyMedium.copyWith(
-                        color: WorldClassDesignSystem.primaryText,
+              ...slide.features.map(
+                (feature) => Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: WorldClassDesignSystem.spacingM,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: WorldClassDesignSystem.successColor,
+                        size: WorldClassDesignSystem.iconM,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: WorldClassDesignSystem.spacingM),
+                      Text(
+                        feature,
+                        style: WorldClassDesignSystem.bodyMedium.copyWith(
+                          color: WorldClassDesignSystem.primaryText,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              )),
+              ),
             ],
           ),
         ),

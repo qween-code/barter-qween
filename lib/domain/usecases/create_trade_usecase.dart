@@ -2,10 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../core/error/failures.dart';
 import '../entities/trade_entity.dart';
-import '../entities/trade_offer_entity.dart' hide TradeStatus;
 
 /// Use case for creating a confirmed trade from an accepted offer
-/// 
+///
 /// This is called when both parties have agreed on terms and the trade
 /// is ready to move from "offer" stage to "active trade" stage.
 @lazySingleton
@@ -13,7 +12,7 @@ class CreateTradeUsecase {
   CreateTradeUsecase();
 
   /// Execute the use case
-  /// 
+  ///
   /// Takes an accepted TradeOffer and creates a Trade entity
   /// with initial status of 'pending' or 'scheduled'
   Future<Either<Failure, TradeEntity>> call(CreateTradeParams params) async {
@@ -32,8 +31,8 @@ class CreateTradeUsecase {
         initiatorItemId: params.initiatorItemId,
         receiverId: params.receiverId,
         receiverItemId: params.receiverItemId,
-        status: params.scheduledMeetupTime != null 
-            ? TradeStatus.scheduled 
+        status: params.scheduledMeetupTime != null
+            ? TradeStatus.scheduled
             : TradeStatus.pending,
         cashDifferential: params.cashDifferential,
         paymentDirection: params.paymentDirection,

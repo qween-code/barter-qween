@@ -40,7 +40,9 @@ abstract class BarterMatchRepository {
   Future<Either<Failure, void>> deleteMatch(String matchId);
 
   /// Get barter matches for an item
-  Future<Either<Failure, List<BarterMatchEntity>>> getBarterMatches(String itemId);
+  Future<Either<Failure, List<BarterMatchEntity>>> getBarterMatches(
+    String itemId,
+  );
 
   /// Dismiss a barter match
   Future<Either<Failure, void>> dismissBarterMatch(String matchId);

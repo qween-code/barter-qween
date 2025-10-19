@@ -68,8 +68,8 @@ class ItemModel {
       location: data['location'],
       city: data['city'],
       status: data['status'] ?? 'active',
-      createdAt: data['createdAt'] is Timestamp 
-          ? data['createdAt'] 
+      createdAt: data['createdAt'] is Timestamp
+          ? data['createdAt']
           : Timestamp.now(),
       updatedAt: data['updatedAt'] is Timestamp ? data['updatedAt'] : null,
       viewCount: data['viewCount'] ?? 0,
@@ -155,8 +155,8 @@ class ItemModel {
       city: entity.city,
       status: _statusToString(entity.status),
       createdAt: Timestamp.fromDate(entity.createdAt),
-      updatedAt: entity.updatedAt != null 
-          ? Timestamp.fromDate(entity.updatedAt!) 
+      updatedAt: entity.updatedAt != null
+          ? Timestamp.fromDate(entity.updatedAt!)
           : null,
       viewCount: entity.viewCount,
       favoriteCount: entity.favoriteCount,

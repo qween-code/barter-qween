@@ -13,39 +13,39 @@ class PerformanceProfiler {
   final List<FrameMetrics> _frameMetrics = [];
   final List<ShadowRenderMetrics> _shadowMetrics = [];
   final List<MemorySnapshot> _memorySnapshots = [];
-  
+
   Timer? _memoryTimer;
   bool _isEnabled = false;
-  int _maxSamples = 300; // 5 seconds at 60fps
+  final int _maxSamples = 300; // 5 seconds at 60fps
 
   /// Start profiling
   void start() {
     if (_isEnabled) return;
-    
+
     _isEnabled = true;
     _frameMetrics.clear();
     _shadowMetrics.clear();
     _memorySnapshots.clear();
-    
+
     // Monitor frames
     SchedulerBinding.instance.addTimingsCallback(_onFrameTiming);
-    
+
     // Monitor memory every second
     _memoryTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       _captureMemorySnapshot();
     });
-    
+
     debugPrint('🎯 Performance Profiler STARTED');
   }
 
   /// Stop profiling
   void stop() {
     if (!_isEnabled) return;
-    
+
     _isEnabled = false;
     SchedulerBinding.instance.removeTimingsCallback(_onFrameTiming);
     _memoryTimer?.cancel();
-    
+
     debugPrint('🛑 Performance Profiler STOPPED');
   }
 
@@ -57,16 +57,16 @@ class PerformanceProfiler {
       final buildDuration = timing.buildDuration.inMicroseconds / 1000.0;
       final rasterDuration = timing.rasterDuration.inMicroseconds / 1000.0;
       final totalDuration = timing.totalSpan.inMicroseconds / 1000.0;
-      
+
       final metrics = FrameMetrics(
         buildTime: buildDuration,
         rasterTime: rasterDuration,
         totalTime: totalDuration,
         timestamp: DateTime.now(),
       );
-      
+
       _frameMetrics.add(metrics);
-      
+
       if (_frameMetrics.length > _maxSamples) {
         _frameMetrics.removeAt(0);
       }
@@ -101,7 +101,7 @@ class PerformanceProfiler {
     // - dart:developer's Timeline API
     // - DevTools memory profiler
     // For now, we'll track basic metrics
-    
+
     final snapshot = MemorySnapshot(
       timestamp: DateTime.now(),
       // These would come from actual memory profiling
@@ -120,26 +120,30 @@ class PerformanceProfiler {
   /// Get current FPS
   double getCurrentFPS() {
     if (_frameMetrics.isEmpty) return 60.0;
-    
-    final recentFrames = _frameMetrics.length > 60 
+
+    final recentFrames = _frameMetrics.length > 60
         ? _frameMetrics.sublist(_frameMetrics.length - 60)
         : _frameMetrics;
-    
-    final avgFrameTime = recentFrames.map((f) => f.totalTime).reduce((a, b) => a + b) / recentFrames.length;
-    
+
+    final avgFrameTime =
+        recentFrames.map((f) => f.totalTime).reduce((a, b) => a + b) /
+        recentFrames.length;
+
     return 1000.0 / avgFrameTime;
   }
 
   /// Get average build time
   double getAverageBuildTime() {
     if (_frameMetrics.isEmpty) return 0.0;
-    return _frameMetrics.map((f) => f.buildTime).reduce((a, b) => a + b) / _frameMetrics.length;
+    return _frameMetrics.map((f) => f.buildTime).reduce((a, b) => a + b) /
+        _frameMetrics.length;
   }
 
   /// Get average raster time
   double getAverageRasterTime() {
     if (_frameMetrics.isEmpty) return 0.0;
-    return _frameMetrics.map((f) => f.rasterTime).reduce((a, b) => a + b) / _frameMetrics.length;
+    return _frameMetrics.map((f) => f.rasterTime).reduce((a, b) => a + b) /
+        _frameMetrics.length;
   }
 
   /// Get jank count (frames > 16ms)
@@ -163,13 +167,19 @@ class PerformanceProfiler {
       );
     }
 
-    final avgRenderTime = _shadowMetrics.map((m) => m.renderTime).reduce((a, b) => a + b) / _shadowMetrics.length;
-    final maxRenderTime = _shadowMetrics.map((m) => m.renderTime).reduce((a, b) => a > b ? a : b);
+    final avgRenderTime =
+        _shadowMetrics.map((m) => m.renderTime).reduce((a, b) => a + b) /
+        _shadowMetrics.length;
+    final maxRenderTime = _shadowMetrics
+        .map((m) => m.renderTime)
+        .reduce((a, b) => a > b ? a : b);
 
     // Group by component type
     final breakdown = <String, List<double>>{};
     for (final metric in _shadowMetrics) {
-      breakdown.putIfAbsent(metric.componentType, () => []).add(metric.renderTime);
+      breakdown
+          .putIfAbsent(metric.componentType, () => [])
+          .add(metric.renderTime);
     }
 
     final componentAverages = breakdown.map((key, values) {

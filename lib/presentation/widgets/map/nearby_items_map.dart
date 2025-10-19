@@ -28,7 +28,6 @@ class NearbyItemsMap extends StatefulWidget {
 
 class _NearbyItemsMapState extends State<NearbyItemsMap> {
   final MapService _mapService = MapService();
-  GoogleMapController? _mapController;
   Set<Marker> _markers = {};
   ItemEntity? _selectedItem;
 
@@ -104,7 +103,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
     if (widget.userLatitude != null && widget.userLongitude != null) {
       return LatLng(widget.userLatitude!, widget.userLongitude!);
     }
-    
+
     // If user location not available, use first item
     if (widget.items.isNotEmpty) {
       final firstItem = widget.items.firstWhere(
@@ -128,12 +127,14 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
       return item.city ?? '';
     }
 
-    return _mapService.getFormattedDistance(
+    final distanceKm = _mapService.distanceInKm(
       widget.userLatitude!,
       widget.userLongitude!,
       item.latitude!,
       item.longitude!,
     );
+
+    return _mapService.getFormattedDistance(distanceKm);
   }
 
   @override
@@ -147,7 +148,6 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
             zoom: 12,
           ),
           markers: _markers,
-          onMapCreated: (controller) => _mapController = controller,
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
           onTap: (_) => setState(() => _selectedItem = null),
@@ -159,10 +159,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
             top: 16,
             left: 16,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -201,10 +198,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
           top: 16,
           right: 16,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.green.shade700,
               borderRadius: BorderRadius.circular(20),
@@ -217,7 +211,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
               ],
             ),
             child: Text(
-              '${_markers.length - 1} ürün',
+              '${_calculateItemMarkerCount()} ürün',
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -267,7 +261,7 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
                               ),
                       ),
                       const SizedBox(width: 12),
-                      
+
                       // Info
                       Expanded(
                         child: Column(
@@ -329,5 +323,15 @@ class _NearbyItemsMapState extends State<NearbyItemsMap> {
           ),
       ],
     );
+  }
+
+  int _calculateItemMarkerCount() {
+    final hasUserMarker =
+        widget.userLatitude != null && widget.userLongitude != null;
+    final baseCount = _markers.length;
+    if (!hasUserMarker) {
+      return baseCount;
+    }
+    return baseCount > 0 ? baseCount - 1 : 0;
   }
 }

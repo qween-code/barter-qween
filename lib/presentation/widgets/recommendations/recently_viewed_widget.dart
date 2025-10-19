@@ -4,10 +4,10 @@ import '../../../core/di/injection.dart';
 import '../../../core/services/recommendation_service.dart';
 import '../../../core/services/analytics_service.dart';
 import '../../../domain/entities/item_entity.dart';
-import '../../pages/items/item_detail_page.dart';
+import '../../../core/routes/app_router.dart';
 
 /// Recently Viewed Widget
-/// 
+///
 /// Displays user's recently viewed items
 /// Useful for quick access to browsing history
 class RecentlyViewedWidget extends StatefulWidget {
@@ -25,9 +25,10 @@ class RecentlyViewedWidget extends StatefulWidget {
 }
 
 class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget> {
-  final RecommendationService _recommendationService = getIt<RecommendationService>();
+  final RecommendationService _recommendationService =
+      getIt<RecommendationService>();
   final AnalyticsService _analytics = getIt<AnalyticsService>();
-  
+
   List<ItemEntity> _items = [];
   bool _isLoading = true;
 
@@ -83,16 +84,16 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget> {
               const SizedBox(width: 8),
               Text(
                 'Recently Viewed',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               Text(
                 '${_items.length} items',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey.shade600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -114,12 +115,7 @@ class _RecentlyViewedWidgetState extends State<RecentlyViewedWidget> {
                     position: index,
                   );
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemDetailPage(itemId: item.id),
-                    ),
-                  );
+                  AppRouter.toItemDetail(context, item.id);
                 },
               );
             },
@@ -134,10 +130,7 @@ class _RecentlyViewedCard extends StatelessWidget {
   final ItemEntity item;
   final VoidCallback onTap;
 
-  const _RecentlyViewedCard({
-    required this.item,
-    required this.onTap,
-  });
+  const _RecentlyViewedCard({required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -164,19 +157,23 @@ class _RecentlyViewedCard extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
                   child: item.images.isNotEmpty
                       ? CachedNetworkImage(
                           imageUrl: item.images.first,
                           height: 110,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey.shade200,
-                          ),
+                          placeholder: (context, url) =>
+                              Container(color: Colors.grey.shade200),
                           errorWidget: (context, url, error) => Container(
                             color: Colors.grey.shade200,
-                            child: const Icon(Icons.image_not_supported, size: 35),
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              size: 35,
+                            ),
                           ),
                         )
                       : Container(
@@ -189,7 +186,10 @@ class _RecentlyViewedCard extends StatelessWidget {
                   top: 6,
                   right: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(4),
@@ -197,11 +197,7 @@ class _RecentlyViewedCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        Icon(
-                          Icons.visibility,
-                          color: Colors.white,
-                          size: 10,
-                        ),
+                        Icon(Icons.visibility, color: Colors.white, size: 10),
                         SizedBox(width: 2),
                         Text(
                           'Viewed',
@@ -217,7 +213,7 @@ class _RecentlyViewedCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             Padding(
               padding: const EdgeInsets.all(8),
               child: Column(

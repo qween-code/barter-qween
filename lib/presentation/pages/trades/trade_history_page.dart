@@ -79,7 +79,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
               ),
             ),
           ),
-          
+
           // Trade list
           Expanded(
             child: BlocConsumer<TradeBloc, TradeState>(
@@ -100,7 +100,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
 
                 if (state is TradeOffersLoaded) {
                   final filteredTrades = _filterTrades(state.offers);
-                  
+
                   if (filteredTrades.isEmpty) {
                     return Center(
                       child: Column(
@@ -208,9 +208,11 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
 
   Widget _buildTradeCard(TradeOfferEntity trade) {
     final authState = context.read<AuthBloc>().state;
-    final currentUserId = authState is AuthAuthenticated ? authState.user.uid : '';
+    final currentUserId = authState is AuthAuthenticated
+        ? authState.user.uid
+        : '';
     final isOfferedByMe = trade.fromUserId == currentUserId;
-    
+
     return Container(
       padding: const EdgeInsets.all(AppDimensions.spacing16),
       decoration: BoxDecoration(
@@ -235,7 +237,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
             ],
           ),
           const SizedBox(height: AppDimensions.spacing12),
-          
+
           // Trade details
           Text(
             'Trade Offer',
@@ -244,7 +246,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
             ),
           ),
           const SizedBox(height: AppDimensions.spacing8),
-          
+
           if (trade.message != null && trade.message!.isNotEmpty) ...[
             Text(
               trade.message!,
@@ -256,7 +258,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
             ),
             const SizedBox(height: AppDimensions.spacing8),
           ],
-          
+
           // Date
           Row(
             children: [
@@ -282,7 +284,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
   Widget _buildStatusBadge(TradeStatus status) {
     Color color;
     String label;
-    
+
     switch (status) {
       case TradeStatus.completed:
         color = AppColors.success;
@@ -304,7 +306,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
         color = AppColors.textSecondary;
         label = 'Unknown';
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.spacing12,

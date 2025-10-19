@@ -20,7 +20,15 @@ class AdminUserEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, email, name, role, permissions, createdAt, isActive];
+  List<Object?> get props => [
+    id,
+    email,
+    name,
+    role,
+    permissions,
+    createdAt,
+    isActive,
+  ];
 
   AdminUserEntity copyWith({
     String? id,
@@ -44,10 +52,10 @@ class AdminUserEntity extends Equatable {
 }
 
 enum AdminRole {
-  superAdmin,    // Tüm yetkiler
-  moderator,     // İlan onaylama
-  support,       // Kullanıcı desteği
-  analyst,       // Raporlama
+  superAdmin, // Tüm yetkiler
+  moderator, // İlan onaylama
+  support, // Kullanıcı desteği
+  analyst, // Raporlama
 }
 
 enum AdminPermission {

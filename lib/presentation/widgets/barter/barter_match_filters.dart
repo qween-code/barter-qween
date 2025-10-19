@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/barter_match_entity.dart';
-import '../../../core/services/barter_matching_service.dart' hide CashDirection;
+import '../../../core/services/barter_matching_service.dart';
 import '../../../core/theme/minimal_design_system.dart';
 
 /// Advanced Barter Match Filters Widget
-/// 
+///
 /// Provides sophisticated filtering options for barter matches
 /// with real-time filtering and sorting capabilities.
 class BarterMatchFilters extends StatefulWidget {
@@ -28,12 +28,12 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
   MatchQuality? _qualityFilter;
   double? _minScore;
   double? _maxDistance;
-  List<String> _categoryFilter = [];
+  final List<String> _categoryFilter = [];
   bool? _hasCashDifferential;
   CashDirection? _cashDirection;
   DateTime? _fromDate;
   DateTime? _toDate;
-  List<String> _excludeUsers = [];
+  final List<String> _excludeUsers = [];
 
   // Sort state
   BarterSortCriteria _sortCriteria = BarterSortCriteria.bestMatch;
@@ -82,9 +82,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                   ),
                   child: Icon(
                     Icons.tune,
-                    color: _activeFiltersCount > 0 
-                      ? MinimalDesignSystem.primaryColor 
-                      : MinimalDesignSystem.softDark,
+                    color: _activeFiltersCount > 0
+                        ? MinimalDesignSystem.primaryColor
+                        : MinimalDesignSystem.softDark,
                     size: 24,
                   ),
                 ),
@@ -102,13 +102,13 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _activeFiltersCount > 0 
-                          ? '$_activeFiltersCount active filters'
-                          : 'No filters applied',
+                        _activeFiltersCount > 0
+                            ? '$_activeFiltersCount active filters'
+                            : 'No filters applied',
                         style: TextStyle(
-                          color: _activeFiltersCount > 0 
-                            ? MinimalDesignSystem.primaryColor
-                            : MinimalDesignSystem.softDark,
+                          color: _activeFiltersCount > 0
+                              ? MinimalDesignSystem.primaryColor
+                              : MinimalDesignSystem.softDark,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -123,7 +123,8 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: MinimalDesignSystem.baseColor,
-                          boxShadow: MinimalDesignSystem.neumorphismOutsetShadow,
+                          boxShadow:
+                              MinimalDesignSystem.neumorphismOutsetShadow,
                         ),
                         child: Material(
                           color: Colors.transparent,
@@ -131,7 +132,10 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                             onTap: _clearAllFilters,
                             borderRadius: BorderRadius.circular(12),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               child: Text(
                                 'Clear All',
                                 style: TextStyle(
@@ -162,7 +166,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                           child: Padding(
                             padding: const EdgeInsets.all(8),
                             child: Icon(
-                              _isExpanded ? Icons.expand_less : Icons.expand_more,
+                              _isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
                               color: MinimalDesignSystem.softDark,
                             ),
                           ),
@@ -174,7 +180,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
               ],
             ),
           ),
-          
+
           // Expanded filters
           if (_isExpanded) ...[
             const Divider(height: 1),
@@ -185,27 +191,27 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                   // Quality filter
                   _buildQualityFilter(),
                   const SizedBox(height: 16),
-                  
+
                   // Score range filter
                   _buildScoreRangeFilter(),
                   const SizedBox(height: 16),
-                  
+
                   // Distance filter
                   _buildDistanceFilter(),
                   const SizedBox(height: 16),
-                  
+
                   // Cash differential filter
                   _buildCashDifferentialFilter(),
                   const SizedBox(height: 16),
-                  
+
                   // Date range filter
                   _buildDateRangeFilter(),
                   const SizedBox(height: 16),
-                  
+
                   // Sort options
                   _buildSortOptions(),
                   const SizedBox(height: 16),
-                  
+
                   // Apply button
                   SizedBox(
                     width: double.infinity,
@@ -235,9 +241,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       children: [
         Text(
           'Match Quality',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -253,30 +259,32 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 });
               },
             ),
-            ...MatchQuality.values.map((quality) => FilterChip(
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: _getQualityColor(quality),
-                      shape: BoxShape.circle,
+            ...MatchQuality.values.map(
+              (quality) => FilterChip(
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: _getQualityColor(quality),
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(quality.name),
-                ],
+                    const SizedBox(width: 4),
+                    Text(quality.name),
+                  ],
+                ),
+                selected: _qualityFilter == quality,
+                onSelected: (selected) {
+                  setState(() {
+                    _qualityFilter = selected ? quality : null;
+                    _updateActiveFiltersCount();
+                  });
+                },
               ),
-              selected: _qualityFilter == quality,
-              onSelected: (selected) {
-                setState(() {
-                  _qualityFilter = selected ? quality : null;
-                  _updateActiveFiltersCount();
-                });
-              },
-            )),
+            ),
           ],
         ),
       ],
@@ -289,9 +297,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       children: [
         Text(
           'Minimum Match Score',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Row(
@@ -315,9 +323,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
               width: 60,
               child: Text(
                 '${(_minScore ?? 0).round()}%',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -333,9 +341,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       children: [
         Text(
           'Maximum Distance (km)',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Row(
@@ -359,9 +367,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
               width: 60,
               child: Text(
                 '${(_maxDistance ?? 50).round()} km',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -377,9 +385,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       children: [
         Text(
           'Cash Differential',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -420,10 +428,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
         ),
         if (_hasCashDifferential == true) ...[
           const SizedBox(height: 8),
-          Text(
-            'Cash Direction',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text('Cash Direction', style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 4),
           Wrap(
             spacing: 8,
@@ -443,7 +448,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 selected: _cashDirection == CashDirection.fromInitiator,
                 onSelected: (selected) {
                   setState(() {
-                    _cashDirection = selected ? CashDirection.fromInitiator : null;
+                    _cashDirection = selected
+                        ? CashDirection.fromInitiator
+                        : null;
                     _updateActiveFiltersCount();
                   });
                 },
@@ -453,7 +460,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 selected: _cashDirection == CashDirection.toInitiator,
                 onSelected: (selected) {
                   setState(() {
-                    _cashDirection = selected ? CashDirection.toInitiator : null;
+                    _cashDirection = selected
+                        ? CashDirection.toInitiator
+                        : null;
                     _updateActiveFiltersCount();
                   });
                 },
@@ -471,9 +480,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       children: [
         Text(
           'Date Range',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Row(
@@ -483,8 +492,12 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 onPressed: () async {
                   final date = await showDatePicker(
                     context: context,
-                    initialDate: _fromDate ?? DateTime.now().subtract(const Duration(days: 30)),
-                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                    initialDate:
+                        _fromDate ??
+                        DateTime.now().subtract(const Duration(days: 30)),
+                    firstDate: DateTime.now().subtract(
+                      const Duration(days: 365),
+                    ),
                     lastDate: DateTime.now(),
                   );
                   if (date != null) {
@@ -496,9 +509,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 },
                 icon: Icon(Icons.calendar_today, size: 16),
                 label: Text(
-                  _fromDate != null 
-                    ? '${_fromDate!.day}/${_fromDate!.month}/${_fromDate!.year}'
-                    : 'From Date',
+                  _fromDate != null
+                      ? '${_fromDate!.day}/${_fromDate!.month}/${_fromDate!.year}'
+                      : 'From Date',
                 ),
               ),
             ),
@@ -509,7 +522,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                   final date = await showDatePicker(
                     context: context,
                     initialDate: _toDate ?? DateTime.now(),
-                    firstDate: _fromDate ?? DateTime.now().subtract(const Duration(days: 365)),
+                    firstDate:
+                        _fromDate ??
+                        DateTime.now().subtract(const Duration(days: 365)),
                     lastDate: DateTime.now(),
                   );
                   if (date != null) {
@@ -521,9 +536,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 },
                 icon: Icon(Icons.calendar_today, size: 16),
                 label: Text(
-                  _toDate != null 
-                    ? '${_toDate!.day}/${_toDate!.month}/${_toDate!.year}'
-                    : 'To Date',
+                  _toDate != null
+                      ? '${_toDate!.day}/${_toDate!.month}/${_toDate!.year}'
+                      : 'To Date',
                 ),
               ),
             ),
@@ -539,9 +554,9 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       children: [
         Text(
           'Sort By',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Row(
@@ -551,7 +566,10 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
                 value: _sortCriteria,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
                 items: BarterSortCriteria.values.map((criteria) {
                   return DropdownMenuItem(
@@ -588,7 +606,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
 
   void _updateActiveFiltersCount() {
     int count = 0;
-    
+
     if (_qualityFilter != null) count++;
     if (_minScore != null && _minScore! > 0) count++;
     if (_maxDistance != null && _maxDistance! < 100) count++;
@@ -596,7 +614,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
     if (_cashDirection != null) count++;
     if (_fromDate != null) count++;
     if (_toDate != null) count++;
-    
+
     setState(() {
       _activeFiltersCount = count;
     });
@@ -615,7 +633,7 @@ class _BarterMatchFiltersState extends State<BarterMatchFilters> {
       _excludeUsers.clear();
       _activeFiltersCount = 0;
     });
-    
+
     _applyFilters();
   }
 

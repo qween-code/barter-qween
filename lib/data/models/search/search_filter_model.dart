@@ -57,20 +57,20 @@ class SearchFilterModel extends SearchFilterEntity {
       conditions: json['conditions'] != null
           ? List<String>.from(json['conditions'])
           : null,
-      colors:
-          json['colors'] != null ? List<String>.from(json['colors']) : null,
+      colors: json['colors'] != null ? List<String>.from(json['colors']) : null,
       statuses: json['statuses'] != null
           ? (json['statuses'] as List)
-              .map((e) => ItemStatus.values.firstWhere(
+                .map(
+                  (e) => ItemStatus.values.firstWhere(
                     (status) => status.toString() == 'ItemStatus.$e',
                     orElse: () => ItemStatus.active,
-                  ))
-              .toList()
+                  ),
+                )
+                .toList()
           : null,
       minPrice: json['minPrice']?.toDouble(),
       maxPrice: json['maxPrice']?.toDouble(),
-      cities:
-          json['cities'] != null ? List<String>.from(json['cities']) : null,
+      cities: json['cities'] != null ? List<String>.from(json['cities']) : null,
       radiusKm: json['radiusKm']?.toDouble(),
       centerLocation: json['centerLocation'] != null
           ? GeoPoint(
@@ -81,8 +81,7 @@ class SearchFilterModel extends SearchFilterEntity {
       startDate: json['startDate'] != null
           ? DateTime.parse(json['startDate'])
           : null,
-      endDate:
-          json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
+      endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       sortBy: json['sortBy'] != null
           ? SortOption.values.firstWhere(

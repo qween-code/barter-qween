@@ -10,10 +10,10 @@ import 'package:path/path.dart' as path;
 @injectable
 class ImageService {
   final FirebaseStorage _storage;
-  
+
   ImageService(this._storage);
   static const String placeholderPath = 'assets/images/placeholder/';
-  
+
   /// Kullanıcı avatarı için kaliteli görsel widget
   static Widget userAvatar({
     String? imageUrl,
@@ -47,7 +47,7 @@ class ImageService {
       ),
     );
   }
-  
+
   /// Ürün görseli için kaliteli widget
   static Widget itemImage({
     String? imageUrl,
@@ -74,8 +74,10 @@ class ImageService {
             ? CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: fit,
-                placeholder: (context, url) => _buildItemPlaceholder(width, height),
-                errorWidget: (context, url, error) => _buildItemPlaceholder(width, height),
+                placeholder: (context, url) =>
+                    _buildItemPlaceholder(width, height),
+                errorWidget: (context, url, error) =>
+                    _buildItemPlaceholder(width, height),
                 memCacheWidth: width != null ? (width * 2).toInt() : null,
                 memCacheHeight: height != null ? (height * 2).toInt() : null,
               )
@@ -83,7 +85,7 @@ class ImageService {
       ),
     );
   }
-  
+
   /// Compress image before upload
   Future<File?> compressImage(File file) async {
     try {
@@ -110,13 +112,14 @@ class ImageService {
   /// Upload item image to Firebase Storage
   Future<String?> uploadItemImage(File imageFile, String itemId) async {
     try {
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';
       final ref = _storage.ref().child('items/$itemId/$fileName');
-      
+
       final uploadTask = ref.putFile(imageFile);
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
-      
+
       return downloadUrl;
     } catch (e) {
       print('Error uploading image: $e');
@@ -129,11 +132,11 @@ class ImageService {
     try {
       final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final ref = _storage.ref().child('users/$userId/$fileName');
-      
+
       final uploadTask = ref.putFile(imageFile);
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
-      
+
       return downloadUrl;
     } catch (e) {
       print('Error uploading avatar: $e');
@@ -159,22 +162,15 @@ class ImageService {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [
-            Colors.grey[300]!,
-            Colors.grey[400]!,
-          ],
+          colors: [Colors.grey[300]!, Colors.grey[400]!],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
-      child: Icon(
-        Icons.person,
-        size: size * 0.5,
-        color: Colors.grey[600],
-      ),
+      child: Icon(Icons.person, size: size * 0.5, color: Colors.grey[600]),
     );
   }
-  
+
   /// Ürün placeholder widget
   static Widget _buildItemPlaceholder(double? width, double? height) {
     return Container(
@@ -182,17 +178,14 @@ class ImageService {
       height: height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.grey[300]!,
-            Colors.grey[400]!,
-          ],
+          colors: [Colors.grey[300]!, Colors.grey[400]!],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
       child: Icon(
         Icons.image,
-        size: (width != null && height != null) 
+        size: (width != null && height != null)
             ? (width < height ? width * 0.3 : height * 0.3)
             : 40,
         color: Colors.grey[600],

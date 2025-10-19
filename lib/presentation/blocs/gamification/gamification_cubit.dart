@@ -80,8 +80,8 @@ class GamificationCubit extends Cubit<GamificationState> {
   GamificationCubit({
     required GamificationService gamificationService,
     required this.userId,
-  })  : _gamificationService = gamificationService,
-        super(GamificationInitial());
+  }) : _gamificationService = gamificationService,
+       super(GamificationInitial());
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PUBLIC METHODS
@@ -94,14 +94,18 @@ class GamificationCubit extends Cubit<GamificationState> {
       final coins = await _gamificationService.getCoinBalance(userId);
       final streak = await _gamificationService.getCurrentStreak(userId);
       final level = await _gamificationService.getUserLevel(userId);
-      final achievements = await _gamificationService.getUserAchievements(userId);
+      final achievements = await _gamificationService.getUserAchievements(
+        userId,
+      );
 
-      emit(GamificationLoaded(
-        coins: coins,
-        streak: streak,
-        level: level,
-        achievements: achievements,
-      ));
+      emit(
+        GamificationLoaded(
+          coins: coins,
+          streak: streak,
+          level: level,
+          achievements: achievements,
+        ),
+      );
     } catch (e) {
       emit(GamificationError('Failed to load gamification data: $e'));
     }
@@ -113,7 +117,7 @@ class GamificationCubit extends Cubit<GamificationState> {
 
       if (state is GamificationLoaded) {
         final currentState = state as GamificationLoaded;
-        
+
         // Reload to get updated coins from streak bonus
         await loadGamificationData();
 
@@ -139,12 +143,16 @@ class GamificationCubit extends Cubit<GamificationState> {
 
   Future<bool> spendCoins(int amount, String reason) async {
     try {
-      final success = await _gamificationService.spendCoins(userId, amount, reason);
-      
+      final success = await _gamificationService.spendCoins(
+        userId,
+        amount,
+        reason,
+      );
+
       if (success) {
         await loadGamificationData();
       }
-      
+
       return success;
     } catch (e) {
       print('Error spending coins: $e');
@@ -155,10 +163,10 @@ class GamificationCubit extends Cubit<GamificationState> {
   Future<void> unlockAchievement(Achievement achievement) async {
     try {
       await _gamificationService.unlockAchievement(userId, achievement);
-      
+
       // Show achievement notification
       emit(AchievementUnlocked(achievement));
-      
+
       // Reload data
       await Future.delayed(const Duration(seconds: 2));
       await loadGamificationData();

@@ -12,7 +12,7 @@ class BarterMatchRepositoryImpl implements BarterMatchRepository {
   final FirebaseFirestore _firestore;
 
   BarterMatchRepositoryImpl({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   @override
   Future<Either<Failure, List<BarterMatchEntity>>> findMatches(
@@ -43,8 +43,10 @@ class BarterMatchRepositoryImpl implements BarterMatchRepository {
   @override
   Future<Either<Failure, BarterMatchEntity>> getMatch(String matchId) async {
     try {
-      final doc =
-          await _firestore.collection('barter_matches').doc(matchId).get();
+      final doc = await _firestore
+          .collection('barter_matches')
+          .doc(matchId)
+          .get();
 
       if (!doc.exists) {
         return Left(NotFoundFailure('Match not found'));
@@ -189,7 +191,9 @@ class BarterMatchRepositoryImpl implements BarterMatchRepository {
   }
 
   @override
-  Future<Either<Failure, List<BarterMatchEntity>>> getBarterMatches(String itemId) async {
+  Future<Either<Failure, List<BarterMatchEntity>>> getBarterMatches(
+    String itemId,
+  ) async {
     try {
       final snapshot = await _firestore
           .collection('barter_matches')

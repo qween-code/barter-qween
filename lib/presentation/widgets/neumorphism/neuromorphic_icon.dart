@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/neuromorphic_effects.dart';
 
 /// Ultra-Deep Neuromorphic Icon Wrapper
 /// Pinterest-level 4-6 layer icon shadows with interactive effects
 
 enum IconStyle {
-  standard,    // Standard neuromorphic
-  circular,    // Circular background with glow
-  floating,    // Floating effect
-  embedded,    // Embedded/inset effect
-  morphing,    // Interactive morphing
+  standard, // Standard neuromorphic
+  circular, // Circular background with glow
+  floating, // Floating effect
+  embedded, // Embedded/inset effect
+  morphing, // Interactive morphing
 }
 
 enum IconSize {
@@ -68,9 +67,10 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
       duration: const Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.9,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -109,7 +109,6 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
       case IconStyle.morphing:
         return _buildMorphingIcon();
       case IconStyle.standard:
-      default:
         return _buildStandardIcon();
     }
   }
@@ -132,14 +131,16 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
           decoration: BoxDecoration(
             color: widget.backgroundColor ?? AppColors.surface,
             borderRadius: BorderRadius.circular(widget.size.size * 0.3),
-            boxShadow: NeuromorphicPresets.IconPresets.standard(
+            boxShadow: NeuromorphicPresets.iconPresets.standard(
               isActive: widget.isActive,
             ),
           ),
           child: Icon(
             widget.icon,
             size: widget.size.size,
-            color: widget.color ?? (widget.isActive ? AppColors.primary : AppColors.textSecondary),
+            color:
+                widget.color ??
+                (widget.isActive ? AppColors.primary : AppColors.textSecondary),
           ),
         ),
       ),
@@ -148,7 +149,7 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
 
   Widget _buildCircularIcon() {
     final containerSize = widget.size.size * 2.5;
-    
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -167,7 +168,7 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
           decoration: BoxDecoration(
             color: widget.backgroundColor ?? AppColors.surface,
             shape: BoxShape.circle,
-            boxShadow: NeuromorphicPresets.IconPresets.circular(
+            boxShadow: NeuromorphicPresets.iconPresets.circular(
               isActive: widget.isActive,
               glowColor: widget.glowColor ?? AppColors.primary,
             ),
@@ -176,7 +177,11 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
             child: Icon(
               widget.icon,
               size: widget.size.size,
-              color: widget.color ?? (widget.isActive ? AppColors.primary : AppColors.textSecondary),
+              color:
+                  widget.color ??
+                  (widget.isActive
+                      ? AppColors.primary
+                      : AppColors.textSecondary),
             ),
           ),
         ),
@@ -186,7 +191,7 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
 
   Widget _buildFloatingIcon() {
     final containerSize = widget.size.size * 2.2;
-    
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -223,7 +228,11 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
             child: Icon(
               widget.icon,
               size: widget.size.size,
-              color: widget.color ?? (widget.isActive ? AppColors.primary : AppColors.textSecondary),
+              color:
+                  widget.color ??
+                  (widget.isActive
+                      ? AppColors.primary
+                      : AppColors.textSecondary),
             ),
           ),
         ),
@@ -233,7 +242,7 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
 
   Widget _buildEmbeddedIcon() {
     final containerSize = widget.size.size * 2.2;
-    
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -272,7 +281,11 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
             child: Icon(
               widget.icon,
               size: widget.size.size,
-              color: widget.color ?? (widget.isActive ? AppColors.primary : AppColors.textSecondary),
+              color:
+                  widget.color ??
+                  (widget.isActive
+                      ? AppColors.primary
+                      : AppColors.textSecondary),
             ),
           ),
         ),
@@ -282,7 +295,7 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
 
   Widget _buildMorphingIcon() {
     final containerSize = widget.size.size * 2.3;
-    
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -305,8 +318,8 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
               widget.isActive ? containerSize / 2 : widget.size.size * 0.35,
             ),
             boxShadow: NeuromorphicEffects.animator.createMorphingShadows(
-              stateShadows: NeuromorphicPresets.IconPresets.standard(),
-              targetShadows: NeuromorphicPresets.IconPresets.circular(
+              stateShadows: NeuromorphicPresets.iconPresets.standard(),
+              targetShadows: NeuromorphicPresets.iconPresets.circular(
                 isActive: true,
                 glowColor: widget.glowColor ?? AppColors.primary,
               ),
@@ -317,7 +330,11 @@ class _NeuromorphicIconState extends State<NeuromorphicIcon>
             child: Icon(
               widget.icon,
               size: widget.size.size,
-              color: widget.color ?? (widget.isActive ? AppColors.primary : AppColors.textSecondary),
+              color:
+                  widget.color ??
+                  (widget.isActive
+                      ? AppColors.primary
+                      : AppColors.textSecondary),
             ),
           ),
         ),
@@ -481,10 +498,7 @@ class NeuromorphicIconCollection {
                   ),
                 ],
               ),
-              constraints: const BoxConstraints(
-                minWidth: 18,
-                minHeight: 18,
-              ),
+              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
               child: Center(
                 child: Text(
                   badgeCount > 99 ? '99+' : badgeCount.toString(),

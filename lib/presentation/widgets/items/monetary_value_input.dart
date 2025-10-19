@@ -39,7 +39,7 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
-    
+
     if (widget.initialValue != null && _controller.text.isEmpty) {
       _controller.text = widget.initialValue!.toStringAsFixed(0);
     }
@@ -84,7 +84,8 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(10), // Max 10 digits
           ],
-          validator: widget.validator ??
+          validator:
+              widget.validator ??
               (value) {
                 if (value == null || value.isEmpty) {
                   return 'Lütfen bir değer girin';
@@ -112,7 +113,9 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
               child: Text(
                 '₺',
                 style: AppTextStyles.h6.copyWith(
-                  color: _isFocused ? AppColors.primary : AppColors.textSecondary,
+                  color: _isFocused
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -146,24 +149,15 @@ class _MonetaryValueInputState extends State<MonetaryValueInput> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-              borderSide: const BorderSide(
-                color: AppColors.error,
-                width: 1.5,
-              ),
+              borderSide: const BorderSide(color: AppColors.error, width: 1.5),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-              borderSide: const BorderSide(
-                color: AppColors.error,
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: AppColors.error, width: 2),
             ),
           ),
         ),

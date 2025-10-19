@@ -24,10 +24,10 @@ class ChatRemoteDataSource {
           .orderBy('updatedAt', descending: true)
           .snapshots()
           .map((snapshot) {
-        return snapshot.docs
-            .map((doc) => ConversationModel.fromFirestore(doc))
-            .toList();
-      });
+            return snapshot.docs
+                .map((doc) => ConversationModel.fromFirestore(doc))
+                .toList();
+          });
     } catch (e) {
       throw ServerException('Failed to get conversations: $e');
     }
@@ -37,7 +37,7 @@ class ChatRemoteDataSource {
   Future<ConversationModel> getConversation(String conversationId) async {
     try {
       final doc = await _conversationsRef.doc(conversationId).get();
-      
+
       if (!doc.exists) {
         throw NotFoundException('Conversation not found');
       }
@@ -77,10 +77,7 @@ class ChatRemoteDataSource {
         'lastMessage': '',
         'lastMessageSenderId': '',
         'lastMessageTime': Timestamp.fromDate(now),
-        'unreadCount': {
-          userId: 0,
-          otherUserId: 0,
-        },
+        'unreadCount': {userId: 0, otherUserId: 0},
         'createdAt': Timestamp.fromDate(now),
         'updatedAt': Timestamp.fromDate(now),
       };
@@ -99,7 +96,9 @@ class ChatRemoteDataSource {
     String conversationId, {
     int limit = 50,
   }) {
-    print('📥 Firestore: Creating messages stream for conversation: $conversationId');
+    print(
+      '📥 Firestore: Creating messages stream for conversation: $conversationId',
+    );
     try {
       // Temporarily remove orderBy to test if that's causing the issue
       return _messagesRef
@@ -107,21 +106,22 @@ class ChatRemoteDataSource {
           .limit(limit)
           .snapshots()
           .map((snapshot) {
-        print('📥 Firestore: Received ${snapshot.docs.length} messages from stream');
-        return snapshot.docs
-            .map((doc) {
+            print(
+              '📥 Firestore: Received ${snapshot.docs.length} messages from stream',
+            );
+            return snapshot.docs.map((doc) {
               try {
                 return MessageModel.fromFirestore(doc);
               } catch (e) {
                 print('❌ Firestore: Error parsing message ${doc.id}: $e');
                 rethrow;
               }
-            })
-            .toList();
-      }).handleError((error) {
-        print('❌ Firestore: Stream error - $error');
-        throw ServerException('Failed to get messages: $error');
-      });
+            }).toList();
+          })
+          .handleError((error) {
+            print('❌ Firestore: Stream error - $error');
+            throw ServerException('Failed to get messages: $error');
+          });
     } catch (e) {
       print('❌ Firestore: Exception creating stream - $e');
       throw ServerException('Failed to get messages: $e');
@@ -155,19 +155,24 @@ class ChatRemoteDataSource {
       // Update conversation with last message info
       final conversationRef = _conversationsRef.doc(conversationId);
       final conversationDoc = await conversationRef.get();
-      
+
       if (conversationDoc.exists) {
         final conversationData = conversationDoc.data() as Map<String, dynamic>;
-        final participants = List<String>.from(conversationData['participants'] ?? []);
-        final currentUnreadCount = Map<String, dynamic>.from(conversationData['unreadCount'] ?? {});
-        
+        final participants = List<String>.from(
+          conversationData['participants'] ?? [],
+        );
+        final currentUnreadCount = Map<String, dynamic>.from(
+          conversationData['unreadCount'] ?? {},
+        );
+
         // Increment unread count for other participants
         final updatedUnreadCount = <String, int>{};
         for (final participantId in participants) {
           if (participantId == senderId) {
             updatedUnreadCount[participantId] = 0; // Sender has 0 unread
           } else {
-            updatedUnreadCount[participantId] = (currentUnreadCount[participantId] ?? 0) + 1;
+            updatedUnreadCount[participantId] =
+                (currentUnreadCount[participantId] ?? 0) + 1;
           }
         }
 
@@ -194,9 +199,7 @@ class ChatRemoteDataSource {
     try {
       // Update unread count in conversation
       final conversationRef = _conversationsRef.doc(conversationId);
-      await conversationRef.update({
-        'unreadCount.$userId': 0,
-      });
+      await conversationRef.update({'unreadCount.$userId': 0});
 
       // Optionally, mark individual messages as read
       // (This can be done in batches for better performance)
@@ -249,7 +252,9 @@ class ChatRemoteDataSource {
       int totalUnread = 0;
       for (final doc in conversations.docs) {
         final data = doc.data() as Map<String, dynamic>;
-        final unreadCount = Map<String, dynamic>.from(data['unreadCount'] ?? {});
+        final unreadCount = Map<String, dynamic>.from(
+          data['unreadCount'] ?? {},
+        );
         totalUnread += (unreadCount[userId] as int?) ?? 0;
       }
 

@@ -10,7 +10,9 @@ class GetBarterMatchesUsecase {
 
   GetBarterMatchesUsecase(this._repository);
 
-  Future<Either<Failure, List<BarterMatchEntity>>> call(GetBarterMatchesParams params) async {
+  Future<Either<Failure, List<BarterMatchEntity>>> call(
+    GetBarterMatchesParams params,
+  ) async {
     return await _repository.getBarterMatches(params.itemId);
   }
 }

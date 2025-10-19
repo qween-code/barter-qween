@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/errors/exceptions.dart';
+import '../../../core/error/exceptions.dart';
 import '../../models/favorite_model.dart';
 import '../../models/item_model.dart';
 
@@ -32,15 +32,34 @@ class FavoriteRemoteDataSourceImpl implements FavoriteRemoteDataSource {
         return FavoriteModel.fromFirestore(existing.docs.first);
       }
 
-      // Create new favorite
-      final docRef = await firestore.collection('favorites').add({
-        'userId': userId,
-        'itemId': itemId,
-        'createdAt': FieldValue.serverTimestamp(),
+      // Create new favorite and increment item counter atomically
+      FavoriteModel? createdFavorite;
+      await firestore.runTransaction((transaction) async {
+        final favoriteRef = firestore.collection('favorites').doc();
+        transaction.set(favoriteRef, {
+          'userId': userId,
+          'itemId': itemId,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        final itemRef = firestore.collection('items').doc(itemId);
+        final itemSnapshot = await transaction.get(itemRef);
+        if (itemSnapshot.exists) {
+          final current = (itemSnapshot.data()?['favoriteCount'] as num?) ?? 0;
+          transaction.update(itemRef, {
+            'favoriteCount': current + 1,
+          });
+        }
+
+        createdFavorite = FavoriteModel(
+          id: favoriteRef.id,
+          userId: userId,
+          itemId: itemId,
+          createdAt: DateTime.now(),
+        );
       });
 
-      final doc = await docRef.get();
-      return FavoriteModel.fromFirestore(doc);
+      return createdFavorite!;
     } on FirebaseException catch (e) {
       throw ServerException(e.message ?? 'Failed to add favorite');
     } catch (e) {
@@ -51,15 +70,31 @@ class FavoriteRemoteDataSourceImpl implements FavoriteRemoteDataSource {
   @override
   Future<void> removeFavorite(String userId, String itemId) async {
     try {
-      final querySnapshot = await firestore
-          .collection('favorites')
-          .where('userId', isEqualTo: userId)
-          .where('itemId', isEqualTo: itemId)
-          .get();
+      await firestore.runTransaction((transaction) async {
+        final favoritesQuery = await firestore
+            .collection('favorites')
+            .where('userId', isEqualTo: userId)
+            .where('itemId', isEqualTo: itemId)
+            .get();
 
-      for (final doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
+        if (favoritesQuery.docs.isEmpty) {
+          return;
+        }
+
+        for (final doc in favoritesQuery.docs) {
+          transaction.delete(doc.reference);
+        }
+
+        final itemRef = firestore.collection('items').doc(itemId);
+        final itemSnapshot = await transaction.get(itemRef);
+        if (itemSnapshot.exists) {
+          final current = (itemSnapshot.data()?['favoriteCount'] as num?) ?? 0;
+          final nextValue = current - favoritesQuery.docs.length;
+          transaction.update(itemRef, {
+            'favoriteCount': nextValue < 0 ? 0 : nextValue,
+          });
+        }
+      });
     } on FirebaseException catch (e) {
       throw ServerException(e.message ?? 'Failed to remove favorite');
     } catch (e) {
@@ -71,11 +106,27 @@ class FavoriteRemoteDataSourceImpl implements FavoriteRemoteDataSource {
   Future<List<ItemModel>> getFavoriteItems(String userId) async {
     try {
       // Get favorite item IDs
-      final favoritesSnapshot = await firestore
+      Query<Map<String, dynamic>> query = firestore
           .collection('favorites')
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
+          .where('userId', isEqualTo: userId);
+
+      QuerySnapshot<Map<String, dynamic>> favoritesSnapshot;
+      try {
+        favoritesSnapshot = await query
+            .orderBy('createdAt', descending: true)
+            .get();
+      } on FirebaseException catch (e) {
+        if (e.code == 'failed-precondition') {
+          // ignore: avoid_print
+          print(
+            '[Firestore] Missing composite index for favorites query. '
+            'Falling back to unordered results. Generated URL: ${e.message}',
+          );
+          favoritesSnapshot = await query.get();
+        } else {
+          rethrow;
+        }
+      }
 
       if (favoritesSnapshot.docs.isEmpty) {
         return [];
@@ -84,6 +135,15 @@ class FavoriteRemoteDataSourceImpl implements FavoriteRemoteDataSource {
       final itemIds = favoritesSnapshot.docs
           .map((doc) => doc.data()['itemId'] as String)
           .toList();
+
+      final createdAtMap = favoritesSnapshot.docs.fold<Map<String, Timestamp?>>(
+        {},
+        (acc, doc) {
+          acc[doc.data()['itemId'] as String] =
+              doc.data()['createdAt'] as Timestamp?;
+          return acc;
+        },
+      );
 
       // Fetch items in batches (Firestore 'in' query limit is 10)
       final List<ItemModel> allItems = [];
@@ -95,9 +155,21 @@ class FavoriteRemoteDataSourceImpl implements FavoriteRemoteDataSource {
             .get();
 
         allItems.addAll(
-          itemsSnapshot.docs.map((doc) => ItemModel.fromFirestore(doc)).toList(),
+          itemsSnapshot.docs
+              .map((doc) => ItemModel.fromFirestore(doc))
+              .toList(),
         );
       }
+
+      allItems.sort((a, b) {
+        final aDate =
+            createdAtMap[a.id]?.toDate() ??
+            DateTime.fromMillisecondsSinceEpoch(0);
+        final bDate =
+            createdAtMap[b.id]?.toDate() ??
+            DateTime.fromMillisecondsSinceEpoch(0);
+        return bDate.compareTo(aDate);
+      });
 
       return allItems;
     } on FirebaseException catch (e) {

@@ -15,7 +15,7 @@ analyzer:
     - functions/**/node_modules/**
   errors:
     # Suppress deprecated member warnings temporarily
-    # TODO: Migrate withOpacity to withValues() in future sprint
+    # TODO: Migrate withOpacity to withValues() in future sprint (350+ occurrences)
     deprecated_member_use: ignore
     # Suppress print warnings - TODO: Replace with proper logging system
     avoid_print: ignore

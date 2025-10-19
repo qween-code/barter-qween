@@ -110,8 +110,9 @@ class CounterOfferModel {
           : null,
       'message': message,
       'status': status,
-      'respondedAt':
-          respondedAt != null ? Timestamp.fromDate(respondedAt!) : null,
+      'respondedAt': respondedAt != null
+          ? Timestamp.fromDate(respondedAt!)
+          : null,
       'responseMessage': responseMessage,
       'createdAt': Timestamp.fromDate(createdAt),
       'expiresAt': expiresAt != null ? Timestamp.fromDate(expiresAt!) : null,

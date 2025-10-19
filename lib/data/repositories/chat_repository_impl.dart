@@ -19,7 +19,9 @@ class ChatRepositoryImpl implements ChatRepository {
     String userId,
   ) {
     try {
-      return remoteDataSource.getConversationsStream(userId).map(
+      return remoteDataSource
+          .getConversationsStream(userId)
+          .map(
             (conversations) => Right<Failure, List<ConversationEntity>>(
               conversations.map((model) => model.toEntity()).toList(),
             ),
@@ -36,7 +38,9 @@ class ChatRepositoryImpl implements ChatRepository {
     String conversationId,
   ) async {
     try {
-      final conversation = await remoteDataSource.getConversation(conversationId);
+      final conversation = await remoteDataSource.getConversation(
+        conversationId,
+      );
       return Right(conversation.toEntity());
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));

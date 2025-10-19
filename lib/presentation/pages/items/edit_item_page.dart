@@ -22,7 +22,8 @@ class EditItemPage extends StatefulWidget {
   State<EditItemPage> createState() => _EditItemPageState();
 }
 
-class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderStateMixin {
+class _EditItemPageState extends State<EditItemPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -34,7 +35,7 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
   final List<String> _networkImages = [];
   final List<File> _newImages = [];
   final List<String> _imagesToDelete = [];
-  
+
   // Barter fields
   late ItemTier _selectedTier;
   double? _estimatedValue;
@@ -55,11 +56,12 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
     _selectedCategory = widget.item.category;
     _selectedCondition = widget.item.condition;
     _networkImages.addAll(widget.item.images);
-    
+
     // Initialize barter fields
     _selectedTier = widget.item.tier ?? ItemTier.medium;
     _estimatedValue = widget.item.monetaryValue ?? widget.item.price;
-    _barterConditionType = widget.item.barterCondition?.type ?? BarterConditionType.flexible;
+    _barterConditionType =
+        widget.item.barterCondition?.type ?? BarterConditionType.flexible;
     _cashAmount = widget.item.barterCondition?.cashDifferential;
     _acceptedCategories = widget.item.barterCondition?.acceptedCategories ?? [];
 
@@ -128,15 +130,19 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
       }
 
       final barterCondition = BarterConditionEntity(
-        id: widget.item.barterCondition?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        id:
+            widget.item.barterCondition?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
         type: _barterConditionType,
         cashDifferential: _cashAmount,
         paymentDirection: _barterConditionType == BarterConditionType.cashPlus
             ? CashPaymentDirection.fromMe
             : _barterConditionType == BarterConditionType.cashMinus
-                ? CashPaymentDirection.toMe
-                : null,
-        acceptedCategories: _acceptedCategories.isNotEmpty ? _acceptedCategories : null,
+            ? CashPaymentDirection.toMe
+            : null,
+        acceptedCategories: _acceptedCategories.isNotEmpty
+            ? _acceptedCategories
+            : null,
         createdAt: widget.item.barterCondition?.createdAt ?? DateTime.now(),
       );
 
@@ -145,8 +151,12 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
         description: _descriptionController.text,
         category: _selectedCategory!,
         condition: _selectedCondition,
-        location: _locationController.text.isEmpty ? null : _locationController.text,
-        tradePreference: _tradePrefController.text.isEmpty ? null : _tradePrefController.text,
+        location: _locationController.text.isEmpty
+            ? null
+            : _locationController.text,
+        tradePreference: _tradePrefController.text.isEmpty
+            ? null
+            : _tradePrefController.text,
         images: _networkImages,
         tier: _selectedTier,
         price: _estimatedValue,
@@ -188,7 +198,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                 ),
                 backgroundColor: Colors.green,
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             );
             Navigator.pop(context, state.item);
@@ -235,9 +247,7 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                   if (isLoading)
                     Container(
                       color: Colors.black26,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: const Center(child: CircularProgressIndicator()),
                     ),
                 ],
               ),
@@ -349,12 +359,7 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.file(
-              file,
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
-            ),
+            child: Image.file(file, width: 120, height: 120, fit: BoxFit.cover),
           ),
           Positioned(
             top: 4,
@@ -400,14 +405,21 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
         decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!, width: 2, style: BorderStyle.solid),
+          border: Border.all(
+            color: Colors.grey[300]!,
+            width: 2,
+            style: BorderStyle.solid,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[400]),
             const SizedBox(height: 4),
-            Text('Add Photo', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            Text(
+              'Add Photo',
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
           ],
         ),
       ),
@@ -433,7 +445,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 labelText: 'Title *',
                 prefixIcon: const Icon(Icons.title),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -448,7 +462,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 labelText: 'Description *',
                 prefixIcon: const Icon(Icons.description),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               maxLines: 4,
               validator: (value) {
@@ -483,7 +499,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 labelText: 'Category *',
                 prefixIcon: const Icon(Icons.category),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               items: ItemCategory.all.map((category) {
                 return DropdownMenuItem(value: category, child: Text(category));
@@ -502,10 +520,15 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 labelText: 'Condition',
                 prefixIcon: const Icon(Icons.star),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               items: ItemCondition.all.map((condition) {
-                return DropdownMenuItem(value: condition, child: Text(condition));
+                return DropdownMenuItem(
+                  value: condition,
+                  child: Text(condition),
+                );
               }).toList(),
               onChanged: (value) => setState(() => _selectedCondition = value),
             ),
@@ -534,7 +557,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 labelText: 'Location',
                 prefixIcon: const Icon(Icons.location_on),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -543,7 +568,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
               decoration: InputDecoration(
                 labelText: 'What do you want in exchange?',
                 prefixIcon: const Icon(Icons.swap_horiz),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 hintText: 'e.g., Smartphone, Book collection, etc.',
               ),
               maxLines: 2,
@@ -569,7 +596,10 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
             ),
             const SizedBox(height: 16),
             // Tier selector
-            const Text('Ürün Boyutu', style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text(
+              'Ürün Boyutu',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 8),
             Row(
               children: ItemTier.values.map((tier) {
@@ -582,7 +612,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue.withValues(alpha: 0.1) : Colors.transparent,
+                          color: isSelected
+                              ? Colors.blue.withValues(alpha: 0.1)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: isSelected ? Colors.blue : Colors.grey[300]!,
@@ -595,8 +627,8 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                               tier == ItemTier.small
                                   ? Icons.shopping_bag_outlined
                                   : tier == ItemTier.medium
-                                      ? Icons.shopping_basket_outlined
-                                      : Icons.shopping_cart_outlined,
+                                  ? Icons.shopping_basket_outlined
+                                  : Icons.shopping_cart_outlined,
                               size: 32,
                               color: isSelected ? Colors.blue : Colors.grey,
                             ),
@@ -605,8 +637,12 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                               tier.displayName,
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                                color: isSelected ? Colors.blue : Colors.grey[700],
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                                color: isSelected
+                                    ? Colors.blue
+                                    : Colors.grey[700],
                               ),
                             ),
                           ],
@@ -626,7 +662,9 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
                 labelText: 'Tahmini Değer (TL)',
                 prefixIcon: const Icon(Icons.attach_money),
                 prefixText: '₺ ',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onChanged: (value) {
                 final amount = double.tryParse(value);
@@ -662,21 +700,29 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
       child: ElevatedButton(
         onPressed: isLoading ? null : _updateItem,
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           elevation: 2,
         ),
         child: isLoading
             ? const SizedBox(
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
               )
             : const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.check_circle_outline),
                   SizedBox(width: 8),
-                  Text('Update Item', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    'Update Item',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
       ),
@@ -689,8 +735,12 @@ class _EditItemPageState extends State<EditItemPage> with SingleTickerProviderSt
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Delete Item'),
-          content: const Text('Are you sure you want to delete this item? This action cannot be undone.'),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          content: const Text(
+            'Are you sure you want to delete this item? This action cannot be undone.',
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),

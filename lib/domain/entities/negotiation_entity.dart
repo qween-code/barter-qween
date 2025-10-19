@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'counter_offer_entity.dart';
 
 /// Negotiation Entity
-/// 
+///
 /// Represents a negotiation thread between two users
 /// for a specific trade offer. Tracks counter-offers and messages.
 class NegotiationEntity extends Equatable {
@@ -183,36 +183,36 @@ class NegotiationEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        tradeOfferId,
-        initiatorId,
-        responderId,
-        sourceItemId,
-        targetItemId,
-        receiverId,
-        lastActionBy,
-        lastCounterOffer,
-        counterOffers,
-        status,
-        roundCount,
-        currentOfferer,
-        currentCashOffer,
-        currentPaymentDirection,
-        currentMeetupLocation,
-        currentMeetupTime,
-        currentNotes,
-        rounds,
-        totalMessages,
-        agreedAt,
-        rejectedAt,
-        rejectionReason,
-        rejectedBy,
-        expiresAt,
-        isExpired,
-        createdAt,
-        updatedAt,
-        lastActivityAt,
-      ];
+    id,
+    tradeOfferId,
+    initiatorId,
+    responderId,
+    sourceItemId,
+    targetItemId,
+    receiverId,
+    lastActionBy,
+    lastCounterOffer,
+    counterOffers,
+    status,
+    roundCount,
+    currentOfferer,
+    currentCashOffer,
+    currentPaymentDirection,
+    currentMeetupLocation,
+    currentMeetupTime,
+    currentNotes,
+    rounds,
+    totalMessages,
+    agreedAt,
+    rejectedAt,
+    rejectionReason,
+    rejectedBy,
+    expiresAt,
+    isExpired,
+    createdAt,
+    updatedAt,
+    lastActivityAt,
+  ];
 
   @override
   String toString() {
@@ -221,7 +221,7 @@ class NegotiationEntity extends Equatable {
 }
 
 /// Negotiation Round
-/// 
+///
 /// Represents a single counter-offer in the negotiation
 class NegotiationRound extends Equatable {
   final int roundNumber;
@@ -246,15 +246,15 @@ class NegotiationRound extends Equatable {
 
   @override
   List<Object?> get props => [
-        roundNumber,
-        offererId,
-        cashOffer,
-        paymentDirection,
-        meetupLocation,
-        meetupTime,
-        notes,
-        createdAt,
-      ];
+    roundNumber,
+    offererId,
+    cashOffer,
+    paymentDirection,
+    meetupLocation,
+    meetupTime,
+    notes,
+    createdAt,
+  ];
 }
 
 /// Negotiation status enum

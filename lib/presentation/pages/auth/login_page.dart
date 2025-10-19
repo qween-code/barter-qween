@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/world_class_design_system.dart';
-import '../../../core/services/analytics_service.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/auth/auth_state.dart';
@@ -11,7 +9,7 @@ import 'register_page.dart';
 import 'forgot_password_page.dart';
 
 /// 🌟 WORLD-CLASS LOGIN PAGE
-/// 
+///
 /// Features:
 /// - Email/Password authentication
 /// - Social login options
@@ -31,11 +29,11 @@ class _LoginPageState extends State<LoginPage>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   bool _obscurePassword = true;
   bool _rememberMe = false;
 
@@ -50,23 +48,22 @@ class _LoginPageState extends State<LoginPage>
       duration: WorldClassDesignSystem.animationSlow,
       vsync: this,
     );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-    ));
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
-    ));
-    
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
+          ),
+        );
+
     _animationController.forward();
   }
 
@@ -103,7 +100,8 @@ class _LoginPageState extends State<LoginPage>
   void _navigateToRegister() {
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const RegisterPage(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const RegisterPage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
             position: Tween<Offset>(
@@ -121,12 +119,10 @@ class _LoginPageState extends State<LoginPage>
   void _navigateToForgotPassword() {
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const ForgotPasswordPage(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const ForgotPasswordPage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
+          return FadeTransition(opacity: animation, child: child);
         },
         transitionDuration: WorldClassDesignSystem.animationNormal,
       ),
@@ -143,13 +139,12 @@ class _LoginPageState extends State<LoginPage>
             if (state is AuthAuthenticated) {
               Navigator.of(context).pushReplacement(
                 PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const MainDashboard(),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
-                  },
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const MainDashboard(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
                   transitionDuration: WorldClassDesignSystem.animationNormal,
                 ),
               );
@@ -168,7 +163,7 @@ class _LoginPageState extends State<LoginPage>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: WorldClassDesignSystem.spacingXXL),
-                
+
                 // Logo and Welcome
                 FadeTransition(
                   opacity: _fadeAnimation,
@@ -186,7 +181,9 @@ class _LoginPageState extends State<LoginPage>
                               WorldClassDesignSystem.secondaryColor,
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusL),
+                          borderRadius: BorderRadius.circular(
+                            WorldClassDesignSystem.radiusL,
+                          ),
                           boxShadow: WorldClassDesignSystem.shadowM,
                         ),
                         child: Icon(
@@ -195,9 +192,9 @@ class _LoginPageState extends State<LoginPage>
                           color: WorldClassDesignSystem.primaryWhite,
                         ),
                       ),
-                      
+
                       const SizedBox(height: WorldClassDesignSystem.spacingL),
-                      
+
                       Text(
                         'Welcome Back',
                         style: WorldClassDesignSystem.heading1.copyWith(
@@ -205,9 +202,9 @@ class _LoginPageState extends State<LoginPage>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      
+
                       const SizedBox(height: WorldClassDesignSystem.spacingS),
-                      
+
                       Text(
                         'Sign in to continue trading',
                         style: WorldClassDesignSystem.bodyLarge.copyWith(
@@ -217,9 +214,9 @@ class _LoginPageState extends State<LoginPage>
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: WorldClassDesignSystem.spacingXXL),
-                
+
                 // Login Form
                 SlideTransition(
                   position: _slideAnimation,
@@ -232,50 +229,56 @@ class _LoginPageState extends State<LoginPage>
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: WorldClassDesignSystem.inputDecoration.copyWith(
-                            labelText: 'Email',
-                            hintText: 'Enter your email',
-                            prefixIcon: Icon(
-                              Icons.email_outlined,
-                              color: WorldClassDesignSystem.secondaryText,
-                            ),
-                          ),
+                          decoration: WorldClassDesignSystem.inputDecoration
+                              .copyWith(
+                                labelText: 'Email',
+                                hintText: 'Enter your email',
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: WorldClassDesignSystem.secondaryText,
+                                ),
+                              ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                            if (!RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            ).hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
                           },
                         ),
-                        
+
                         const SizedBox(height: WorldClassDesignSystem.spacingL),
-                        
+
                         // Password Field
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          decoration: WorldClassDesignSystem.inputDecoration.copyWith(
-                            labelText: 'Password',
-                            hintText: 'Enter your password',
-                            prefixIcon: Icon(
-                              Icons.lock_outlined,
-                              color: WorldClassDesignSystem.secondaryText,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                                color: WorldClassDesignSystem.secondaryText,
+                          decoration: WorldClassDesignSystem.inputDecoration
+                              .copyWith(
+                                labelText: 'Password',
+                                hintText: 'Enter your password',
+                                prefixIcon: Icon(
+                                  Icons.lock_outlined,
+                                  color: WorldClassDesignSystem.secondaryText,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: WorldClassDesignSystem.secondaryText,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
@@ -286,9 +289,9 @@ class _LoginPageState extends State<LoginPage>
                             return null;
                           },
                         ),
-                        
+
                         const SizedBox(height: WorldClassDesignSystem.spacingM),
-                        
+
                         // Remember Me & Forgot Password
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -302,13 +305,16 @@ class _LoginPageState extends State<LoginPage>
                                       _rememberMe = value ?? false;
                                     });
                                   },
-                                  activeColor: WorldClassDesignSystem.primaryColor,
+                                  activeColor:
+                                      WorldClassDesignSystem.primaryColor,
                                 ),
                                 Text(
                                   'Remember me',
-                                  style: WorldClassDesignSystem.bodyMedium.copyWith(
-                                    color: WorldClassDesignSystem.secondaryText,
-                                  ),
+                                  style: WorldClassDesignSystem.bodyMedium
+                                      .copyWith(
+                                        color: WorldClassDesignSystem
+                                            .secondaryText,
+                                      ),
                                 ),
                               ],
                             ),
@@ -316,21 +322,27 @@ class _LoginPageState extends State<LoginPage>
                               onPressed: _navigateToForgotPassword,
                               child: Text(
                                 'Forgot Password?',
-                                style: WorldClassDesignSystem.labelMedium.copyWith(
-                                  color: WorldClassDesignSystem.primaryColor,
-                                ),
+                                style: WorldClassDesignSystem.labelMedium
+                                    .copyWith(
+                                      color:
+                                          WorldClassDesignSystem.primaryColor,
+                                    ),
                               ),
                             ),
                           ],
                         ),
-                        
-                        const SizedBox(height: WorldClassDesignSystem.spacingXL),
-                        
+
+                        const SizedBox(
+                          height: WorldClassDesignSystem.spacingXL,
+                        ),
+
                         // Login Button
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return ElevatedButton(
-                              onPressed: state is AuthLoading ? null : _handleLogin,
+                              onPressed: state is AuthLoading
+                                  ? null
+                                  : _handleLogin,
                               style: WorldClassDesignSystem.primaryButtonStyle,
                               child: state is AuthLoading
                                   ? SizedBox(
@@ -338,18 +350,22 @@ class _LoginPageState extends State<LoginPage>
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          WorldClassDesignSystem.primaryWhite,
-                                        ),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              WorldClassDesignSystem
+                                                  .primaryWhite,
+                                            ),
                                       ),
                                     )
                                   : const Text('Sign In'),
                             );
                           },
                         ),
-                        
-                        const SizedBox(height: WorldClassDesignSystem.spacingXL),
-                        
+
+                        const SizedBox(
+                          height: WorldClassDesignSystem.spacingXL,
+                        ),
+
                         // Divider
                         Row(
                           children: [
@@ -364,9 +380,11 @@ class _LoginPageState extends State<LoginPage>
                               ),
                               child: Text(
                                 'or continue with',
-                                style: WorldClassDesignSystem.bodySmall.copyWith(
-                                  color: WorldClassDesignSystem.secondaryText,
-                                ),
+                                style: WorldClassDesignSystem.bodySmall
+                                    .copyWith(
+                                      color:
+                                          WorldClassDesignSystem.secondaryText,
+                                    ),
                               ),
                             ),
                             Expanded(
@@ -376,9 +394,11 @@ class _LoginPageState extends State<LoginPage>
                             ),
                           ],
                         ),
-                        
-                        const SizedBox(height: WorldClassDesignSystem.spacingXL),
-                        
+
+                        const SizedBox(
+                          height: WorldClassDesignSystem.spacingXL,
+                        ),
+
                         // Social Login Buttons
                         Row(
                           children: [
@@ -391,16 +411,21 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 label: Text(
                                   'Google',
-                                  style: WorldClassDesignSystem.labelLarge.copyWith(
-                                    color: WorldClassDesignSystem.primaryColor,
-                                  ),
+                                  style: WorldClassDesignSystem.labelLarge
+                                      .copyWith(
+                                        color:
+                                            WorldClassDesignSystem.primaryColor,
+                                      ),
                                 ),
-                                style: WorldClassDesignSystem.secondaryButtonStyle,
+                                style:
+                                    WorldClassDesignSystem.secondaryButtonStyle,
                               ),
                             ),
-                            
-                            const SizedBox(width: WorldClassDesignSystem.spacingM),
-                            
+
+                            const SizedBox(
+                              width: WorldClassDesignSystem.spacingM,
+                            ),
+
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: _handleAppleLogin,
@@ -410,18 +435,23 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 label: Text(
                                   'Apple',
-                                  style: WorldClassDesignSystem.labelLarge.copyWith(
-                                    color: WorldClassDesignSystem.primaryColor,
-                                  ),
+                                  style: WorldClassDesignSystem.labelLarge
+                                      .copyWith(
+                                        color:
+                                            WorldClassDesignSystem.primaryColor,
+                                      ),
                                 ),
-                                style: WorldClassDesignSystem.secondaryButtonStyle,
+                                style:
+                                    WorldClassDesignSystem.secondaryButtonStyle,
                               ),
                             ),
                           ],
                         ),
-                        
-                        const SizedBox(height: WorldClassDesignSystem.spacingXXL),
-                        
+
+                        const SizedBox(
+                          height: WorldClassDesignSystem.spacingXXL,
+                        ),
+
                         // Register Link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -436,10 +466,12 @@ class _LoginPageState extends State<LoginPage>
                               onPressed: _navigateToRegister,
                               child: Text(
                                 'Sign Up',
-                                style: WorldClassDesignSystem.labelLarge.copyWith(
-                                  color: WorldClassDesignSystem.primaryColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: WorldClassDesignSystem.labelLarge
+                                    .copyWith(
+                                      color:
+                                          WorldClassDesignSystem.primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                             ),
                           ],

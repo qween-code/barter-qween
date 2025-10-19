@@ -17,7 +17,7 @@ class GetUserFavoritesUseCase {
     if (user == null) {
       return Left(AuthFailure('User not authenticated'));
     }
-    
+
     return await repository.getFavoriteItems(user.uid);
   }
 }

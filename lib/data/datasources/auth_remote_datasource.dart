@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
-import '../../core/errors/exceptions.dart';
+import '../../core/error/exceptions.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -21,10 +21,13 @@ abstract class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser();
   Future<bool> isSignedIn();
   Future<void> sendEmailVerification();
-  
+
   Future<UserModel> signInWithGoogle();
   Future<String> signInWithPhone(String phoneNumber);
-  Future<UserModel> verifyOtp({required String verificationId, required String smsCode});
+  Future<UserModel> verifyOtp({
+    required String verificationId,
+    required String smsCode,
+  });
   Future<void> resetPassword(String email);
 }
 
@@ -57,12 +60,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       // Try to load profile from Firestore
       try {
-        final doc = await firestore.collection('users').doc(userCredential.user!.uid).get();
+        final doc = await firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
         if (doc.exists) {
           return UserModel.fromFirestore(doc);
         } else {
           // Profile doesn't exist in Firestore, create it
-          print('📝 Creating Firestore profile for existing user: ${userCredential.user!.uid}');
+          print(
+            '📝 Creating Firestore profile for existing user: ${userCredential.user!.uid}',
+          );
           final userModel = UserModel.fromFirebaseUser(userCredential.user!);
           await firestore
               .collection('users')
@@ -105,9 +113,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       // Create user document in Firestore
       final userModel = UserModel.fromFirebaseUser(updatedUser);
-      await firestore.collection('users').doc(updatedUser.uid).set(
-            userModel.toFirestore(),
-          );
+      await firestore
+          .collection('users')
+          .doc(updatedUser.uid)
+          .set(userModel.toFirestore());
 
       return userModel;
     } on FirebaseAuthException catch (e) {
@@ -124,6 +133,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final googleCurrentUser = await googleSignIn.isSignedIn();
       if (googleCurrentUser) {
         await googleSignIn.signOut();
+        try {
+          await googleSignIn.disconnect();
+        } catch (_) {
+          // Ignore disconnect errors
+        }
       }
       // Sign out from Firebase
       await firebaseAuth.signOut();
@@ -137,7 +151,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final user = firebaseAuth.currentUser;
       if (user == null) return null;
-      
+
       // Try to load profile from Firestore
       try {
         final doc = await firestore.collection('users').doc(user.uid).get();
@@ -199,8 +213,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         idToken: googleAuth.idToken,
       );
 
-      final userCredential =
-          await firebaseAuth.signInWithCredential(credential);
+      final userCredential = await firebaseAuth.signInWithCredential(
+        credential,
+      );
 
       if (userCredential.user == null) {
         throw const AuthException('Failed to sign in with Google');
@@ -245,7 +260,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       // Wait a bit to ensure codeSent callback is triggered
       await Future.delayed(const Duration(seconds: 1));
-      
+
       if (verificationId.isEmpty) {
         throw const AuthException('Failed to send verification code');
       }
@@ -269,8 +284,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         smsCode: smsCode,
       );
 
-      final userCredential =
-          await firebaseAuth.signInWithCredential(credential);
+      final userCredential = await firebaseAuth.signInWithCredential(
+        credential,
+      );
 
       if (userCredential.user == null) {
         throw const AuthException('Failed to verify OTP');

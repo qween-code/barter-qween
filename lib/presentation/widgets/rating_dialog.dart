@@ -27,38 +27,26 @@ class _RatingDialogState extends State<RatingDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.star_rounded,
-              size: 64,
-              color: Colors.amber,
-            ),
+            const Icon(Icons.star_rounded, size: 64, color: Colors.amber),
             const SizedBox(height: 16),
             Text(
               'Rate ${widget.userName}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
               'How was your trading experience?',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 14),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            
+
             // Star rating
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -80,9 +68,9 @@ class _RatingDialogState extends State<RatingDialog> {
                 );
               }),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Comment field
             TextField(
               controller: _commentController,
@@ -96,9 +84,9 @@ class _RatingDialogState extends State<RatingDialog> {
                 fillColor: Colors.grey.shade50,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Buttons
             Row(
               children: [

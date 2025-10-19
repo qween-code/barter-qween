@@ -10,6 +10,9 @@ import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/routes/app_router.dart';
+import '../../pages/trades/trade_deeplink_page.dart';
+import '../../pages/trades/trades_page.dart';
 
 /// Notifications page displaying user notifications
 class NotificationsPage extends StatefulWidget {
@@ -20,88 +23,139 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  final List<NotificationEntity> _notifications = []; // local cache for optimistic UI
+  final List<NotificationEntity> _notifications = [];
 
-@override
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<NotificationBloc>()..add(_initialEvent(context)),
-      child: Scaffold(
-        backgroundColor: Colors.grey[50],
-        appBar: AppBar(
-          title: const Text('Notifications'),
-          actions: [
-            if (_notifications.isNotEmpty)
-              TextButton(
-                onPressed: _markAllAsRead,
-                child: Text(
-                  'Mark all read',
-                  style: TextStyle(color: AppColors.primary),
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: Colors.grey[50],
+          appBar: AppBar(
+            title: const Text('Bildirimler'),
+            actions: [
+              if (_notifications.isNotEmpty)
+                TextButton(
+                  onPressed: _markAllAsRead,
+                  child: Text(
+                    'Tümünü okundu yap',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
                 ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'delete_all') {
+                    _deleteAll();
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'delete_all',
+                    child: Text('Hepsini sil'),
+                  ),
+                ],
               ),
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'delete_all') {
-                  _deleteAll();
-                }
-              },
-              itemBuilder: (context) => const [
-                PopupMenuItem(
-                  value: 'delete_all',
-                  child: Text('Delete all'),
-                ),
+            ],
+            bottom: const TabBar(
+              indicatorColor: AppColors.primary,
+              labelColor: AppColors.primary,
+              unselectedLabelColor: Colors.grey,
+              tabs: [
+                Tab(text: 'Takas & Teklif'),
+                Tab(text: 'Mesajlar'),
+                Tab(text: 'Diğer'),
               ],
             ),
-          ],
-        ),
-        body: BlocBuilder<NotificationBloc, NotificationState>(
-          builder: (context, state) {
-            final notifications = state is NotificationsLoaded
-                ? state.notifications
-                : state is NotificationsStreaming
-                    ? state.notifications
-                    : _notifications; // fallback
+          ),
+          body: BlocBuilder<NotificationBloc, NotificationState>(
+            builder: (context, state) {
+              if (state is NotificationsLoaded) {
+                _notifications
+                  ..clear()
+                  ..addAll(state.notifications);
+              } else if (state is NotificationsStreaming) {
+                _notifications
+                  ..clear()
+                  ..addAll(state.notifications);
+              }
 
-            if (notifications.isEmpty) {
-              return _buildEmptyState();
-            }
+              final notifications = state is NotificationsLoaded
+                  ? state.notifications
+                  : state is NotificationsStreaming
+                  ? state.notifications
+                  : _notifications;
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                return _buildNotificationCard(notifications[index]);
-              },
-            );
-          },
+              final tradeNotifications = notifications
+                  .where((n) => _tradeTypes.contains(n.type))
+                  .toList();
+              final messageNotifications = notifications
+                  .where((n) => n.type == NotificationType.newMessage)
+                  .toList();
+              final otherNotifications = notifications
+                  .where(
+                    (n) =>
+                        !_tradeTypes.contains(n.type) &&
+                        n.type != NotificationType.newMessage,
+                  )
+                  .toList();
+
+              return TabBarView(
+                children: [
+                  _buildNotificationList(
+                    tradeNotifications,
+                    emptyLabel: 'Henüz takas veya teklif bildiriminiz yok.',
+                  ),
+                  _buildNotificationList(
+                    messageNotifications,
+                    emptyLabel: 'Yeni mesaj bildiriminiz bulunmuyor.',
+                  ),
+                  _buildNotificationList(
+                    otherNotifications,
+                    emptyLabel: 'Diğer bildirimler burada listelenecek.',
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildNotificationList(
+    List<NotificationEntity> notifications, {
+    required String emptyLabel,
+  }) {
+    if (notifications.isEmpty) {
+      return _buildEmptyState(emptyLabel);
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: notifications.length,
+      itemBuilder: (context, index) {
+        return _buildNotificationCard(notifications[index]);
+      },
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications_none,
-            size: 100,
-            color: Colors.grey[300],
-          ),
+          Icon(Icons.notifications_none, size: 100, color: Colors.grey[300]),
           const SizedBox(height: 16),
           Text(
-            'No notifications yet',
-            style: AppTextStyles.titleLarge.copyWith(
-              color: Colors.grey[600],
-            ),
+            'Bildirim yok',
+            style: AppTextStyles.titleLarge.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
-            'When you get notifications, they\'ll show up here',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.grey[500],
-            ),
+            message,
+            style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -113,7 +167,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       elevation: notification.isRead ? 0 : 2,
-      color: notification.isRead ? Colors.white : AppColors.primary.withOpacity(0.05),
+      color: notification.isRead
+          ? Colors.white
+          : AppColors.primary.withOpacity(0.05),
       child: InkWell(
         onTap: () => _handleNotificationTap(notification),
         borderRadius: BorderRadius.circular(12),
@@ -127,7 +183,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: _getNotificationColor(notification.type).withOpacity(0.1),
+                  color: _getNotificationColor(
+                    notification.type,
+                  ).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -234,6 +292,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return Icons.handshake;
       case NotificationType.priceDropMatch:
         return Icons.trending_down;
+      case NotificationType.newItemFromVendor:
+        return Icons.shopping_bag;
       case NotificationType.system:
         return Icons.info;
     }
@@ -260,6 +320,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
         return const Color(0xFF4CAF50); // Green
       case NotificationType.priceDropMatch:
         return const Color(0xFFFF9800); // Orange
+      case NotificationType.newItemFromVendor:
+        return const Color(0xFF673AB7); // Purple
       case NotificationType.system:
         return Colors.grey;
     }
@@ -271,12 +333,55 @@ class _NotificationsPageState extends State<NotificationsPage> {
       _markAsRead(notification.id);
     }
 
-    // Navigate based on type
-    // TODO: Implement navigation
-    print('Navigate to ${notification.type} - ${notification.relatedEntityId}');
+    final entityId = notification.relatedEntityId;
+    switch (notification.type) {
+      case NotificationType.newTradeOffer:
+      case NotificationType.tradeAccepted:
+      case NotificationType.tradeRejected:
+      case NotificationType.tradeCancelled:
+      case NotificationType.tradeCompleted:
+        if (entityId != null && entityId.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TradeDeepLinkPage(tradeId: entityId),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TradesPage()),
+          );
+        }
+        break;
+      case NotificationType.newMessage:
+        AppRouter.toMessages(context);
+        break;
+      case NotificationType.itemSold:
+      case NotificationType.itemLiked:
+      case NotificationType.newMatch:
+      case NotificationType.priceDropMatch:
+      case NotificationType.newItemFromVendor:
+        if (entityId != null && entityId.isNotEmpty) {
+          AppRouter.toItemDetail(context, entityId);
+        }
+        break;
+      case NotificationType.followReceived:
+      case NotificationType.system:
+        break;
+    }
   }
 
   void _markAsRead(String notificationId) {
+    final auth = context.read<AuthBloc>().state;
+    if (auth is AuthAuthenticated) {
+      context.read<NotificationBloc>().add(
+        MarkNotificationAsRead(
+          userId: auth.user.uid,
+          notificationId: notificationId,
+        ),
+      );
+    }
     setState(() {
       final index = _notifications.indexWhere((n) => n.id == notificationId);
       if (index != -1) {
@@ -288,7 +393,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   void _markAllAsRead() {
     final auth = context.read<AuthBloc>().state;
     if (auth is AuthAuthenticated) {
-      context.read<NotificationBloc>().add(MarkAllNotificationsAsRead(auth.user.uid));
+      context.read<NotificationBloc>().add(
+        MarkAllNotificationsAsRead(auth.user.uid),
+      );
     }
     setState(() {
       _notifications.replaceRange(
@@ -300,44 +407,51 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   void _deleteNotification(String notificationId) {
+    final auth = context.read<AuthBloc>().state;
+    if (auth is AuthAuthenticated) {
+      context.read<NotificationBloc>().add(
+        DeleteNotification(
+          userId: auth.user.uid,
+          notificationId: notificationId,
+        ),
+      );
+    }
     setState(() {
       _notifications.removeWhere((n) => n.id == notificationId);
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Notification deleted')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Bildirim silindi')));
   }
 
   void _deleteAll() {
     final auth = context.read<AuthBloc>().state;
+    final notificationBloc = context.read<NotificationBloc>();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete all notifications?'),
-        content: const Text('This action cannot be undone.'),
+        title: const Text('Tüm bildirimleri silmek istiyor musunuz?'),
+        content: const Text('Bu işlem geri alınamaz.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Vazgeç'),
           ),
           TextButton(
             onPressed: () {
               if (auth is AuthAuthenticated) {
-                context.read<NotificationBloc>().add(DeleteAllNotifications(auth.user.uid));
+                notificationBloc.add(DeleteAllNotifications(auth.user.uid));
               }
               setState(() {
                 _notifications.clear();
               });
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All notifications deleted')),
+                const SnackBar(content: Text('Tüm bildirimler silindi')),
               );
             },
-            child: Text(
-              'Delete',
-              style: TextStyle(color: AppColors.error),
-            ),
+            child: Text('Sil', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -351,4 +465,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
     return const LoadNotifications('');
   }
+
+  static const _tradeTypes = {
+    NotificationType.newTradeOffer,
+    NotificationType.tradeAccepted,
+    NotificationType.tradeRejected,
+    NotificationType.tradeCancelled,
+    NotificationType.tradeCompleted,
+  };
 }

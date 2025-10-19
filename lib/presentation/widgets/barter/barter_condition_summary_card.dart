@@ -24,7 +24,7 @@ class BarterConditionSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final barterCondition = item.barterCondition;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -53,11 +53,7 @@ class BarterConditionSummaryCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.handshake,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
+                const Icon(Icons.handshake, color: AppColors.primary, size: 24),
                 const SizedBox(width: AppDimensions.spacing8),
                 Text(
                   'Takas Şartları',
@@ -69,7 +65,7 @@ class BarterConditionSummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(AppDimensions.spacing16),
             child: Column(
@@ -90,23 +86,24 @@ class BarterConditionSummaryCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppDimensions.spacing12),
-                
+
                 // Estimated Value
                 if (item.monetaryValue != null || item.price != null)
                   _buildInfoRow(
                     icon: Icons.attach_money,
                     label: 'Tahmini Değer',
-                    value: '₺${(item.monetaryValue ?? item.price!).toStringAsFixed(0)} TL',
+                    value:
+                        '₺${(item.monetaryValue ?? item.price!).toStringAsFixed(0)} TL',
                   ),
-                
+
                 if (item.monetaryValue != null || item.price != null)
                   const SizedBox(height: AppDimensions.spacing16),
-                
+
                 const Divider(),
                 const SizedBox(height: AppDimensions.spacing16),
-                
+
                 // Barter Condition Type
                 if (barterCondition != null) ...[
                   Text(
@@ -125,25 +122,32 @@ class BarterConditionSummaryCard extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  
+
                   // Cash Differential (if applicable)
                   if (barterCondition.cashDifferential != null &&
                       barterCondition.cashDifferential! > 0) ...[
                     const SizedBox(height: AppDimensions.spacing16),
                     _buildInfoRow(
-                      icon: barterCondition.paymentDirection == CashPaymentDirection.fromMe
+                      icon:
+                          barterCondition.paymentDirection ==
+                              CashPaymentDirection.fromMe
                           ? Icons.arrow_upward
                           : Icons.arrow_downward,
-                      label: barterCondition.paymentDirection == CashPaymentDirection.fromMe
+                      label:
+                          barterCondition.paymentDirection ==
+                              CashPaymentDirection.fromMe
                           ? 'Ekstra Ödeyeceğim'
                           : 'Para Farkı Alacağım',
-                      value: '₺${barterCondition.cashDifferential!.toStringAsFixed(0)} TL',
-                      valueColor: barterCondition.paymentDirection == CashPaymentDirection.fromMe
+                      value:
+                          '₺${barterCondition.cashDifferential!.toStringAsFixed(0)} TL',
+                      valueColor:
+                          barterCondition.paymentDirection ==
+                              CashPaymentDirection.fromMe
                           ? const Color(0xFFFF9800)
                           : const Color(0xFF4CAF50),
                     ),
                   ],
-                  
+
                   // Accepted Categories
                   if (barterCondition.acceptedCategories != null &&
                       barterCondition.acceptedCategories!.isNotEmpty) ...[
@@ -161,19 +165,22 @@ class BarterConditionSummaryCard extends StatelessWidget {
                       runSpacing: 8,
                       children: barterCondition.acceptedCategories!
                           .take(5)
-                          .map((category) => Chip(
-                                label: Text(
-                                  category,
-                                  style: const TextStyle(fontSize: 11),
-                                ),
-                                padding: EdgeInsets.zero,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ))
+                          .map(
+                            (category) => Chip(
+                              label: Text(
+                                category,
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              padding: EdgeInsets.zero,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          )
                           .toList(),
                     ),
                   ],
                 ],
-                
+
                 // Find Matches Button
                 if (showMatchButton && onFindMatches != null) ...[
                   const SizedBox(height: AppDimensions.spacing16),
@@ -188,7 +195,9 @@ class BarterConditionSummaryCard extends StatelessWidget {
                         foregroundColor: AppColors.textOnPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusMedium,
+                          ),
                         ),
                       ),
                     ),
@@ -233,10 +242,7 @@ class BarterConditionSummaryCard extends StatelessWidget {
                       color: valueColor ?? AppColors.textPrimary,
                     ),
                   ),
-                  if (badge != null) ...[
-                    const SizedBox(width: 8),
-                    badge,
-                  ],
+                  if (badge != null) ...[const SizedBox(width: 8), badge],
                 ],
               ),
             ],

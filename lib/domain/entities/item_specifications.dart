@@ -281,23 +281,10 @@ class ItemSpecifications {
   ];
 
   /// Common genders
-  static const genders = [
-    'Men',
-    'Women',
-    'Unisex',
-    'Boys',
-    'Girls',
-    'Kids',
-  ];
+  static const genders = ['Men', 'Women', 'Unisex', 'Boys', 'Girls', 'Kids'];
 
   /// Common seasons
-  static const seasons = [
-    'Spring',
-    'Summer',
-    'Fall',
-    'Winter',
-    'All Seasons',
-  ];
+  static const seasons = ['Spring', 'Summer', 'Fall', 'Winter', 'All Seasons'];
 
   /// Common pet types
   static const petTypes = [
@@ -324,16 +311,16 @@ class ItemSpecifications {
   /// Validate specifications
   static bool validateSpecs(String category, Map<String, dynamic> specs) {
     final requiredSpecs = getRequiredSpecsForCategory(category);
-    
+
     // Check if all required fields are present and not empty
     for (final required in requiredSpecs) {
-      if (!specs.containsKey(required) || 
-          specs[required] == null || 
+      if (!specs.containsKey(required) ||
+          specs[required] == null ||
           specs[required].toString().trim().isEmpty) {
         return false;
       }
     }
-    
+
     return true;
   }
 

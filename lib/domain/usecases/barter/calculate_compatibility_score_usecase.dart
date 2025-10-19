@@ -9,12 +9,8 @@ class CalculateCompatibilityScoreUseCase {
   CalculateCompatibilityScoreUseCase();
 
   /// Calculate compatibility score between source item and potential match
-  double call({
-    required ItemEntity sourceItem,
-    required ItemEntity matchItem,
-  }) {
+  double call({required ItemEntity sourceItem, required ItemEntity matchItem}) {
     double score = 0.0;
-    int factors = 0;
 
     final sourceCondition = sourceItem.barterCondition;
     final matchCondition = matchItem.barterCondition;
@@ -25,12 +21,13 @@ class CalculateCompatibilityScoreUseCase {
     } else if (_isRelatedCategory(sourceItem.category, matchItem.category)) {
       score += 15.0; // Partial points for related categories
     }
-    factors++;
 
     // Factor 2: Tier Compatibility (25 points)
-    final tierScore = _calculateTierCompatibility(sourceItem.tier, matchItem.tier);
+    final tierScore = _calculateTierCompatibility(
+      sourceItem.tier,
+      matchItem.tier,
+    );
     score += tierScore * 25.0;
-    factors++;
 
     // Factor 3: Price Range Match (25 points)
     final priceScore = _calculatePriceCompatibility(
@@ -38,7 +35,6 @@ class CalculateCompatibilityScoreUseCase {
       matchItem.monetaryValue ?? matchItem.price ?? 0,
     );
     score += priceScore * 25.0;
-    factors++;
 
     // Factor 4: Barter Type Compatibility (10 points)
     if (sourceCondition != null && matchCondition != null) {
@@ -48,7 +44,6 @@ class CalculateCompatibilityScoreUseCase {
       );
       score += barterScore * 10.0;
     }
-    factors++;
 
     // Factor 5: Location Proximity (10 points)
     if (sourceItem.city != null && matchItem.city != null) {
@@ -58,7 +53,6 @@ class CalculateCompatibilityScoreUseCase {
         score += 5.0; // Same region
       }
     }
-    factors++;
 
     // Ensure score is between 0-100
     return score.clamp(0.0, 100.0);
@@ -126,23 +120,23 @@ class CalculateCompatibilityScoreUseCase {
 
     final minPrice = price1 < price2 ? price1 : price2;
     final maxPrice = price1 > price2 ? price1 : price2;
-    
+
     if (minPrice == 0) return 0.5;
 
     final ratio = maxPrice / minPrice;
 
     // Perfect match
     if (ratio <= 1.1) return 1.0;
-    
+
     // Close match (within 20%)
     if (ratio <= 1.2) return 0.9;
-    
+
     // Acceptable match (within 50%)
     if (ratio <= 1.5) return 0.7;
-    
+
     // Fair match (within 100%)
     if (ratio <= 2.0) return 0.5;
-    
+
     // Poor match (more than double)
     return 0.3;
   }

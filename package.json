@@ -4,7 +4,8 @@
   "description": "Firebase seed script for Barter Qween",
   "main": "seed_firebase.js",
   "scripts": {
-    "seed": "node seed_firebase.js"
+    "seed": "node seed_firebase.js",
+    "seed:user-locations": "node scripts/seed_user_locations.js"
   },
   "dependencies": {
     "firebase-admin": "^12.7.0"

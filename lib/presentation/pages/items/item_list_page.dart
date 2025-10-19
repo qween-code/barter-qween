@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/routes/app_router.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
@@ -13,7 +14,6 @@ import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import 'create_item_page.dart';
-import 'item_detail_page.dart';
 
 class ItemListPage extends StatefulWidget {
   const ItemListPage({super.key});
@@ -29,7 +29,7 @@ class _ItemListPageState extends State<ItemListPage> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
   Timer? _debounce;
-  
+
   // Filter states
   String? _selectedCondition;
   RangeValues _priceRange = const RangeValues(0, 10000);
@@ -125,7 +125,10 @@ class _ItemListPageState extends State<ItemListPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.swap_horiz, color: Theme.of(context).primaryColor),
+                          Icon(
+                            Icons.swap_horiz,
+                            color: Theme.of(context).primaryColor,
+                          ),
                           const SizedBox(width: 8),
                           const Text(
                             'Barter Qween',
@@ -139,11 +142,15 @@ class _ItemListPageState extends State<ItemListPage> {
                       ),
                       Row(
                         children: [
-                          _buildIconButton(Icons.filter_list, onTap: _showFilterBottomSheet),
+                          _buildIconButton(
+                            Icons.filter_list,
+                            onTap: _showFilterBottomSheet,
+                          ),
                           const SizedBox(width: 8),
                           _buildIconButton(
                             _isGridView ? Icons.view_list : Icons.grid_view,
-                            onTap: () => setState(() => _isGridView = !_isGridView),
+                            onTap: () =>
+                                setState(() => _isGridView = !_isGridView),
                           ),
                         ],
                       ),
@@ -164,7 +171,10 @@ class _ItemListPageState extends State<ItemListPage> {
                         Expanded(
                           child: Text(
                             'Discover great items to trade today!',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
@@ -232,7 +242,8 @@ class _ItemListPageState extends State<ItemListPage> {
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
-                  final isSelected = _selectedCategory == category['name'] ||
+                  final isSelected =
+                      _selectedCategory == category['name'] ||
                       (_selectedCategory == null && category['name'] == 'All');
 
                   return Padding(
@@ -244,9 +255,9 @@ class _ItemListPageState extends State<ItemListPage> {
                               ? null
                               : category['name'] as String;
                         });
-                        context.read<ItemBloc>().add(LoadAllItems(
-                              category: _selectedCategory,
-                            ));
+                        context.read<ItemBloc>().add(
+                          LoadAllItems(category: _selectedCategory),
+                        );
                       },
                       child: Container(
                         width: 80,
@@ -269,7 +280,9 @@ class _ItemListPageState extends State<ItemListPage> {
                           children: [
                             Icon(
                               category['icon'] as IconData,
-                              color: isSelected ? Colors.white : Theme.of(context).primaryColor,
+                              color: isSelected
+                                  ? Colors.white
+                                  : Theme.of(context).primaryColor,
                               size: 32,
                             ),
                             const SizedBox(height: 8),
@@ -277,8 +290,12 @@ class _ItemListPageState extends State<ItemListPage> {
                               category['name'] as String,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                color: isSelected ? Colors.white : Colors.black87,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.black87,
                               ),
                               textAlign: TextAlign.center,
                               maxLines: 2,
@@ -307,11 +324,11 @@ class _ItemListPageState extends State<ItemListPage> {
           onChanged: (value) {
             // Cancel previous timer
             if (_debounce?.isActive ?? false) _debounce!.cancel();
-            
+
             setState(() {
               _searchQuery = value.toLowerCase();
             });
-            
+
             // Start new timer for debouncing
             _debounce = Timer(const Duration(milliseconds: 500), () {
               // Only search if query is not empty and has at least 2 characters
@@ -320,7 +337,9 @@ class _ItemListPageState extends State<ItemListPage> {
                 context.read<ItemBloc>().add(SearchItems(value.trim()));
               } else if (value.trim().isEmpty) {
                 // Reload all items if search is cleared
-                context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
+                context.read<ItemBloc>().add(
+                  LoadAllItems(category: _selectedCategory),
+                );
               }
             });
           },
@@ -338,7 +357,9 @@ class _ItemListPageState extends State<ItemListPage> {
                         _searchQuery = '';
                       });
                       // Reload all items when search is cleared
-                      context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
+                      context.read<ItemBloc>().add(
+                        LoadAllItems(category: _selectedCategory),
+                      );
                     },
                   )
                 : null,
@@ -348,7 +369,10 @@ class _ItemListPageState extends State<ItemListPage> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
       ),
@@ -376,8 +400,11 @@ class _ItemListPageState extends State<ItemListPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline,
-                      size: 64, color: Colors.red.shade300),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red.shade300,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     state.message,
@@ -398,24 +425,37 @@ class _ItemListPageState extends State<ItemListPage> {
 
         if (state is ItemsLoaded) {
           final filteredItems = _filterItems(state.items);
-          
+
           if (filteredItems.isEmpty) {
             return SliverFillRemaining(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.inventory_2_outlined,
-                        size: 80, color: Colors.grey.shade300),
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      size: 80,
+                      color: Colors.grey.shade300,
+                    ),
                     const SizedBox(height: 16),
                     Text(
-                      _searchQuery.isNotEmpty ? 'No items match your search' : 'No items found',
-                      style: const TextStyle(fontSize: 18, color: Colors.black54),
+                      _searchQuery.isNotEmpty
+                          ? 'No items match your search'
+                          : 'No items found',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.black54,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _searchQuery.isNotEmpty ? 'Try different keywords' : 'Be the first to create an item!',
-                      style: const TextStyle(fontSize: 14, color: Colors.black38),
+                      _searchQuery.isNotEmpty
+                          ? 'Try different keywords'
+                          : 'Be the first to create an item!',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black38,
+                      ),
                     ),
                   ],
                 ),
@@ -441,7 +481,7 @@ class _ItemListPageState extends State<ItemListPage> {
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.75,
+          childAspectRatio: 0.58,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
@@ -455,20 +495,7 @@ class _ItemListPageState extends State<ItemListPage> {
 
   Widget _buildGridItem(ItemEntity item) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-              ],
-              child: ItemDetailPage(itemId: item.id),
-            ),
-          ),
-        );
-      },
+      onTap: () => AppRouter.toItemDetail(context, item.id),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -490,8 +517,9 @@ class _ItemListPageState extends State<ItemListPage> {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                     child: item.images.isNotEmpty
                         ? CachedNetworkImage(
                             imageUrl: item.images.first,
@@ -501,19 +529,27 @@ class _ItemListPageState extends State<ItemListPage> {
                             placeholder: (context, url) => Container(
                               color: Colors.grey.shade200,
                               child: const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
                               color: Colors.grey.shade200,
-                              child: Icon(Icons.image_not_supported,
-                                  size: 40, color: Colors.grey.shade400),
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 40,
+                                color: Colors.grey.shade400,
+                              ),
                             ),
                           )
                         : Container(
                             color: Colors.grey.shade200,
-                            child: Icon(Icons.inventory_2_outlined,
-                                size: 40, color: Colors.grey.shade400),
+                            child: Icon(
+                              Icons.inventory_2_outlined,
+                              size: 40,
+                              color: Colors.grey.shade400,
+                            ),
                           ),
                   ),
                   // Favorite button
@@ -522,7 +558,9 @@ class _ItemListPageState extends State<ItemListPage> {
                     right: 8,
                     child: BlocBuilder<FavoriteBloc, FavoriteState>(
                       builder: (context, state) {
-                        final isFavorited = context.read<FavoriteBloc>().isFavorited(item.id);
+                        final isFavorited = context
+                            .read<FavoriteBloc>()
+                            .isFavorited(item.id);
                         return GestureDetector(
                           onTap: () => _toggleFavorite(item.id),
                           child: Container(
@@ -539,8 +577,12 @@ class _ItemListPageState extends State<ItemListPage> {
                               ],
                             ),
                             child: Icon(
-                              isFavorited ? Icons.favorite : Icons.favorite_border,
-                              color: isFavorited ? Colors.red : Colors.grey.shade700,
+                              isFavorited
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isFavorited
+                                  ? Colors.red
+                                  : Colors.grey.shade700,
                               size: 18,
                             ),
                           ),
@@ -598,9 +640,9 @@ class _ItemListPageState extends State<ItemListPage> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .primaryColor
-                                .withOpacity(0.1),
+                            color: Theme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -613,8 +655,11 @@ class _ItemListPageState extends State<ItemListPage> {
                           ),
                         ),
                         const Spacer(),
-                        Icon(Icons.location_on,
-                            size: 12, color: Colors.grey.shade600),
+                        Icon(
+                          Icons.location_on,
+                          size: 12,
+                          color: Colors.grey.shade600,
+                        ),
                         const SizedBox(width: 2),
                         Flexible(
                           child: Text(
@@ -652,20 +697,7 @@ class _ItemListPageState extends State<ItemListPage> {
 
   Widget _buildListItem(ItemEntity item) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-              ],
-              child: ItemDetailPage(itemId: item.id),
-            ),
-          ),
-        );
-      },
+      onTap: () => AppRouter.toItemDetail(context, item.id),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
@@ -683,8 +715,9 @@ class _ItemListPageState extends State<ItemListPage> {
           children: [
             // Image
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.horizontal(left: Radius.circular(16)),
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
               child: item.images.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: item.images.first,
@@ -699,16 +732,22 @@ class _ItemListPageState extends State<ItemListPage> {
                       ),
                       errorWidget: (context, url, error) => Container(
                         color: Colors.grey.shade200,
-                        child: Icon(Icons.image_not_supported,
-                            size: 40, color: Colors.grey.shade400),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          size: 40,
+                          color: Colors.grey.shade400,
+                        ),
                       ),
                     )
                   : Container(
                       width: 120,
                       height: 120,
                       color: Colors.grey.shade200,
-                      child: Icon(Icons.inventory_2_outlined,
-                          size: 40, color: Colors.grey.shade400),
+                      child: Icon(
+                        Icons.inventory_2_outlined,
+                        size: 40,
+                        color: Colors.grey.shade400,
+                      ),
                     ),
             ),
             // Details
@@ -747,9 +786,9 @@ class _ItemListPageState extends State<ItemListPage> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .primaryColor
-                                .withOpacity(0.1),
+                            color: Theme.of(
+                              context,
+                            ).primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -762,8 +801,11 @@ class _ItemListPageState extends State<ItemListPage> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Icon(Icons.location_on,
-                            size: 14, color: Colors.grey.shade600),
+                        Icon(
+                          Icons.location_on,
+                          size: 14,
+                          color: Colors.grey.shade600,
+                        ),
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
@@ -790,10 +832,7 @@ class _ItemListPageState extends State<ItemListPage> {
   void _toggleFavorite(String itemId) {
     final authBloc = context.read<AuthBloc>();
     if (authBloc.state is AuthAuthenticated) {
-      final authState = authBloc.state as AuthAuthenticated;
-      context.read<FavoriteBloc>().add(
-        ToggleFavorite(itemId),
-      );
+      context.read<FavoriteBloc>().add(ToggleFavorite(itemId));
     }
   }
 
@@ -858,7 +897,9 @@ class _ItemListPageState extends State<ItemListPage> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor.withOpacity(0.1),
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -870,7 +911,11 @@ class _ItemListPageState extends State<ItemListPage> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                          Icon(
+                            Icons.location_on,
+                            size: 16,
+                            color: Colors.grey.shade600,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             item.city ?? 'Unknown',
@@ -893,18 +938,7 @@ class _ItemListPageState extends State<ItemListPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MultiBlocProvider(
-                                  providers: [
-                                    BlocProvider(create: (_) => getIt<ItemBloc>()),
-                                    BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-                                  ],
-                                  child: ItemDetailPage(itemId: item.id),
-                                ),
-                              ),
-                            );
+                            AppRouter.toItemDetail(context, item.id);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -947,7 +981,10 @@ class _ItemListPageState extends State<ItemListPage> {
                   children: [
                     const Text(
                       'Filter Options',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -964,7 +1001,7 @@ class _ItemListPageState extends State<ItemListPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Condition Filter
                 const Text(
                   'Condition',
@@ -973,7 +1010,9 @@ class _ItemListPageState extends State<ItemListPage> {
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
-                  children: ['New', 'Like New', 'Good', 'Fair', 'Poor'].map((condition) {
+                  children: ['New', 'Like New', 'Good', 'Fair', 'Poor'].map((
+                    condition,
+                  ) {
                     final isSelected = _selectedCondition == condition;
                     return FilterChip(
                       label: Text(condition),
@@ -983,14 +1022,16 @@ class _ItemListPageState extends State<ItemListPage> {
                           _selectedCondition = selected ? condition : null;
                         });
                       },
-                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                      selectedColor: Theme.of(
+                        context,
+                      ).primaryColor.withOpacity(0.2),
                       checkmarkColor: Theme.of(context).primaryColor,
                     );
                   }).toList(),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Price Range Filter
                 const Text(
                   'Price Range (Estimated Value)',
@@ -1019,9 +1060,9 @@ class _ItemListPageState extends State<ItemListPage> {
                     Text('₺${_priceRange.end.round()}'),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Distance Filter
                 const Text(
                   'Maximum Distance',
@@ -1044,9 +1085,9 @@ class _ItemListPageState extends State<ItemListPage> {
                   '${_maxDistance.round()} km',
                   style: TextStyle(color: Colors.grey.shade600),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Sort By Section
                 const Text(
                   'Sort By',
@@ -1054,9 +1095,9 @@ class _ItemListPageState extends State<ItemListPage> {
                 ),
                 const SizedBox(height: 12),
                 ..._buildSortByOptions(setModalState),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Show only active items
                 SwitchListTile(
                   title: const Text('Show only active items'),
@@ -1072,9 +1113,9 @@ class _ItemListPageState extends State<ItemListPage> {
                   },
                   contentPadding: EdgeInsets.zero,
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Apply button
                 SizedBox(
                   width: double.infinity,
@@ -1103,7 +1144,7 @@ class _ItemListPageState extends State<ItemListPage> {
       ),
     );
   }
-  
+
   List<Widget> _buildSortByOptions(StateSetter setModalState) {
     final sortOptions = [
       {'value': 'newest', 'label': 'Newest First', 'icon': Icons.access_time},
@@ -1129,13 +1170,13 @@ class _ItemListPageState extends State<ItemListPage> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isSelected 
-                  ? Theme.of(context).primaryColor.withOpacity(0.1) 
+              color: isSelected
+                  ? Theme.of(context).primaryColor.withOpacity(0.1)
                   : Colors.grey[50],
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected 
-                    ? Theme.of(context).primaryColor 
+                color: isSelected
+                    ? Theme.of(context).primaryColor
                     : Colors.grey[200]!,
                 width: 2,
               ),
@@ -1144,8 +1185,8 @@ class _ItemListPageState extends State<ItemListPage> {
               children: [
                 Icon(
                   option['icon'] as IconData,
-                  color: isSelected 
-                      ? Theme.of(context).primaryColor 
+                  color: isSelected
+                      ? Theme.of(context).primaryColor
                       : Colors.grey[600],
                   size: 20,
                 ),
@@ -1154,11 +1195,11 @@ class _ItemListPageState extends State<ItemListPage> {
                   child: Text(
                     option['label'] as String,
                     style: TextStyle(
-                      color: isSelected 
-                          ? Theme.of(context).primaryColor 
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
                           : Colors.black87,
-                      fontWeight: isSelected 
-                          ? FontWeight.bold 
+                      fontWeight: isSelected
+                          ? FontWeight.bold
                           : FontWeight.w500,
                     ),
                   ),
@@ -1176,15 +1217,32 @@ class _ItemListPageState extends State<ItemListPage> {
       );
     }).toList();
   }
-  
+
   void _applyFilters() {
-    // Apply all filters using FilterItems event
-    context.read<ItemBloc>().add(FilterItems({
-      'categories': _selectedCategory != null ? [_selectedCategory!] : null,
+    final filters = <String, dynamic>{
+      'category': _selectedCategory,
       'condition': _selectedCondition,
       'minPrice': _priceRange.start,
       'maxPrice': _priceRange.end,
-      'sortBy': _sortBy,
-    }));
+      'maxDistance': _maxDistance,
+    };
+
+    if (_showOnlyActive) {
+      filters['status'] = 'active';
+    }
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      final user = authState.user;
+      if (user.city != null && user.city!.isNotEmpty) {
+        filters['city'] = user.city;
+      }
+      if (user.latitude != null && user.longitude != null) {
+        filters['latitude'] = user.latitude;
+        filters['longitude'] = user.longitude;
+      }
+    }
+
+    context.read<ItemBloc>().add(FilterItems(filters));
   }
 }

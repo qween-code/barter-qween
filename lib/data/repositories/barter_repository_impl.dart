@@ -12,7 +12,7 @@ class BarterRepositoryImpl implements BarterRepository {
   final FirebaseFirestore _firestore;
 
   BarterRepositoryImpl({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   @override
   Future<Either<Failure, List<ItemEntity>>> getMatchingItems(
@@ -33,19 +33,25 @@ class BarterRepositoryImpl implements BarterRepository {
         case BarterConditionType.categorySpecific:
           if (condition.acceptedCategories != null &&
               condition.acceptedCategories!.isNotEmpty) {
-            query = query.where('category',
-                whereIn: condition.acceptedCategories);
+            query = query.where(
+              'category',
+              whereIn: condition.acceptedCategories,
+            );
           }
           break;
 
         case BarterConditionType.valueRange:
           if (condition.minValue != null) {
-            query =
-                query.where('monetaryValue', isGreaterThanOrEqualTo: condition.minValue);
+            query = query.where(
+              'monetaryValue',
+              isGreaterThanOrEqualTo: condition.minValue,
+            );
           }
           if (condition.maxValue != null) {
-            query =
-                query.where('monetaryValue', isLessThanOrEqualTo: condition.maxValue);
+            query = query.where(
+              'monetaryValue',
+              isLessThanOrEqualTo: condition.maxValue,
+            );
           }
           break;
 
@@ -77,10 +83,14 @@ class BarterRepositoryImpl implements BarterRepository {
   ) async {
     try {
       // Her iki ilanı getir
-      final offeredDoc =
-          await _firestore.collection('items').doc(offeredItemId).get();
-      final requestedDoc =
-          await _firestore.collection('items').doc(requestedItemId).get();
+      final offeredDoc = await _firestore
+          .collection('items')
+          .doc(offeredItemId)
+          .get();
+      final requestedDoc = await _firestore
+          .collection('items')
+          .doc(requestedItemId)
+          .get();
 
       if (!offeredDoc.exists || !requestedDoc.exists) {
         return Left(ServerFailure('Bir veya her iki ilan bulunamadı'));
@@ -114,8 +124,8 @@ class BarterRepositoryImpl implements BarterRepository {
           suggestedCash = valueDiff;
           suggestedDirection =
               offeredItem.monetaryValue! > requestedItem.monetaryValue!
-                  ? CashPaymentDirection.toMe
-                  : CashPaymentDirection.fromMe;
+              ? CashPaymentDirection.toMe
+              : CashPaymentDirection.fromMe;
         }
       } else {
         compatibilityScore += 25; // Değer belirtilmemiş, orta skor

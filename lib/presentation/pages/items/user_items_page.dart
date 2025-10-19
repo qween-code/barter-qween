@@ -10,9 +10,9 @@ import '../../blocs/auth/auth_state.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
-import '../../blocs/favorite/favorite_bloc.dart';
-import '../../blocs/trade/trade_bloc.dart';
-import 'item_detail_page.dart';
+import '../../../core/routes/app_router.dart';
+import 'create_item_page.dart';
+import 'edit_item_page.dart';
 
 class UserItemsPage extends StatelessWidget {
   const UserItemsPage({super.key});
@@ -124,7 +124,9 @@ class _UserItemsViewState extends State<UserItemsView> {
                       padding: const EdgeInsets.all(AppDimensions.spacing16),
                       decoration: BoxDecoration(
                         gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusMedium,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -142,7 +144,8 @@ class _UserItemsViewState extends State<UserItemsView> {
                           _buildStatItem(
                             icon: Icons.visibility_outlined,
                             label: 'Active',
-                            value: '${state.items.where((item) => item.status == ItemStatus.active).length}',
+                            value:
+                                '${state.items.where((item) => item.status == ItemStatus.active).length}',
                           ),
                           Container(
                             width: 1,
@@ -152,7 +155,8 @@ class _UserItemsViewState extends State<UserItemsView> {
                           _buildStatItem(
                             icon: Icons.pause_circle_outline,
                             label: 'Inactive',
-                            value: '${state.items.where((item) => item.status != ItemStatus.active).length}',
+                            value:
+                                '${state.items.where((item) => item.status != ItemStatus.active).length}',
                           ),
                         ],
                       ),
@@ -166,19 +170,17 @@ class _UserItemsViewState extends State<UserItemsView> {
                       vertical: AppDimensions.spacing8,
                     ),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.7,
-                        crossAxisSpacing: AppDimensions.spacing12,
-                        mainAxisSpacing: AppDimensions.spacing12,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final item = state.items[index];
-                          return _buildItemCard(item);
-                        },
-                        childCount: state.items.length,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.58,
+                            crossAxisSpacing: AppDimensions.spacing12,
+                            mainAxisSpacing: AppDimensions.spacing12,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final item = state.items[index];
+                        return _buildItemCard(item);
+                      }, childCount: state.items.length),
                     ),
                   ),
 
@@ -225,9 +227,9 @@ class _UserItemsViewState extends State<UserItemsView> {
     );
   }
 
-  Widget _buildItemCard(item) {
+  Widget _buildItemCard(ItemEntity item) {
     return GestureDetector(
-      onTap: () => _showItemOptions(context, item.id),
+      onTap: () => _showItemOptions(context, item),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -301,10 +303,14 @@ class _UserItemsViewState extends State<UserItemsView> {
                           color: item.status == ItemStatus.active
                               ? AppColors.success.withOpacity(0.1)
                               : AppColors.warning.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusSmall,
+                          ),
                         ),
                         child: Text(
-                          item.status == ItemStatus.active ? 'Active' : 'Inactive',
+                          item.status == ItemStatus.active
+                              ? 'Active'
+                              : 'Inactive',
                           style: AppTextStyles.labelSmall.copyWith(
                             color: item.status == ItemStatus.active
                                 ? AppColors.success
@@ -314,7 +320,7 @@ class _UserItemsViewState extends State<UserItemsView> {
                       ),
                       const Spacer(),
                       Text(
-                        item.condition,
+                        item.condition ?? 'Belirtilmedi',
                         style: AppTextStyles.labelSmall.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w500,
@@ -357,7 +363,7 @@ class _UserItemsViewState extends State<UserItemsView> {
     );
   }
 
-  void _showItemOptions(BuildContext context, String itemId) {
+  void _showItemOptions(BuildContext context, ItemEntity item) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppColors.surface,
@@ -381,41 +387,37 @@ class _UserItemsViewState extends State<UserItemsView> {
             ),
             const SizedBox(height: AppDimensions.spacing16),
             ListTile(
-              leading: const Icon(Icons.edit_outlined, color: AppColors.primary),
+              leading: const Icon(
+                Icons.edit_outlined,
+                color: AppColors.primary,
+              ),
               title: const Text('Edit Item'),
               onTap: () {
                 Navigator.pop(ctx);
-                _navigateToEditItem(context, itemId);
+                _navigateToEditItem(context, item);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.visibility_outlined, color: AppColors.primary),
+              leading: const Icon(
+                Icons.visibility_outlined,
+                color: AppColors.primary,
+              ),
               title: const Text('View Details'),
               onTap: () {
                 Navigator.pop(ctx);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MultiBlocProvider(
-                      providers: [
-                        BlocProvider.value(value: context.read<ItemBloc>()),
-                        BlocProvider.value(value: context.read<AuthBloc>()),
-                        BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-                        BlocProvider(create: (_) => getIt<TradeBloc>()),
-                      ],
-                      child: ItemDetailPage(itemId: itemId),
-                    ),
-                  ),
-                );
+                AppRouter.toItemDetail(context, item.id);
               },
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: const Text('Delete Item', style: TextStyle(color: AppColors.error)),
+              title: const Text(
+                'Delete Item',
+                style: TextStyle(color: AppColors.error),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
-                _showDeleteConfirmation(context, itemId);
+                _showDeleteConfirmation(context, item.id);
               },
             ),
             const SizedBox(height: AppDimensions.spacing16),
@@ -452,10 +454,16 @@ class _UserItemsViewState extends State<UserItemsView> {
   }
 
   void _navigateToCreateItem(BuildContext context) {
-    Navigator.pushNamed(context, '/create-item');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CreateItemPage()),
+    );
   }
 
-  void _navigateToEditItem(BuildContext context, String itemId) {
-    Navigator.pushNamed(context, '/edit-item', arguments: itemId);
+  void _navigateToEditItem(BuildContext context, ItemEntity item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => EditItemPage(item: item)),
+    );
   }
 }

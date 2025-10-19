@@ -4,7 +4,7 @@ import 'auth_event.dart';
 import 'auth_state.dart';
 
 /// 🌟 WORLD-CLASS AUTH BLOC
-/// 
+///
 /// Features:
 /// - Email/Password authentication
 /// - Social login
@@ -14,8 +14,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _firebaseAuth;
 
   AuthBloc({required FirebaseAuth firebaseAuth})
-      : _firebaseAuth = firebaseAuth,
-        super(AuthInitial()) {
+    : _firebaseAuth = firebaseAuth,
+      super(AuthInitial()) {
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthGoogleLoginRequested>(_onGoogleLoginRequested);
     on<AuthAppleLoginRequested>(_onAppleLoginRequested);
@@ -28,13 +28,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    
+
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
         email: event.email,
         password: event.password,
       );
-      
+
       if (credential.user != null) {
         emit(AuthSuccess(user: credential.user!));
       } else {
@@ -52,7 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    
+
     try {
       // TODO: Implement Google Sign-In
       emit(AuthFailure(message: 'Google Sign-In not implemented yet'));
@@ -66,7 +66,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    
+
     try {
       // TODO: Implement Apple Sign-In
       emit(AuthFailure(message: 'Apple Sign-In not implemented yet'));
@@ -80,7 +80,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    
+
     try {
       await _firebaseAuth.signOut();
       emit(AuthInitial());
@@ -94,7 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     final user = _firebaseAuth.currentUser;
-    
+
     if (user != null) {
       emit(AuthSuccess(user: user));
     } else {

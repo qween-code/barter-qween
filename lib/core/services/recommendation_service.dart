@@ -1,4 +1,3 @@
-import 'dart:math' show cos, pi;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/entities/item_entity.dart';
@@ -6,7 +5,7 @@ import '../../data/models/item_model.dart';
 import 'map_service.dart';
 
 /// Recommendation Service - Phase 2 Quick Win #2
-/// 
+///
 /// Provides simple but effective item recommendations based on:
 /// - Category similarity
 /// - Price range
@@ -33,22 +32,22 @@ class RecommendationService {
       final querySnapshot = await _firestore
           .collection('items')
           .where('category', isEqualTo: sourceItem.category)
-          .where('status', isEqualTo: 'active')
-          .where('id', isNotEqualTo: sourceItem.id) // Exclude source item
           .limit(limit * 3) // Get more for filtering
           .get();
 
       final items = querySnapshot.docs
           .map((doc) => ItemModel.fromFirestore(doc).toEntity())
+          .where((item) => item.status == ItemStatus.active)
+          .where((item) => item.id != sourceItem.id)
           .toList();
 
       // Filter by price range (±30%)
       final sourcePrice = sourceItem.price;
       if (sourcePrice == null) return [];
-      
+
       final priceMin = sourcePrice * 0.7;
       final priceMax = sourcePrice * 1.3;
-      
+
       final filteredItems = items.where((item) {
         final itemPrice = item.price;
         if (itemPrice == null) return false;
@@ -64,14 +63,14 @@ class RecommendationService {
             validItems.add(item);
             continue;
           }
-          
+
           final distance = await _mapService.calculateDistance(
             sourceItem.latitude!,
             sourceItem.longitude!,
             item.latitude!,
             item.longitude!,
           );
-          
+
           if (distance <= maxDistanceKm) {
             validItems.add(item);
           }
@@ -106,23 +105,20 @@ class RecommendationService {
     int limit = 6,
   }) async {
     try {
-      var query = _firestore
+      final querySnapshot = await _firestore
           .collection('items')
           .where('ownerId', isEqualTo: sellerId)
-          .where('status', isEqualTo: 'active');
-
-      if (excludeItemId != null) {
-        query = query.where('id', isNotEqualTo: excludeItemId);
-      }
-
-      final querySnapshot = await query
           .orderBy('createdAt', descending: true)
-          .limit(limit)
+          .limit(limit * 2)
           .get();
 
-      return querySnapshot.docs
+      final items = querySnapshot.docs
           .map((doc) => ItemModel.fromFirestore(doc).toEntity())
+          .where((item) => item.status == ItemStatus.active)
+          .where((item) => excludeItemId == null || item.id != excludeItemId)
           .toList();
+
+      return items.take(limit).toList();
     } catch (e) {
       print('Error getting more from seller: $e');
       return [];
@@ -142,14 +138,13 @@ class RecommendationService {
     int limit = 20,
   }) async {
     try {
-      // Calculate bounding box
+      // Calculate simple latitude bounding box (longitude filtering applied
+      // later with precise distance calculation to avoid composite indexes).
       const double kmPerDegree = 111.0; // Approximate
       final latDelta = radiusKm / kmPerDegree;
-      final lonDelta = radiusKm / (kmPerDegree * cos(userLat * pi / 180));
 
       var query = _firestore
           .collection('items')
-          .where('status', isEqualTo: 'active')
           .where('latitude', isGreaterThan: userLat - latDelta)
           .where('latitude', isLessThan: userLat + latDelta);
 
@@ -157,23 +152,24 @@ class RecommendationService {
         query = query.where('category', isEqualTo: category);
       }
 
-      final querySnapshot = await query.limit(limit * 2).get();
+      final querySnapshot = await query.limit(limit * 3).get();
 
       final allItems = querySnapshot.docs
           .map((doc) => ItemModel.fromFirestore(doc).toEntity())
+          .where((item) => item.status == ItemStatus.active)
           .toList();
-      
+
       final items = <ItemEntity>[];
       for (final item in allItems) {
         if (item.latitude == null || item.longitude == null) continue;
-        
+
         final distance = await _mapService.calculateDistance(
           userLat,
           userLon,
           item.latitude!,
           item.longitude!,
         );
-        
+
         if (distance <= radiusKm) {
           items.add(item);
         }
@@ -183,11 +179,14 @@ class RecommendationService {
       final itemsWithDistance = <MapEntry<ItemEntity, double>>[];
       for (final item in items) {
         final distance = await _mapService.calculateDistance(
-          userLat, userLon, item.latitude!, item.longitude!,
+          userLat,
+          userLon,
+          item.latitude!,
+          item.longitude!,
         );
         itemsWithDistance.add(MapEntry(item, distance));
       }
-      
+
       itemsWithDistance.sort((a, b) => a.value.compareTo(b.value));
       final sortedItems = itemsWithDistance.map((entry) => entry.key).toList();
 
@@ -210,20 +209,18 @@ class RecommendationService {
   }) async {
     try {
       final userDoc = await _firestore.collection('users').doc(userId).get();
-      
+
       if (!userDoc.exists) return [];
-      
-      final recentlyViewedIds = (userDoc.data()?['recentlyViewed'] as List?)
-          ?.cast<String>() ?? [];
+
+      final recentlyViewedIds =
+          (userDoc.data()?['recentlyViewed'] as List?)?.cast<String>() ?? [];
 
       if (recentlyViewedIds.isEmpty) return [];
 
       // Get items in chunks (Firestore 'in' query limit is 10)
       final chunks = <List<String>>[];
       for (var i = 0; i < recentlyViewedIds.length; i += 10) {
-        chunks.add(
-          recentlyViewedIds.skip(i).take(10).toList(),
-        );
+        chunks.add(recentlyViewedIds.skip(i).take(10).toList());
       }
 
       final items = <ItemEntity>[];
@@ -231,12 +228,12 @@ class RecommendationService {
         final querySnapshot = await _firestore
             .collection('items')
             .where('id', whereIn: chunk)
-            .where('status', isEqualTo: 'active')
             .get();
 
         items.addAll(
           querySnapshot.docs
-              .map((doc) => ItemModel.fromFirestore(doc).toEntity()),
+              .map((doc) => ItemModel.fromFirestore(doc).toEntity())
+              .where((item) => item.status == ItemStatus.active),
         );
 
         if (items.length >= limit) break;
@@ -269,14 +266,17 @@ class RecommendationService {
       final querySnapshot = await _firestore
           .collection('items')
           .where('category', isEqualTo: category)
-          .where('status', isEqualTo: 'active')
-          .orderBy('viewCount', descending: true)
-          .limit(limit)
+          .limit(limit * 3)
           .get();
 
-      return querySnapshot.docs
+      final items = querySnapshot.docs
           .map((doc) => ItemModel.fromFirestore(doc).toEntity())
+          .where((item) => item.status == ItemStatus.active)
           .toList();
+
+      items.sort((a, b) => b.viewCount.compareTo(a.viewCount));
+
+      return items.take(limit).toList();
     } catch (e) {
       print('Error getting popular in category: $e');
       return [];
@@ -290,18 +290,17 @@ class RecommendationService {
   }) async {
     try {
       final cutoffDate = DateTime.now().subtract(Duration(days: daysBack));
-      
+
       final querySnapshot = await _firestore
           .collection('items')
-          .where('status', isEqualTo: 'active')
           .where('createdAt', isGreaterThan: Timestamp.fromDate(cutoffDate))
           .orderBy('createdAt', descending: true)
-          .orderBy('viewCount', descending: true)
-          .limit(limit * 2)
+          .limit(limit * 5)
           .get();
 
       final items = querySnapshot.docs
           .map((doc) => ItemModel.fromFirestore(doc).toEntity())
+          .where((item) => item.status == ItemStatus.active)
           .toList();
 
       // Sort by engagement score (views / days since creation)
@@ -398,8 +397,8 @@ class RecommendationService {
 
       // Keep only last 50 viewed items
       final userDoc = await _firestore.collection('users').doc(userId).get();
-      final recentlyViewed = (userDoc.data()?['recentlyViewed'] as List?)
-          ?.cast<String>() ?? [];
+      final recentlyViewed =
+          (userDoc.data()?['recentlyViewed'] as List?)?.cast<String>() ?? [];
 
       if (recentlyViewed.length > 50) {
         await _firestore.collection('users').doc(userId).update({
@@ -410,4 +409,44 @@ class RecommendationService {
       print('Error tracking item view: $e');
     }
   }
+
+  Future<List<CategorySummary>> getTopCategories({int limit = 8}) async {
+    try {
+      final snapshot = await _firestore
+          .collection('items')
+          .where('status', isEqualTo: 'active')
+          .get();
+
+      final counts = <String, int>{};
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final rawCategory = data['category'];
+        if (rawCategory is! String) continue;
+        final category = rawCategory.trim();
+        if (category.isEmpty) continue;
+        counts[category] = (counts[category] ?? 0) + 1;
+      }
+
+      if (counts.isEmpty) {
+        return [];
+      }
+
+      final entries = counts.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      return entries.take(limit).map((entry) {
+        return CategorySummary(category: entry.key, count: entry.value);
+      }).toList();
+    } catch (e) {
+      print('Error getting category summaries: $e');
+      return [];
+    }
+  }
+}
+
+class CategorySummary {
+  final String category;
+  final int count;
+
+  CategorySummary({required this.category, required this.count});
 }

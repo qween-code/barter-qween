@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../core/errors/exceptions.dart';
+import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/profile_repository.dart';
@@ -59,7 +59,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
     File imageFile,
   ) async {
     try {
-      final downloadUrl = await remoteDataSource.uploadAvatar(userId, imageFile);
+      final downloadUrl = await remoteDataSource.uploadAvatar(
+        userId,
+        imageFile,
+      );
       return Right(downloadUrl);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -81,7 +84,57 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> getUserStats(String userId) async {
+  Future<Either<Failure, void>> followUser(
+    String currentUserId,
+    String targetUserId,
+  ) async {
+    try {
+      await remoteDataSource.followUser(currentUserId, targetUserId);
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('Unexpected error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> unfollowUser(
+    String currentUserId,
+    String targetUserId,
+  ) async {
+    try {
+      await remoteDataSource.unfollowUser(currentUserId, targetUserId);
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('Unexpected error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> isFollowing(
+    String currentUserId,
+    String targetUserId,
+  ) async {
+    try {
+      final result = await remoteDataSource.isFollowing(
+        currentUserId,
+        targetUserId,
+      );
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('Unexpected error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getUserStats(
+    String userId,
+  ) async {
     try {
       final stats = await remoteDataSource.getUserStats(userId);
       return Right(stats);

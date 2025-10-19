@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/subscription_entity.dart';
 
-
 /// Premium Features Service
-/// 
+///
 /// World-class premium features management inspired by:
 /// - Airbnb (premium listing placement)
 /// - LinkedIn Premium (profile boost)
@@ -11,7 +10,8 @@ import '../../domain/entities/subscription_entity.dart';
 /// - OfferUp (featured ads)
 class PremiumFeaturesService {
   static PremiumFeaturesService? _instance;
-  static PremiumFeaturesService get instance => _instance ??= PremiumFeaturesService._();
+  static PremiumFeaturesService get instance =>
+      _instance ??= PremiumFeaturesService._();
 
   PremiumFeaturesService._();
 
@@ -43,8 +43,8 @@ class PremiumFeaturesService {
           suggestedAction: plan == SubscriptionPlan.free
               ? 'Upgrade to Basic plan for 10 listings or Premium for 50 listings'
               : plan == SubscriptionPlan.basic
-                  ? 'Upgrade to Premium for 50 listings'
-                  : 'Delete some listings to create new ones',
+              ? 'Upgrade to Premium for 50 listings'
+              : 'Delete some listings to create new ones',
         );
       }
 
@@ -77,7 +77,10 @@ class PremiumFeaturesService {
       final monthlyListings = await _firestore
           .collection('items')
           .where('userId', isEqualTo: userId)
-          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth))
+          .where(
+            'createdAt',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth),
+          )
           .count()
           .get();
 
@@ -87,12 +90,15 @@ class PremiumFeaturesService {
       // Premium listing check
       if (isPremiumListing) {
         final premiumAllowance = plan.features.premiumListingsPerMonth;
-        
+
         // Get premium listings this month
         final premiumCount = await _firestore
             .collection('premium_listings')
             .where('userId', isEqualTo: userId)
-            .where('startDate', isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth))
+            .where(
+              'startDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth),
+            )
             .count()
             .get();
 
@@ -105,7 +111,8 @@ class PremiumFeaturesService {
             freeAllowanceUsed: currentPremiumCount,
             freeAllowanceTotal: premiumAllowance,
             isPremiumListing: true,
-            message: 'Premium listing quota exceeded. Pay ₺${ListingFeeConfig.premiumListingFee} to continue.',
+            message:
+                'Premium listing quota exceeded. Pay ₺${ListingFeeConfig.premiumListingFee} to continue.',
           );
         }
 
@@ -115,7 +122,8 @@ class PremiumFeaturesService {
           freeAllowanceUsed: currentPremiumCount,
           freeAllowanceTotal: premiumAllowance,
           isPremiumListing: true,
-          message: 'Premium listing quota available (${currentPremiumCount}/${premiumAllowance} used)',
+          message:
+              'Premium listing quota available ($currentPremiumCount/$premiumAllowance used)',
         );
       }
 
@@ -127,7 +135,8 @@ class PremiumFeaturesService {
           freeAllowanceUsed: currentMonthCount,
           freeAllowanceTotal: freeAllowance,
           isPremiumListing: false,
-          message: 'Free listing quota exceeded. Pay ₺${ListingFeeConfig.standardListingFee} to continue.',
+          message:
+              'Free listing quota exceeded. Pay ₺${ListingFeeConfig.standardListingFee} to continue.',
         );
       }
 
@@ -137,7 +146,8 @@ class PremiumFeaturesService {
         freeAllowanceUsed: currentMonthCount,
         freeAllowanceTotal: freeAllowance,
         isPremiumListing: false,
-        message: 'Free listing quota available (${currentMonthCount}/${freeAllowance} used)',
+        message:
+            'Free listing quota available ($currentMonthCount/$freeAllowance used)',
       );
     } catch (e) {
       return ListingFeeResult(
@@ -235,9 +245,9 @@ class PremiumFeaturesService {
     try {
       final doc = await _firestore.collection('items').doc(itemId).get();
       final data = doc.data();
-      
+
       if (data == null) return false;
-      
+
       final isPremium = data['isPremium'] as bool? ?? false;
       if (!isPremium) return false;
 
@@ -296,7 +306,11 @@ class PremiumFeaturesService {
       final firstDayOfMonth = DateTime(now.year, now.month, 1);
 
       // Get monthly stats
-      final [activeListingsQuery, monthlyListingsQuery, premiumListingsQuery] = await Future.wait([
+      final [
+        activeListingsQuery,
+        monthlyListingsQuery,
+        premiumListingsQuery,
+      ] = await Future.wait([
         _firestore
             .collection('items')
             .where('userId', isEqualTo: userId)
@@ -306,13 +320,19 @@ class PremiumFeaturesService {
         _firestore
             .collection('items')
             .where('userId', isEqualTo: userId)
-            .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth))
+            .where(
+              'createdAt',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth),
+            )
             .count()
             .get(),
         _firestore
             .collection('premium_listings')
             .where('userId', isEqualTo: userId)
-            .where('startDate', isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth))
+            .where(
+              'startDate',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(firstDayOfMonth),
+            )
             .count()
             .get(),
       ]);
@@ -393,7 +413,8 @@ class ListingFeeResult {
     required this.message,
   });
 
-  int get remainingFreeListings => (freeAllowanceTotal - freeAllowanceUsed).clamp(0, freeAllowanceTotal);
+  int get remainingFreeListings =>
+      (freeAllowanceTotal - freeAllowanceUsed).clamp(0, freeAllowanceTotal);
 }
 
 /// Subscription benefits summary
@@ -427,14 +448,17 @@ class SubscriptionBenefitsSummary {
   });
 
   int get remainingActiveSlots => maxActiveListings - activeListings;
-  int get remainingMonthlyListings => (monthlyListingsAllowance - monthlyListingsUsed).clamp(0, 999);
-  int get remainingPremiumListings => (premiumListingsAllowance - premiumListingsUsed).clamp(0, 999);
-  
-  double get activeListingsPercentage => 
-      maxActiveListings > 0 ? (activeListings / maxActiveListings * 100).clamp(0, 100) : 0;
-  
+  int get remainingMonthlyListings =>
+      (monthlyListingsAllowance - monthlyListingsUsed).clamp(0, 999);
+  int get remainingPremiumListings =>
+      (premiumListingsAllowance - premiumListingsUsed).clamp(0, 999);
+
+  double get activeListingsPercentage => maxActiveListings > 0
+      ? (activeListings / maxActiveListings * 100).clamp(0, 100)
+      : 0;
+
   double get monthlyListingsPercentage =>
       monthlyListingsAllowance > 0 && monthlyListingsAllowance < 999
-          ? (monthlyListingsUsed / monthlyListingsAllowance * 100).clamp(0, 100)
-          : 0;
+      ? (monthlyListingsUsed / monthlyListingsAllowance * 100).clamp(0, 100)
+      : 0;
 }

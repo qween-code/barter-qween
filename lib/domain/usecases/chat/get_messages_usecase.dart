@@ -9,10 +9,7 @@ class GetMessagesParams {
   final String conversationId;
   final int limit;
 
-  GetMessagesParams({
-    required this.conversationId,
-    this.limit = 50,
-  });
+  GetMessagesParams({required this.conversationId, this.limit = 50});
 }
 
 /// Use case for getting messages in a conversation
@@ -24,9 +21,6 @@ class GetMessagesUseCase {
 
   /// Execute the use case - returns stream for real-time updates
   Stream<Either<Failure, List<MessageEntity>>> call(GetMessagesParams params) {
-    return repository.getMessages(
-      params.conversationId,
-      limit: params.limit,
-    );
+    return repository.getMessages(params.conversationId, limit: params.limit);
   }
 }

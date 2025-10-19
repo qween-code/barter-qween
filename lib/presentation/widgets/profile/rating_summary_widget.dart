@@ -17,7 +17,19 @@ class _RatingSummaryWidgetState extends State<RatingSummaryWidget> {
   @override
   void initState() {
     super.initState();
-    _future = getIt<GetUserRatingStatsUseCase>().call(widget.userId).then((e) => e.fold((l) => const UserRatingStats(userId: '', averageRating: 0, totalRatings: 0, ratingDistribution: {}), (r) => r));
+    _future = getIt<GetUserRatingStatsUseCase>()
+        .call(widget.userId)
+        .then(
+          (e) => e.fold(
+            (l) => const UserRatingStats(
+              userId: '',
+              averageRating: 0,
+              totalRatings: 0,
+              ratingDistribution: {},
+            ),
+            (r) => r,
+          ),
+        );
   }
 
   @override
@@ -43,15 +55,18 @@ class _RatingSummaryWidgetState extends State<RatingSummaryWidget> {
                   filled
                       ? Icons.star
                       : half
-                          ? Icons.star_half
-                          : Icons.star_border,
+                      ? Icons.star_half
+                      : Icons.star_border,
                   color: Colors.amber,
                   size: 20,
                 ),
               );
             }),
             const SizedBox(width: 8),
-            Text(avg.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              avg.toStringAsFixed(1),
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(width: 4),
             Text('($total)', style: TextStyle(color: Colors.grey.shade600)),
           ],

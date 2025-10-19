@@ -33,7 +33,9 @@ class RatingRepositoryImpl implements RatingRepository {
   }
 
   @override
-  Future<Either<Failure, List<RatingEntity>>> getUserRatings(String userId) async {
+  Future<Either<Failure, List<RatingEntity>>> getUserRatings(
+    String userId,
+  ) async {
     try {
       final list = await _remote.getUserRatings(userId);
       return Right(list);
@@ -43,7 +45,9 @@ class RatingRepositoryImpl implements RatingRepository {
   }
 
   @override
-  Future<Either<Failure, UserRatingStats>> getUserRatingStats(String userId) async {
+  Future<Either<Failure, UserRatingStats>> getUserRatingStats(
+    String userId,
+  ) async {
     try {
       final s = await _remote.getUserRatingStats(userId);
       return Right(s);

@@ -19,10 +19,7 @@ class LoadRecentItems extends HomeEvent {
   final String? category;
   final String? city;
 
-  const LoadRecentItems({
-    this.category,
-    this.city,
-  });
+  const LoadRecentItems({this.category, this.city});
 
   @override
   List<Object?> get props => [category, city];
@@ -32,10 +29,7 @@ class LoadTrendingItems extends HomeEvent {
   final String? category;
   final String? city;
 
-  const LoadTrendingItems({
-    this.category,
-    this.city,
-  });
+  const LoadTrendingItems({this.category, this.city});
 
   @override
   List<Object?> get props => [category, city];
@@ -44,7 +38,6 @@ class LoadTrendingItems extends HomeEvent {
 class RefreshHomeData extends HomeEvent {
   const RefreshHomeData();
 }
-
 
 class CategorySelected extends HomeEvent {
   final String category;

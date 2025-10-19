@@ -23,9 +23,9 @@ class AdminSidebar extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Admin Panel',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -126,9 +126,7 @@ class AdminSidebar extends StatelessWidget {
         ),
       ),
       onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       tileColor: isActive
           ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
           : null,

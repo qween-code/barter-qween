@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 /// WORLD-CLASS User Entity
 /// Based on Depop, Vinted, Poshmark, OfferUp best practices
-/// 
+///
 /// Features:
 /// - Verification & Trust (TruYou, Blue Tick)
 /// - Ratings & Reviews (Love Notes, Feedback)
@@ -48,7 +48,7 @@ class UserEntityWorldClass extends Equatable {
   final bool isGoogleConnected;
   final DateTime? verifiedAt;
   final VerificationLevel verificationLevel;
-  
+
   // ========================================
   // SELLER STATS (Poshmark + Depop)
   // ========================================
@@ -60,7 +60,7 @@ class UserEntityWorldClass extends Equatable {
   final int totalListings;
   final DateTime? firstSaleDate;
   final DateTime? lastSaleDate;
-  
+
   // ========================================
   // RATINGS & REVIEWS (All platforms)
   // ========================================
@@ -71,13 +71,13 @@ class UserEntityWorldClass extends Equatable {
   final int threeStarReviews;
   final int twoStarReviews;
   final int oneStarReviews;
-  
+
   // Review attributes (OfferUp style)
   final int timelyCount; // "Timely" compliment
   final int friendlyCount; // "Friendly" compliment
   final int reliableCount; // "Reliable" compliment
   final int asDescribedCount; // "As Described" compliment
-  
+
   // ========================================
   // RESPONSE & SHIPPING (Depop + OfferUp)
   // ========================================
@@ -87,13 +87,13 @@ class UserEntityWorldClass extends Equatable {
   final double replyRate; // 0-100% (OfferUp Reply Rate Badge)
   final int messagesReceived;
   final int messagesReplied;
-  
+
   final ShippingSpeedCategory shippingSpeedCategory;
   final double? averageShippingDays;
   final int itemsShippedOnTime;
   final int totalItemsShipped;
   final bool fastShipper; // Shipped within 3 days
-  
+
   // ========================================
   // SOCIAL FEATURES (Poshmark + Depop)
   // ========================================
@@ -101,7 +101,7 @@ class UserEntityWorldClass extends Equatable {
   final int followingCount;
   final List<String>? followers; // User IDs
   final List<String>? following; // User IDs
-  
+
   // ========================================
   // BADGES & ACHIEVEMENTS (All platforms)
   // ========================================
@@ -113,7 +113,7 @@ class UserEntityWorldClass extends Equatable {
   final bool hasTopRatedBadge;
   final List<String> badges; // All earned badges
   final TrustScore trustScore; // Custom trust score calculation
-  
+
   // ========================================
   // SUBSCRIPTION & PREMIUM (Poshmark + others)
   // ========================================
@@ -124,7 +124,7 @@ class UserEntityWorldClass extends Equatable {
   final bool hasAutoRelist;
   final bool hasPromotedListings;
   final bool hasPrioritySupport;
-  
+
   // ========================================
   // ACTIVITY & ENGAGEMENT
   // ========================================
@@ -135,7 +135,7 @@ class UserEntityWorldClass extends Equatable {
   final int totalSharesReceived;
   final int totalOffersSent;
   final int totalOffersReceived;
-  
+
   // ========================================
   // PREFERENCES
   // ========================================
@@ -146,7 +146,7 @@ class UserEntityWorldClass extends Equatable {
   final bool smsNotificationsEnabled;
   final String? preferredLanguage;
   final String? preferredCurrency;
-  
+
   // ========================================
   // SAFETY & MODERATION
   // ========================================
@@ -282,15 +282,15 @@ class UserEntityWorldClass extends Equatable {
 
   @override
   List<Object?> get props => [
-        uid,
-        email,
-        displayName,
-        phoneNumber,
-        photoUrl,
-        createdAt,
-        updatedAt,
-        // ... (all fields for equality check)
-      ];
+    uid,
+    email,
+    displayName,
+    phoneNumber,
+    photoUrl,
+    createdAt,
+    updatedAt,
+    // ... (all fields for equality check)
+  ];
 
   /// Calculate trust score based on multiple factors
   TrustScore calculateTrustScore() {
@@ -303,16 +303,26 @@ class UserEntityWorldClass extends Equatable {
     if (isSelfieVerified) score += 5;
 
     // Sales history (20 points max)
-    if (totalSales >= 50) score += 20;
-    else if (totalSales >= 20) score += 15;
-    else if (totalSales >= 5) score += 10;
-    else if (totalSales >= 1) score += 5;
+    if (totalSales >= 50) {
+      score += 20;
+    } else if (totalSales >= 20) {
+      score += 15;
+    } else if (totalSales >= 5) {
+      score += 10;
+    } else if (totalSales >= 1) {
+      score += 5;
+    }
 
     // Ratings (20 points max)
-    if (averageRating >= 4.8) score += 20;
-    else if (averageRating >= 4.5) score += 15;
-    else if (averageRating >= 4.0) score += 10;
-    else if (averageRating >= 3.5) score += 5;
+    if (averageRating >= 4.8) {
+      score += 20;
+    } else if (averageRating >= 4.5) {
+      score += 15;
+    } else if (averageRating >= 4.0) {
+      score += 10;
+    } else if (averageRating >= 3.5) {
+      score += 5;
+    }
 
     // Response & Shipping (10 points max)
     if (replyRate >= 90) score += 5;
@@ -333,9 +343,9 @@ class UserEntityWorldClass extends Equatable {
   /// Get response time display string
   String get responseTimeDisplay {
     if (averageResponseTime != null) return averageResponseTime!;
-    
+
     if (averageResponseMinutes == null) return 'Not available';
-    
+
     final mins = averageResponseMinutes!;
     if (mins < 60) return 'Within $mins minutes';
     if (mins < 1440) return 'Within ${(mins / 60).round()} hours';
@@ -364,34 +374,34 @@ class UserEntityWorldClass extends Equatable {
 // ========================================
 
 enum VerificationLevel {
-  none,       // No verification
-  basic,      // Email + Phone
-  standard,   // Basic + ID
-  verified,   // Standard + Selfie
-  premium,    // Verified + Facebook/Google
+  none, // No verification
+  basic, // Email + Phone
+  standard, // Basic + ID
+  verified, // Standard + Selfie
+  premium, // Verified + Facebook/Google
 }
 
 enum ResponseTimeCategory {
-  instant,      // < 1 hour
-  veryfast,     // 1-6 hours
-  fast,         // 6-24 hours
-  moderate,     // 1-2 days
-  slow,         // 2+ days
+  instant, // < 1 hour
+  veryfast, // 1-6 hours
+  fast, // 6-24 hours
+  moderate, // 1-2 days
+  slow, // 2+ days
   notAvailable, // No data
 }
 
 enum ShippingSpeedCategory {
-  sameDay,      // Same day
-  nextDay,      // 1 day
-  fast,         // 2-3 days
-  standard,     // 4-7 days
-  slow,         // 7+ days
+  sameDay, // Same day
+  nextDay, // 1 day
+  fast, // 2-3 days
+  standard, // 4-7 days
+  slow, // 7+ days
 }
 
 enum TrustScore {
-  new_,         // New user, no history
-  fair,         // Some history, mixed reviews
-  good,         // Good history, positive reviews
-  verygood,     // Excellent history, great reviews
-  excellent,    // Perfect history, top seller
+  new_, // New user, no history
+  fair, // Some history, mixed reviews
+  good, // Good history, positive reviews
+  verygood, // Excellent history, great reviews
+  excellent, // Perfect history, top seller
 }

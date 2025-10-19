@@ -20,10 +20,7 @@ class PrivacyPolicyPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Privacy Policy',
-              style: AppTextStyles.displaySmall,
-            ),
+            Text('Privacy Policy', style: AppTextStyles.displaySmall),
             const SizedBox(height: AppDimensions.spacing8),
             Text(
               'Last Updated: ${DateTime.now().year}',

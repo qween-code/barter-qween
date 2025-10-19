@@ -117,18 +117,22 @@ void main() {
     });
 
     group('canRate', () {
-      final completed = TradeEntity(
-        id: 'trade123',
-        offerId: 'offer456',
-        initiatorId: 'user1',
-        initiatorItemId: 'item1',
-        receiverId: 'user2',
-        receiverItemId: 'item2',
-        status: TradeStatus.completed,
-        agreedAt: testDate,
-        createdAt: testDate,
-        updatedAt: testDate,
-      );
+      late TradeEntity completed;
+
+      setUp(() {
+        completed = TradeEntity(
+          id: 'trade123',
+          offerId: 'offer456',
+          initiatorId: 'user1',
+          initiatorItemId: 'item1',
+          receiverId: 'user2',
+          receiverItemId: 'item2',
+          status: TradeStatus.completed,
+          agreedAt: testDate,
+          createdAt: testDate,
+          updatedAt: testDate,
+        );
+      });
 
       test('should return false if trade not completed', () {
         expect(trade.canRate('user1'), false);

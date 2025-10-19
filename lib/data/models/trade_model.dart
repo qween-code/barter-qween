@@ -201,10 +201,12 @@ class TradeModel {
           : null,
       'meetupNotes': meetupNotes,
       'agreedAt': Timestamp.fromDate(agreedAt),
-      'completedAt':
-          completedAt != null ? Timestamp.fromDate(completedAt!) : null,
-      'cancelledAt':
-          cancelledAt != null ? Timestamp.fromDate(cancelledAt!) : null,
+      'completedAt': completedAt != null
+          ? Timestamp.fromDate(completedAt!)
+          : null,
+      'cancelledAt': cancelledAt != null
+          ? Timestamp.fromDate(cancelledAt!)
+          : null,
       'cancellationReason': cancellationReason,
       'cancelledBy': cancelledBy,
       'initiatorConfirmed': initiatorConfirmed,
@@ -244,8 +246,9 @@ class TradeModel {
       status: TradeStatus.values.firstWhere((e) => e.name == status),
       cashDifferential: cashDifferential,
       paymentDirection: paymentDirection != null
-          ? CashPaymentDirection.values
-              .firstWhere((e) => e.name == paymentDirection)
+          ? CashPaymentDirection.values.firstWhere(
+              (e) => e.name == paymentDirection,
+            )
           : null,
       paymentMethod: paymentMethod,
       meetupLocation: meetupLocation,

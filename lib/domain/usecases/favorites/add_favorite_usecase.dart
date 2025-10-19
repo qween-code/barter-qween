@@ -10,7 +10,10 @@ class AddFavoriteUseCase {
 
   AddFavoriteUseCase(this.repository);
 
-  Future<Either<Failure, FavoriteEntity>> call(String userId, String itemId) async {
+  Future<Either<Failure, FavoriteEntity>> call(
+    String userId,
+    String itemId,
+  ) async {
     return await repository.addFavorite(userId, itemId);
   }
 }

@@ -20,10 +20,7 @@ class TermsOfServicePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Terms of Service',
-              style: AppTextStyles.displaySmall,
-            ),
+            Text('Terms of Service', style: AppTextStyles.displaySmall),
             const SizedBox(height: AppDimensions.spacing8),
             Text(
               'Last Updated: ${DateTime.now().year}',

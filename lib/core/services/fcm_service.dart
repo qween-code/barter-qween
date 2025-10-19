@@ -1,4 +1,4 @@
-﻿import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:io' show Platform;
@@ -7,19 +7,16 @@ import 'package:barter_qween/main.dart' show navigatorKey;
 import 'package:barter_qween/core/di/injection.dart';
 import 'package:barter_qween/core/services/analytics_service.dart';
 import 'package:flutter/material.dart';
-import 'package:barter_qween/presentation/pages/chat/conversations_list_page.dart';
+import 'package:barter_qween/presentation/pages/messages/world_class_messages_page.dart';
 import 'package:barter_qween/presentation/pages/chat/chat_deeplink_page.dart';
 import 'package:barter_qween/presentation/blocs/chat/chat_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:barter_qween/presentation/pages/trades/trades_page.dart';
 import 'package:barter_qween/presentation/pages/trades/trade_deeplink_page.dart';
 import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart';
-import 'package:barter_qween/presentation/pages/items/item_detail_page.dart';
-import 'package:barter_qween/presentation/blocs/item/item_bloc.dart';
-import 'package:barter_qween/presentation/blocs/favorite/favorite_bloc.dart';
+import 'package:barter_qween/core/routes/app_router.dart';
 
 /// Service for handling Firebase Cloud Messaging
-@lazySingleton
 class FCMService {
   final FirebaseMessaging _firebaseMessaging;
   final FlutterLocalNotificationsPlugin _localNotifications;
@@ -27,10 +24,7 @@ class FCMService {
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
 
-  FCMService(
-    this._firebaseMessaging,
-    this._localNotifications,
-  );
+  FCMService(this._firebaseMessaging, this._localNotifications);
 
   /// Initialize FCM and request permissions
   Future<void> initialize() async {
@@ -69,7 +63,7 @@ class FCMService {
 
   /// Request notification permissions
   Future<void> _requestPermission() async {
-    final settings = await _firebaseMessaging.requestPermission(
+    await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -79,12 +73,14 @@ class FCMService {
       provisional: false,
     );
 
-    // DEBUG: print('📱 Permission status: ${settings.authorizationStatus}');
+    // DEBUG: print('📱 Permission status requested');
   }
 
   /// Initialize local notifications for foreground display
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -112,7 +108,8 @@ class FCMService {
 
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel);
     }
   }
@@ -192,20 +189,19 @@ class FCMService {
       case 'new_chat_message':
         // Navigate to specific conversation if entityId (conversationId) is provided
         if (entityId != null && entityId.isNotEmpty) {
-          nav.push(MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => getIt<ChatBloc>(),
-              child: ChatDeepLinkPage(conversationId: entityId),
+          nav.push(
+            MaterialPageRoute(
+              builder: (_) => BlocProvider(
+                create: (_) => getIt<ChatBloc>(),
+                child: ChatDeepLinkPage(conversationId: entityId),
+              ),
             ),
-          ));
+          );
         } else {
-          // Fallback to conversations list
-          nav.push(MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => getIt<ChatBloc>(),
-              child: const ConversationsListPage(),
-            ),
-          ));
+          // Fallback to messages page
+          nav.push(
+            MaterialPageRoute(builder: (_) => const WorldClassMessagesPage()),
+          );
         }
         break;
       case 'new_trade_offer':
@@ -213,30 +209,26 @@ class FCMService {
       case 'trade_rejected':
       case 'trade_completed':
         if (entityId != null && entityId.isNotEmpty) {
-          nav.push(MaterialPageRoute(
-            builder: (_) => TradeDeepLinkPage(tradeId: entityId),
-          ));
-        } else {
-          nav.push(MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (_) => getIt<TradeBloc>(),
-              child: const TradesPage(),
+          nav.push(
+            MaterialPageRoute(
+              builder: (_) => TradeDeepLinkPage(tradeId: entityId),
             ),
-          ));
+          );
+        } else {
+          nav.push(
+            MaterialPageRoute(
+              builder: (_) => BlocProvider(
+                create: (_) => getIt<TradeBloc>(),
+                child: const TradesPage(),
+              ),
+            ),
+          );
         }
         break;
       case 'item_liked':
       case 'item_sold':
         if (entityId != null && entityId.isNotEmpty) {
-          nav.push(MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-              ],
-              child: ItemDetailPage(itemId: entityId),
-            ),
-          ));
+          nav.pushNamed(AppRouter.itemDetail, arguments: entityId);
         } else {
           nav.pushNamed(RouteNames.dashboard);
         }
@@ -247,26 +239,10 @@ class FCMService {
         final sourceItemId = data['sourceItemId'] as String?;
         if (sourceItemId != null && sourceItemId.isNotEmpty) {
           // Load source item and navigate to matches
-          nav.push(MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-              ],
-              child: ItemDetailPage(itemId: sourceItemId),
-            ),
-          ));
+          nav.pushNamed(AppRouter.itemDetail, arguments: sourceItemId);
         } else if (entityId != null && entityId.isNotEmpty) {
           // Navigate to matched item
-          nav.push(MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<ItemBloc>()),
-                BlocProvider(create: (_) => getIt<FavoriteBloc>()),
-              ],
-              child: ItemDetailPage(itemId: entityId),
-            ),
-          ));
+          nav.pushNamed(AppRouter.itemDetail, arguments: entityId);
         } else {
           nav.pushNamed(RouteNames.dashboard);
         }
@@ -281,7 +257,10 @@ class FCMService {
     // DEBUG: print('📲 Local notification tapped: ${response.payload}');
     final nav = navigatorKey.currentState;
     if (nav != null) {
-      nav.pushNamedAndRemoveUntil(RouteNames.dashboard, (route) => route.isFirst);
+      nav.pushNamedAndRemoveUntil(
+        RouteNames.dashboard,
+        (route) => route.isFirst,
+      );
     }
   }
 

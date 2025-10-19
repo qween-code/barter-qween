@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS CATEGORY GRID
-/// 
+///
 /// Features:
 /// - Category icons
 /// - Grid layout
@@ -11,109 +11,127 @@ import '../../../core/theme/world_class_design_system.dart';
 class WorldClassCategoryGrid extends StatelessWidget {
   final Function(String) onCategoryTap;
 
-  const WorldClassCategoryGrid({
-    Key? key,
-    required this.onCategoryTap,
-  }) : super(key: key);
+  const WorldClassCategoryGrid({super.key, required this.onCategoryTap});
 
-  final List<CategoryItem> _categories = const [
+  static const _categories = <CategoryItem>[
     CategoryItem(
-      name: 'Electronics',
-      icon: Icons.phone_android_rounded,
+      id: 'Elektronik',
+      label: 'Elektronik',
+      icon: Icons.devices_other_rounded,
       color: Color(0xFF3B82F6),
     ),
     CategoryItem(
-      name: 'Fashion',
+      id: 'Moda',
+      label: 'Moda',
       icon: Icons.checkroom_rounded,
       color: Color(0xFFEC4899),
     ),
     CategoryItem(
-      name: 'Home',
-      icon: Icons.home_rounded,
+      id: 'Ev & Yaşam',
+      label: 'Ev & Yaşam',
+      icon: Icons.chair_alt_rounded,
       color: Color(0xFF10B981),
     ),
     CategoryItem(
-      name: 'Sports',
+      id: 'Kozmetik',
+      label: 'Kozmetik',
+      icon: Icons.brush_rounded,
+      color: Color(0xFFF97316),
+    ),
+    CategoryItem(
+      id: 'Spor & Outdoor',
+      label: 'Spor & Outdoor',
       icon: Icons.sports_soccer_rounded,
-      color: Color(0xFFF59E0B),
+      color: Color(0xFF6366F1),
     ),
     CategoryItem(
-      name: 'Books',
-      icon: Icons.menu_book_rounded,
-      color: Color(0xFF8B5CF6),
+      id: 'Anne & Bebek',
+      label: 'Anne & Bebek',
+      icon: Icons.child_friendly_rounded,
+      color: Color(0xFFFF6584),
     ),
     CategoryItem(
-      name: 'Toys',
-      icon: Icons.toys_rounded,
-      color: Color(0xFFEF4444),
+      id: 'Süpermarket',
+      label: 'Süpermarket',
+      icon: Icons.local_grocery_store_rounded,
+      color: Color(0xFF22C55E),
     ),
     CategoryItem(
-      name: 'Automotive',
-      icon: Icons.directions_car_rounded,
-      color: Color(0xFF6B7280),
-    ),
-    CategoryItem(
-      name: 'More',
-      icon: Icons.more_horiz_rounded,
-      color: Color(0xFF9CA3AF),
+      id: 'Otomotiv',
+      label: 'Otomotiv',
+      icon: Icons.directions_car_filled_rounded,
+      color: Color(0xFF94A3B8),
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: WorldClassDesignSystem.spacingM,
-          mainAxisSpacing: WorldClassDesignSystem.spacingM,
-          childAspectRatio: 0.8,
+    return SizedBox(
+      height: 112,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(
+          horizontal: WorldClassDesignSystem.spacingM,
         ),
-        itemCount: _categories.length,
+        scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           final category = _categories[index];
-          return _buildCategoryItem(category);
+          return _CategoryPill(
+            category: category,
+            onTap: () => onCategoryTap(category.id),
+          );
         },
+        separatorBuilder: (_, __) => const SizedBox(
+          width: WorldClassDesignSystem.spacingM,
+        ),
+        itemCount: _categories.length,
       ),
     );
   }
+}
 
-  Widget _buildCategoryItem(CategoryItem category) {
+class _CategoryPill extends StatelessWidget {
+  final CategoryItem category;
+  final VoidCallback onTap;
+
+  const _CategoryPill({required this.category, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onCategoryTap(category.name),
+      onTap: onTap,
       child: Container(
+        width: 92,
         decoration: BoxDecoration(
-          color: category.color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusL),
-          border: Border.all(
-            color: category.color.withOpacity(0.2),
-          ),
+          color: category.color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(48),
+          border: Border.all(color: category.color.withOpacity(0.25)),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 color: category.color,
-                borderRadius: BorderRadius.circular(WorldClassDesignSystem.radiusM),
+                shape: BoxShape.circle,
               ),
               child: Icon(
                 category.icon,
                 color: WorldClassDesignSystem.primaryWhite,
-                size: 24,
+                size: 22,
               ),
             ),
-            const SizedBox(height: WorldClassDesignSystem.spacingS),
+            const SizedBox(height: 8),
             Text(
-              category.name,
+              category.label,
               style: WorldClassDesignSystem.labelSmall.copyWith(
-                color: WorldClassDesignSystem.primaryText,
                 fontWeight: FontWeight.w600,
+                color: WorldClassDesignSystem.primaryText,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -127,12 +145,14 @@ class WorldClassCategoryGrid extends StatelessWidget {
 }
 
 class CategoryItem {
-  final String name;
+  final String id;
+  final String label;
   final IconData icon;
   final Color color;
 
   const CategoryItem({
-    required this.name,
+    required this.id,
+    required this.label,
     required this.icon,
     required this.color,
   });

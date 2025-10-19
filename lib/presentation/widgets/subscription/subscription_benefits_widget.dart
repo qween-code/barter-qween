@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/subscription_entity.dart';
 
 /// Subscription Benefits Widget
-/// 
+///
 /// Shows current plan benefits and upgrade prompts
-/// 
+///
 /// Usage:
 /// ```dart
 /// SubscriptionBenefitsWidget(
@@ -16,7 +16,7 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
   final SubscriptionPlan currentPlan;
   final VoidCallback? onUpgradePressed;
   final bool compact;
-  
+
   const SubscriptionBenefitsWidget({
     Key? key,
     required this.currentPlan,
@@ -28,11 +28,11 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final features = currentPlan.features;
     final isPremium = currentPlan == SubscriptionPlan.premium;
-    
+
     if (compact) {
       return _buildCompactView(features, isPremium);
     }
-    
+
     return _buildFullView(context, features, isPremium);
   }
 
@@ -90,7 +90,9 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isPremium ? Colors.white : const Color(0xFF2D3142),
+                        color: isPremium
+                            ? Colors.white
+                            : const Color(0xFF2D3142),
                       ),
                     ),
                     Text(
@@ -127,29 +129,21 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
               isPremium,
             ),
           if (features.adFree)
-            _buildBenefitRow(
-              Icons.block,
-              'Reklamsız deneyim',
-              isPremium,
-            ),
+            _buildBenefitRow(Icons.block, 'Reklamsız deneyim', isPremium),
           _buildBenefitRow(
             Icons.percent,
             'Trade komisyonu %${features.tradeCommissionRate.toStringAsFixed(0)}',
             isPremium,
           ),
           if (features.advancedSearch)
-            _buildBenefitRow(
-              Icons.search,
-              'Gelişmiş arama',
-              isPremium,
-            ),
+            _buildBenefitRow(Icons.search, 'Gelişmiş arama', isPremium),
           if (features.prioritySupport)
             _buildBenefitRow(
               Icons.support_agent,
               'Öncelikli destek',
               isPremium,
             ),
-          
+
           if (!isPremium && onUpgradePressed != null) ...[
             const SizedBox(height: 16),
             SizedBox(
@@ -217,7 +211,9 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
                   '${features.maxActiveListings} aktif ilan • ${features.freeListingsPerMonth == 999 ? "Sınırsız" : features.freeListingsPerMonth} ücretsiz/ay',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isPremium ? Colors.white.withOpacity(0.9) : Colors.grey[600],
+                    color: isPremium
+                        ? Colors.white.withOpacity(0.9)
+                        : Colors.grey[600],
                   ),
                 ),
               ],
@@ -232,10 +228,7 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
               ),
               child: const Text(
                 'Yükselt',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
             ),
         ],
@@ -278,7 +271,7 @@ class SubscriptionBenefitsWidget extends StatelessWidget {
 class PlanComparisonWidget extends StatelessWidget {
   final SubscriptionPlan currentPlan;
   final VoidCallback? onUpgradePressed;
-  
+
   const PlanComparisonWidget({
     Key? key,
     required this.currentPlan,
@@ -315,9 +308,10 @@ class PlanComparisonWidget extends StatelessWidget {
           ...SubscriptionPlans.allPlans.map((plan) {
             final isCurrent = plan.plan == currentPlan;
             return _buildPlanRow(plan, isCurrent);
-          }).toList(),
-          
-          if (currentPlan != SubscriptionPlan.premium && onUpgradePressed != null) ...[
+          }),
+
+          if (currentPlan != SubscriptionPlan.premium &&
+              onUpgradePressed != null) ...[
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -379,7 +373,9 @@ class PlanComparisonWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: isCurrent ? const Color(0xFFFF6B35) : const Color(0xFF2D3142),
+                        color: isCurrent
+                            ? const Color(0xFFFF6B35)
+                            : const Color(0xFF2D3142),
                       ),
                     ),
                     if (isCurrent) ...[
@@ -410,20 +406,13 @@ class PlanComparisonWidget extends StatelessWidget {
                   plan.plan == SubscriptionPlan.free
                       ? 'Ücretsiz'
                       : '₺${plan.monthlyPriceTRY}/ay',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
             ),
           ),
           if (!isCurrent && plan.plan != SubscriptionPlan.free)
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
         ],
       ),
     );
@@ -434,7 +423,7 @@ class PlanComparisonWidget extends StatelessWidget {
 class QuickBenefitsBanner extends StatelessWidget {
   final SubscriptionPlan currentPlan;
   final VoidCallback onTap;
-  
+
   const QuickBenefitsBanner({
     Key? key,
     required this.currentPlan,
@@ -495,19 +484,12 @@ class QuickBenefitsBanner extends StatelessWidget {
                   SizedBox(height: 4),
                   Text(
                     'Sınırsız ilan, reklamsız deneyim',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.white),
                   ),
                 ],
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-              size: 18,
-            ),
+            const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
           ],
         ),
       ),

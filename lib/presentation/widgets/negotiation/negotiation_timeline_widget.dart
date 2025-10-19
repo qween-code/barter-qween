@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/minimal_design_system.dart';
 import '../../../domain/entities/negotiation_entity.dart';
-import '../../../domain/entities/counter_offer_entity.dart';
 
 /// Neuromorphic Negotiation Timeline Widget
 /// Shows the progression of negotiation with visual timeline
@@ -16,7 +15,8 @@ class NegotiationTimelineWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<NegotiationTimelineWidget> createState() => _NegotiationTimelineWidgetState();
+  State<NegotiationTimelineWidget> createState() =>
+      _NegotiationTimelineWidgetState();
 }
 
 class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
@@ -36,7 +36,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
@@ -45,17 +45,16 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
     // Create animations for each timeline step
     _stepAnimations = List.generate(
       _getTimelineSteps().length,
-      (index) => Tween<double>(
-        begin: 0.0,
-        end: 1.0,
-      ).animate(CurvedAnimation(
-        parent: _timelineController,
-        curve: Interval(
-          index * 0.2,
-          (index * 0.2) + 0.3,
-          curve: Curves.easeOutCubic,
+      (index) => Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _timelineController,
+          curve: Interval(
+            index * 0.2,
+            (index * 0.2) + 0.3,
+            curve: Curves.easeOutCubic,
+          ),
         ),
-      )),
+      ),
     );
 
     _timelineController.forward();
@@ -99,7 +98,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
   @override
   Widget build(BuildContext context) {
     final steps = _getTimelineSteps();
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -147,9 +146,9 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Timeline Steps
           Expanded(
             child: ListView.builder(
@@ -159,7 +158,10 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                   animation: _stepAnimations[index],
                   builder: (context, child) {
                     return Transform.translate(
-                      offset: Offset(0, 20 * (1 - _stepAnimations[index].value)),
+                      offset: Offset(
+                        0,
+                        20 * (1 - _stepAnimations[index].value),
+                      ),
                       child: Opacity(
                         opacity: _stepAnimations[index].value,
                         child: _buildTimelineStep(steps[index], index),
@@ -197,9 +199,9 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
                 ),
             ],
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Step content
           Expanded(
             child: Container(
@@ -303,11 +305,7 @@ class _NegotiationTimelineWidgetState extends State<NegotiationTimelineWidget>
         color: backgroundColor,
         boxShadow: shadows,
       ),
-      child: Icon(
-        step.icon,
-        color: iconColor,
-        size: 16,
-      ),
+      child: Icon(step.icon, color: iconColor, size: 16),
     );
   }
 
@@ -354,8 +352,4 @@ class TimelineStep {
   });
 }
 
-enum TimelineStepStatus {
-  completed,
-  active,
-  pending,
-}
+enum TimelineStepStatus { completed, active, pending }

@@ -22,14 +22,7 @@ enum ButtonSize {
   final double padding;
 }
 
-enum ButtonState {
-  normal,
-  hover,
-  pressed,
-  loading,
-  disabled,
-  focused,
-}
+enum ButtonState { normal, hover, pressed, loading, disabled, focused }
 
 class PrimaryButton extends StatefulWidget {
   final String text;
@@ -67,78 +60,12 @@ class PrimaryButton extends StatefulWidget {
 
 class _PrimaryButtonState extends State<PrimaryButton>
     with TickerProviderStateMixin {
-  // late AnimationController _hoverController;
-  // late AnimationController _pressController;
-  // late AnimationController _focusController;
-  late AnimationController _loadingController;
-
-  late Animation<double> _hoverScaleAnimation;
-  late Animation<double> _pressScaleAnimation;
-  late Animation<double> _focusScaleAnimation;
-  late Animation<List<BoxShadow>> _shadowAnimation;
-
   ButtonState _currentState = ButtonState.normal;
   bool _isHovered = false;
-  bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-  }
-
-  @override
-  void dispose() {
-    _disposeAnimations();
-    super.dispose();
-  }
-
-  void _initializeAnimations() {
-    // Hover animasyonu
-    // _hoverController = NeumorphismAnimationController.createHoverController(this);
-    // _hoverScaleAnimation = NeumorphismAnimations.createCinematicHoverAnimation(_hoverController);
-
-    // Press animasyonu
-    // _pressController = NeumorphismAnimationController.createPressController(this);
-    _pressScaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
-    );
-
-    // Focus animasyonu
-    // _focusController = NeumorphismAnimationController.createFocusController(this);
-    _focusScaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
-    );
-
-    // Loading animasyonu
-    // _loadingController = NeumorphismAnimationController.createLoadingController(this);
-
-    // Shadow animasyonu
-    _shadowAnimation = TweenSequence<List<BoxShadow>>([
-      TweenSequenceItem(
-        tween: Tween<List<BoxShadow>>(
-          begin: MinimalDesignSystem.neumorphismUltraOutsetShadow,
-          end: MinimalDesignSystem.neumorphismHoverShadow,
-        ),
-        weight: 50,
-      ),
-      TweenSequenceItem(
-        tween: Tween<List<BoxShadow>>(
-          begin: MinimalDesignSystem.neumorphismHoverShadow,
-          end: MinimalDesignSystem.neumorphismPressedShadow,
-        ),
-        weight: 50,
-      ),
-    ]).animate(
-      CurvedAnimation(parent: _loadingController, curve: Curves.easeInOutCubic),
-    );
-  }
-
-  void _disposeAnimations() {
-    // _hoverController.dispose();
-    // _pressController.dispose();
-    // _focusController.dispose();
-    _loadingController.dispose();
   }
 
   void _updateState(ButtonState newState) {
@@ -187,7 +114,6 @@ class _PrimaryButtonState extends State<PrimaryButton>
   }
 
   void _onFocusChange(bool hasFocus) {
-    _isFocused = hasFocus;
     if (hasFocus && widget.onPressed != null && !widget.isLoading) {
       _updateState(ButtonState.focused);
       // _focusController.forward();
@@ -216,19 +142,9 @@ class _PrimaryButtonState extends State<PrimaryButton>
           onTapDown: _onTapDown,
           onTapUp: _onTapUp,
           onTapCancel: _onTapCancel,
-          child: AnimatedBuilder(
-            animation: Listenable.merge([
-              // _hoverController,
-              // _pressController,
-              // _focusController,
-              _loadingController,
-            ]),
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _getCurrentScale(),
-                child: child,
-              );
-            },
+          child: AnimatedScale(
+            scale: _getCurrentScale(),
+            duration: const Duration(milliseconds: 150),
             child: Container(
               width: widget.isFullWidth
                   ? double.infinity
@@ -253,7 +169,9 @@ class _PrimaryButtonState extends State<PrimaryButton>
                         : AppDimensions.radius16,
                   ),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: buttonSize.padding),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: buttonSize.padding,
+                    ),
                     child: Center(
                       child: widget.isLoading
                           ? _buildLoadingIndicator()
@@ -270,23 +188,16 @@ class _PrimaryButtonState extends State<PrimaryButton>
   }
 
   double _getCurrentScale() {
-    double scale = 1.0;
-
     switch (_currentState) {
       case ButtonState.hover:
-        scale = _hoverScaleAnimation.value;
-        break;
+        return 1.02;
       case ButtonState.pressed:
-        scale = _pressScaleAnimation.value;
-        break;
+        return 0.97;
       case ButtonState.focused:
-        scale = _focusScaleAnimation.value;
-        break;
+        return 1.01;
       default:
-        scale = 1.0;
+        return 1.0;
     }
-
-    return scale;
   }
 
   LinearGradient? _getCurrentGradient(bool isDisabled) {
@@ -334,23 +245,15 @@ class _PrimaryButtonState extends State<PrimaryButton>
   }
 
   Widget _buildLoadingIndicator() {
-    return AnimatedBuilder(
-      animation: _loadingController,
-      builder: (context, child) {
-        return Transform.rotate(
-          angle: 0.0,
-          child: SizedBox(
-            width: AppDimensions.icon20,
-            height: AppDimensions.icon20,
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                AppColors.textOnPrimary,
-              ),
-            ),
-          ),
-        );
-      },
+    return SizedBox(
+      width: AppDimensions.icon20,
+      height: AppDimensions.icon20,
+      child: CircularProgressIndicator(
+        strokeWidth: 3,
+        valueColor: const AlwaysStoppedAnimation<Color>(
+          AppColors.textOnPrimary,
+        ),
+      ),
     );
   }
 
@@ -480,7 +383,9 @@ class NeumorphismButtonCollection {
         color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(AppDimensions.fabSizeCinematic / 2),
+          borderRadius: BorderRadius.circular(
+            AppDimensions.fabSizeCinematic / 2,
+          ),
           child: Icon(
             icon,
             color: AppColors.primary,
@@ -524,10 +429,7 @@ class NeumorphismButtonCollection {
                   Icon(icon, color: AppColors.primary),
                   SizedBox(width: AppDimensions.spacing8),
                 ],
-                Text(
-                  text,
-                  style: AppTextStyles.buttonMedium,
-                ),
+                Text(text, style: AppTextStyles.buttonMedium),
               ],
             ),
           ),
@@ -556,11 +458,7 @@ class NeumorphismButtonCollection {
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(AppDimensions.radius12),
-          child: Icon(
-            icon,
-            color: AppColors.primary,
-            size: size * 0.5,
-          ),
+          child: Icon(icon, color: AppColors.primary, size: size * 0.5),
         ),
       ),
     );

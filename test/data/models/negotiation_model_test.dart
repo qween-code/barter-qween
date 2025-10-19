@@ -15,6 +15,10 @@ void main() {
         tradeOfferId: 'offer123',
         initiatorId: 'user1',
         responderId: 'user2',
+        sourceItemId: 'item-source',
+        targetItemId: 'item-target',
+        receiverId: 'user2',
+        lastActionBy: 'user1',
         status: NegotiationStatus.active,
         currentOfferer: 'user1',
         createdAt: testDate,
@@ -185,15 +189,23 @@ void main() {
 
         expect(firestoreData['rounds'], isA<List>());
         expect((firestoreData['rounds'] as List).length, 1);
-        expect((firestoreData['rounds'] as List)[0]['meetupTime'], isA<Timestamp>());
-        expect((firestoreData['rounds'] as List)[0]['createdAt'], isA<Timestamp>());
+        expect(
+          (firestoreData['rounds'] as List)[0]['meetupTime'],
+          isA<Timestamp>(),
+        );
+        expect(
+          (firestoreData['rounds'] as List)[0]['createdAt'],
+          isA<Timestamp>(),
+        );
       });
 
       test('handles optional DateTime fields', () {
-        final model = NegotiationModel.fromEntity(testEntity.copyWith(
-          expiresAt: testDate.add(const Duration(days: 7)),
-          lastActivityAt: testDate.add(const Duration(hours: 1)),
-        ));
+        final model = NegotiationModel.fromEntity(
+          testEntity.copyWith(
+            expiresAt: testDate.add(const Duration(days: 7)),
+            lastActivityAt: testDate.add(const Duration(hours: 1)),
+          ),
+        );
         final firestoreData = model.toFirestore();
 
         expect(firestoreData['expiresAt'], isA<Timestamp>());

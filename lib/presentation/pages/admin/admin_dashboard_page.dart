@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/services/admin_service.dart';
 
 /// World-Class Admin Dashboard
 /// Design inspiration: Trendyol/Dolap admin panels
@@ -11,14 +12,63 @@ class AdminDashboardPage extends StatefulWidget {
 
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   int _selectedIndex = 0;
+  late AdminService _adminService;
+  AdminStats? _stats;
+  bool _isLoading = true;
 
   final List<_AdminTab> _tabs = const [
-    _AdminTab(icon: Icons.dashboard_outlined, label: 'Dashboard', selectedIcon: Icons.dashboard),
-    _AdminTab(icon: Icons.people_outline, label: 'Users', selectedIcon: Icons.people),
-    _AdminTab(icon: Icons.inventory_2_outlined, label: 'Items', selectedIcon: Icons.inventory_2),
-    _AdminTab(icon: Icons.flag_outlined, label: 'Reports', selectedIcon: Icons.flag),
-    _AdminTab(icon: Icons.analytics_outlined, label: 'Analytics', selectedIcon: Icons.analytics),
+    _AdminTab(
+      icon: Icons.dashboard_outlined,
+      label: 'Dashboard',
+      selectedIcon: Icons.dashboard,
+    ),
+    _AdminTab(
+      icon: Icons.people_outline,
+      label: 'Users',
+      selectedIcon: Icons.people,
+    ),
+    _AdminTab(
+      icon: Icons.inventory_2_outlined,
+      label: 'Items',
+      selectedIcon: Icons.inventory_2,
+    ),
+    _AdminTab(
+      icon: Icons.flag_outlined,
+      label: 'Reports',
+      selectedIcon: Icons.flag,
+    ),
+    _AdminTab(
+      icon: Icons.analytics_outlined,
+      label: 'Analytics',
+      selectedIcon: Icons.analytics,
+    ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _adminService = AdminService();
+    _loadAdminData();
+  }
+
+  Future<void> _loadAdminData() async {
+    setState(() => _isLoading = true);
+    try {
+      final stats = await _adminService.getAdminStats();
+      setState(() {
+        _stats = stats;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error loading admin data'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,23 +77,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       body: Row(
         children: [
           // Sidebar (Desktop/Tablet)
-          if (MediaQuery.of(context).size.width > 600)
-            _buildSidebar(),
-          
+          if (MediaQuery.of(context).size.width > 600) _buildSidebar(),
+
           // Main Content
           Expanded(
             child: Column(
               children: [
                 _buildTopBar(),
-                Expanded(
-                  child: _buildContent(),
-                ),
+                Expanded(child: _buildContent()),
               ],
             ),
           ),
         ],
       ),
-      
+
       // Bottom Navigation (Mobile)
       bottomNavigationBar: MediaQuery.of(context).size.width <= 600
           ? _buildBottomNav()
@@ -101,19 +148,16 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ),
                     Text(
                       'Barter Qween',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF636E72),
-                      ),
+                      style: TextStyle(fontSize: 12, color: Color(0xFF636E72)),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // Navigation Items
           Expanded(
             child: ListView.builder(
@@ -122,11 +166,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               itemBuilder: (context, index) {
                 final tab = _tabs[index];
                 final isSelected = _selectedIndex == index;
-                
+
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   child: Material(
-                    color: isSelected 
+                    color: isSelected
                         ? const Color(0xFFFF6B6B).withOpacity(0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
@@ -142,7 +189,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           children: [
                             Icon(
                               isSelected ? tab.selectedIcon : tab.icon,
-                              color: isSelected 
+                              color: isSelected
                                   ? const Color(0xFFFF6B6B)
                                   : const Color(0xFF636E72),
                               size: 24,
@@ -152,10 +199,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               tab.label,
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: isSelected 
+                                fontWeight: isSelected
                                     ? FontWeight.w600
                                     : FontWeight.normal,
-                                color: isSelected 
+                                color: isSelected
                                     ? const Color(0xFFFF6B6B)
                                     : const Color(0xFF2D3436),
                               ),
@@ -169,7 +216,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               },
             ),
           ),
-          
+
           // User Profile
           Container(
             margin: const EdgeInsets.all(12),
@@ -245,11 +292,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         children: [
           // Mobile Menu Button
           if (MediaQuery.of(context).size.width <= 600)
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
-            ),
-          
+            IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+
           // Page Title
           Expanded(
             child: Text(
@@ -261,7 +305,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               ),
             ),
           ),
-          
+
           // Search
           if (MediaQuery.of(context).size.width > 600)
             Container(
@@ -280,9 +324,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 ),
               ),
             ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Notifications
           IconButton(
             icon: Stack(
@@ -313,11 +357,15 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     return NavigationBar(
       selectedIndex: _selectedIndex,
       onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-      destinations: _tabs.map((tab) => NavigationDestination(
-        icon: Icon(tab.icon),
-        selectedIcon: Icon(tab.selectedIcon),
-        label: tab.label,
-      )).toList(),
+      destinations: _tabs
+          .map(
+            (tab) => NavigationDestination(
+              icon: Icon(tab.icon),
+              selectedIcon: Icon(tab.selectedIcon),
+              label: tab.label,
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -351,72 +399,211 @@ class _AdminTab {
   });
 }
 
-// Dashboard Tab with Stats
+// Dashboard Tab with Real Stats
 class _DashboardTab extends StatelessWidget {
+  final AdminStats? stats;
+  final bool isLoading;
+
+  const _DashboardTab({
+    this.stats,
+    this.isLoading = false,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Stats Cards
-          GridView.count(
-            crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 4 : 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
-            childAspectRatio: 1.5,
-            children: [
-              _StatCard(
-                title: 'Total Users',
-                value: '12,345',
-                change: '+12%',
-                isPositive: true,
-                icon: Icons.people,
-                color: const Color(0xFF4ECDC4),
-              ),
-              _StatCard(
-                title: 'Active Items',
-                value: '8,921',
-                change: '+8%',
-                isPositive: true,
-                icon: Icons.inventory_2,
-                color: const Color(0xFFFFE66D),
-              ),
-              _StatCard(
-                title: 'Pending Reviews',
-                value: '127',
-                change: '-5%',
-                isPositive: false,
-                icon: Icons.pending_actions,
-                color: const Color(0xFFFF6B6B),
-              ),
-              _StatCard(
-                title: 'Total Trades',
-                value: '45,678',
-                change: '+15%',
-                isPositive: true,
-                icon: Icons.swap_horiz,
-                color: const Color(0xFF95E1D3),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Recent Activity
-          _SectionHeader(title: 'Recent Activity'),
-          const SizedBox(height: 16),
-          _ActivityCard(),
-        ],
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        // Implement refresh logic
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Stats Cards
+            GridView.count(
+              crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 4 : 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.5,
+              children: [
+                _StatCard(
+                  title: 'Total Users',
+                  value: stats?.totalUsers.toString() ?? '0',
+                  change: '+${stats?.weeklyGrowth.toStringAsFixed(1)}%',
+                  isPositive: stats?.weeklyGrowth >= 0,
+                  icon: Icons.people,
+                  color: const Color(0xFF4ECDC4),
+                ),
+                _StatCard(
+                  title: 'Active Users',
+                  value: stats?.activeUsers.toString() ?? '0',
+                  change: '+8%',
+                  isPositive: true,
+                  icon: Icons.people,
+                  color: const Color(0xFF4ECDC4),
+                ),
+                _StatCard(
+                  title: 'Active Items',
+                  value: stats?.activeItems.toString() ?? '0',
+                  change: '+5%',
+                  isPositive: true,
+                  icon: Icons.inventory_2,
+                  color: const Color(0xFFFFE66D),
+                ),
+                _StatCard(
+                  title: 'Total Trades',
+                  value: stats?.activeTrades.toString() ?? '0',
+                  change: '+10%',
+                  isPositive: true,
+                  icon: Icons.swap_horiz,
+                  color: const Color(0xFF95E1D3),
+                ),
+                _StatCard(
+                  title: 'Premium Users',
+                  value: stats?.premiumSubscribers.toString() ?? '0',
+                  change: '+23%',
+                  isPositive: true,
+                  icon: Icons.star,
+                  color: const Color(0xFFFFD700),
+                ),
+                _StatCard(
+                  title: 'Total Revenue',
+                  value: '\$${(stats?.totalRevenue.toStringAsFixed(2) ?? '0.00')}',
+                  change: '+15%',
+                  isPositive: true,
+                  icon: Icons.attach_money,
+                  color: const Color(0xFF4CAF50),
+                ),
+                _StatCard(
+                  title: 'Monthly Revenue',
+                  value: '\$${(stats?.monthlyRevenue.toStringAsFixed(2) ?? '0.00')}',
+                  change: '+12%',
+                  isPositive: true,
+                  icon: Icons.trending_up,
+                  color: const Color(0xFF2196F3),
+                ),
+                _StatCard(
+                  title: 'Active Conversations',
+                  value: stats?.activeConversations.toString() ?? '0',
+                  change: '+3%',
+                  isPositive: true,
+                  icon: Icons.chat,
+                  color: const Color(0xFF9C27B0),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Category Distribution
+            _SectionHeader(title: 'Item Categories'),
+            const SizedBox(height: 16),
+            _buildCategoryChart(),
+
+            const SizedBox(height: 24),
+
+            // Recent Activity
+            _SectionHeader(title: 'Recent Activity'),
+            const SizedBox(height: 16),
+            _ActivityCard(),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
+Widget _buildCategoryChart() {
+    if (stats == null || stats!.categoryStats.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final categories = stats!.categoryStats.entries.toList();
+    
+    return Container(
+      height: 200,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Item Distribution',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Row(
+              children: categories.map((entry) {
+                return Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        entry.key,
+                        style: const TextStyle(fontSize: 14),
+                        textAlign: TextAlign.right,
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: _getCategoryColor(entry.key),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        width: (entry.value / (stats!.totalItems > 0 ? stats!.totalItems : 1)) * 100,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'electronics':
+        return Colors.blue;
+      case 'clothing':
+        return Colors.purple;
+      case 'books':
+        return Colors.green;
+      case 'home':
+        return Colors.orange;
+      case 'sports':
+        return Colors.red;
+      case 'toys':
+        Colors.yellow;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  class _StatCard extends StatelessWidget {
   final String title;
   final String value;
   final String change;
@@ -441,10 +628,7 @@ class _StatCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
         ],
       ),
       child: Column(
@@ -465,7 +649,7 @@ class _StatCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isPositive 
+                  color: isPositive
                       ? const Color(0xFF00B894).withOpacity(0.1)
                       : const Color(0xFFD63031).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -475,7 +659,7 @@ class _StatCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isPositive 
+                    color: isPositive
                         ? const Color(0xFF00B894)
                         : const Color(0xFFD63031),
                   ),
@@ -497,10 +681,7 @@ class _StatCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF636E72),
-                ),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF636E72)),
               ),
             ],
           ),
@@ -537,15 +718,10 @@ class _ActivityCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
         ],
       ),
-      child: const Center(
-        child: Text('Activity feed will be implemented'),
-      ),
+      child: const Center(child: Text('Activity feed will be implemented')),
     );
   }
 }

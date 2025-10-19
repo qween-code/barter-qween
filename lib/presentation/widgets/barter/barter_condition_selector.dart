@@ -4,7 +4,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/barter_condition_entity.dart';
-import '../../../domain/entities/item_entity.dart';
 
 /// Barter Condition Selector Widget
 /// Allows users to select barter conditions for their item
@@ -180,10 +179,7 @@ class _BarterConditionSelectorState extends State<BarterConditionSelector> {
               ),
             ),
             if (isSelected)
-              const Icon(
-                Icons.check_circle,
-                color: AppColors.primary,
-              ),
+              const Icon(Icons.check_circle, color: AppColors.primary),
           ],
         ),
       ),
@@ -250,8 +246,9 @@ class _BarterConditionSelectorState extends State<BarterConditionSelector> {
                 selected: isSelected,
                 onSelected: (selected) {
                   if (widget.onCategoriesChanged != null) {
-                    List<String> newCategories =
-                        List.from(widget.selectedCategories ?? []);
+                    List<String> newCategories = List.from(
+                      widget.selectedCategories ?? [],
+                    );
                     if (selected) {
                       newCategories.add(category);
                     } else {

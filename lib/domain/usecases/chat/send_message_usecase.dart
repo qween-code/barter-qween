@@ -30,9 +30,7 @@ class SendMessageUseCase {
   Future<Either<Failure, MessageEntity>> call(SendMessageParams params) {
     // Validate message text
     if (params.text.trim().isEmpty) {
-      return Future.value(
-        Left(ValidationFailure('Message cannot be empty')),
-      );
+      return Future.value(Left(ValidationFailure('Message cannot be empty')));
     }
 
     if (params.text.length > 1000) {

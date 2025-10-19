@@ -4,7 +4,8 @@ import 'package:equatable/equatable.dart';
 class ConversationEntity extends Equatable {
   final String id;
   final List<String> participants; // User IDs
-  final String? listingId; // Optional - if conversation is about a specific item
+  final String?
+  listingId; // Optional - if conversation is about a specific item
   final String lastMessage;
   final String lastMessageSenderId;
   final DateTime lastMessageTime;
@@ -44,14 +45,14 @@ class ConversationEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        participants,
-        listingId,
-        lastMessage,
-        lastMessageSenderId,
-        lastMessageTime,
-        unreadCount,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    participants,
+    listingId,
+    lastMessage,
+    lastMessageSenderId,
+    lastMessageTime,
+    unreadCount,
+    createdAt,
+    updatedAt,
+  ];
 }

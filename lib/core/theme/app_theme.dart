@@ -16,7 +16,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      
+
       // ============================================
       // NEUMORPHISM COLOR SCHEME
       // ============================================
@@ -78,26 +78,29 @@ class AppTheme {
       // NEUMORPHISM BUTTON THEMES
       // ============================================
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.surface,
-          foregroundColor: AppColors.textPrimary,
-          textStyle: AppTextStyles.buttonLarge,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.buttonPaddingHorizontal,
-            vertical: AppDimensions.spacing16,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-          ),
-          elevation: 0,
-          shadowColor: Colors.transparent,
-        ).copyWith(
-          backgroundColor: WidgetStateProperty.all(AppColors.surface),
-          foregroundColor: WidgetStateProperty.all(AppColors.textPrimary),
-          overlayColor: WidgetStateProperty.all(AppColors.primaryLight.withOpacity(0.1)),
-          elevation: WidgetStateProperty.all(0),
-          shadowColor: WidgetStateProperty.all(Colors.transparent),
-        ),
+        style:
+            FilledButton.styleFrom(
+              backgroundColor: AppColors.surface,
+              foregroundColor: AppColors.textPrimary,
+              textStyle: AppTextStyles.buttonLarge,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.buttonPaddingHorizontal,
+                vertical: AppDimensions.spacing16,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+              ),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+            ).copyWith(
+              backgroundColor: WidgetStateProperty.all(AppColors.surface),
+              foregroundColor: WidgetStateProperty.all(AppColors.textPrimary),
+              overlayColor: WidgetStateProperty.all(
+                AppColors.primaryLight.withOpacity(0.1),
+              ),
+              elevation: WidgetStateProperty.all(0),
+              shadowColor: WidgetStateProperty.all(Colors.transparent),
+            ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -194,9 +197,7 @@ class AppTheme {
         hintStyle: AppTextStyles.inputLabel.copyWith(
           color: AppColors.textTertiary,
         ),
-        errorStyle: AppTextStyles.bodySmall.copyWith(
-          color: AppColors.error,
-        ),
+        errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
       ),
 
       // ============================================
@@ -248,7 +249,9 @@ class AppTheme {
           if (states.contains(WidgetState.selected)) {
             return AppTextStyles.labelSmall.copyWith(color: AppColors.primary);
           }
-          return AppTextStyles.labelSmall.copyWith(color: AppColors.textSecondary);
+          return AppTextStyles.labelSmall.copyWith(
+            color: AppColors.textSecondary,
+          );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -390,7 +393,7 @@ class AppTheme {
   // ============================================
   // SYSTEM UI OVERLAY STYLES
   // ============================================
-  
+
   /// Light status bar (for dark backgrounds)
   static const SystemUiOverlayStyle lightStatusBar = SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,

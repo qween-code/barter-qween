@@ -13,9 +13,9 @@ class GetUserItemsUseCase {
   GetUserItemsUseCase(this.repository);
 
   /// Execute the use case
-  /// 
-  /// Gets all items belonging to a specific user
-  /// Returns Either<Failure, List<ItemEntity>>
+  ///
+  /// Gets all items belonging to a specific user.
+  /// Returns an Either with a Failure on error or the user's items on success.
   Future<Either<Failure, List<ItemEntity>>> call(String userId) async {
     try {
       return await repository.getUserItems(userId);

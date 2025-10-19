@@ -4,7 +4,7 @@ import '../../core/error/failures.dart';
 import '../entities/counter_offer_entity.dart';
 
 /// Use case for rejecting a counter-offer
-/// 
+///
 /// Allows user to reject a counter-offer and optionally
 /// send a new counter-offer or end negotiation
 @lazySingleton
@@ -27,16 +27,16 @@ class RejectCounterOfferUsecase {
       // TODO: Get counter-offer from repository
       // TODO: Validate user can reject (must be target user)
       // TODO: Validate counter-offer is still valid
-      
+
       final now = DateTime.now();
-      
+
       // Create result
       // In real implementation, this would:
       // 1. Update counter-offer status to 'rejected'
       // 2. Update negotiation state
       // 3. Optionally end negotiation if endNegotiation=true
       // 4. Send notification to other party
-      
+
       final result = RejectCounterOfferResult(
         counterOfferId: params.counterOfferId,
         negotiationId: '', // TODO: Get from counter-offer
@@ -85,7 +85,7 @@ class RejectCounterOfferUsecase {
           ? '$userName müzakereyi sonlandırdı: $reason'
           : '$userName müzakereyi sonlandırdı.';
     }
-    
+
     return reason != null && reason.isNotEmpty
         ? '$userName karşı teklifi reddetti: $reason'
         : '$userName karşı teklifi reddetti.';

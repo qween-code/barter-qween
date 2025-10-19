@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
 /// 🗺️ WORLD-CLASS LOCATION PICKER WIDGET
-/// 
+///
 /// Features:
 /// - Interactive Google Maps
 /// - Current location detection
@@ -13,7 +13,8 @@ import 'package:geocoding/geocoding.dart';
 /// - Beautiful UI with smooth animations
 class LocationPickerWidget extends StatefulWidget {
   final LatLng? initialLocation;
-  final Function(LatLng location, String address, String city) onLocationSelected;
+  final Function(LatLng location, String address, String city)
+  onLocationSelected;
 
   const LocationPickerWidget({
     Key? key,
@@ -53,7 +54,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
 
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoading = true);
-    
+
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -76,7 +77,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
       setState(() {
         _selectedLocation = LatLng(position.latitude, position.longitude);
       });
-      
+
       await _getAddressFromLatLng(_selectedLocation);
       _mapController?.animateCamera(
         CameraUpdate.newLatLngZoom(_selectedLocation, 15),
@@ -98,7 +99,8 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
         setState(() {
-          _selectedAddress = '${place.street}, ${place.subLocality}, ${place.locality}';
+          _selectedAddress =
+              '${place.street}, ${place.subLocality}, ${place.locality}';
           _selectedCity = place.locality ?? place.administrativeArea ?? '';
         });
       }
@@ -113,14 +115,16 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
     setState(() => _isLoading = true);
 
     try {
-      List<Location> locations = await locationFromAddress(_searchController.text);
-      
+      List<Location> locations = await locationFromAddress(
+        _searchController.text,
+      );
+
       if (locations.isNotEmpty) {
         final location = locations.first;
         setState(() {
           _selectedLocation = LatLng(location.latitude, location.longitude);
         });
-        
+
         await _getAddressFromLatLng(_selectedLocation);
         _mapController?.animateCamera(
           CameraUpdate.newLatLngZoom(_selectedLocation, 15),
@@ -309,10 +313,7 @@ class _LocationPickerWidgetState extends State<LocationPickerWidget> {
                   const SizedBox(height: 16),
                   Text(
                     'Haritayı sürükleyerek veya işareti hareket ettirerek konumu seçebilirsiniz',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),

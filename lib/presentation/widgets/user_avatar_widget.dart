@@ -29,10 +29,7 @@ class UserAvatarWidget extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: photoUrl == null ? AppColors.primaryGradient : null,
-            border: Border.all(
-              color: AppColors.surface,
-              width: 3,
-            ),
+            border: Border.all(color: AppColors.surface, width: 3),
           ),
           child: ClipOval(
             child: photoUrl != null
@@ -41,9 +38,7 @@ class UserAvatarWidget extends StatelessWidget {
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: AppColors.surfaceVariant,
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: const Center(child: CircularProgressIndicator()),
                     ),
                     errorWidget: (context, url, error) => _buildInitials(),
                   )
@@ -64,10 +59,7 @@ class UserAvatarWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: AppColors.primaryGradient,
-                  border: Border.all(
-                    color: AppColors.surface,
-                    width: 2,
-                  ),
+                  border: Border.all(color: AppColors.surface, width: 2),
                 ),
                 child: Icon(
                   Icons.camera_alt_rounded,

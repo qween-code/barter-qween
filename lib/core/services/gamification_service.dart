@@ -2,17 +2,12 @@
 // Coins, Achievements, Streaks, Levels
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class GamificationService {
   final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
 
-  GamificationService({
-    required FirebaseFirestore firestore,
-    required FirebaseAuth auth,
-  })  : _firestore = firestore,
-        _auth = auth;
+  GamificationService({required FirebaseFirestore firestore})
+    : _firestore = firestore;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // COINS SYSTEM
@@ -45,7 +40,11 @@ class GamificationService {
 
         // Log transaction
         transaction.set(
-          _firestore.collection('users').doc(userId).collection('coinHistory').doc(),
+          _firestore
+              .collection('users')
+              .doc(userId)
+              .collection('coinHistory')
+              .doc(),
           {
             'amount': amount,
             'reason': reason,
@@ -84,7 +83,11 @@ class GamificationService {
 
         // Log transaction
         transaction.set(
-          _firestore.collection('users').doc(userId).collection('coinHistory').doc(),
+          _firestore
+              .collection('users')
+              .doc(userId)
+              .collection('coinHistory')
+              .doc(),
           {
             'amount': -amount,
             'reason': reason,
@@ -188,7 +191,11 @@ class GamificationService {
       }
 
       final lastLogin = lastLoginTimestamp.toDate();
-      final lastLoginDay = DateTime(lastLogin.year, lastLogin.month, lastLogin.day);
+      final lastLoginDay = DateTime(
+        lastLogin.year,
+        lastLogin.month,
+        lastLogin.day,
+      );
       final daysDifference = today.difference(lastLoginDay).inDays;
 
       if (daysDifference == 0) {
@@ -197,7 +204,9 @@ class GamificationService {
       } else if (daysDifference == 1) {
         // Consecutive day
         final newStreak = currentStreak + 1;
-        final newLongest = newStreak > longestStreak ? newStreak : longestStreak;
+        final newLongest = newStreak > longestStreak
+            ? newStreak
+            : longestStreak;
 
         await userRef.update({
           'lastLoginDate': Timestamp.fromDate(today),
@@ -317,7 +326,11 @@ class GamificationService {
 
       // Reward coins
       if (achievement.coinReward > 0) {
-        await addCoins(userId, achievement.coinReward, 'Achievement: ${achievement.name}');
+        await addCoins(
+          userId,
+          achievement.coinReward,
+          'Achievement: ${achievement.name}',
+        );
       }
     } catch (e) {
       print('Error unlocking achievement: $e');
@@ -461,106 +474,106 @@ class Achievement {
 
   // Predefined achievements
   static Achievement firstTrade() => Achievement(
-        id: 'first_trade',
-        name: 'First Trade',
-        description: 'Complete your first successful trade',
-        icon: '🎯',
-        coinReward: 25,
-      );
+    id: 'first_trade',
+    name: 'First Trade',
+    description: 'Complete your first successful trade',
+    icon: '🎯',
+    coinReward: 25,
+  );
 
   static Achievement tenTrades() => Achievement(
-        id: 'ten_trades',
-        name: '10 Trades',
-        description: 'Complete 10 successful trades',
-        icon: '⭐',
-        coinReward: 50,
-      );
+    id: 'ten_trades',
+    name: '10 Trades',
+    description: 'Complete 10 successful trades',
+    icon: '⭐',
+    coinReward: 50,
+  );
 
   static Achievement fiftyTrades() => Achievement(
-        id: 'fifty_trades',
-        name: '50 Trades',
-        description: 'Complete 50 successful trades',
-        icon: '🔥',
-        coinReward: 100,
-      );
+    id: 'fifty_trades',
+    name: '50 Trades',
+    description: 'Complete 50 successful trades',
+    icon: '🔥',
+    coinReward: 100,
+  );
 
   static Achievement hundredTrades() => Achievement(
-        id: 'hundred_trades',
-        name: '100 Trades',
-        description: 'Complete 100 successful trades',
-        icon: '👑',
-        coinReward: 250,
-      );
+    id: 'hundred_trades',
+    name: '100 Trades',
+    description: 'Complete 100 successful trades',
+    icon: '👑',
+    coinReward: 250,
+  );
 
   static Achievement fiveListings() => Achievement(
-        id: 'five_listings',
-        name: '5 Listings',
-        description: 'List 5 items for trade',
-        icon: '📦',
-        coinReward: 20,
-      );
+    id: 'five_listings',
+    name: '5 Listings',
+    description: 'List 5 items for trade',
+    icon: '📦',
+    coinReward: 20,
+  );
 
   static Achievement twentyListings() => Achievement(
-        id: 'twenty_listings',
-        name: '20 Listings',
-        description: 'List 20 items for trade',
-        icon: '📚',
-        coinReward: 50,
-      );
+    id: 'twenty_listings',
+    name: '20 Listings',
+    description: 'List 20 items for trade',
+    icon: '📚',
+    coinReward: 50,
+  );
 
   static Achievement weekStreak() => Achievement(
-        id: 'week_streak',
-        name: 'Week Streak',
-        description: 'Log in for 7 consecutive days',
-        icon: '🔥',
-        coinReward: 50,
-      );
+    id: 'week_streak',
+    name: 'Week Streak',
+    description: 'Log in for 7 consecutive days',
+    icon: '🔥',
+    coinReward: 50,
+  );
 
   static Achievement monthStreak() => Achievement(
-        id: 'month_streak',
-        name: 'Month Streak',
-        description: 'Log in for 30 consecutive days',
-        icon: '💎',
-        coinReward: 200,
-      );
+    id: 'month_streak',
+    name: 'Month Streak',
+    description: 'Log in for 30 consecutive days',
+    icon: '💎',
+    coinReward: 200,
+  );
 
   static Achievement hundredDayStreak() => Achievement(
-        id: 'hundred_day_streak',
-        name: '100 Day Streak',
-        description: 'Log in for 100 consecutive days',
-        icon: '🏆',
-        coinReward: 1000,
-      );
+    id: 'hundred_day_streak',
+    name: '100 Day Streak',
+    description: 'Log in for 100 consecutive days',
+    icon: '🏆',
+    coinReward: 1000,
+  );
 
   static Achievement highRating() => Achievement(
-        id: 'high_rating',
-        name: 'Highly Rated',
-        description: 'Maintain 4.5+ star rating with 10+ trades',
-        icon: '⭐',
-        coinReward: 75,
-      );
+    id: 'high_rating',
+    name: 'Highly Rated',
+    description: 'Maintain 4.5+ star rating with 10+ trades',
+    icon: '⭐',
+    coinReward: 75,
+  );
 
   static Achievement perfectRating() => Achievement(
-        id: 'perfect_rating',
-        name: 'Perfect Rating',
-        description: 'Maintain 5.0 star rating with 20+ trades',
-        icon: '🌟',
-        coinReward: 150,
-      );
+    id: 'perfect_rating',
+    name: 'Perfect Rating',
+    description: 'Maintain 5.0 star rating with 20+ trades',
+    icon: '🌟',
+    coinReward: 150,
+  );
 
   static Achievement thousandCoins() => Achievement(
-        id: 'thousand_coins',
-        name: '1,000 Coins',
-        description: 'Accumulate 1,000 Barter Coins',
-        icon: '🪙',
-        coinReward: 100,
-      );
+    id: 'thousand_coins',
+    name: '1,000 Coins',
+    description: 'Accumulate 1,000 Barter Coins',
+    icon: '🪙',
+    coinReward: 100,
+  );
 
   static Achievement fiveThousandCoins() => Achievement(
-        id: 'five_thousand_coins',
-        name: '5,000 Coins',
-        description: 'Accumulate 5,000 Barter Coins',
-        icon: '💰',
-        coinReward: 500,
-      );
+    id: 'five_thousand_coins',
+    name: '5,000 Coins',
+    description: 'Accumulate 5,000 Barter Coins',
+    icon: '💰',
+    coinReward: 500,
+  );
 }

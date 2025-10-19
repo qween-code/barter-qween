@@ -4,7 +4,7 @@ import '../../../domain/entities/item_entity.dart';
 import '../items/item_card_widget.dart';
 
 /// 🌟 WORLD-CLASS ITEMS GRID
-/// 
+///
 /// Features:
 /// - Responsive grid layout (2-4 columns)
 /// - Modern item cards with quick actions
@@ -73,28 +73,46 @@ class _WorldClassItemsGridState extends State<WorldClassItemsGrid> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = _calculateCrossAxisCount(screenWidth);
+    const cardAspectRatio = 0.64;
 
-    return GridView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: WorldClassDesignSystem.spacingM,
-        mainAxisSpacing: WorldClassDesignSystem.spacingM,
-        childAspectRatio: 0.7, // Adjusted for better card proportions
-      ),
-      itemCount: widget.items.length + (_isLoadingMore || widget.showLoadingIndicator ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == widget.items.length) {
-          return _buildLoadingIndicator();
-        }
-        
-        final item = widget.items[index];
-        return ItemCardWidget(
-          item: item,
-          onTap: () => widget.onItemTap(item),
-          showFavoriteButton: true,
-          enableLongPressPreview: true,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final horizontalPadding = WorldClassDesignSystem.spacingM * 2;
+        final spacing = WorldClassDesignSystem.spacingM;
+        final availableWidth = (constraints.maxWidth - horizontalPadding).clamp(
+          0.0,
+          double.infinity,
+        );
+        final itemWidth = crossAxisCount > 0
+            ? (availableWidth - (crossAxisCount - 1) * spacing) / crossAxisCount
+            : availableWidth;
+        final itemHeight = itemWidth / cardAspectRatio;
+
+        return GridView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(WorldClassDesignSystem.spacingM),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: spacing,
+            mainAxisSpacing: spacing,
+            mainAxisExtent: itemHeight,
+          ),
+          itemCount:
+              widget.items.length +
+              (_isLoadingMore || widget.showLoadingIndicator ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == widget.items.length) {
+              return _buildLoadingIndicator();
+            }
+
+            final item = widget.items[index];
+            return ItemCardWidget(
+              item: item,
+              onTap: () => widget.onItemTap(item),
+              showFavoriteButton: true,
+              enableLongPressPreview: true,
+            );
+          },
         );
       },
     );
@@ -116,9 +134,7 @@ class _WorldClassItemsGridState extends State<WorldClassItemsGrid> {
   Widget _buildLoadingIndicator() {
     return Container(
       decoration: WorldClassDesignSystem.cardDecoration,
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: const Center(child: CircularProgressIndicator()),
     );
   }
 

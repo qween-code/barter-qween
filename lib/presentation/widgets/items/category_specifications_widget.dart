@@ -56,7 +56,9 @@ class _CategorySpecificationsWidgetState
   @override
   Widget build(BuildContext context) {
     final specs = ItemSpecifications.getSpecsForCategory(widget.category);
-    final requiredSpecs = ItemSpecifications.getRequiredSpecsForCategory(widget.category);
+    final requiredSpecs = ItemSpecifications.getRequiredSpecsForCategory(
+      widget.category,
+    );
 
     if (specs.isEmpty) {
       return const SizedBox.shrink();
@@ -76,17 +78,17 @@ class _CategorySpecificationsWidgetState
                 Text(
                   'Ürün Özellikleri',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 4),
             Text(
               'Ürününüz hakkında daha fazla bilgi verin',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
             ...specs.entries.map((entry) {
@@ -96,7 +98,7 @@ class _CategorySpecificationsWidgetState
                 entry.value,
                 isRequired: isRequired,
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -177,7 +179,9 @@ class _CategorySpecificationsWidgetState
           filled: true,
           fillColor: isRequired ? Colors.blue.withOpacity(0.05) : null,
         ),
-        maxLines: key.contains('description') || key.contains('instructions') ? 3 : 1,
+        maxLines: key.contains('description') || key.contains('instructions')
+            ? 3
+            : 1,
       ),
     );
   }
@@ -199,14 +203,11 @@ class _CategorySpecificationsWidgetState
           fillColor: isRequired ? Colors.blue.withOpacity(0.05) : null,
         ),
         items: [
-          const DropdownMenuItem<String>(
-            value: null,
-            child: Text('Seçiniz'),
+          const DropdownMenuItem<String>(value: null, child: Text('Seçiniz')),
+          ...options.map(
+            (option) =>
+                DropdownMenuItem<String>(value: option, child: Text(option)),
           ),
-          ...options.map((option) => DropdownMenuItem<String>(
-                value: option,
-                child: Text(option),
-              )),
         ],
         onChanged: (value) {
           setState(() {
@@ -221,7 +222,11 @@ class _CategorySpecificationsWidgetState
     );
   }
 
-  Widget _buildBooleanField(String key, String label, {required bool isRequired}) {
+  Widget _buildBooleanField(
+    String key,
+    String label, {
+    required bool isRequired,
+  }) {
     final value = _specifications[key];
     final boolValue = value == true || value == 'true' || value == 'yes';
 
@@ -304,7 +309,9 @@ class SpecificationsDisplayWidget extends StatelessWidget {
     }
 
     final specs = ItemSpecifications.getSpecsForCategory(category);
-    final requiredSpecs = ItemSpecifications.getRequiredSpecsForCategory(category);
+    final requiredSpecs = ItemSpecifications.getRequiredSpecsForCategory(
+      category,
+    );
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -320,14 +327,16 @@ class SpecificationsDisplayWidget extends StatelessWidget {
                 Text(
                   'Ürün Özellikleri',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             const Divider(height: 24),
             ...specifications.entries.map((entry) {
-              final specLabel = specs[entry.key] ?? ItemSpecifications.getDisplayName(entry.key);
+              final specLabel =
+                  specs[entry.key] ??
+                  ItemSpecifications.getDisplayName(entry.key);
               final isRequired = requiredSpecs.contains(entry.key);
               final value = entry.value.toString();
 
@@ -352,15 +361,13 @@ class SpecificationsDisplayWidget extends StatelessWidget {
                       flex: 3,
                       child: Text(
                         _formatValue(entry.key, value),
-                        style: const TextStyle(
-                          fontSize: 15,
-                        ),
+                        style: const TextStyle(fontSize: 15),
                       ),
                     ),
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -369,13 +376,15 @@ class SpecificationsDisplayWidget extends StatelessWidget {
 
   String _formatValue(String key, String value) {
     // Boolean fields
-    if (key.contains('required') || key.contains('certified') || 
-        key.contains('authenticated') || key.contains('includes') || 
+    if (key.contains('required') ||
+        key.contains('certified') ||
+        key.contains('authenticated') ||
+        key.contains('includes') ||
         key.contains('opened')) {
       if (value == 'true' || value == 'yes') return 'Evet';
       if (value == 'false' || value == 'no') return 'Hayır';
     }
-    
+
     return value;
   }
 }

@@ -14,7 +14,7 @@ class NegotiationRepositoryImpl implements NegotiationRepository {
   final FirebaseFirestore _firestore;
 
   NegotiationRepositoryImpl({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   @override
   Future<Either<Failure, NegotiationEntity>> createNegotiation(

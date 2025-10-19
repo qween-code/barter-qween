@@ -10,12 +10,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:barter_qween/core/di/injection.dart' as _i328;
+import 'package:barter_qween/core/services/admin_service.dart' as _i384;
 import 'package:barter_qween/core/services/analytics_service.dart' as _i628;
 import 'package:barter_qween/core/services/data_service.dart' as _i450;
-import 'package:barter_qween/core/services/fcm_service.dart' as _i1066;
 import 'package:barter_qween/core/services/gamification_service.dart' as _i754;
 import 'package:barter_qween/core/services/image_service.dart' as _i89;
 import 'package:barter_qween/core/services/map_service.dart' as _i728;
+import 'package:barter_qween/core/services/map_service_clean.dart' as _i631;
 import 'package:barter_qween/core/services/recommendation_service.dart'
     as _i729;
 import 'package:barter_qween/data/datasources/auth_remote_datasource.dart'
@@ -142,6 +143,8 @@ import 'package:barter_qween/domain/usecases/items/get_all_items_usecase.dart'
     as _i163;
 import 'package:barter_qween/domain/usecases/items/get_recent_items_usecase.dart'
     as _i367;
+import 'package:barter_qween/domain/usecases/items/get_recommended_items_usecase.dart'
+    as _i405;
 import 'package:barter_qween/domain/usecases/items/get_trending_items_usecase.dart'
     as _i1070;
 import 'package:barter_qween/domain/usecases/items/get_user_items_usecase.dart'
@@ -150,9 +153,15 @@ import 'package:barter_qween/domain/usecases/items/update_item_usecase.dart'
     as _i768;
 import 'package:barter_qween/domain/usecases/notifications/get_notifications_usecase.dart'
     as _i983;
+import 'package:barter_qween/domain/usecases/profile/check_follow_status_usecase.dart'
+    as _i137;
+import 'package:barter_qween/domain/usecases/profile/follow_user_usecase.dart'
+    as _i1006;
 import 'package:barter_qween/domain/usecases/profile/get_user_profile_usecase.dart'
     as _i680;
 import 'package:barter_qween/domain/usecases/profile/get_user_stats_usecase.dart'
+    as _i566;
+import 'package:barter_qween/domain/usecases/profile/unfollow_user_usecase.dart'
     as _i566;
 import 'package:barter_qween/domain/usecases/profile/update_profile_usecase.dart'
     as _i303;
@@ -252,7 +261,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i754.GamificationService>(
       () => firebaseInjectableModule.gamificationService,
     );
+    gh.lazySingleton<_i384.AdminService>(() => _i384.AdminService());
     gh.lazySingleton<_i728.MapService>(() => _i728.MapService());
+    gh.lazySingleton<_i631.MapService>(() => _i631.MapService());
     gh.lazySingleton<_i396.AcceptCounterOfferUsecase>(
       () => _i396.AcceptCounterOfferUsecase(),
     );
@@ -298,12 +309,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i728.MapService>(),
       ),
     );
-    gh.lazySingleton<_i1066.FCMService>(
-      () => _i1066.FCMService(
-        gh<_i892.FirebaseMessaging>(),
-        gh<_i163.FlutterLocalNotificationsPlugin>(),
-      ),
-    );
     gh.lazySingleton<_i476.GetUserFavoritesUseCase>(
       () => _i476.GetUserFavoritesUseCase(
         gh<_i933.FavoriteRepository>(),
@@ -346,6 +351,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1020.ChatRemoteDataSource>(
       () => _i1020.ChatRemoteDataSource(gh<_i974.FirebaseFirestore>()),
+    );
+    gh.factory<_i450.DataService>(
+      () => _i450.DataService(gh<_i974.FirebaseFirestore>()),
     );
     gh.lazySingleton<_i573.BarterRepository>(
       () =>
@@ -411,12 +419,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1051.GetItemUsecase>(
       () => _i1051.GetItemUsecase(gh<_i754.ItemRepository>()),
     );
-    gh.factory<_i450.DataService>(
-      () => _i450.DataService(
-        gh<_i974.FirebaseFirestore>(),
-        gh<_i59.FirebaseAuth>(),
-      ),
-    );
     gh.lazySingleton<_i970.NegotiationRepository>(
       () => _i687.NegotiationRepositoryImpl(
         firestore: gh<_i974.FirebaseFirestore>(),
@@ -466,6 +468,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i367.GetRecentItemsUseCase>(
       () => _i367.GetRecentItemsUseCase(gh<_i754.ItemRepository>()),
+    );
+    gh.lazySingleton<_i405.GetRecommendedItemsUseCase>(
+      () => _i405.GetRecommendedItemsUseCase(gh<_i754.ItemRepository>()),
     );
     gh.lazySingleton<_i1070.GetTrendingItemsUseCase>(
       () => _i1070.GetTrendingItemsUseCase(gh<_i754.ItemRepository>()),
@@ -521,17 +526,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i374.RatingRepository>(
       () => _i761.RatingRepositoryImpl(gh<_i579.RatingRemoteDataSource>()),
     );
-    gh.factory<_i492.BarterMatchCubit>(
-      () => _i492.BarterMatchCubit(
-        gh<_i1038.FindBarterMatchesUsecase>(),
-        gh<_i864.CalculateMatchScoreUsecase>(),
-      ),
+    gh.factory<_i137.CheckFollowStatusUseCase>(
+      () => _i137.CheckFollowStatusUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i1006.FollowUserUseCase>(
+      () => _i1006.FollowUserUseCase(gh<_i1043.ProfileRepository>()),
     );
     gh.factory<_i680.GetUserProfileUseCase>(
       () => _i680.GetUserProfileUseCase(gh<_i1043.ProfileRepository>()),
     );
     gh.factory<_i566.GetUserStatsUseCase>(
       () => _i566.GetUserStatsUseCase(gh<_i1043.ProfileRepository>()),
+    );
+    gh.factory<_i566.UnfollowUserUseCase>(
+      () => _i566.UnfollowUserUseCase(gh<_i1043.ProfileRepository>()),
     );
     gh.factory<_i303.UpdateProfileUseCase>(
       () => _i303.UpdateProfileUseCase(gh<_i1043.ProfileRepository>()),
@@ -594,6 +602,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i765.GetBarterMatchesUsecase>(),
         gh<_i790.DismissBarterMatchUsecase>(),
       ),
+    );
+    gh.factory<_i492.BarterMatchCubit>(
+      () => _i492.BarterMatchCubit(gh<_i1038.FindBarterMatchesUsecase>()),
     );
     gh.factory<_i525.GetSearchSuggestionsUseCase>(
       () => _i525.GetSearchSuggestionsUseCase(gh<_i754.ItemRepository>()),

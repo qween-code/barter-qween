@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'item_entity.dart';
 
 /// Barter Match Entity
-/// 
+///
 /// Represents a potential barter match between two items.
 /// Contains match scoring and compatibility analysis.
 class BarterMatchEntity extends Equatable {
@@ -118,6 +117,7 @@ class BarterMatchEntity extends Equatable {
     String? sourceUserId,
     String? targetUserId,
     double? matchScore,
+    double? compatibilityScore,
     double? categoryScore,
     double? priceScore,
     double? locationScore,
@@ -177,36 +177,36 @@ class BarterMatchEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        sourceItemId,
-        targetItemId,
-        sourceUserId,
-        targetUserId,
-        matchScore,
-        compatibilityScore,
-        categoryScore,
-        priceScore,
-        locationScore,
-        trustScore,
-        conditionScore,
-        quality,
-        matchReasons,
-        concerns,
-        distanceKm,
-        locationDescription,
-        conditionsCompatible,
-        compatibilityNote,
-        suggestedCashDifferential,
-        cashDirection,
-        calculatedAt,
-        isSeen,
-        isDismissed,
-        seenAt,
-        dismissedAt,
-        viewCount,
-        wasOffered,
-        offerId,
-      ];
+    id,
+    sourceItemId,
+    targetItemId,
+    sourceUserId,
+    targetUserId,
+    matchScore,
+    compatibilityScore,
+    categoryScore,
+    priceScore,
+    locationScore,
+    trustScore,
+    conditionScore,
+    quality,
+    matchReasons,
+    concerns,
+    distanceKm,
+    locationDescription,
+    conditionsCompatible,
+    compatibilityNote,
+    suggestedCashDifferential,
+    cashDirection,
+    calculatedAt,
+    isSeen,
+    isDismissed,
+    seenAt,
+    dismissedAt,
+    viewCount,
+    wasOffered,
+    offerId,
+  ];
 
   @override
   String toString() {
@@ -304,10 +304,14 @@ extension BarterMatchEntityExtension on BarterMatchEntity {
         (e) => e.toString() == 'CashDirection.${json['cashDirection']}',
         orElse: () => CashDirection.none,
       ),
-      calculatedAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      calculatedAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
       isSeen: json['isSeen'] ?? false,
       isDismissed: json['isDismissed'] ?? false,
-      dismissedAt: json['dismissedAt'] != null ? DateTime.parse(json['dismissedAt']) : null,
+      dismissedAt: json['dismissedAt'] != null
+          ? DateTime.parse(json['dismissedAt'])
+          : null,
       offerId: json['offerId'],
     );
   }

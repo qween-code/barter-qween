@@ -4,7 +4,7 @@ import 'item_state.dart';
 import '../../../domain/entities/item_entity.dart';
 
 /// 🌟 WORLD-CLASS ITEM BLOC
-/// 
+///
 /// Features:
 /// - Item management
 /// - Loading states
@@ -24,11 +24,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     Emitter<ItemState> emit,
   ) async {
     emit(ItemLoading());
-    
+
     try {
       // TODO: Load featured items from Firebase
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Mock data for now
       final items = <ItemEntity>[];
       emit(FeaturedItemsLoaded(items: items));
@@ -42,11 +42,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     Emitter<ItemState> emit,
   ) async {
     emit(ItemLoading());
-    
+
     try {
       // TODO: Load recent items from Firebase
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Mock data for now
       final items = <ItemEntity>[];
       emit(RecentItemsLoaded(items: items));
@@ -60,11 +60,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     Emitter<ItemState> emit,
   ) async {
     emit(ItemLoading());
-    
+
     try {
       // TODO: Load trending items from Firebase
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Mock data for now
       final items = <ItemEntity>[];
       emit(TrendingItemsLoaded(items: items));
@@ -73,16 +73,13 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     }
   }
 
-  Future<void> _onLoadItem(
-    LoadItem event,
-    Emitter<ItemState> emit,
-  ) async {
+  Future<void> _onLoadItem(LoadItem event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
-    
+
     try {
       // TODO: Load specific item from Firebase
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Mock data for now
       emit(ItemError(message: 'Item not found'));
     } catch (e) {
@@ -95,11 +92,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     Emitter<ItemState> emit,
   ) async {
     emit(ItemLoading());
-    
+
     try {
       // TODO: Load all items from Firebase
       await Future.delayed(const Duration(seconds: 1));
-      
+
       // Mock data for now
       final items = <ItemEntity>[];
       emit(AllItemsLoaded(items: items));

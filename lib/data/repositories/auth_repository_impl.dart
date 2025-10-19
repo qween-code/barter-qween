@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../core/errors/exceptions.dart';
+import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -121,7 +121,9 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, String>> signInWithPhone(String phoneNumber) async {
     try {
-      final verificationId = await remoteDataSource.signInWithPhone(phoneNumber);
+      final verificationId = await remoteDataSource.signInWithPhone(
+        phoneNumber,
+      );
       return Right(verificationId);
     } on AuthException catch (e) {
       return Left(AuthFailure(e.message));

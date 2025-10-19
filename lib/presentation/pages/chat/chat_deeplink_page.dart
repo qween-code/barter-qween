@@ -5,17 +5,14 @@ import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
 import 'chat_detail_page.dart';
-import 'conversations_list_page.dart';
+import '../messages/world_class_messages_page.dart';
 
 /// Deep-link loader page for chat conversations
 /// Used when opening a specific conversation from a notification
 class ChatDeepLinkPage extends StatefulWidget {
   final String conversationId;
 
-  const ChatDeepLinkPage({
-    super.key,
-    required this.conversationId,
-  });
+  const ChatDeepLinkPage({super.key, required this.conversationId});
 
   @override
   State<ChatDeepLinkPage> createState() => _ChatDeepLinkPageState();
@@ -44,7 +41,8 @@ class _ChatDeepLinkPageState extends State<ChatDeepLinkPage> {
             // Navigate to the actual chat detail page
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => ChatDetailPage(conversation: state.conversation),
+                builder: (_) =>
+                    ChatDetailPage(conversation: state.conversation),
               ),
             );
           } else if (state is ChatError) {
@@ -56,34 +54,23 @@ class _ChatDeepLinkPageState extends State<ChatDeepLinkPage> {
               ),
             );
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<ChatBloc>(),
-                  child: const ConversationsListPage(),
-                ),
-              ),
+              MaterialPageRoute(builder: (_) => const WorldClassMessagesPage()),
             );
           }
         },
         builder: (context, state) {
           if (state is ChatLoading) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primary,
-              ),
+              child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
-          
+
           if (state is ChatError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red,
-                  ),
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
                     'Failed to load conversation',
@@ -100,10 +87,7 @@ class _ChatDeepLinkPageState extends State<ChatDeepLinkPage> {
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (_) => BlocProvider.value(
-                            value: context.read<ChatBloc>(),
-                            child: const ConversationsListPage(),
-                          ),
+                          builder: (_) => const WorldClassMessagesPage(),
                         ),
                       );
                     },
@@ -115,9 +99,7 @@ class _ChatDeepLinkPageState extends State<ChatDeepLinkPage> {
           }
 
           return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
+            child: CircularProgressIndicator(color: AppColors.primary),
           );
         },
       ),

@@ -28,7 +28,6 @@ class ItemMapView extends StatefulWidget {
 
 class _ItemMapViewState extends State<ItemMapView> {
   final MapService _mapService = MapService();
-  GoogleMapController? _mapController;
   Set<Marker> _markers = {};
 
   @override
@@ -62,9 +61,7 @@ class _ItemMapViewState extends State<ItemMapView> {
           markerId: const MarkerId('user'),
           position: LatLng(widget.userLatitude!, widget.userLongitude!),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(
-            title: 'Konumunuz',
-          ),
+          infoWindow: const InfoWindow(title: 'Konumunuz'),
         ),
       );
     }
@@ -86,8 +83,12 @@ class _ItemMapViewState extends State<ItemMapView> {
 
   Future<String?> _getDistanceText() async {
     if (!widget.showDistance) return null;
-    if (widget.item.latitude == null || widget.item.longitude == null) return null;
-    if (widget.userLatitude == null || widget.userLongitude == null) return null;
+    if (widget.item.latitude == null || widget.item.longitude == null) {
+      return null;
+    }
+    if (widget.userLatitude == null || widget.userLongitude == null) {
+      return null;
+    }
 
     // Calculate distance first, then format it
     final distance = await _mapService.calculateDistance(
@@ -135,10 +136,7 @@ class _ItemMapViewState extends State<ItemMapView> {
                   const SizedBox(width: 8),
                   const Text(
                     'Konum',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   if (distanceText != null) ...[
                     const Spacer(),
@@ -184,16 +182,13 @@ class _ItemMapViewState extends State<ItemMapView> {
                         zoom: 14,
                       ),
                       markers: _markers,
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                      },
                       mapType: MapType.normal,
                       myLocationEnabled: false,
                       myLocationButtonEnabled: false,
                       zoomControlsEnabled: false,
                       mapToolbarEnabled: false,
                     ),
-                    
+
                     // Tap to expand overlay
                     Positioned.fill(
                       child: Container(
@@ -232,11 +227,7 @@ class _ItemMapViewState extends State<ItemMapView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.place,
-                      size: 16,
-                      color: Colors.grey.shade600,
-                    ),
+                    Icon(Icons.place, size: 16, color: Colors.grey.shade600),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -255,7 +246,8 @@ class _ItemMapViewState extends State<ItemMapView> {
             ],
 
             // Meetup points (if enabled)
-            if (widget.showMeetupPoints && widget.item.preferredMeetupPoints != null) ...[
+            if (widget.showMeetupPoints &&
+                widget.item.preferredMeetupPoints != null) ...[
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -281,37 +273,42 @@ class _ItemMapViewState extends State<ItemMapView> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: widget.item.preferredMeetupPoints!.length,
-                      itemBuilder: (context, index) {
-                        final point = widget.item.preferredMeetupPoints![index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                size: 14,
-                                color: Colors.grey.shade600,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  point,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade700,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight: 200, // Limit height to prevent overflow
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: widget.item.preferredMeetupPoints!.length,
+                        itemBuilder: (context, index) {
+                          final point = widget.item.preferredMeetupPoints![index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: 14,
+                                  color: Colors.grey.shade600,
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    point,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -342,16 +339,12 @@ class FullMapView extends StatefulWidget {
 }
 
 class _FullMapViewState extends State<FullMapView> {
-  final MapService _mapService = MapService();
-  GoogleMapController? _mapController;
   Set<Marker> _markers = {};
-  List<dynamic> _safePlaces = []; // TODO: Use SafeMeetupPoint when available
 
   @override
   void initState() {
     super.initState();
     _initializeMarkers();
-    _loadSafePlaces();
   }
 
   void _initializeMarkers() {
@@ -379,19 +372,12 @@ class _FullMapViewState extends State<FullMapView> {
           markerId: const MarkerId('user'),
           position: LatLng(widget.userLatitude!, widget.userLongitude!),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(
-            title: 'Konumunuz',
-          ),
+          infoWindow: const InfoWindow(title: 'Konumunuz'),
         ),
       );
     }
 
     setState(() => _markers = markers);
-  }
-
-  void _loadSafePlaces() {
-    // TODO: Load safe meetup places from service
-    setState(() => _safePlaces = []);
   }
 
   LatLng _getCenterPosition() {
@@ -424,9 +410,6 @@ class _FullMapViewState extends State<FullMapView> {
           zoom: 14,
         ),
         markers: _markers,
-        onMapCreated: (GoogleMapController controller) {
-          _mapController = controller;
-        },
         mapType: MapType.normal,
         myLocationEnabled: true,
         myLocationButtonEnabled: true,

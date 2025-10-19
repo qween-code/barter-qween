@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS SORT OPTIONS
-/// 
+///
 /// Features:
 /// - Sort dropdown
 /// - Sort options (relevance, price, distance, newest)
@@ -29,7 +29,9 @@ class WorldClassSortOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+      margin: const EdgeInsets.symmetric(
+        horizontal: WorldClassDesignSystem.spacingM,
+      ),
       child: Row(
         children: [
           Icon(
@@ -37,18 +39,18 @@ class WorldClassSortOptions extends StatelessWidget {
             size: WorldClassDesignSystem.iconS,
             color: WorldClassDesignSystem.secondaryText,
           ),
-          
+
           const SizedBox(width: WorldClassDesignSystem.spacingS),
-          
+
           Text(
             'Sort by:',
             style: WorldClassDesignSystem.labelMedium.copyWith(
               color: WorldClassDesignSystem.secondaryText,
             ),
           ),
-          
+
           const SizedBox(width: WorldClassDesignSystem.spacingS),
-          
+
           Expanded(
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(

@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import '../../../domain/entities/barter_match_entity.dart';
 import '../../../domain/usecases/find_barter_matches_usecase.dart';
-import '../../../domain/usecases/calculate_match_score_usecase.dart';
 
 part 'barter_match_state.dart';
 
@@ -11,12 +10,8 @@ part 'barter_match_state.dart';
 @injectable
 class BarterMatchCubit extends Cubit<BarterMatchState> {
   final FindBarterMatchesUsecase _findMatchesUsecase;
-  final CalculateMatchScoreUsecase _calculateScoreUsecase;
 
-  BarterMatchCubit(
-    this._findMatchesUsecase,
-    this._calculateScoreUsecase,
-  ) : super(BarterMatchInitial());
+  BarterMatchCubit(this._findMatchesUsecase) : super(BarterMatchInitial());
 
   /// Find matches for an item
   Future<void> findMatches({
@@ -27,26 +22,18 @@ class BarterMatchCubit extends Cubit<BarterMatchState> {
     emit(BarterMatchLoading());
 
     final result = await _findMatchesUsecase(
-      FindMatchesParams(
-        itemId: itemId,
-        limit: limit,
-        minScore: minScore,
-      ),
+      FindMatchesParams(itemId: itemId, limit: limit, minScore: minScore),
     );
 
-    result.fold(
-      (failure) => emit(BarterMatchError(failure.message)),
-      (matches) {
-        if (matches.isEmpty) {
-          emit(const BarterMatchEmpty('Henüz uygun eşleşme bulunamadı'));
-        } else {
-          emit(BarterMatchLoaded(
-            matches: matches,
-            itemId: itemId,
-          ));
-        }
-      },
-    );
+    result.fold((failure) => emit(BarterMatchError(failure.message)), (
+      matches,
+    ) {
+      if (matches.isEmpty) {
+        emit(const BarterMatchEmpty('Henüz uygun eşleşme bulunamadı'));
+      } else {
+        emit(BarterMatchLoaded(matches: matches, itemId: itemId));
+      }
+    });
   }
 
   /// Refresh matches
@@ -86,10 +73,7 @@ class BarterMatchCubit extends Cubit<BarterMatchState> {
     if (currentState is BarterMatchLoaded) {
       final updatedMatches = currentState.matches.map((match) {
         if (match.id == matchId) {
-          return match.copyWith(
-            isDismissed: true,
-            dismissedAt: DateTime.now(),
-          );
+          return match.copyWith(isDismissed: true, dismissedAt: DateTime.now());
         }
         return match;
       }).toList();
@@ -102,9 +86,7 @@ class BarterMatchCubit extends Cubit<BarterMatchState> {
   void filterByQuality(MatchQuality minQuality) {
     final currentState = state;
     if (currentState is BarterMatchLoaded) {
-      emit(currentState.copyWith(
-        filteredQuality: minQuality,
-      ));
+      emit(currentState.copyWith(filteredQuality: minQuality));
     }
   }
 
@@ -112,15 +94,11 @@ class BarterMatchCubit extends Cubit<BarterMatchState> {
   List<BarterMatchEntity> getFilteredMatches() {
     final currentState = state;
     if (currentState is BarterMatchLoaded) {
-      var matches = currentState.matches
-          .where((m) => !m.isDismissed)
-          .toList();
+      var matches = currentState.matches.where((m) => !m.isDismissed).toList();
 
       if (currentState.filteredQuality != null) {
         final minScore = _getMinScoreForQuality(currentState.filteredQuality!);
-        matches = matches
-            .where((m) => m.matchScore >= minScore)
-            .toList();
+        matches = matches.where((m) => m.matchScore >= minScore).toList();
       }
 
       return matches;

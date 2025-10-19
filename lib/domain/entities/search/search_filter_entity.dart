@@ -142,41 +142,32 @@ class SearchFilterEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        categories,
-        subcategories,
-        conditions,
-        colors,
-        statuses,
-        minPrice,
-        maxPrice,
-        cities,
-        radiusKm,
-        centerLocation,
-        startDate,
-        endDate,
-        tags,
-        specifications,
-        sortBy,
-        sortDirection,
-        limit,
-        startAfter,
-      ];
+    categories,
+    subcategories,
+    conditions,
+    colors,
+    statuses,
+    minPrice,
+    maxPrice,
+    cities,
+    radiusKm,
+    centerLocation,
+    startDate,
+    endDate,
+    tags,
+    specifications,
+    sortBy,
+    sortDirection,
+    limit,
+    startAfter,
+  ];
 }
 
 /// Sort options for search results
-enum SortOption {
-  createdAt,
-  price,
-  viewCount,
-  favoriteCount,
-  title,
-}
+enum SortOption { createdAt, price, viewCount, favoriteCount, title }
 
 /// Sort direction
-enum SortDirection {
-  ascending,
-  descending,
-}
+enum SortDirection { ascending, descending }
 
 extension SortOptionExtension on SortOption {
   String get displayName {

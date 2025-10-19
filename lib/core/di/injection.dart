@@ -32,7 +32,8 @@ abstract class FirebaseInjectableModule {
   GoogleSignIn get googleSignIn => GoogleSignIn(
     scopes: ['email', 'profile'],
     // Web client ID from google-services.json for server-side authentication
-    serverClientId: '229577295263-jmk1pspkjong8olrdet0e1tkhhinfral.apps.googleusercontent.com',
+    serverClientId:
+        '229577295263-jmk1pspkjong8olrdet0e1tkhhinfral.apps.googleusercontent.com',
   );
 
   @lazySingleton
@@ -46,14 +47,13 @@ abstract class FirebaseInjectableModule {
   FirebaseAnalytics get analytics => FirebaseAnalytics.instance;
 
   @lazySingleton
-  FirebaseAnalyticsObserver get analyticsObserver => FirebaseAnalyticsObserver(analytics: analytics);
+  FirebaseAnalyticsObserver get analyticsObserver =>
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   @preResolve
   Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
 
   @lazySingleton
-  GamificationService get gamificationService => GamificationService(
-    firestore: firestore,
-    auth: firebaseAuth,
-  );
+  GamificationService get gamificationService =>
+      GamificationService(firestore: firestore);
 }

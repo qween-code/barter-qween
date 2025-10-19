@@ -20,17 +20,18 @@ class SendTradeOfferUseCase {
         offer.requestedItemId,
       );
 
-      return checkResult.fold(
-        (failure) => Left(failure),
-        (exists) async {
-          if (exists) {
-            return Left(ValidationFailure('A trade offer already exists for these items'));
-          }
-          return await repository.sendTradeOffer(offer);
-        },
-      );
+      return checkResult.fold((failure) => Left(failure), (exists) async {
+        if (exists) {
+          return Left(
+            ValidationFailure('A trade offer already exists for these items'),
+          );
+        }
+        return await repository.sendTradeOffer(offer);
+      });
     } catch (e) {
-      return Left(UnknownFailure('Failed to send trade offer: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to send trade offer: ${e.toString()}'),
+      );
     }
   }
 }
@@ -49,7 +50,9 @@ class AcceptTradeOfferUseCase {
     try {
       return await repository.acceptTradeOffer(offerId, responseMessage);
     } catch (e) {
-      return Left(UnknownFailure('Failed to accept trade offer: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to accept trade offer: ${e.toString()}'),
+      );
     }
   }
 }
@@ -68,7 +71,9 @@ class RejectTradeOfferUseCase {
     try {
       return await repository.rejectTradeOffer(offerId, rejectionReason);
     } catch (e) {
-      return Left(UnknownFailure('Failed to reject trade offer: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to reject trade offer: ${e.toString()}'),
+      );
     }
   }
 }
@@ -84,7 +89,9 @@ class CancelTradeOfferUseCase {
     try {
       return await repository.cancelTradeOffer(offerId);
     } catch (e) {
-      return Left(UnknownFailure('Failed to cancel trade offer: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to cancel trade offer: ${e.toString()}'),
+      );
     }
   }
 }
@@ -132,7 +139,9 @@ class GetUserTradeOffersUseCase {
     try {
       return await repository.getUserTradeOffers(userId);
     } catch (e) {
-      return Left(UnknownFailure('Failed to get trade offers: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to get trade offers: ${e.toString()}'),
+      );
     }
   }
 }
@@ -148,7 +157,9 @@ class GetSentTradeOffersUseCase {
     try {
       return await repository.getSentTradeOffers(userId);
     } catch (e) {
-      return Left(UnknownFailure('Failed to get sent trade offers: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to get sent trade offers: ${e.toString()}'),
+      );
     }
   }
 }
@@ -164,7 +175,9 @@ class GetReceivedTradeOffersUseCase {
     try {
       return await repository.getReceivedTradeOffers(userId);
     } catch (e) {
-      return Left(UnknownFailure('Failed to get received trade offers: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to get received trade offers: ${e.toString()}'),
+      );
     }
   }
 }
@@ -183,7 +196,9 @@ class GetTradeOffersByStatusUseCase {
     try {
       return await repository.getTradeOffersByStatus(userId, status);
     } catch (e) {
-      return Left(UnknownFailure('Failed to get trade offers by status: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to get trade offers by status: ${e.toString()}'),
+      );
     }
   }
 }
@@ -199,7 +214,9 @@ class GetItemTradeHistoryUseCase {
     try {
       return await repository.getItemTradeHistory(itemId);
     } catch (e) {
-      return Left(UnknownFailure('Failed to get item trade history: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to get item trade history: ${e.toString()}'),
+      );
     }
   }
 }
@@ -215,7 +232,9 @@ class GetPendingReceivedCountUseCase {
     try {
       return await repository.getPendingReceivedCount(userId);
     } catch (e) {
-      return Left(UnknownFailure('Failed to get pending trade count: ${e.toString()}'));
+      return Left(
+        UnknownFailure('Failed to get pending trade count: ${e.toString()}'),
+      );
     }
   }
 }

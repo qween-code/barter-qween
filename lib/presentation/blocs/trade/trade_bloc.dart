@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import '../../../core/di/injection.dart';
+import '../../../core/services/analytics_service.dart';
 import '../../../domain/usecases/trade/trade_usecases.dart';
 import 'trade_event.dart';
 import 'trade_state.dart';
@@ -18,6 +20,7 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
   final GetTradeOffersByStatusUseCase getTradeOffersByStatusUseCase;
   final GetItemTradeHistoryUseCase getItemTradeHistoryUseCase;
   final GetPendingReceivedCountUseCase getPendingReceivedCountUseCase;
+  final AnalyticsService _analyticsService = getIt<AnalyticsService>();
 
   TradeBloc({
     required this.sendTradeOfferUseCase,
@@ -54,9 +57,17 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
   ) async {
     emit(const TradeLoading());
     final result = await sendTradeOfferUseCase(event.offer);
-    result.fold(
-      (failure) => emit(TradeError(failure.message)),
-      (offer) => emit(TradeOfferSent(offer)),
+    await result.fold(
+      (failure) async {
+        emit(TradeError(failure.message));
+      },
+      (offer) async {
+        await _analyticsService.logTradeOfferSent(
+          tradeId: offer.id,
+          itemId: offer.offeredItemId,
+        );
+        emit(TradeOfferSent(offer));
+      },
     );
   }
 
@@ -65,10 +76,18 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     Emitter<TradeState> emit,
   ) async {
     emit(const TradeActionInProgress('accepting'));
-    final result = await acceptTradeOfferUseCase(event.offerId, event.responseMessage);
-    result.fold(
-      (failure) => emit(TradeError(failure.message)),
-      (offer) => emit(TradeOfferAccepted(offer)),
+    final result = await acceptTradeOfferUseCase(
+      event.offerId,
+      event.responseMessage,
+    );
+    await result.fold(
+      (failure) async {
+        emit(TradeError(failure.message));
+      },
+      (offer) async {
+        await _analyticsService.logTradeAccepted(tradeId: offer.id);
+        emit(TradeOfferAccepted(offer));
+      },
     );
   }
 
@@ -77,10 +96,18 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     Emitter<TradeState> emit,
   ) async {
     emit(const TradeActionInProgress('rejecting'));
-    final result = await rejectTradeOfferUseCase(event.offerId, event.rejectionReason);
-    result.fold(
-      (failure) => emit(TradeError(failure.message)),
-      (offer) => emit(TradeOfferRejected(offer)),
+    final result = await rejectTradeOfferUseCase(
+      event.offerId,
+      event.rejectionReason,
+    );
+    await result.fold(
+      (failure) async {
+        emit(TradeError(failure.message));
+      },
+      (offer) async {
+        await _analyticsService.logTradeRejected(tradeId: offer.id);
+        emit(TradeOfferRejected(offer));
+      },
     );
   }
 
@@ -102,9 +129,21 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
   ) async {
     emit(const TradeActionInProgress('completing'));
     final result = await completeTradeUseCase(event.offerId);
-    result.fold(
-      (failure) => emit(TradeError(failure.message)),
-      (offer) => emit(TradeCompleted(offer)),
+    await result.fold(
+      (failure) async {
+        emit(TradeError(failure.message));
+      },
+      (offer) async {
+        await _analyticsService.logTradeCompleted(
+          tradeId: offer.id,
+          initiatorId: offer.fromUserId,
+          receiverId: offer.toUserId,
+          initiatorItemId: offer.offeredItemId,
+          receiverItemId: offer.requestedItemId,
+          cashDifferential: offer.cashDifferential,
+        );
+        emit(TradeCompleted(offer));
+      },
     );
   }
 
@@ -126,7 +165,7 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
   ) async {
     emit(const TradeLoading());
     print('🔄 Loading trade offers for user: ${event.userId}');
-    
+
     final result = await getUserTradeOffersUseCase(event.userId);
     result.fold(
       (failure) {
@@ -148,7 +187,8 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     final result = await getSentTradeOffersUseCase(event.userId);
     result.fold(
       (failure) => emit(TradeError(failure.message)),
-      (offers) => emit(FilteredTradeOffersLoaded(offers, TradeOfferFilter.sent)),
+      (offers) =>
+          emit(FilteredTradeOffersLoaded(offers, TradeOfferFilter.sent)),
     );
   }
 
@@ -160,7 +200,8 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     final result = await getReceivedTradeOffersUseCase(event.userId);
     result.fold(
       (failure) => emit(TradeError(failure.message)),
-      (offers) => emit(FilteredTradeOffersLoaded(offers, TradeOfferFilter.received)),
+      (offers) =>
+          emit(FilteredTradeOffersLoaded(offers, TradeOfferFilter.received)),
     );
   }
 
@@ -169,14 +210,14 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     Emitter<TradeState> emit,
   ) async {
     emit(const TradeLoading());
-    final result = await getTradeOffersByStatusUseCase(event.userId, event.status);
-    result.fold(
-      (failure) => emit(TradeError(failure.message)),
-      (offers) {
-        final filter = _mapStatusToFilter(event.status);
-        emit(FilteredTradeOffersLoaded(offers, filter));
-      },
+    final result = await getTradeOffersByStatusUseCase(
+      event.userId,
+      event.status,
     );
+    result.fold((failure) => emit(TradeError(failure.message)), (offers) {
+      final filter = _mapStatusToFilter(event.status);
+      emit(FilteredTradeOffersLoaded(offers, filter));
+    });
   }
 
   Future<void> _onLoadItemTradeHistory(

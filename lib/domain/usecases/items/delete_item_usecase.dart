@@ -12,9 +12,9 @@ class DeleteItemUseCase {
   DeleteItemUseCase(this.repository);
 
   /// Execute the use case
-  /// 
-  /// Soft deletes an item by updating its status to 'deleted'
-  /// Returns Either<Failure, void>
+  ///
+  /// Soft deletes an item by updating its status to 'deleted'.
+  /// Returns an Either containing a Failure or void on success.
   Future<Either<Failure, void>> call(String itemId) async {
     try {
       return await repository.deleteItem(itemId);

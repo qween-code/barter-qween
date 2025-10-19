@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// 🌟 WORLD-CLASS AUTH EVENTS
-/// 
+///
 /// Features:
 /// - Login events
 /// - Social login events

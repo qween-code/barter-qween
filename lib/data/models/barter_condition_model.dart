@@ -21,8 +21,9 @@ class BarterConditionModel extends BarterConditionEntity {
       id: data['id'] as String? ?? '',
       type: _parseBarterConditionType(data['type'] as String?),
       cashDifferential: (data['cashDifferential'] as num?)?.toDouble(),
-      paymentDirection:
-          _parsePaymentDirection(data['paymentDirection'] as String?),
+      paymentDirection: _parsePaymentDirection(
+        data['paymentDirection'] as String?,
+      ),
       acceptedCategories: (data['acceptedCategories'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -30,8 +31,7 @@ class BarterConditionModel extends BarterConditionEntity {
       minValue: (data['minValue'] as num?)?.toDouble(),
       maxValue: (data['maxValue'] as num?)?.toDouble(),
       description: data['description'] as String?,
-      createdAt:
-          (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
@@ -73,8 +73,9 @@ class BarterConditionModel extends BarterConditionEntity {
       id: json['id'] as String? ?? '',
       type: _parseBarterConditionType(json['type'] as String?),
       cashDifferential: (json['cashDifferential'] as num?)?.toDouble(),
-      paymentDirection:
-          _parsePaymentDirection(json['paymentDirection'] as String?),
+      paymentDirection: _parsePaymentDirection(
+        json['paymentDirection'] as String?,
+      ),
       acceptedCategories: (json['acceptedCategories'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),

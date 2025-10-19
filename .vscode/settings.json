@@ -1,4 +1,5 @@
 {
     "cmake.sourceDirectory": "C:/Users/qw/Desktop/barter-qween/barter_qween/build/windows/x64/extracted/firebase_cpp_sdk_windows",
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

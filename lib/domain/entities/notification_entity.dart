@@ -2,18 +2,19 @@ import 'package:equatable/equatable.dart';
 
 /// Types of notifications in the app
 enum NotificationType {
-  newTradeOffer,     // New trade offer received
-  tradeAccepted,     // Your trade offer was accepted
-  tradeRejected,     // Your trade offer was rejected
-  tradeCancelled,    // Trade offer was cancelled
-  tradeCompleted,    // Trade completed successfully
-  newMessage,        // New chat message
-  itemSold,          // Your item was marked as sold
-  itemLiked,         // Someone liked your item
-  followReceived,    // Someone followed you
-  newMatch,          // New barter match found (Sprint 3)
-  priceDropMatch,    // Price dropped on potential match (Sprint 3)
-  system,            // System notification
+  newTradeOffer, // New trade offer received
+  tradeAccepted, // Your trade offer was accepted
+  tradeRejected, // Your trade offer was rejected
+  tradeCancelled, // Trade offer was cancelled
+  tradeCompleted, // Trade completed successfully
+  newMessage, // New chat message
+  itemSold, // Your item was marked as sold
+  itemLiked, // Someone liked your item
+  followReceived, // Someone followed you
+  newMatch, // New barter match found (Sprint 3)
+  priceDropMatch, // Price dropped on potential match (Sprint 3)
+  newItemFromVendor, // New item from a vendor you follow
+  system, // System notification
 }
 
 /// Extension for NotificationType
@@ -42,6 +43,8 @@ extension NotificationTypeExtension on NotificationType {
         return 'new_match';
       case NotificationType.priceDropMatch:
         return 'price_drop_match';
+      case NotificationType.newItemFromVendor:
+        return 'new_item_from_vendor';
       case NotificationType.system:
         return 'system';
     }
@@ -71,6 +74,8 @@ extension NotificationTypeExtension on NotificationType {
         return NotificationType.newMatch;
       case 'price_drop_match':
         return NotificationType.priceDropMatch;
+      case 'new_item_from_vendor':
+        return NotificationType.newItemFromVendor;
       case 'system':
       default:
         return NotificationType.system;
@@ -101,6 +106,8 @@ extension NotificationTypeExtension on NotificationType {
         return 'Yeni Eşleşme';
       case NotificationType.priceDropMatch:
         return 'Fiyat Düştü';
+      case NotificationType.newItemFromVendor:
+        return 'Yeni Ürün';
       case NotificationType.system:
         return 'System Notification';
     }
@@ -187,26 +194,23 @@ class NotificationEntity extends Equatable {
 
   /// Mark as read
   NotificationEntity markAsRead() {
-    return copyWith(
-      isRead: true,
-      readAt: DateTime.now(),
-    );
+    return copyWith(isRead: true, readAt: DateTime.now());
   }
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        type,
-        title,
-        body,
-        imageUrl,
-        isRead,
-        relatedEntityId,
-        data,
-        createdAt,
-        readAt,
-      ];
+    id,
+    userId,
+    type,
+    title,
+    body,
+    imageUrl,
+    isRead,
+    relatedEntityId,
+    data,
+    createdAt,
+    readAt,
+  ];
 
   @override
   String toString() {

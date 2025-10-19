@@ -69,16 +69,18 @@ class NegotiationModel {
       currentMeetupTime: entity.currentMeetupTime,
       currentNotes: entity.currentNotes,
       rounds: entity.rounds
-          .map((round) => {
-                'roundNumber': round.roundNumber,
-                'offererId': round.offererId,
-                'cashOffer': round.cashOffer,
-                'paymentDirection': round.paymentDirection,
-                'meetupLocation': round.meetupLocation,
-                'meetupTime': round.meetupTime,
-                'notes': round.notes,
-                'createdAt': round.createdAt,
-              })
+          .map(
+            (round) => {
+              'roundNumber': round.roundNumber,
+              'offererId': round.offererId,
+              'cashOffer': round.cashOffer,
+              'paymentDirection': round.paymentDirection,
+              'meetupLocation': round.meetupLocation,
+              'meetupTime': round.meetupTime,
+              'notes': round.notes,
+              'createdAt': round.createdAt,
+            },
+          )
           .toList(),
       totalMessages: entity.totalMessages,
       agreedAt: entity.agreedAt,
@@ -113,8 +115,8 @@ class NegotiationModel {
       currentNotes: data['currentNotes'] as String?,
       rounds: data['rounds'] != null
           ? (data['rounds'] as List)
-              .map((r) => Map<String, dynamic>.from(r as Map))
-              .toList()
+                .map((r) => Map<String, dynamic>.from(r as Map))
+                .toList()
           : [],
       totalMessages: data['totalMessages'] as int? ?? 0,
       agreedAt: data['agreedAt'] != null
@@ -154,23 +156,24 @@ class NegotiationModel {
           : null,
       'currentNotes': currentNotes,
       'rounds': rounds
-          .map((round) => {
-                'roundNumber': round['roundNumber'],
-                'offererId': round['offererId'],
-                'cashOffer': round['cashOffer'],
-                'paymentDirection': round['paymentDirection'],
-                'meetupLocation': round['meetupLocation'],
-                'meetupTime': round['meetupTime'] != null
-                    ? Timestamp.fromDate(round['meetupTime'] as DateTime)
-                    : null,
-                'notes': round['notes'],
-                'createdAt': Timestamp.fromDate(round['createdAt'] as DateTime),
-              })
+          .map(
+            (round) => {
+              'roundNumber': round['roundNumber'],
+              'offererId': round['offererId'],
+              'cashOffer': round['cashOffer'],
+              'paymentDirection': round['paymentDirection'],
+              'meetupLocation': round['meetupLocation'],
+              'meetupTime': round['meetupTime'] != null
+                  ? Timestamp.fromDate(round['meetupTime'] as DateTime)
+                  : null,
+              'notes': round['notes'],
+              'createdAt': Timestamp.fromDate(round['createdAt'] as DateTime),
+            },
+          )
           .toList(),
       'totalMessages': totalMessages,
       'agreedAt': agreedAt != null ? Timestamp.fromDate(agreedAt!) : null,
-      'rejectedAt':
-          rejectedAt != null ? Timestamp.fromDate(rejectedAt!) : null,
+      'rejectedAt': rejectedAt != null ? Timestamp.fromDate(rejectedAt!) : null,
       'rejectionReason': rejectionReason,
       'rejectedBy': rejectedBy,
       'expiresAt': expiresAt != null ? Timestamp.fromDate(expiresAt!) : null,
@@ -196,8 +199,7 @@ class NegotiationModel {
       lastActionBy: currentOfferer,
       lastCounterOffer: null,
       counterOffers: const [],
-      status:
-          NegotiationStatus.values.firstWhere((e) => e.name == status),
+      status: NegotiationStatus.values.firstWhere((e) => e.name == status),
       roundCount: roundCount,
       currentOfferer: currentOfferer,
       currentCashOffer: currentCashOffer,
@@ -206,22 +208,24 @@ class NegotiationModel {
       currentMeetupTime: currentMeetupTime,
       currentNotes: currentNotes,
       rounds: rounds
-          .map((round) => NegotiationRound(
-                roundNumber: round['roundNumber'] as int,
-                offererId: round['offererId'] as String,
-                cashOffer: (round['cashOffer'] as num?)?.toDouble(),
-                paymentDirection: round['paymentDirection'] as String?,
-                meetupLocation: round['meetupLocation'] as String?,
-                meetupTime: round['meetupTime'] != null
-                    ? (round['meetupTime'] is Timestamp
+          .map(
+            (round) => NegotiationRound(
+              roundNumber: round['roundNumber'] as int,
+              offererId: round['offererId'] as String,
+              cashOffer: (round['cashOffer'] as num?)?.toDouble(),
+              paymentDirection: round['paymentDirection'] as String?,
+              meetupLocation: round['meetupLocation'] as String?,
+              meetupTime: round['meetupTime'] != null
+                  ? (round['meetupTime'] is Timestamp
                         ? (round['meetupTime'] as Timestamp).toDate()
                         : round['meetupTime'] as DateTime)
-                    : null,
-                notes: round['notes'] as String?,
-                createdAt: round['createdAt'] is Timestamp
-                    ? (round['createdAt'] as Timestamp).toDate()
-                    : round['createdAt'] as DateTime,
-              ))
+                  : null,
+              notes: round['notes'] as String?,
+              createdAt: round['createdAt'] is Timestamp
+                  ? (round['createdAt'] as Timestamp).toDate()
+                  : round['createdAt'] as DateTime,
+            ),
+          )
           .toList(),
       totalMessages: totalMessages,
       agreedAt: agreedAt,

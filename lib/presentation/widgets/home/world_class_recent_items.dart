@@ -3,7 +3,7 @@ import '../../../core/theme/world_class_design_system.dart';
 import '../../../domain/entities/item_entity.dart';
 
 /// 🌟 WORLD-CLASS RECENT ITEMS
-/// 
+///
 /// Features:
 /// - Horizontal list
 /// - Item cards
@@ -24,7 +24,9 @@ class WorldClassRecentItems extends StatelessWidget {
     if (items.isEmpty) {
       return Container(
         height: 160,
-        margin: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+        margin: const EdgeInsets.symmetric(
+          horizontal: WorldClassDesignSystem.spacingM,
+        ),
         decoration: WorldClassDesignSystem.cardDecoration,
         child: Center(
           child: Column(
@@ -52,7 +54,9 @@ class WorldClassRecentItems extends StatelessWidget {
       height: 160,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: WorldClassDesignSystem.spacingM),
+        padding: const EdgeInsets.symmetric(
+          horizontal: WorldClassDesignSystem.spacingM,
+        ),
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
@@ -108,11 +112,13 @@ class WorldClassRecentItems extends StatelessWidget {
                         ),
                 ),
               ),
-              
+
               // Content
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(WorldClassDesignSystem.spacingS),
+                  padding: const EdgeInsets.all(
+                    WorldClassDesignSystem.spacingS,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -126,9 +132,9 @@ class WorldClassRecentItems extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      
+
                       const Spacer(),
-                      
+
                       // Price
                       Text(
                         '${item.price?.toStringAsFixed(0) ?? '0'} TL',

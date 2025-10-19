@@ -11,11 +11,12 @@ abstract class ProfileEvent extends Equatable {
 
 class LoadProfile extends ProfileEvent {
   final String userId;
+  final String? viewerId;
 
-  const LoadProfile(this.userId);
+  const LoadProfile(this.userId, {this.viewerId});
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [userId, viewerId];
 }
 
 class UpdateProfile extends ProfileEvent {
@@ -44,11 +45,34 @@ class UploadAvatar extends ProfileEvent {
   final File imageFile;
   final String userId;
 
-  const UploadAvatar({
-    required this.imageFile,
-    required this.userId,
-  });
+  const UploadAvatar({required this.imageFile, required this.userId});
 
   @override
   List<Object?> get props => [imageFile, userId];
+}
+
+class FollowUserProfile extends ProfileEvent {
+  final String currentUserId;
+  final String targetUserId;
+
+  const FollowUserProfile({
+    required this.currentUserId,
+    required this.targetUserId,
+  });
+
+  @override
+  List<Object?> get props => [currentUserId, targetUserId];
+}
+
+class UnfollowUserProfile extends ProfileEvent {
+  final String currentUserId;
+  final String targetUserId;
+
+  const UnfollowUserProfile({
+    required this.currentUserId,
+    required this.targetUserId,
+  });
+
+  @override
+  List<Object?> get props => [currentUserId, targetUserId];
 }

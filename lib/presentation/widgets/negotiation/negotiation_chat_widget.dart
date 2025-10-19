@@ -29,9 +29,9 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
     with TickerProviderStateMixin {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   late AnimationController _typingController;
-  late AnimationController _messageController_anim;
+  late AnimationController _messageControllerAnim;
   late Animation<double> _typingAnimation;
   late Animation<double> _messageAnimation;
 
@@ -50,29 +50,24 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
-    _messageController_anim = AnimationController(
+
+    _messageControllerAnim = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
 
-    _typingAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _typingController,
-      curve: Curves.easeInOut,
-    ));
+    _typingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _typingController, curve: Curves.easeInOut),
+    );
 
-    _messageAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _messageController_anim,
-      curve: Curves.easeOutCubic,
-    ));
+    _messageAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _messageControllerAnim,
+        curve: Curves.easeOutCubic,
+      ),
+    );
 
-    _messageController_anim.forward();
+    _messageControllerAnim.forward();
   }
 
   void _loadMessages() {
@@ -84,7 +79,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
   @override
   void dispose() {
     _typingController.dispose();
-    _messageController_anim.dispose();
+    _messageControllerAnim.dispose();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -100,9 +95,9 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
           children: [
             // Chat Header
             _buildChatHeader(),
-            
+
             const SizedBox(height: 16),
-            
+
             // Messages List
             Expanded(
               child: BlocBuilder<ChatBloc, ChatState>(
@@ -110,25 +105,25 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
                   if (state is ChatLoading) {
                     return _buildLoadingState();
                   }
-                  
+
                   if (state is ChatError) {
                     return _buildErrorState(state.message);
                   }
-                  
+
                   if (state is MessagesLoaded) {
                     return _buildMessagesList(state.messages);
                   }
-                  
+
                   return _buildEmptyState();
                 },
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Typing Indicator
             if (_isTyping) _buildTypingIndicator(),
-            
+
             // Message Input
             _buildMessageInput(),
           ],
@@ -323,13 +318,15 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
       itemBuilder: (context, index) {
         final message = messages[index];
         final isCurrentUser = message.senderId == _currentUserId;
-        
+
         return AnimatedBuilder(
           animation: _messageAnimation,
           builder: (context, child) {
             return Transform.translate(
               offset: Offset(
-                isCurrentUser ? 20 * (1 - _messageAnimation.value) : -20 * (1 - _messageAnimation.value),
+                isCurrentUser
+                    ? 20 * (1 - _messageAnimation.value)
+                    : -20 * (1 - _messageAnimation.value),
                 0,
               ),
               child: Opacity(
@@ -347,8 +344,8 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: isCurrentUser 
-            ? MainAxisAlignment.end 
+        mainAxisAlignment: isCurrentUser
+            ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
           if (!isCurrentUser) ...[
@@ -507,9 +504,7 @@ class _NegotiationChatWidgetState extends State<NegotiationChatWidget>
               ),
               decoration: InputDecoration(
                 hintText: 'Type a message...',
-                hintStyle: TextStyle(
-                  color: MinimalDesignSystem.primaryWhite,
-                ),
+                hintStyle: TextStyle(color: MinimalDesignSystem.primaryWhite),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,

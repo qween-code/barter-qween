@@ -2,25 +2,22 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/subscription_entity.dart';
 
 /// World-Class Premium Plans Page
-/// 
+///
 /// Features:
 /// - Modern card-based plan comparison
 /// - Toggle between monthly/yearly
 /// - Feature highlights with animations
 /// - Current plan indicator
 /// - Smooth transitions
-/// 
+///
 /// Inspired by:
 /// - Netflix subscription page
 /// - Spotify Premium
 /// - Apple One plans
 class PremiumPlansPage extends StatefulWidget {
   final SubscriptionPlan? currentPlan;
-  
-  const PremiumPlansPage({
-    Key? key,
-    this.currentPlan,
-  }) : super(key: key);
+
+  const PremiumPlansPage({Key? key, this.currentPlan}) : super(key: key);
 
   @override
   State<PremiumPlansPage> createState() => _PremiumPlansPageState();
@@ -75,10 +72,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFFFF6B35),
-                      const Color(0xFFFF8C42),
-                    ],
+                    colors: [const Color(0xFFFF6B35), const Color(0xFFFF8C42)],
                   ),
                 ),
                 child: Center(
@@ -114,10 +108,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                     const SizedBox(height: 12),
                     Text(
                       'Premium planlarla işlerini daha hızlı halledin',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 32),
 
@@ -126,9 +117,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                     const SizedBox(height: 32),
 
                     // Plans
-                    ...SubscriptionPlans.allPlans.map((plan) {
-                      return _buildPlanCard(plan);
-                    }).toList(),
+                    ...SubscriptionPlans.allPlans.map(_buildPlanCard),
 
                     const SizedBox(height: 32),
 
@@ -168,23 +157,14 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
       child: Row(
         children: [
           Expanded(
-            child: _buildToggleButton(
-              'Aylık',
-              !_isYearly,
-              () {
-                setState(() => _isYearly = false);
-              },
-            ),
+            child: _buildToggleButton('Aylık', !_isYearly, () {
+              setState(() => _isYearly = false);
+            }),
           ),
           Expanded(
-            child: _buildToggleButton(
-              'Yıllık',
-              _isYearly,
-              () {
-                setState(() => _isYearly = true);
-              },
-              badge: '%17 İndirim',
-            ),
+            child: _buildToggleButton('Yıllık', _isYearly, () {
+              setState(() => _isYearly = true);
+            }, badge: '%17 İndirim'),
           ),
         ],
       ),
@@ -224,10 +204,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
             if (badge != null && isSelected) ...[
               const SizedBox(height: 4),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -252,9 +229,11 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
     final isCurrentPlan = widget.currentPlan == plan.plan;
     final isFree = plan.plan == SubscriptionPlan.free;
     final isPremium = plan.plan == SubscriptionPlan.premium;
-    
+
     final price = _isYearly ? plan.yearlyPriceTRY : plan.monthlyPriceTRY;
-    final monthlyEquivalent = _isYearly ? plan.yearlyPriceMonthlyEquivalent : price;
+    final monthlyEquivalent = _isYearly
+        ? plan.yearlyPriceMonthlyEquivalent
+        : price;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -302,7 +281,9 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: isPremium ? Colors.white : const Color(0xFF2D3142),
+                        color: isPremium
+                            ? Colors.white
+                            : const Color(0xFF2D3142),
                       ),
                     ),
                     if (isCurrentPlan)
@@ -312,7 +293,9 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: isPremium ? Colors.white : const Color(0xFFFF6B35),
+                          color: isPremium
+                              ? Colors.white
+                              : const Color(0xFFFF6B35),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -320,7 +303,9 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: isPremium ? const Color(0xFFFF6B35) : Colors.white,
+                            color: isPremium
+                                ? const Color(0xFFFF6B35)
+                                : Colors.white,
                           ),
                         ),
                       ),
@@ -345,7 +330,9 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                       style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
-                        color: isPremium ? Colors.white : const Color(0xFF2D3142),
+                        color: isPremium
+                            ? Colors.white
+                            : const Color(0xFF2D3142),
                       ),
                     ),
                     if (!isFree) ...[
@@ -420,11 +407,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
                   isPremium,
                 ),
                 if (plan.advancedSearch)
-                  _buildFeatureItem(
-                    Icons.search,
-                    'Gelişmiş arama',
-                    isPremium,
-                  ),
+                  _buildFeatureItem(Icons.search, 'Gelişmiş arama', isPremium),
                 if (plan.analyticsAccess)
                   _buildFeatureItem(
                     Icons.analytics,
@@ -448,9 +431,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: isFree
-                      ? null
-                      : () => _handleSubscribe(plan),
+                  onPressed: isFree ? null : () => _handleSubscribe(plan),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isFree
                         ? Colors.grey[300]
@@ -488,27 +469,16 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
               color: const Color(0xFFFF6B35).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: const Color(0xFFFF6B35),
-            ),
+            child: Icon(icon, size: 18, color: const Color(0xFFFF6B35)),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[800],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[800]),
             ),
           ),
-          Icon(
-            Icons.check_circle,
-            size: 20,
-            color: const Color(0xFFFF6B35),
-          ),
+          Icon(Icons.check_circle, size: 20, color: const Color(0xFFFF6B35)),
         ],
       ),
     );
@@ -540,7 +510,13 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
             ),
           ),
           const SizedBox(height: 20),
-          _buildComparisonRow('Özellik', 'Ücretsiz', 'Temel', 'Premium', isHeader: true),
+          _buildComparisonRow(
+            'Özellik',
+            'Ücretsiz',
+            'Temel',
+            'Premium',
+            isHeader: true,
+          ),
           const Divider(height: 24),
           _buildComparisonRow('Aktif İlan', '3', '10', '50'),
           _buildComparisonRow('Ücretsiz İlan/Ay', '1', '5', 'Sınırsız'),
@@ -572,10 +548,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(feature, style: style),
-          ),
+          Expanded(flex: 2, child: Text(feature, style: style)),
           Expanded(
             child: Text(free, style: style, textAlign: TextAlign.center),
           ),
@@ -666,10 +639,7 @@ class _PremiumPlansPageState extends State<PremiumPlansPage>
     Navigator.pushNamed(
       context,
       '/payment-selection',
-      arguments: {
-        'plan': plan,
-        'isYearly': _isYearly,
-      },
+      arguments: {'plan': plan, 'isYearly': _isYearly},
     );
   }
 }

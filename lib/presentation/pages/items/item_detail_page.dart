@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../../../core/theme/world_class_design_system.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 
 /// 🌟 WORLD-CLASS ITEM DETAIL PAGE - Hepsiburada/Trendyol Style
-/// 
+///
 /// Features:
 /// - Image gallery with zoom
 /// - Complete item information
@@ -22,16 +22,14 @@ import '../../blocs/item/item_state.dart';
 class ItemDetailPage extends StatefulWidget {
   final String itemId;
 
-  const ItemDetailPage({
-    Key? key,
-    required this.itemId,
-  }) : super(key: key);
+  const ItemDetailPage({Key? key, required this.itemId}) : super(key: key);
 
   @override
   State<ItemDetailPage> createState() => _ItemDetailPageState();
 }
 
-class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProviderStateMixin {
+class _ItemDetailPageState extends State<ItemDetailPage>
+    with SingleTickerProviderStateMixin {
   final PageController _imageController = PageController();
   late TabController _tabController;
   bool _isFavorite = false;
@@ -60,6 +58,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
       backgroundColor: const Color(0xFFF5F5F5),
       body: BlocListener<ItemBloc, ItemState>(
         listener: (context, state) {
+          if (!mounted) return;
           if (state is ItemsLoaded) {
             try {
               final item = state.items.firstWhere(
@@ -76,7 +75,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
             setState(() => _item = state.item);
           } else if (state is ItemError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
@@ -91,7 +93,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 16),
                     const Text('Ürün bulunamadı'),
                     const SizedBox(height: 16),
@@ -134,10 +140,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
             color: Colors.white,
             shape: BoxShape.circle,
             boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-              ),
+              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8),
             ],
           ),
           child: const Icon(Icons.arrow_back, color: Colors.black, size: 20),
@@ -152,15 +155,12 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                ),
+                BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8),
               ],
             ),
             child: const Icon(Icons.share, color: Colors.black, size: 20),
           ),
-          onPressed: () {},
+          onPressed: _shareCurrentItem,
         ),
         IconButton(
           icon: Container(
@@ -169,10 +169,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                ),
+                BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8),
               ],
             ),
             child: Icon(
@@ -189,9 +186,38 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
     );
   }
 
+  void _shareCurrentItem() {
+    final item = _item;
+    if (item == null) {
+      return;
+    }
+
+    final buffer = StringBuffer();
+    final priceText = item.price != null ? 'Fiyat: ₺${item.price!.toStringAsFixed(0)}' : null;
+
+    buffer.writeln(item.title.trim().isEmpty ? 'BarterQween ürünü' : item.title.trim());
+    if (priceText != null) {
+      buffer.writeln(priceText);
+    }
+    if (item.city != null && item.city!.isNotEmpty) {
+      buffer.writeln('Konum: ${item.city}');
+    }
+    if (item.description.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln(item.description.trim());
+    }
+
+    buffer
+      ..writeln()
+      ..writeln('BarterQween uygulamasında incele. İlan kodu: ${item.id}');
+
+    Share.share(buffer.toString().trim());
+  }
+
   Widget _buildImageGallery() {
     final images = _item!.images.isNotEmpty ? _item!.images : [''];
-    
+
     return SliverToBoxAdapter(
       child: Container(
         height: 400,
@@ -208,14 +234,17 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                   },
                   child: images[index].isEmpty
                       ? const Center(
-                          child: Icon(Icons.image_outlined, size: 100, color: Colors.grey),
+                          child: Icon(
+                            Icons.image_outlined,
+                            size: 100,
+                            color: Colors.grey,
+                          ),
                         )
                       : CachedNetworkImage(
                           imageUrl: images[index],
                           fit: BoxFit.contain,
-                          placeholder: (context, url) => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
                           errorWidget: (context, url, error) => const Icon(
                             Icons.broken_image,
                             size: 100,
@@ -276,7 +305,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               ),
             ),
             const SizedBox(height: 12),
-            
+
             // Title
             Text(
               _item!.title,
@@ -288,13 +317,16 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               ),
             ),
             const SizedBox(height: 12),
-            
+
             // Price & Condition
             Row(
               children: [
                 // Price
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFFFF6B35), Color(0xFFF7931E)],
@@ -311,10 +343,13 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Condition
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -322,7 +357,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 18,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         _item!.condition?.toUpperCase() ?? 'N/A',
@@ -338,22 +377,36 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Location & Time
             Row(
               children: [
-                const Icon(Icons.location_on, size: 16, color: Color(0xFF999999)),
+                const Icon(
+                  Icons.location_on,
+                  size: 16,
+                  color: Color(0xFF999999),
+                ),
                 const SizedBox(width: 4),
                 Text(
                   _item!.location ?? 'Belirtilmemiş',
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF666666)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF666666),
+                  ),
                 ),
                 const SizedBox(width: 16),
-                const Icon(Icons.access_time, size: 16, color: Color(0xFF999999)),
+                const Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: Color(0xFF999999),
+                ),
                 const SizedBox(width: 4),
                 Text(
                   timeago.format(_item!.createdAt, locale: 'tr'),
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF666666)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF666666),
+                  ),
                 ),
               ],
             ),
@@ -366,7 +419,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
   Widget _buildBarterConditions() {
     // Check if barter condition exists and has accepted categories
     final barterCondition = _item!.barterCondition;
-    if (barterCondition == null || 
+    if (barterCondition == null ||
         barterCondition.acceptedCategories == null ||
         barterCondition.acceptedCategories!.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
@@ -409,7 +462,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Barter Conditions List
             Container(
               padding: const EdgeInsets.all(16),
@@ -443,7 +496,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                     children: acceptedCategories.map((condition) {
                       IconData icon;
                       Color color;
-                      
+
                       switch (condition.toLowerCase()) {
                         case 'electronics':
                           icon = Icons.phone_android;
@@ -469,7 +522,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                           icon = Icons.category;
                           color = const Color(0xFF607D8B);
                       }
-                      
+
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -564,94 +617,100 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
             children: [
               // Avatar
               Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFF6B35), Color(0xFFF7931E)],
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFF6B35).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFF6B35), Color(0xFFF7931E)],
                   ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(Icons.person, color: Colors.white, size: 28),
-              ),
-            ),
-            const SizedBox(width: 16),
-            
-            // Seller Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _item!.ownerName.isNotEmpty ? _item!.ownerName : 'Kullanıcı',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF333333),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFFF6B35).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, size: 16, color: Color(0xFFFFC107)),
-                      const SizedBox(width: 4),
-                      const Text(
-                        '4.8',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF666666),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '(127 değerlendirme)',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            
-            // Message Button
-            OutlinedButton.icon(
-              onPressed: () {
-                // Navigate to chat with owner
-                Navigator.pushNamed(
-                  context,
-                  '/chat',
-                  arguments: {
-                    'otherUserId': _item!.ownerId,
-                    'otherUserName': _item!.ownerName,
-                    'itemId': _item!.id,
-                  },
-                );
-              },
-              icon: const Icon(Icons.chat_bubble_outline, size: 18),
-              label: const Text('Mesaj'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFFF6B35),
-                side: const BorderSide(color: Color(0xFFFF6B35)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(Icons.person, color: Colors.white, size: 28),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 16),
+
+              // Seller Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _item!.ownerName.isNotEmpty
+                          ? _item!.ownerName
+                          : 'Kullanıcı',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF333333),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star,
+                          size: 16,
+                          color: Color(0xFFFFC107),
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          '4.8',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF666666),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '(127 değerlendirme)',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Message Button
+              OutlinedButton.icon(
+                onPressed: () {
+                  // Navigate to chat with owner
+                  Navigator.pushNamed(
+                    context,
+                    '/chat',
+                    arguments: {
+                      'otherUserId': _item!.ownerId,
+                      'otherUserName': _item!.ownerName,
+                      'itemId': _item!.id,
+                    },
+                  );
+                },
+                icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                label: const Text('Mesaj'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFFF6B35),
+                  side: const BorderSide(color: Color(0xFFFF6B35)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -691,10 +750,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                       ),
                     ),
                   ),
-                  
+
                   // Features
                   const Center(child: Text('Ürün özellikleri yakında...')),
-                  
+
                   // Reviews
                   const Center(child: Text('Yorumlar yakında...')),
                 ],
@@ -741,7 +800,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
               ),
             ),
             const SizedBox(width: 12),
-            
+
             // Make Offer Button
             Expanded(
               child: ElevatedButton.icon(
@@ -757,13 +816,14 @@ class _ItemDetailPageState extends State<ItemDetailPage> with SingleTickerProvid
                       'toUserName': _item!.ownerName,
                     },
                   ).catchError((e) {
-                    // If route not found, show message
+                    if (!mounted) return null;
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Teklif sayfası açılıyor...'),
                         backgroundColor: Color(0xFF4CAF50),
                       ),
                     );
+                    return null;
                   });
                 },
                 icon: const Icon(Icons.swap_horiz, size: 24),

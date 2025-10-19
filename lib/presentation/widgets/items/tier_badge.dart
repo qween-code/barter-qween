@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/item_entity.dart';
@@ -30,10 +29,7 @@ class TierBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: _getTierColor(tier!).withOpacity(0.1),
         borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-        border: Border.all(
-          color: _getTierColor(tier!),
-          width: 1.5,
-        ),
+        border: Border.all(color: _getTierColor(tier!), width: 1.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -47,13 +43,14 @@ class TierBadge extends StatelessWidget {
             SizedBox(width: size != null ? size! * 0.3 : 4),
             Text(
               tier!.displayName,
-              style: (size != null
-                      ? AppTextStyles.bodySmall
-                      : AppTextStyles.bodyMedium)
-                  .copyWith(
-                color: _getTierColor(tier!),
-                fontWeight: FontWeight.w600,
-              ),
+              style:
+                  (size != null
+                          ? AppTextStyles.bodySmall
+                          : AppTextStyles.bodyMedium)
+                      .copyWith(
+                        color: _getTierColor(tier!),
+                        fontWeight: FontWeight.w600,
+                      ),
             ),
           ],
         ],

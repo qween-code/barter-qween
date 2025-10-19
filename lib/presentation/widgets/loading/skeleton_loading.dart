@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// Professional skeleton loading screens for better UX
-/// 
+///
 /// Provides pre-built skeleton screens for:
 /// - Item details
 /// - Item list/grid
@@ -17,12 +17,7 @@ class SkeletonLoading {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image carousel skeleton
-          _skeleton(
-            child: Container(
-              height: 400,
-              color: Colors.white,
-            ),
-          ),
+          _skeleton(child: Container(height: 400, color: Colors.white)),
 
           const SizedBox(height: 24),
 
@@ -175,7 +170,7 @@ class SkeletonLoading {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.58,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),
@@ -225,8 +220,9 @@ class SkeletonLoading {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
-            mainAxisAlignment:
-                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isMe
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
             children: [
               _skeleton(
                 child: Container(
@@ -251,7 +247,7 @@ class SkeletonLoading {
       child: Column(
         children: [
           const SizedBox(height: 32),
-          
+
           // Profile picture skeleton
           _skeleton(
             child: const CircleAvatar(
@@ -373,10 +369,7 @@ class SkeletonLoading {
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
-      child: CircleAvatar(
-        radius: radius,
-        backgroundColor: Colors.white,
-      ),
+      child: CircleAvatar(radius: radius, backgroundColor: Colors.white),
     );
   }
 }

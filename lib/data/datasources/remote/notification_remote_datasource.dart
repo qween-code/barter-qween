@@ -40,10 +40,9 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
 
   @override
   Future<List<NotificationEntity>> getNotifications(String userId) async {
-    final snap = await _col(userId)
-        .orderBy('createdAt', descending: true)
-        .limit(100)
-        .get();
+    final snap = await _col(
+      userId,
+    ).orderBy('createdAt', descending: true).limit(100).get();
     return snap.docs.map(_fromDoc).toList();
   }
 
@@ -64,14 +63,16 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
 
   @override
   Stream<int> watchUnreadCount(String userId) {
-    return _col(userId)
-        .where('isRead', isEqualTo: false)
-        .snapshots()
-        .map((s) => s.size);
+    return _col(
+      userId,
+    ).where('isRead', isEqualTo: false).snapshots().map((s) => s.size);
   }
 
   @override
-  Future<NotificationEntity> markAsRead(String userId, String notificationId) async {
+  Future<NotificationEntity> markAsRead(
+    String userId,
+    String notificationId,
+  ) async {
     await _col(userId).doc(notificationId).update({
       'isRead': true,
       'readAt': FieldValue.serverTimestamp(),

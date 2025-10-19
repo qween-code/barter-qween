@@ -5,7 +5,7 @@ import '../entities/counter_offer_entity.dart';
 import '../entities/negotiation_entity.dart';
 
 /// Use case for sending a counter-offer during negotiation
-/// 
+///
 /// Validates the counter-offer, checks user permissions,
 /// and creates the counter-offer entity
 @lazySingleton
@@ -13,7 +13,7 @@ class SendCounterOfferUsecase {
   SendCounterOfferUsecase();
 
   /// Execute the use case
-  /// 
+  ///
   /// Creates a counter-offer and updates the negotiation state
   Future<Either<Failure, CounterOfferEntity>> call(
     SendCounterOfferParams params,
@@ -27,7 +27,7 @@ class SendCounterOfferUsecase {
 
       // TODO: Get negotiation from repository to validate state
       // For now, create counter-offer entity directly
-      
+
       final now = DateTime.now();
       final counterOffer = CounterOfferEntity(
         id: '', // Firestore will generate
@@ -54,7 +54,7 @@ class SendCounterOfferUsecase {
       // TODO: Save to repository
       // TODO: Update negotiation with new round
       // TODO: Send notification to target user
-      
+
       return Right(counterOffer);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -89,14 +89,14 @@ class SendCounterOfferUsecase {
           return 'Cash amount cannot be negative';
         }
         break;
-      
+
       case CounterOfferType.location:
-        if (params.proposedMeetupLocation == null || 
+        if (params.proposedMeetupLocation == null ||
             params.proposedMeetupLocation!.isEmpty) {
           return 'Meetup location is required for location counter-offers';
         }
         break;
-      
+
       case CounterOfferType.time:
         if (params.proposedMeetupTime == null) {
           return 'Meetup time is required for time counter-offers';
@@ -105,7 +105,7 @@ class SendCounterOfferUsecase {
           return 'Meetup time cannot be in the past';
         }
         break;
-      
+
       case CounterOfferType.full:
         // Full counter-offer should have at least some changes
         if (params.proposedCash == null &&
@@ -114,13 +114,13 @@ class SendCounterOfferUsecase {
           return 'Full counter-offer must include at least one change';
         }
         break;
-      
+
       case CounterOfferType.terms:
         if (params.message == null || params.message!.isEmpty) {
           return 'Message is required for terms counter-offers';
         }
         break;
-      
+
       case CounterOfferType.itemSwap:
         // TODO: Validate item swap specific fields
         break;
@@ -135,7 +135,7 @@ class SendCounterOfferUsecase {
     required NegotiationEntity negotiation,
   }) {
     // User must be part of negotiation
-    if (userId != negotiation.initiatorId && 
+    if (userId != negotiation.initiatorId &&
         userId != negotiation.responderId) {
       return false;
     }
@@ -166,14 +166,14 @@ class SendCounterOfferParams {
   final String offererId; // User making counter-offer
   final String targetUserId; // User receiving counter-offer
   final CounterOfferType type;
-  
+
   // Counter-offer terms
   final double? proposedCash;
   final String? proposedPaymentDirection;
   final String? proposedMeetupLocation;
   final DateTime? proposedMeetupTime;
   final String? message;
-  
+
   // Expiration
   final int? expirationHours; // Default: 48 hours
 

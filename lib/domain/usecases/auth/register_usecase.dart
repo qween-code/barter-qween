@@ -19,7 +19,9 @@ class RegisterUseCase {
       return const Left(ValidationFailure('All fields are required'));
     }
     if (password.length < 6) {
-      return const Left(ValidationFailure('Password must be at least 6 characters'));
+      return const Left(
+        ValidationFailure('Password must be at least 6 characters'),
+      );
     }
     return await repository.registerWithEmailAndPassword(
       email: email,

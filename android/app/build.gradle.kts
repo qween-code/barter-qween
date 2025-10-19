@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId = "com.bogazici.barter"
-        minSdk = 21  // Required for Firebase
+        minSdk = 23  // Required for Google Mobile Ads
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

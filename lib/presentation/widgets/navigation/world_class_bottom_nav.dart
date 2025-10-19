@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS BOTTOM NAVIGATION
-/// 
+///
 /// Features:
 /// - 5-tab navigation
 /// - Smooth animations
@@ -12,11 +12,13 @@ import '../../../core/theme/world_class_design_system.dart';
 class WorldClassBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final int? messagesBadgeCount;
 
   const WorldClassBottomNav({
     Key? key,
     required this.currentIndex,
     required this.onTap,
+    this.messagesBadgeCount,
   }) : super(key: key);
 
   @override
@@ -26,10 +28,7 @@ class WorldClassBottomNav extends StatelessWidget {
         color: WorldClassDesignSystem.surfaceColor,
         boxShadow: WorldClassDesignSystem.shadowM,
         border: Border(
-          top: BorderSide(
-            color: WorldClassDesignSystem.borderColor,
-            width: 1,
-          ),
+          top: BorderSide(color: WorldClassDesignSystem.borderColor, width: 1),
         ),
       ),
       child: SafeArea(
@@ -65,7 +64,7 @@ class WorldClassBottomNav extends StatelessWidget {
                 icon: Icons.chat_bubble_rounded,
                 label: 'Messages',
                 isSelected: currentIndex == 3,
-                badgeCount: 3, // Example badge
+                badgeCount: messagesBadgeCount,
               ),
               _buildNavItem(
                 index: 4,
@@ -107,14 +106,12 @@ class WorldClassBottomNav extends StatelessWidget {
                 color: isSelected
                     ? WorldClassDesignSystem.primaryColor
                     : isSpecial
-                        ? WorldClassDesignSystem.primaryColor
-                        : Colors.transparent,
+                    ? WorldClassDesignSystem.primaryColor
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(
                   isSpecial ? 28 : WorldClassDesignSystem.radiusM,
                 ),
-                boxShadow: isSpecial
-                    ? WorldClassDesignSystem.shadowM
-                    : null,
+                boxShadow: isSpecial ? WorldClassDesignSystem.shadowM : null,
               ),
               child: Stack(
                 children: [
@@ -127,7 +124,7 @@ class WorldClassBottomNav extends StatelessWidget {
                           : WorldClassDesignSystem.secondaryText,
                     ),
                   ),
-                  
+
                   // Badge
                   if (badgeCount != null && badgeCount > 0)
                     Positioned(
@@ -157,9 +154,9 @@ class WorldClassBottomNav extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: WorldClassDesignSystem.spacingXS),
-            
+
             // Label
             Text(
               label,

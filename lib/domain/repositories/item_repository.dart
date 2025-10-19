@@ -50,6 +50,14 @@ abstract class ItemRepository {
   /// Get trending items
   Future<Either<Failure, List<ItemEntity>>> getTrendingItems();
 
+  /// Get personalized recommended items
+  Future<Either<Failure, List<ItemEntity>>> getRecommendedItems({
+    required String userId,
+    String? city,
+    double? latitude,
+    double? longitude,
+  });
+
   /// Get search suggestions
   Future<List<String>> getSearchSuggestions(String query);
 }

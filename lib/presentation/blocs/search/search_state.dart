@@ -29,10 +29,7 @@ class SearchCompleted extends SearchState {
   final String query;
   final List<ItemEntity> results;
 
-  const SearchCompleted({
-    required this.query,
-    required this.results,
-  });
+  const SearchCompleted({required this.query, required this.results});
 
   @override
   List<Object?> get props => [query, results];
@@ -43,10 +40,7 @@ class SearchLoaded extends SearchState {
   final String query;
   final List<ItemEntity> results;
 
-  const SearchLoaded({
-    required this.query,
-    required this.results,
-  });
+  const SearchLoaded({required this.query, required this.results});
 
   // Aliases for legacy code compatibility
   List<ItemEntity> get items => results;

@@ -146,10 +146,7 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
           // Title
           const Text(
             'Welcome to Barter Qween',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
 
@@ -194,13 +191,7 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -213,22 +204,31 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
         children: [
           const Text(
             'How It Works',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 48),
 
-          _buildStep(1, Icons.camera_alt, 'List Your Items',
-              'Take photos and describe what you want to trade'),
+          _buildStep(
+            1,
+            Icons.camera_alt,
+            'List Your Items',
+            'Take photos and describe what you want to trade',
+          ),
           const SizedBox(height: 32),
-          _buildStep(2, Icons.auto_awesome, 'Get Matched',
-              'Our AI finds perfect trade matches for you'),
+          _buildStep(
+            2,
+            Icons.auto_awesome,
+            'Get Matched',
+            'Our AI finds perfect trade matches for you',
+          ),
           const SizedBox(height: 32),
-          _buildStep(3, Icons.handshake, 'Make the Trade',
-              'Meet safely on campus and complete the exchange'),
+          _buildStep(
+            3,
+            Icons.handshake,
+            'Make the Trade',
+            'Meet safely on campus and complete the exchange',
+          ),
 
           const SizedBox(height: 32),
 
@@ -260,7 +260,12 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
     );
   }
 
-  Widget _buildStep(int number, IconData icon, String title, String description) {
+  Widget _buildStep(
+    int number,
+    IconData icon,
+    String title,
+    String description,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -322,30 +327,20 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shield_outlined,
-            size: 100,
-            color: Colors.blue[600],
-          ),
+          Icon(Icons.shield_outlined, size: 100, color: Colors.blue[600]),
 
           const SizedBox(height: 32),
 
           const Text(
             'Your Safety Matters',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 16),
 
           Text(
             'We\'ve built multiple safety features to ensure secure trading',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             textAlign: TextAlign.center,
           ),
 
@@ -404,10 +399,7 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
                 ),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -419,7 +411,11 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
 
   Widget _buildPersonalizationScreen() {
     final categories = [
-      {'name': 'Electronics', 'icon': Icons.phone_android, 'color': Colors.blue},
+      {
+        'name': 'Electronics',
+        'icon': Icons.phone_android,
+        'color': Colors.blue,
+      },
       {'name': 'Fashion', 'icon': Icons.checkroom, 'color': Colors.pink},
       {'name': 'Books', 'icon': Icons.menu_book, 'color': Colors.green},
       {'name': 'Gaming', 'icon': Icons.sports_esports, 'color': Colors.purple},
@@ -435,20 +431,14 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
         children: [
           const Text(
             'What Interests You?',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 16),
 
           Text(
             'Select categories to personalize your feed',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             textAlign: TextAlign.center,
           ),
 
@@ -541,20 +531,14 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
 
           const Text(
             'Enable Features',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 16),
 
           Text(
             'Allow permissions for the best experience',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             textAlign: TextAlign.center,
           ),
 
@@ -583,10 +567,7 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
 
           Text(
             'You can change these settings anytime',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -616,10 +597,7 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
               color: Theme.of(context).primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: Theme.of(context).primaryColor,
-            ),
+            child: Icon(icon, color: Theme.of(context).primaryColor),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -660,10 +638,7 @@ class _EnhancedOnboardingFlowState extends State<EnhancedOnboardingFlow> {
                 ),
                 Text(
                   description,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 ),
               ],
             ),

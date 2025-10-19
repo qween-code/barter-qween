@@ -90,26 +90,26 @@ class PaymentEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        type,
-        method,
-        amount,
-        currency,
-        status,
-        transactionId,
-        orderId,
-        receiptData,
-        itemId,
-        tradeOfferId,
-        subscriptionId,
-        description,
-        metadata,
-        createdAt,
-        completedAt,
-        refundedAt,
-        errorMessage,
-      ];
+    id,
+    userId,
+    type,
+    method,
+    amount,
+    currency,
+    status,
+    transactionId,
+    orderId,
+    receiptData,
+    itemId,
+    tradeOfferId,
+    subscriptionId,
+    description,
+    metadata,
+    createdAt,
+    completedAt,
+    refundedAt,
+    errorMessage,
+  ];
 }
 
 /// Payment Type - Ödeme tipi
@@ -224,6 +224,8 @@ extension PaymentStatusExtension on PaymentStatus {
   }
 
   bool get isSuccessful => this == PaymentStatus.completed;
-  bool get isPending => this == PaymentStatus.pending || this == PaymentStatus.processing;
-  bool get isFailed => this == PaymentStatus.failed || this == PaymentStatus.cancelled;
+  bool get isPending =>
+      this == PaymentStatus.pending || this == PaymentStatus.processing;
+  bool get isFailed =>
+      this == PaymentStatus.failed || this == PaymentStatus.cancelled;
 }

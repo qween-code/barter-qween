@@ -28,7 +28,8 @@ class TradesPageView extends StatefulWidget {
   State<TradesPageView> createState() => _TradesPageViewState();
 }
 
-class _TradesPageViewState extends State<TradesPageView> with SingleTickerProviderStateMixin {
+class _TradesPageViewState extends State<TradesPageView>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -76,7 +77,11 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red.shade300,
+                  ),
                   const SizedBox(height: 16),
                   Text(state.message, style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 16),
@@ -89,7 +94,8 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
             );
           }
 
-          if (state is TradeOffersLoaded || state is FilteredTradeOffersLoaded) {
+          if (state is TradeOffersLoaded ||
+              state is FilteredTradeOffersLoaded) {
             final offers = state is TradeOffersLoaded
                 ? state.offers
                 : (state as FilteredTradeOffersLoaded).offers;
@@ -99,16 +105,26 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.swap_horiz, size: 80, color: Colors.grey.shade300),
+                    Icon(
+                      Icons.swap_horiz,
+                      size: 80,
+                      color: Colors.grey.shade300,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'No trade offers yet',
-                      style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Start trading items!',
-                      style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade500,
+                      ),
                     ),
                   ],
                 ),
@@ -116,12 +132,16 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
             }
 
             final authState = context.read<AuthBloc>().state;
-            final currentUserId = authState is AuthAuthenticated 
-                ? authState.user.uid 
+            final currentUserId = authState is AuthAuthenticated
+                ? authState.user.uid
                 : '';
 
-            final receivedOffers = offers.where((o) => o.toUserId == currentUserId).toList();
-            final sentOffers = offers.where((o) => o.fromUserId == currentUserId).toList();
+            final receivedOffers = offers
+                .where((o) => o.toUserId == currentUserId)
+                .toList();
+            final sentOffers = offers
+                .where((o) => o.fromUserId == currentUserId)
+                .toList();
 
             return TabBarView(
               controller: _tabController,
@@ -138,7 +158,10 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
     );
   }
 
-  Widget _buildTradeList(List<TradeOfferEntity> offers, {required bool isReceived}) {
+  Widget _buildTradeList(
+    List<TradeOfferEntity> offers, {
+    required bool isReceived,
+  }) {
     if (offers.isEmpty) {
       return Center(
         child: Column(
@@ -164,7 +187,8 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: offers.length,
-        itemBuilder: (context, index) => _buildTradeCard(offers[index], isReceived: isReceived),
+        itemBuilder: (context, index) =>
+            _buildTradeCard(offers[index], isReceived: isReceived),
       ),
     );
   }
@@ -189,122 +213,174 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    isReceived ? 'From: ${offer.fromUserName}' : 'To: ${offer.toUserName}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                _buildStatusBadge(offer.status),
-              ],
-            ),
-            const SizedBox(height: 12),
-            const Divider(),
-            const SizedBox(height: 12),
-            // Items
-            Row(
-              children: [
-                // Your item
-                Expanded(
-                  child: _buildItemPreview(
-                    title: isReceived ? offer.requestedItemTitle : offer.offeredItemTitle,
-                    image: isReceived 
-                        ? (offer.requestedItemImages.isNotEmpty ? offer.requestedItemImages.first : null)
-                        : (offer.offeredItemImages.isNotEmpty ? offer.offeredItemImages.first : null),
-                    label: 'Your Item',
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Icon(Icons.swap_horiz, color: Theme.of(context).primaryColor),
-                ),
-                // Their item
-                Expanded(
-                  child: _buildItemPreview(
-                    title: isReceived ? offer.offeredItemTitle : offer.requestedItemTitle,
-                    image: isReceived
-                        ? (offer.offeredItemImages.isNotEmpty ? offer.offeredItemImages.first : null)
-                        : (offer.requestedItemImages.isNotEmpty ? offer.requestedItemImages.first : null),
-                    label: 'Their Item',
-                  ),
-                ),
-              ],
-            ),
-            if (offer.message != null && offer.message!.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '"${offer.message}"',
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700, fontStyle: FontStyle.italic),
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Text(
-              _formatDate(offer.createdAt),
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-            ),
-            // Action buttons for pending received offers
-            if (isReceived && offer.status.isPending) ...[
-              const SizedBox(height: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with status
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context.read<TradeBloc>().add(AcceptTradeOffer(offer.id));
-                      },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Accept'),
+                    child: Text(
+                      _buildParticipantLabel(
+                        isReceived: isReceived,
+                        fromName: offer.fromUserName,
+                        toName: offer.toUserName,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  _buildStatusBadge(offer.status),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 12),
+              // Items
+              Row(
+                children: [
+                  // Your item
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        context.read<TradeBloc>().add(RejectTradeOffer(offer.id));
-                      },
-                      style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                      child: const Text('Reject'),
+                    child: _buildItemPreview(
+                      title: isReceived
+                          ? offer.requestedItemTitle
+                          : offer.offeredItemTitle,
+                      image: isReceived
+                          ? (offer.requestedItemImages.isNotEmpty
+                                ? offer.requestedItemImages.first
+                                : null)
+                          : (offer.offeredItemImages.isNotEmpty
+                                ? offer.offeredItemImages.first
+                                : null),
+                      label: 'Your Item',
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Icon(
+                      Icons.swap_horiz,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  // Their item
+                  Expanded(
+                    child: _buildItemPreview(
+                      title: isReceived
+                          ? offer.offeredItemTitle
+                          : offer.requestedItemTitle,
+                      image: isReceived
+                          ? (offer.offeredItemImages.isNotEmpty
+                                ? offer.offeredItemImages.first
+                                : null)
+                          : (offer.requestedItemImages.isNotEmpty
+                                ? offer.requestedItemImages.first
+                                : null),
+                      label: 'Their Item',
                     ),
                   ),
                 ],
               ),
-            ],
-            // Cancel button for pending sent offers
-            if (!isReceived && offer.status.isPending) ...[
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    context.read<TradeBloc>().add(CancelTradeOffer(offer.id));
-                  },
-                  style: OutlinedButton.styleFrom(foregroundColor: Colors.orange),
-                  child: const Text('Cancel Offer'),
+              if (offer.message != null && offer.message!.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '"${offer.message}"',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade700,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ),
+              ],
+              const SizedBox(height: 12),
+              Text(
+                _formatDate(offer.createdAt),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               ),
+              // Action buttons for pending received offers
+              if (isReceived && offer.status.isPending) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          context.read<TradeBloc>().add(
+                            AcceptTradeOffer(offer.id),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text('Accept'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          context.read<TradeBloc>().add(
+                            RejectTradeOffer(offer.id),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                        ),
+                        child: const Text('Reject'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              // Cancel button for pending sent offers
+              if (!isReceived && offer.status.isPending) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      context.read<TradeBloc>().add(CancelTradeOffer(offer.id));
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.orange,
+                    ),
+                    child: const Text('Cancel Offer'),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
       ),
     );
   }
 
-  Widget _buildItemPreview({required String title, String? image, required String label}) {
+  String _buildParticipantLabel({
+    required bool isReceived,
+    required String fromName,
+    required String toName,
+  }) {
+    final raw = (isReceived ? fromName : toName).trim();
+    final sanitized = raw.isEmpty || raw.toLowerCase() == 'unknown'
+        ? (isReceived ? 'Satıcı' : 'Alıcı')
+        : raw;
+    return isReceived ? 'From: $sanitized' : 'To: $sanitized';
+  }
+
+  Widget _buildItemPreview({
+    required String title,
+    String? image,
+    required String label,
+  }) {
     return Column(
       children: [
         Container(
@@ -317,7 +393,12 @@ class _TradesPageViewState extends State<TradesPageView> with SingleTickerProvid
                 : null,
           ),
           child: image == null
-              ? Center(child: Icon(Icons.inventory_2_outlined, color: Colors.grey.shade400))
+              ? Center(
+                  child: Icon(
+                    Icons.inventory_2_outlined,
+                    color: Colors.grey.shade400,
+                  ),
+                )
               : null,
         ),
         const SizedBox(height: 4),

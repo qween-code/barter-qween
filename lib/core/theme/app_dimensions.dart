@@ -395,16 +395,16 @@ class AppDimensions {
   // ============================================
 
   /// Derinlik katmanları - Z-index sistemi
-  static const double depth1 = 0.0;    // Base layer
-  static const double depth2 = 10.0;   // Card layer
-  static const double depth3 = 20.0;   // Menu layer
-  static const double depth4 = 30.0;   // App bar layer
-  static const double depth6 = 40.0;   // Modal layer
-  static const double depth8 = 50.0;   // Popover layer
-  static const double depth10 = 60.0;  // Tooltip layer
-  static const double depth12 = 70.0;  // Notification layer
-  static const double depth16 = 80.0;  // Overlay layer
-  static const double depth20 = 90.0;  // Modal backdrop
+  static const double depth1 = 0.0; // Base layer
+  static const double depth2 = 10.0; // Card layer
+  static const double depth3 = 20.0; // Menu layer
+  static const double depth4 = 30.0; // App bar layer
+  static const double depth6 = 40.0; // Modal layer
+  static const double depth8 = 50.0; // Popover layer
+  static const double depth10 = 60.0; // Tooltip layer
+  static const double depth12 = 70.0; // Notification layer
+  static const double depth16 = 80.0; // Overlay layer
+  static const double depth20 = 90.0; // Modal backdrop
   static const double depth24 = 100.0; // Toast layer
 
   /// Nöromorfik derinlik efektleri için
@@ -479,7 +479,7 @@ class AppDimensions {
   // ============================================
   // LEGACY COMPATIBILITY GETTERS
   // ============================================
-  
+
   /// Legacy compatibility getters for older code
   static double get radiusSmall => radius8;
   static const double radiusMedium = 16.0;
@@ -492,7 +492,7 @@ class AppDimensions {
   static const double iconMedium = 24.0;
   static double get iconLarge => icon32;
   static double get appBarElevation => appBarElevation4;
-  
+
   // Missing properties for app_theme.dart compatibility
   static const double buttonPaddingHorizontal = 16.0;
   static const double buttonBorderWidth = 1.5;
@@ -503,7 +503,6 @@ class AppDimensions {
   static const double cardElevation = 2.0;
   static const double bottomNavElevation = 0.0;
   static const double dividerThickness = 1.0;
-  
 
   // ============================================
   // UTILITY METHODS

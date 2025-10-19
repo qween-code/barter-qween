@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/world_class_design_system.dart';
 
 /// 🌟 WORLD-CLASS SEARCH BAR
-/// 
+///
 /// Features:
 /// - Text search
 /// - Voice search button
@@ -28,7 +28,6 @@ class WorldClassSearchBar extends StatefulWidget {
 class _WorldClassSearchBarState extends State<WorldClassSearchBar> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  bool _isSearching = false;
 
   @override
   void dispose() {
@@ -59,9 +58,9 @@ class _WorldClassSearchBarState extends State<WorldClassSearchBar> {
             color: WorldClassDesignSystem.secondaryText,
             size: WorldClassDesignSystem.iconM,
           ),
-          
+
           const SizedBox(width: WorldClassDesignSystem.spacingM),
-          
+
           // Search Field
           Expanded(
             child: TextField(
@@ -79,14 +78,9 @@ class _WorldClassSearchBarState extends State<WorldClassSearchBar> {
                 color: WorldClassDesignSystem.primaryText,
               ),
               onChanged: widget.onSearchChanged,
-              onTap: () {
-                setState(() {
-                  _isSearching = true;
-                });
-              },
             ),
           ),
-          
+
           // Voice Search Button
           IconButton(
             onPressed: widget.onVoiceSearch,
@@ -97,7 +91,7 @@ class _WorldClassSearchBarState extends State<WorldClassSearchBar> {
             ),
             tooltip: 'Voice Search',
           ),
-          
+
           // Image Search Button
           IconButton(
             onPressed: widget.onImageSearch,
@@ -108,16 +102,13 @@ class _WorldClassSearchBarState extends State<WorldClassSearchBar> {
             ),
             tooltip: 'Image Search',
           ),
-          
+
           // Clear Button
           if (_searchController.text.isNotEmpty)
             IconButton(
               onPressed: () {
                 _searchController.clear();
                 widget.onSearchChanged('');
-                setState(() {
-                  _isSearching = false;
-                });
               },
               icon: Icon(
                 Icons.clear_rounded,

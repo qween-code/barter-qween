@@ -1,6 +1,7 @@
 // 📦 WORLD CLASS ADD ITEM PAGE
 // 4-step wizard: Photos → Details → Barter Preferences → Preview
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +12,6 @@ import '../../../core/services/gamification_service.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
-import '../../blocs/item/item_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class WorldClassAddItemPage extends StatefulWidget {
@@ -31,7 +31,8 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
   final List<File> _images = [];
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _originalPriceController = TextEditingController();
+  final TextEditingController _originalPriceController =
+      TextEditingController();
   String? _selectedCategory;
   String? _selectedCondition;
   final List<String> _wantToTradeFor = [];
@@ -48,12 +49,7 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
     'Music',
   ];
 
-  final List<String> _conditions = [
-    'Brand New',
-    'Like New',
-    'Good',
-    'Fair',
-  ];
+  final List<String> _conditions = ['Brand New', 'Like New', 'Good', 'Fair'];
 
   @override
   void dispose() {
@@ -91,7 +87,7 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
   Future<void> _pickImages() async {
     final ImagePicker picker = ImagePicker();
     final List<XFile> images = await picker.pickMultiImage();
-    
+
     if (images.isNotEmpty) {
       setState(() {
         _images.addAll(images.map((e) => File(e.path)));
@@ -117,19 +113,20 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
       _showError('Please select condition');
       return;
     }
-    
+
     setState(() => _isUploading = true);
-    
+
     try {
       final imageService = getIt<ImageService>();
       final user = FirebaseAuth.instance.currentUser;
-      
+      final firestore = FirebaseFirestore.instance;
+
       if (user == null) {
         _showError('Please login first');
         setState(() => _isUploading = false);
         return;
       }
-      
+
       // Step 1: Compress images
       final compressedImages = <File>[];
       for (int i = 0; i < _images.length; i++) {
@@ -139,21 +136,44 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
           compressedImages.add(compressed);
         }
       }
-      
+
       // Step 2: Upload to Firebase Storage
       final imageUrls = <String>[];
       final tempItemId = DateTime.now().millisecondsSinceEpoch.toString();
-      
+
       for (int i = 0; i < compressedImages.length; i++) {
-        setState(() => _uploadProgress = 0.5 + ((i / compressedImages.length) * 0.4));
-        final url = await imageService.uploadItemImage(compressedImages[i], tempItemId);
+        setState(
+          () => _uploadProgress = 0.5 + ((i / compressedImages.length) * 0.4),
+        );
+        final url = await imageService.uploadItemImage(
+          compressedImages[i],
+          tempItemId,
+        );
         if (url != null) {
           imageUrls.add(url);
         }
       }
-      
+
+      if (!mounted) return;
       setState(() => _uploadProgress = 0.9);
-      
+
+      Map<String, dynamic>? profileData;
+      try {
+        final doc = await firestore.collection('users').doc(user.uid).get();
+        profileData = doc.data();
+      } catch (_) {
+        profileData = null;
+      }
+
+      final ownerName = _resolveOwnerName(user, profileData);
+      final ownerPhotoUrl = _resolveOwnerPhoto(user, profileData);
+      final ownerCity = (profileData?['city'] as String?)?.trim();
+      final originalPrice = _parsePrice(_originalPriceController.text);
+      final tradePreference = _composeTradePreference();
+      final desiredCategories = _wantToTradeFor.isNotEmpty
+          ? List<String>.from(_wantToTradeFor)
+          : null;
+
       // Step 3: Create ItemEntity
       final item = ItemEntity(
         id: tempItemId,
@@ -163,24 +183,35 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
         condition: _selectedCondition!,
         images: imageUrls,
         ownerId: user.uid,
-        ownerName: user.displayName ?? 'Unknown',
+        ownerName: ownerName,
+        ownerPhotoUrl: ownerPhotoUrl,
+        city: ownerCity?.isNotEmpty == true ? ownerCity : null,
+        originalPrice: originalPrice,
+        monetaryValue: originalPrice,
         status: ItemStatus.active,
+        tradePreference: tradePreference,
+        tags: desiredCategories,
+        exchangeAvailable: desiredCategories != null || _isOpenToCash
+            ? true
+            : null,
         // estimatedValue removed - not in ItemEntity
-        // barterPreferences removed - not in constructor  
+        // barterPreferences removed - not in constructor
         // isOpenToCash: removed - not in constructor
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       // Step 4: Save to Firestore via BLoC
+      if (!mounted) return;
       context.read<ItemBloc>().add(CreateItem(item, images: const []));
-      
+
       // Step 5: Reward gamification coins
       final gamificationService = getIt<GamificationService>();
       await gamificationService.rewardForAction(user.uid, CoinAction.listItem);
-      
+
+      if (!mounted) return;
       setState(() => _uploadProgress = 1.0);
-      
+
       // Success!
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -191,7 +222,6 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
         );
         Navigator.of(context).pop();
       }
-      
     } catch (e) {
       _showError('Failed to upload: ${e.toString()}');
     } finally {
@@ -205,9 +235,67 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
   }
 
   void _showError(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
+  }
+
+  String _resolveOwnerName(User user, Map<String, dynamic>? profileData) {
+    final email = user.email;
+    final emailPrefix = email?.split('@').first;
+    final candidates = <String?>[
+      profileData?['displayName'] as String?,
+      profileData?['fullName'] as String?,
+      profileData?['username'] as String?,
+      user.displayName,
+      emailPrefix,
+      email,
+    ];
+
+    return candidates
+        .whereType<String>()
+        .map((value) => value.trim())
+        .firstWhere((value) => value.isNotEmpty, orElse: () => 'Misafir');
+  }
+
+  String? _resolveOwnerPhoto(User user, Map<String, dynamic>? profileData) {
+    final candidates = <String?>[
+      profileData?['photoUrl'] as String?,
+      profileData?['avatarUrl'] as String?,
+      user.photoURL,
+    ];
+
+    for (final candidate in candidates) {
+      final value = candidate?.trim();
+      if (value != null && value.isNotEmpty) {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  double? _parsePrice(String input) {
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) return null;
+    final sanitized = trimmed.replaceAll(RegExp(r'[^0-9.,]'), '');
+    if (sanitized.isEmpty) return null;
+    final normalized = sanitized.contains(',')
+        ? sanitized.replaceAll('.', '').replaceAll(',', '.')
+        : sanitized;
+    return double.tryParse(normalized);
+  }
+
+  String? _composeTradePreference() {
+    final segments = <String>[];
+    if (_wantToTradeFor.isNotEmpty) {
+      segments.add('Takasa açık: ${_wantToTradeFor.join(', ')}');
+    }
+    if (_isOpenToCash) {
+      segments.add('Nakit farkı kabul edilir');
+    }
+    if (segments.isEmpty) return null;
+    return segments.join(' • ');
   }
 
   @override
@@ -330,7 +418,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              Text('Uploading ${(_uploadProgress * 100).toInt()}%'),
+                              Text(
+                                'Uploading ${(_uploadProgress * 100).toInt()}%',
+                              ),
                             ],
                           )
                         : Text(_currentStep == 3 ? 'Publish' : 'Continue'),
@@ -371,13 +461,21 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey[300]!, width: 2, style: BorderStyle.solid),
+                  border: Border.all(
+                    color: Colors.grey[300]!,
+                    width: 2,
+                    style: BorderStyle.solid,
+                  ),
                 ),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_photo_alternate, size: 64, color: Colors.grey[400]),
+                      Icon(
+                        Icons.add_photo_alternate,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'Tap to add photos',
@@ -429,14 +527,21 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                         top: 8,
                         left: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.6),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
                             'COVER',
-                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -451,7 +556,11 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                             color: Colors.black.withOpacity(0.6),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.close, size: 16, color: Colors.white),
+                          child: const Icon(
+                            Icons.close,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -478,14 +587,21 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                     const SizedBox(width: 8),
                     Text(
                       'Photo Tips',
-                      style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.blue[900],
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '• Use natural lighting\n• Show all angles\n• Include close-ups of details\n• Show any defects clearly',
-                  style: TextStyle(color: Colors.blue[900], fontSize: 13, height: 1.5),
+                  style: TextStyle(
+                    color: Colors.blue[900],
+                    fontSize: 13,
+                    height: 1.5,
+                  ),
                 ),
               ],
             ),
@@ -513,7 +629,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
             decoration: InputDecoration(
               labelText: 'Title *',
               hintText: 'e.g., iPhone 13 Pro 256GB',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               filled: true,
               fillColor: Colors.grey[50],
             ),
@@ -527,7 +645,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
             value: _selectedCategory,
             decoration: InputDecoration(
               labelText: 'Category *',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               filled: true,
               fillColor: Colors.grey[50],
             ),
@@ -544,7 +664,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
             value: _selectedCondition,
             decoration: InputDecoration(
               labelText: 'Condition *',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               filled: true,
               fillColor: Colors.grey[50],
             ),
@@ -563,7 +685,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
             decoration: InputDecoration(
               labelText: 'Original Price (optional)',
               hintText: '₺1,000',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               filled: true,
               fillColor: Colors.grey[50],
               prefixText: '₺ ',
@@ -580,7 +704,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
             decoration: InputDecoration(
               labelText: 'Description',
               hintText: 'Describe your item, including any defects...',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               filled: true,
               fillColor: Colors.grey[50],
             ),
@@ -689,7 +815,9 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                 // Image
                 if (_images.isNotEmpty)
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
                     child: AspectRatio(
                       aspectRatio: 1.5,
                       child: Image.file(_images.first, fit: BoxFit.cover),
@@ -703,8 +831,13 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                     children: [
                       // Title
                       Text(
-                        _titleController.text.isEmpty ? 'Item Title' : _titleController.text,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        _titleController.text.isEmpty
+                            ? 'Item Title'
+                            : _titleController.text,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
 
                       const SizedBox(height: 8),
@@ -714,27 +847,39 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                         children: [
                           if (_selectedCategory != null)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.blue[50],
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 _selectedCategory!,
-                                style: TextStyle(fontSize: 12, color: Colors.blue[700]),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue[700],
+                                ),
                               ),
                             ),
                           if (_selectedCondition != null) ...[
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.green[50],
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 _selectedCondition!,
-                                style: TextStyle(fontSize: 12, color: Colors.green[700]),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green[700],
+                                ),
                               ),
                             ),
                           ],
@@ -745,7 +890,10 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                         const SizedBox(height: 12),
                         Text(
                           _descriptionController.text,
-                          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                          ),
                         ),
                       ],
 
@@ -753,7 +901,10 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                         const SizedBox(height: 16),
                         const Text(
                           'Looking to trade for:',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Wrap(
@@ -761,14 +912,20 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                           runSpacing: 6,
                           children: _wantToTradeFor.map((cat) {
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.purple[50],
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 cat,
-                                style: TextStyle(fontSize: 11, color: Colors.purple[700]),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.purple[700],
+                                ),
                               ),
                             );
                           }).toList(),
@@ -779,11 +936,18 @@ class _WorldClassAddItemPageState extends State<WorldClassAddItemPage> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Icon(Icons.attach_money, size: 16, color: Colors.green[700]),
+                            Icon(
+                              Icons.attach_money,
+                              size: 16,
+                              color: Colors.green[700],
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Open to cash difference',
-                              style: TextStyle(fontSize: 12, color: Colors.green[700]),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.green[700],
+                              ),
                             ),
                           ],
                         ),

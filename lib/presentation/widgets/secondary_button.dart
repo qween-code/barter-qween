@@ -50,9 +50,10 @@ class _SecondaryButtonState extends State<SecondaryButton>
       duration: const Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -103,10 +104,7 @@ class _SecondaryButtonState extends State<SecondaryButton>
         child: AnimatedBuilder(
           animation: _scaleAnimation,
           builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: child,
-            );
+            return Transform.scale(scale: _scaleAnimation.value, child: child);
           },
           child: RepaintBoundary(
             child: Container(
@@ -115,28 +113,32 @@ class _SecondaryButtonState extends State<SecondaryButton>
                   : (widget.width ?? AppDimensions.buttonHeight8 * 3),
               height: widget.height ?? AppDimensions.buttonHeight8,
               decoration: BoxDecoration(
-                color: isDisabled ? AppColors.surfaceVariant : AppColors.surface,
+                color: isDisabled
+                    ? AppColors.surfaceVariant
+                    : AppColors.surface,
                 borderRadius: BorderRadius.circular(AppDimensions.radius16),
                 border: Border.all(
                   color: isDisabled
                       ? AppColors.border
-                      : (_isHovered ? AppColors.primary : AppColors.borderNeumorphism),
+                      : (_isHovered
+                            ? AppColors.primary
+                            : AppColors.borderNeumorphism),
                   width: _isHovered ? 2 : 1,
                 ),
                 boxShadow: isDisabled
                     ? []
                     : (widget.enableUltraEffects
-                        ? NeuromorphicPresets.ButtonPresets.secondary(
-                            isPressed: _isPressed,
-                            isHovered: _isHovered,
-                          )
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]),
+                          ? NeuromorphicPresets.buttonPresets.secondary(
+                              isPressed: _isPressed,
+                              isHovered: _isHovered,
+                            )
+                          : [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]),
               ),
               child: Material(
                 color: Colors.transparent,

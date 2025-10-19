@@ -25,30 +25,30 @@ class SearchRepositoryImpl implements SearchRepository {
   }) async* {
     try {
       final startTime = DateTime.now();
-      
+
       await for (final items in remoteDataSource.searchItems(
         query: query,
         filters: filters,
       )) {
         final duration = DateTime.now().difference(startTime);
-        
+
         final metadata = SearchMetadata(
           query: query,
           resultsCount: items.length,
           searchDuration: duration,
           timestamp: DateTime.now(),
         );
-        
+
         // Convert ItemModel list to ItemEntity list
         final itemEntities = items.map((model) => model.toEntity()).toList();
-        
+
         final result = SearchResultEntity(
           items: itemEntities,
           totalCount: itemEntities.length,
           hasMore: itemEntities.length >= filters.limit,
           metadata: metadata,
         );
-        
+
         yield Right(result);
       }
     } catch (e) {
@@ -64,15 +64,18 @@ class SearchRepositoryImpl implements SearchRepository {
       // For now, return recent searches as suggestions
       final recent = await localDataSource.getRecentSearches();
       final suggestions = recent
-          .where((s) =>
-              s.query.toLowerCase().contains(partialQuery.toLowerCase()))
-          .map((s) => SearchSuggestionEntity(
-                suggestion: s.query,
-                type: SuggestionType.recentSearch,
-                popularity: s.resultCount,
-              ))
+          .where(
+            (s) => s.query.toLowerCase().contains(partialQuery.toLowerCase()),
+          )
+          .map(
+            (s) => SearchSuggestionEntity(
+              suggestion: s.query,
+              type: SuggestionType.recentSearch,
+              popularity: s.resultCount,
+            ),
+          )
           .toList();
-      
+
       return Right(suggestions);
     } catch (e) {
       return Left(CacheFailure(e.toString()));
@@ -137,14 +140,16 @@ class SearchRepositoryImpl implements SearchRepository {
         category: category,
         limit: limit,
       );
-      
+
       final suggestions = popular
-          .map((query) => SearchSuggestionEntity(
-                suggestion: query,
-                type: SuggestionType.popularSearch,
-              ))
+          .map(
+            (query) => SearchSuggestionEntity(
+              suggestion: query,
+              type: SuggestionType.popularSearch,
+            ),
+          )
           .toList();
-      
+
       return Right(suggestions);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
