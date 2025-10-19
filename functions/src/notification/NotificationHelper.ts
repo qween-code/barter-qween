@@ -1,5 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { PreferencesHelper } from './preferencesHelper';
+import { AnalyticsHelper } from './analyticsHelper';
+import { DeadLetterQueueHelper } from './deadLetterQueueHelper';
+import { NotificationBatchingHelper } from './batchingHelper';
 
 const db = admin.firestore();
 
@@ -15,6 +19,7 @@ export interface NotificationPayload {
 /**
  * CENTRALIZED NOTIFICATION HELPER - NO CODE DUPLICATION
  * All notification logic goes through this helper
+ * Integrates with: Batching, Preferences, Analytics, DLQ
  */
 export class NotificationHelper {
   /**
@@ -230,26 +235,77 @@ export class NotificationHelper {
 
   /**
    * Create notification and send push - combined operation
+   * Integrates preferences, batching, analytics, and DLQ
    */
   static async createAndSendNotification(
     userId: string,
     payload: NotificationPayload
   ): Promise<void> {
     try {
-      // Check notification preferences
-      const isEnabled = await this.checkNotificationPreference(userId, payload.type);
+      // Check notification preferences (respects user settings)
+      const categoryMap: { [key: string]: string } = {
+        new_message: 'messages',
+        new_trade_offer: 'tradeOffers',
+        trade_accepted: 'tradeUpdates',
+        trade_rejected: 'tradeUpdates',
+        trade_cancelled: 'tradeUpdates',
+        trade_completed: 'tradeUpdates',
+        counter_offer_received: 'tradeUpdates',
+        new_item_from_vendor: 'items',
+        new_rating: 'social',
+        new_follow: 'social',
+        campaign_notification: 'campaigns',
+        promotion_notification: 'campaigns',
+        warning_notification: 'warnings',
+        system_notification: 'system',
+      };
 
-      if (!isEnabled) {
-        functions.logger.info(
-          `Notifications disabled for user ${userId}, type ${payload.type}`
+      const category = categoryMap[payload.type] as any;
+
+      if (category) {
+        const isEnabled = await PreferencesHelper.isCategoryEnabled(
+          userId,
+          category
         );
-        return;
+
+        if (!isEnabled) {
+          functions.logger.info(
+            `Notifications disabled for user ${userId}, category ${category}`
+          );
+          return;
+        }
+
+        // Check if user wants batching for this category
+        const shouldBatch = await PreferencesHelper.shouldBatchNotifications(
+          userId,
+          category
+        );
+
+        if (shouldBatch) {
+          // Queue for batching instead of sending immediately
+          await NotificationBatchingHelper.queueNotificationForBatching(
+            userId,
+            payload
+          );
+          functions.logger.info(
+            `Notification queued for batching: user ${userId}, type ${payload.type}`
+          );
+          return;
+        }
       }
 
       // Create notification document (always)
       const notificationId = await this.createNotificationDocument(userId, payload);
       functions.logger.info(
         `Notification document created: ${notificationId} for user ${userId}`
+      );
+
+      // Log analytics: sent event
+      await AnalyticsHelper.logNotificationEvent(
+        userId,
+        'sent',
+        payload.type,
+        payload.entityId
       );
 
       // Get user tokens
@@ -286,7 +342,14 @@ export class NotificationHelper {
         error
       );
       // Log to Dead Letter Queue for later processing
-      await this.logToDeadLetterQueue(userId, payload, error);
+      const failureReason =
+        error instanceof Error ? error.message : 'Unknown error';
+      await DeadLetterQueueHelper.addToQueue(
+        userId,
+        payload,
+        error,
+        failureReason
+      );
     }
   }
 
