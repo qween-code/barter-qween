@@ -20,5 +20,47 @@
       "bucket": "bogazici-barter.appspot.com",
       "rules": "storage.rules"
     }
-  ]
+  ],
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "storage": {
+      "port": 9199
+    },
+    "functions": {
+      "port": 5001
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "bogazici-barter",
+          "appId": "1:229577295263:android:544e2e3c3c6a67760529aa",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "bogazici-barter",
+          "configurations": {
+            "android": "1:229577295263:android:544e2e3c3c6a67760529aa",
+            "ios": "1:229577295263:ios:6642f9c9f05408530529aa",
+            "web": "1:229577295263:web:5769b68cdc0758770529aa"
+          }
+        }
+      }
+    }
+  }
 }
