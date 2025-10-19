@@ -13,6 +13,7 @@ import 'package:barter_qween/core/di/injection.dart' as _i328;
 import 'package:barter_qween/core/services/admin_service.dart' as _i384;
 import 'package:barter_qween/core/services/analytics_service.dart' as _i628;
 import 'package:barter_qween/core/services/data_service.dart' as _i450;
+import 'package:barter_qween/core/services/fcm_service.dart' as _i1066;
 import 'package:barter_qween/core/services/gamification_service.dart' as _i754;
 import 'package:barter_qween/core/services/image_service.dart' as _i89;
 import 'package:barter_qween/core/services/map_service.dart' as _i728;
@@ -418,6 +419,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1051.GetItemUsecase>(
       () => _i1051.GetItemUsecase(gh<_i754.ItemRepository>()),
+    );
+    gh.lazySingleton<_i1066.FCMService>(
+      () => _i1066.FCMService(
+        gh<_i892.FirebaseMessaging>(),
+        gh<_i163.FlutterLocalNotificationsPlugin>(),
+        gh<_i974.FirebaseFirestore>(),
+        gh<_i59.FirebaseAuth>(),
+      ),
     );
     gh.lazySingleton<_i970.NegotiationRepository>(
       () => _i687.NegotiationRepositoryImpl(

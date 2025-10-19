@@ -15,16 +15,27 @@ import 'package:barter_qween/presentation/pages/trades/trades_page.dart';
 import 'package:barter_qween/presentation/pages/trades/trade_deeplink_page.dart';
 import 'package:barter_qween/presentation/blocs/trade/trade_bloc.dart';
 import 'package:barter_qween/core/routes/app_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Service for handling Firebase Cloud Messaging
+/// Manages FCM token lifecycle, local notifications, and deep linking
+@lazySingleton
 class FCMService {
   final FirebaseMessaging _firebaseMessaging;
   final FlutterLocalNotificationsPlugin _localNotifications;
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
 
-  FCMService(this._firebaseMessaging, this._localNotifications);
+  FCMService(
+    this._firebaseMessaging,
+    this._localNotifications,
+    this._firestore,
+    this._auth,
+  );
 
   /// Initialize FCM and request permissions
   Future<void> initialize() async {
@@ -34,15 +45,16 @@ class FCMService {
     // Initialize local notifications
     await _initializeLocalNotifications();
 
-    // Get FCM token
+    // Get FCM token and save to Firestore
     _fcmToken = await _firebaseMessaging.getToken();
-    // DEBUG: print('📱 FCM Token: $_fcmToken');
+    if (_fcmToken != null) {
+      await _saveFCMToken(_fcmToken!);
+    }
 
-    // Listen to token refresh
-    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+    // Listen to token refresh and update Firestore
+    _firebaseMessaging.onTokenRefresh.listen((newToken) async {
       _fcmToken = newToken;
-      // DEBUG: print('📱 FCM Token refreshed: $newToken');
-      // TODO: Update token in Firestore
+      await _saveFCMToken(newToken);
     });
 
     // Handle foreground messages
@@ -58,6 +70,53 @@ class FCMService {
     final initialMessage = await _firebaseMessaging.getInitialMessage();
     if (initialMessage != null) {
       _handleNotificationTap(initialMessage);
+    }
+  }
+
+  /// Save FCM token to Firestore under user's fcmTokens collection
+  Future<void> _saveFCMToken(String token) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return;
+
+      // Save token with metadata
+      await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('fcmTokens')
+          .doc(token)
+          .set({
+            'token': token,
+            'platform': Platform.isAndroid ? 'android' : 'ios',
+            'savedAt': FieldValue.serverTimestamp(),
+            'deviceInfo': {
+              'os': Platform.operatingSystem,
+              'osVersion': Platform.operatingSystemVersion,
+            },
+          });
+
+      debugPrint('✅ FCM Token saved to Firestore: $token');
+    } catch (e) {
+      debugPrint('❌ Error saving FCM token: $e');
+    }
+  }
+
+  /// Delete FCM token from Firestore
+  Future<void> _deleteFCMTokenFromFirestore(String token) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return;
+
+      await _firestore
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('fcmTokens')
+          .doc(token)
+          .delete();
+
+      debugPrint('✅ FCM Token deleted from Firestore: $token');
+    } catch (e) {
+      debugPrint('❌ Error deleting FCM token: $e');
     }
   }
 
@@ -163,9 +222,9 @@ class FCMService {
     );
   }
 
-  /// Handle notification tap
+  /// Handle notification tap - Deep linking to relevant screens
   void _handleNotificationTap(RemoteMessage message) {
-    // DEBUG: print('📲 Notification tapped: ${message.data}');
+    debugPrint('📲 Notification tapped: ${message.data}');
     final data = message.data;
     final type = data['type'] as String?;
     final entityId = data['entityId'] as String?;
@@ -181,13 +240,16 @@ class FCMService {
     }
 
     final nav = navigatorKey.currentState;
-    if (nav == null) return;
+    if (nav == null) {
+      debugPrint('⚠️ Navigator state not available for deep linking');
+      return;
+    }
 
-    // Route based on type
+    // Route based on notification type
     switch (type) {
+      // MESSAGE NOTIFICATIONS
       case 'new_message':
       case 'new_chat_message':
-        // Navigate to specific conversation if entityId (conversationId) is provided
         if (entityId != null && entityId.isNotEmpty) {
           nav.push(
             MaterialPageRoute(
@@ -198,16 +260,20 @@ class FCMService {
             ),
           );
         } else {
-          // Fallback to messages page
           nav.push(
             MaterialPageRoute(builder: (_) => const WorldClassMessagesPage()),
           );
         }
+        debugPrint('✅ Deep linked to message/chat');
         break;
+
+      // TRADE NOTIFICATIONS
       case 'new_trade_offer':
       case 'trade_accepted':
       case 'trade_rejected':
+      case 'trade_cancelled':
       case 'trade_completed':
+      case 'counter_offer_received':
         if (entityId != null && entityId.isNotEmpty) {
           nav.push(
             MaterialPageRoute(
@@ -224,30 +290,80 @@ class FCMService {
             ),
           );
         }
+        debugPrint('✅ Deep linked to trade');
         break;
+
+      // ITEM NOTIFICATIONS
+      case 'new_item_from_vendor':
       case 'item_liked':
       case 'item_sold':
+      case 'promotion_notification':
         if (entityId != null && entityId.isNotEmpty) {
           nav.pushNamed(AppRouter.itemDetail, arguments: entityId);
         } else {
           nav.pushNamed(RouteNames.dashboard);
         }
+        debugPrint('✅ Deep linked to item');
         break;
+
+      // BARTER MATCH NOTIFICATIONS
       case 'new_match':
       case 'price_drop_match':
-        // Navigate to barter matches page if source item ID is provided
         final sourceItemId = data['sourceItemId'] as String?;
         if (sourceItemId != null && sourceItemId.isNotEmpty) {
-          // Load source item and navigate to matches
           nav.pushNamed(AppRouter.itemDetail, arguments: sourceItemId);
         } else if (entityId != null && entityId.isNotEmpty) {
-          // Navigate to matched item
           nav.pushNamed(AppRouter.itemDetail, arguments: entityId);
         } else {
           nav.pushNamed(RouteNames.dashboard);
         }
+        debugPrint('✅ Deep linked to barter match');
         break;
+
+      // SOCIAL NOTIFICATIONS
+      case 'new_follow':
+        final followerId = data['followerUserId'] as String?;
+        if (followerId != null && followerId.isNotEmpty) {
+          // TODO: Navigate to user profile page with followerId
+          nav.pushNamed(RouteNames.dashboard);
+        } else {
+          nav.pushNamed(RouteNames.dashboard);
+        }
+        debugPrint('✅ Deep linked to follow notification');
+        break;
+
+      case 'new_rating':
+        if (entityId != null && entityId.isNotEmpty) {
+          // TODO: Navigate to ratings/reviews page for specific trade
+          nav.pushNamed(RouteNames.dashboard);
+        } else {
+          nav.pushNamed(RouteNames.dashboard);
+        }
+        debugPrint('✅ Deep linked to rating notification');
+        break;
+
+      // CAMPAIGN & SYSTEM NOTIFICATIONS
+      case 'campaign_notification':
+        // Navigate to campaigns/offers page
+        nav.pushNamed(RouteNames.dashboard);
+        debugPrint('✅ Deep linked to campaign');
+        break;
+
+      case 'warning_notification':
+        // Navigate to profile page to show warnings
+        nav.pushNamed(RouteNames.dashboard);
+        debugPrint('✅ Deep linked to warning');
+        break;
+
+      case 'system_notification':
+        // Stay on current page or go to dashboard
+        nav.pushNamed(RouteNames.dashboard);
+        debugPrint('✅ Deep linked to system notification');
+        break;
+
+      // DEFAULT
       default:
+        debugPrint('⚠️ Unknown notification type: $type, navigating to dashboard');
         nav.pushNamed(RouteNames.dashboard);
     }
   }
@@ -276,11 +392,18 @@ class FCMService {
     // DEBUG: print('📬 Unsubscribed from topic: $topic');
   }
 
-  /// Delete FCM token
+  /// Delete FCM token from Firebase and Firestore
   Future<void> deleteToken() async {
-    await _firebaseMessaging.deleteToken();
-    _fcmToken = null;
-    // DEBUG: print('📱 FCM Token deleted');
+    try {
+      if (_fcmToken != null) {
+        await _deleteFCMTokenFromFirestore(_fcmToken!);
+      }
+      await _firebaseMessaging.deleteToken();
+      _fcmToken = null;
+      debugPrint('✅ FCM Token deleted');
+    } catch (e) {
+      debugPrint('❌ Error deleting token: $e');
+    }
   }
 }
 
