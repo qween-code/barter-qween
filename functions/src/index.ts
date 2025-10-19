@@ -25,6 +25,27 @@ import {
   onCounterOfferReceivedNotification,
 } from './notification/notificationTriggers';
 
+// Import scheduled functions
+import {
+  processDeadLetterQueue,
+  cleanupDeadLetterQueue,
+  archiveOldAnalytics,
+  generateDailyStatistics,
+  cleanupInvalidTokens,
+  sendWeeklySummary,
+} from './notification/scheduledFunctions';
+
+// Import admin functions
+import {
+  broadcastNotification,
+  getNotificationStatistics,
+  getDeadLetterQueueItems,
+  resolveDLQItem,
+  getUserPreferences,
+  getNotificationTypePerformance,
+  testNotification,
+} from './notification/adminFunctions';
+
 // Export barter functions
 export { calculateBarterMatch, getMatchingItemsForCondition, onItemCreated, onItemUpdated };
 
@@ -40,6 +61,27 @@ export {
   onWarningIssued,
   onSystemNotificationCreated,
   onCounterOfferReceivedNotification,
+};
+
+// Export scheduled functions
+export {
+  processDeadLetterQueue,
+  cleanupDeadLetterQueue,
+  archiveOldAnalytics,
+  generateDailyStatistics,
+  cleanupInvalidTokens,
+  sendWeeklySummary,
+};
+
+// Export admin functions
+export {
+  broadcastNotification,
+  getNotificationStatistics,
+  getDeadLetterQueueItems,
+  resolveDLQItem,
+  getUserPreferences,
+  getNotificationTypePerformance,
+  testNotification,
 };
 
 // Trigger: when a new message is created, notify other participants
