@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { NotificationHelper, NotificationPayload } from '../notification/NotificationHelper';
 
 const db = admin.firestore();
 
@@ -94,28 +95,35 @@ async function notifyFollowersOfNewItem(ownerId: string, itemId: string, itemDat
           continue;
         }
 
-        // Create notification in the follower's notification collection
-        const notificationId = `${followerId}_new_item_${itemId}_${Date.now()}`;
-        const notificationRef = db.collection('users').doc(followerId).collection('notifications').doc(notificationId);
+        // Check for duplicate notification (deduplication)
+        const isDuplicate = await NotificationHelper.isDuplicateNotification(
+          followerId,
+          'new_item_from_vendor',
+          itemId,
+          60 // 60 minute window to avoid spam
+        );
 
-        await notificationRef.set({
-          userId: followerId,
-          type: 'new_item_from_vendor',
+        if (isDuplicate) {
+          functions.logger.info(`Duplicate notification skipped for follower ${followerId}`);
+          continue;
+        }
+
+        // Create and send notification using helper (includes push)
+        const payload: NotificationPayload = {
           title: 'Takip ettiğin bir satıcı yeni ürün yükledi!',
           body: `${itemOwnerName}, "${itemTitle}" başlıklı yeni bir ürün yükledi.`,
-          imageUrl: itemImageUrl,
-          isRead: false,
-          relatedEntityId: itemId,
+          type: 'new_item_from_vendor',
+          entityId: itemId,
+          imageUrl: itemImageUrl || undefined,
           data: {
-            ownerId: ownerId,
-            itemTitle: itemTitle,
-            itemOwnerName: itemOwnerName,
+            ownerId,
+            itemTitle,
+            itemOwnerName,
           },
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          entityId: itemId // For FCM data payload
-        });
+        };
 
-        functions.logger.info(`Notification created for follower ${followerId} about item ${itemId}`);
+        await NotificationHelper.createAndSendNotification(followerId, payload);
+        functions.logger.info(`Notification created and sent for follower ${followerId} about item ${itemId}`);
       } catch (error) {
         functions.logger.error(`Error notifying follower ${followerId} about item ${itemId}:`, error);
       }
