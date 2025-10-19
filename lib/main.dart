@@ -15,14 +15,23 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
   
   // Note: Emulator connection removed for web compatibility
   // Use platform-specific debug configurations:
   // Android: Enable Connect via localhost with port 9099, 8080, 9199
   // iOS: Use 10.0.2.2:9099 for local development
   
-  await configureDependencies();
+  try {
+    await configureDependencies();
+  } catch (e) {
+    debugPrint('DI configuration error: $e');
+  }
 
   // Initialize Firebase Cloud Messaging and local notifications
   try {
