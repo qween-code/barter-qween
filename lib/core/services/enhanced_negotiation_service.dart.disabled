@@ -1,0 +1,515 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
+import 'package:collection/collection.dart';
+import '../../domain/entities/negotiation_entity.dart';
+import '../../domain/entities/counter_offer_entity.dart';
+import '../../data/models/negotiation_model.dart';
+import '../../data/models/counter_offer_model.dart';
+
+@lazySingleton
+class EnhancedNegotiationService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<StreamSubscription<QuerySnapshot>> _subscriptions = [];
+
+  EnhancedNegotiationService();
+
+  /// Stream subscription for a specific negotiation
+  Stream<NegotiationEntity?> watchNegotiation(String negotiationId) {
+    return _firestore
+        .collection('negotiations')
+        .doc(negotiationId)
+        .snapshots()
+        .map((snapshot) {
+          if (!snapshot.exists) return null;
+          return NegotiationEntity.fromModel(
+            NegotiationModel.fromJson(snapshot.data() as Map<String, dynamic>),
+          );
+        });
+  }
+
+  /// Stream subscription for user's negotiations
+  Stream<List<NegotiationEntity>> watchUserNegotiations(String userId) {
+    return _firestore
+        .collection('negotiations')
+        .where('initiatorId', isEqualTo: userId)
+        .snapshots()
+        .asyncMap((snapshot) => _getNegotiationsFromSnapshot(snapshot));
+  }
+
+  /// Create a new negotiation
+  Future<String> createNegotiation({
+    required String tradeOfferId,
+    required String initiatorId,
+    required String responderId,
+    required String sourceItemId,
+    required String targetItemId,
+    DateTime? expiresAt,
+  }) async {
+    try {
+      final negotiation = NegotiationEntity(
+        id: firestoreId(),
+        tradeOfferId: tradeOfferId,
+        initiatorId: initiatorId,
+        responderId: responderId,
+        sourceItemId: sourceItemId,
+        targetItemId: targetItemId,
+        receiverId: responderId,
+        lastActionBy: initiatorId,
+        status: NegotiationStatus.active,
+        currentOfferer: initiatorId,
+        roundCount: 0,
+        rounds: const [],
+        totalMessages: 0,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        lastActivityAt: DateTime.now(),
+        expiresAt: expiresAt ?? DateTime.now().add(const Duration(days: 7)),
+        isExpired: false,
+      );
+
+      final docRef = await _firestore
+          .collection('negotiations')
+          .add(negotiation.toJson());
+
+      return docRef.id;
+    } catch (e) {
+      print('Error creating negotiation: $e');
+      throw Exception('Failed to create negotiation');
+    }
+  }
+
+  /// Send a counter offer
+  Future<String> sendCounterOffer({
+    required String negotiationId,
+    required String offererId,
+    required String targetUserId,
+    double? cashOffer,
+    String? paymentDirection,
+    String? meetupLocation,
+    DateTime? meetupTime,
+    String? notes,
+  }) async {
+    try {
+      final counterOffer = CounterOfferEntity(
+        id: firestoreId(),
+        negotiationId: negotiationId,
+        offererId: offererId,
+        targetUserId: targetUserId,
+        cashOffer: cashOffer,
+        paymentDirection: paymentDirection,
+        meetupLocation: meetupLocation,
+        meetupTime: meetupTime,
+        notes: notes,
+        status: OfferStatus.pending,
+        createdAt: DateTime.now(),
+        respondsAt: null,
+      );
+
+      // Create counter offer document
+      final docRef = await _firestore
+          .collection('counter_offers')
+          .add(counterOffer.toJson());
+
+      // Update negotiation with latest counter offer
+      await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .update({
+            'lastCounterOffer': counterOffer.toJson(),
+            'counterOffers': FieldValue.arrayUnion([counterOffer.id]),
+            'currentOfferer': targetUserId,
+            'currentCashOffer': cashOffer,
+            'currentPaymentDirection': paymentDirection,
+            'currentMeetupLocation': meetupLocation,
+            'currentMeetupTime': meetupTime?.toIso8601String(),
+            'currentNotes': notes,
+            'roundCount': FieldValue.increment(1),
+            'updatedAt': DateTime.now().toIso8601String(),
+            'lastActivityAt': DateTime.now().toIso8601String(),
+            'status': 'counterOffered',
+          });
+
+      return docRef.id;
+    } catch (e) {
+      print('Error sending counter offer: $e');
+      throw Exception('Failed to send counter offer');
+    }
+  }
+
+  /// Accept an offer
+  Future<bool> acceptOffer(String negotiationId, String userId) async {
+    try {
+      final negotiationDoc = await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .get();
+
+      if (!negotiationDoc.exists) {
+        return false;
+      }
+
+      final data = negotiationDoc.data() as Map<String, dynamic>;
+      
+      // Only the current offerer can accept offers
+      if (data['currentOfferer'] != userId) {
+        return false;
+      }
+
+      await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .update({
+        'status': NegotiationStatus.agreed.toString(),
+        'agreedAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'lastActivityAt': DateTime.now().toIso8601String(),
+      });
+
+      return true;
+    } catch (e) {
+      print('Error accepting offer: $e');
+      return false;
+    }
+  }
+
+  /// Reject an offer
+  Future<bool> rejectOffer({
+    required String negotiationId,
+    required String userId,
+    String? reason,
+  }) async {
+    try {
+      final negotiationDoc = await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .get();
+
+      if (!negotiationDoc.exists) {
+        return false;
+      }
+
+      final data = negotiationDoc.data() as Map<String, dynamic>;
+      
+      final partyId = userId == data['initiatorId'] 
+          ? data['responderId'] 
+          : data['initiatorId'];
+
+      await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .update({
+        'status': NegotiationStatus.rejected.toString(),
+        'rejectedBy': userId,
+        'rejectionReason': reason ?? 'Offer rejected',
+        'rejectedAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'lastActivityAt': DateTime.now().toIso8601String(),
+      });
+
+      // Notify the other party
+      // (Would implement notification service call here)
+
+      return true;
+    } catch (e) {
+      print('Error rejecting offer: $e');
+      return false;
+    }
+  /// Cancel negotiation
+  Future<bool> cancelNegotiation(String negotiationId, String userId) async {
+    try {
+      final negotiationDoc = await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .get();
+
+      if (!negotiationDoc.exists) {
+        return false;
+      }
+
+      final data = negotiationDoc.data() as Map<String, dynamic>;
+      
+      // Only initiator can cancel
+      if (data['initiatorId'] != userId) {
+        return false;
+      }
+
+      await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .update({
+        'status': NegotiationStatus.cancelled.toString(),
+        'cancelledAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+        'lastActivityAt': DateTime.now().toIso8601String(),
+      });
+
+      // Notify the other party
+      // (Would implement notification service call here)
+
+      return true;
+    } catch (e) {
+      print('Error cancelling negotiation: $e');
+      return false;
+    }
+  }
+
+  /// Get negotiation with all counter offers
+  Future<NegotiationEntity?> getNegotiation(String negotiationId) async {
+    try {
+      final doc = await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .get();
+
+      if (!doc.exists) return null;
+
+      final negotiationData = doc.data() as Map<String, dynamic>;
+      List<CounterOfferEntity> counterOffers = [];
+
+      // Get all counter offers for this negotiation
+      final counterOffersSnapshot = await _firestore
+          .collection('counter_offers')
+          .where('negotiationId', isEqualTo: negotiationId)
+          .orderBy('createdAt')
+          .get();
+
+      for (final doc in counterOffersSnapshot.docs) {
+        counterOffers.add(
+          CounterOfferEntity.fromModel(
+            CounterOfferModel.fromJson(doc.data()),
+          ),
+        );
+      }
+
+      return NegotiationEntity(
+        id: negotiationId,
+        tradeOfferId: negotiationData['tradeOfferId'] ?? '',
+        initiatorId: negotiationData['initiatorId'] ?? '',
+        responderId: negotiationData['responderId'] ?? '',
+        sourceItemId: negotiationData['sourceItemId'] ?? '',
+        targetItemId: negotiationData['targetItemId'] ?? '',
+        receiverId: negotiationData['receiverId'] ?? '',
+        lastActionBy: negotiationData['lastActionBy'] ?? '',
+        status: NegotiationStatus.values.firstWhere(
+          (s) => s == negotiationData['status'] ?? 'active'
+        ),
+        roundCount: negotiationData['roundCount'] ?? 0,
+        currentOfferer: negotiationData['currentOfferer'] ?? '',
+        currentCashOffer: negotiationData['currentCashOffer']?.toDouble(),
+        currentPaymentDirection: negotiationData['currentPaymentDirection'],
+        currentMeetupLocation: negotiationData['currentMeetupLocation'],
+        currentMeetupTime: negotiationData['currentMeetupTime'],
+        currentNotes: negotiationData['currentNotes'],
+        rounds: _convertRoundsFromData(
+          negotiationData['rounds'] as List<dynamic>?,
+        ),
+        totalMessages: negotiationData['totalMessages'] ?? 0,
+        createdAt: negotiationData['createdAt'] != null
+            ? DateTime.parse(negotiationData['createdAt'])
+            : DateTime.now(),
+        updatedAt: negotiationData['updatedAt'] != null
+            ? DateTime.parse(negotiationData['updatedAt'])
+            : DateTime.now(),
+        lastActivityAt: negotiationData['lastActivityAt'] != null
+            ? DateTime.parse(negotiationData['lastActivityAt'])
+            : DateTime.now(),
+        agreedAt: negotiationData['agreedAt'] != null
+            ? DateTime.parse(negotiationData['agreedAt'])
+            : null,
+        rejectedAt: negotiationData['rejectedAt'] != null
+            ? DateTime.parse(negotiationData['rejectedAt'])
+            : null,
+        rejectionReason: negotiationData['rejectionReason'],
+        rejectedBy: negotiationData['rejectedBy'],
+        expiresAt: negotiationData['expiresAt'] != null
+            ? DateTime.parse(negotiation['expiresAt'])
+            : null,
+        isExpired: negotiationData['isExpired'] ?? false,
+        counterOffers: counterOffers,
+        lastCounterOffer: counterOffers.isEmpty
+            ? null
+            : counterOffers.last,
+      );
+    } catch (e) {
+      print('Error getting negotiation: $e');
+      return null;
+    }
+  }
+
+  /// Get all negotiations for a user
+  Future<List<NegotiationEntity>> getUserNegotiations(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('negotiations')
+          .where('initiatorId', isEqualTo: userId)
+          .orderBy('updatedAt', descending: true)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => NegotiationEntity.fromModel(
+            NegotiationModel.fromJson(doc.data() as Map<String, dynamic>),
+          ))
+          .toList();
+    } catch (e) {
+      print('Error getting user negotiations: $e');
+      return [];
+    }
+  }
+
+  /// Get pending negotiations (user needs to respond)
+  Future<List<NegotiationEntity>> getPendingNegotiations(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('negotiations')
+          .where('responderId', isEqualTo: userId)
+          .where('status', whereIn: [
+            ['active', 'counterOffered']
+          ])
+          .orderBy('updatedAt', descending: true)
+          .limit(20)
+          .get();
+
+      return snapshot.docs
+          .map((doc) => NegotiationEntity.fromModel(
+            NegotiationModel.fromJson(doc.data() as Map<String, dynamic>),
+          ))
+          .where((n) => n.needsAttention(userId))
+          .toList();
+    } catch (e) {
+      print('Error getting pending negotiations: $e');
+      return [];
+    }
+  }
+
+  /// Get conversation history between negotiation participants
+  Future<List<Map<String, dynamic>>> getConversationHistory(
+    String negotiationId,
+  ) async {
+    try {
+      final messagesSnapshot = await _firestore
+          .collection('messages')
+          .where('conversationId', isEqualTo: negotiationId)
+          .orderBy('createdAt', descending: true)
+          .limit(100)
+          .get();
+
+      return messagesSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    } catch (e) {
+      print('Error getting conversation history: $e');
+      return [];
+    }
+  }
+
+  /// Send negotiation message
+  Future<String> sendMessage({
+    required String negotiationId,
+    required String senderId,
+    required String messageText,
+  }) async {
+    try {
+      final message = {
+        'id': firestoreId(),
+        'negotiationId': negotiationId,
+        'senderId': senderId,
+        'messageText': messageText,
+        'timestamp': DateTime.now().toIso8601String(),
+        'isRead': false,
+        'messageType': 'text',
+        'createdAt': DateTime.now().toIso8601String(),
+      };
+
+      final docRef = await _firestore
+          .collection('messages')
+          .add(message);
+
+      // Update negotiation message count and activity
+      await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .update({
+            'totalMessages': FieldValue.increment(1),
+            'updatedAt': DateTime.now().toIso8601String(),
+            'lastActivityAt': DateTime.now().toIso8601String(),
+          });
+
+      return docRef.id;
+    } catch (e) {
+      print('Error sending message: $e');
+      throw Exception('Failed to send message');
+    }
+  }
+
+  /// Mark messages as read
+  Future<void> markMessagesAsRead(
+    String negotiationId,
+    String userId,
+    List<String> messageIds,
+  ) async {
+    try {
+      for (final messageId in messageIds) {
+        final docRef = _firestore
+            .collection('messages')
+            .doc(messageId);
+
+        await docRef.update({
+          'isRead': true,
+          'readAt': DateTime.now().toIso8601String(),
+        });
+      }
+
+      // Update negotiation activity
+      await _firestore
+          .collection('negotiations')
+          .doc(negotiationId)
+          .update({
+            'lastActivityAt': DateTime.now().toIso8601String(),
+          });
+    } catch (e) {
+      print('Error marking messages as read: $e');
+    }
+  }
+
+  /// Get unread message count for negotiation
+  Future<int> getUnreadMessageCount(String userId, String negotiationId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('messages')
+          .where('negotiationId', isEqualTo: negotiationId)
+          .where('isRead', isEqualTo: false)
+          .where('receiverId', isEqualTo: userId)
+          .count();
+
+      return snapshot.size;
+    } catch (e) {
+      print('Error getting unread message count: $e');
+      return 0;
+    }
+  }
+
+  /// Helper method to convert rounds from Firestore data
+  List<NegotiationRound> _convertRoundsFromData(List<dynamic>? roundsData) {
+    if (roundsData == null) return [];
+    
+    return roundsData.map((roundData) => NegotiationRound(
+      roundNumber: (roundData['roundNumber'] as int?) ?? 0,
+      offererId: roundData['offererId'] as String? ?? '',
+      cashOffer: roundData['cashOffer']?.toDouble(),
+      paymentDirection: roundData['paymentDirection'] as String?,
+      meetupLocation: roundData['meetupLocation'] as String?,
+      meetupTime: roundData['meetupTime'] != null
+          ? DateTime.parse(roundData['meetupTime'])
+          : null,
+      notes: roundData['notes'] as String?,
+      createdAt: roundData['createdAt'] != null
+          ? DateTime.parse(roundData['createdAt'])
+          : DateTime.now(),
+    )).toList();
+  }
+
+  void dispose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+  }
+}

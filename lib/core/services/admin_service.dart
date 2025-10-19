@@ -405,7 +405,7 @@ class AdminService {
       categoryCount[category] = (categoryCount[category] ?? 0) + 1;
     }
     
-    return categoryCount;
+    return Future.value(categoryCount);
   }
 
   /// Calculate weekly user growth
@@ -461,8 +461,8 @@ class AdminStats {
     this.premiumSubscribers = 0,
     this.categoryStats = const {},
     this.weeklyGrowth = 0.0,
-    this.lastUpdated = DateTime.now(),
-  });
+    DateTime? lastUpdated,
+  }) : lastUpdated = lastUpdated ?? DateTime.now();
 }
 
 /// Admin user information
