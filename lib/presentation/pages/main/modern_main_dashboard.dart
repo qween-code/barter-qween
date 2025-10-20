@@ -9,8 +9,8 @@ import '../../blocs/item/item_event.dart';
 import '../../blocs/notification/notification_bloc.dart';
 import '../../blocs/notification/notification_event.dart';
 import '../../blocs/notification/notification_state.dart';
-import '../../widgets/navigation/modern_bottom_nav_v2.dart';
-import '../home/modern_home_page_v2.dart';
+import '../../widgets/navigation/modern_nav_bar_pro.dart';
+import '../home/modern_home_page_v3.dart';
 import '../explore/world_class_explore_page.dart';
 import '../add_item/world_class_add_item_page.dart';
 import '../messages/world_class_messages_page.dart';
@@ -104,7 +104,7 @@ class _ModernMainDashboardState extends State<ModernMainDashboard> {
           },
           children: [
             // Home Page
-            const ModernHomePageV2(),
+            const ModernHomePageV3(),
 
             // Explore Page
             BlocProvider(
@@ -131,7 +131,7 @@ class _ModernMainDashboardState extends State<ModernMainDashboard> {
               unreadCount = notificationState.count > 0 ? notificationState.count : null;
             }
             
-            return ModernBottomNavV2(
+            return ModernNavBarPro(
               currentIndex: _currentIndex,
               onTap: _onNavTap,
               unreadCount: unreadCount,
