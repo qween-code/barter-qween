@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 class ModernBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final int? unreadCount;
 
   const ModernBottomNav({
     Key? key,
     required this.currentIndex,
     required this.onTap,
+    this.unreadCount,
   }) : super(key: key);
 
   @override
@@ -56,10 +58,11 @@ class ModernBottomNav extends StatelessWidget {
               ),
               _buildNavItem(
                 index: 3,
-                icon: Icons.favorite_outline,
-                label: 'Favoriler',
+                icon: Icons.message_outlined,
+                label: 'Mesajlar',
                 isActive: currentIndex == 3,
                 onTap: () => onTap(3),
+                badgeCount: unreadCount,
               ),
               _buildNavItem(
                 index: 4,
@@ -82,12 +85,13 @@ class ModernBottomNav extends StatelessWidget {
     required bool isActive,
     required VoidCallback onTap,
     bool isFab = false,
+    int? badgeCount,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: isFab
           ? _buildFabNavItem(icon, label)
-          : _buildRegularNavItem(icon, label, isActive),
+          : _buildRegularNavItem(icon, label, isActive, badgeCount),
     );
   }
 
@@ -95,6 +99,7 @@ class ModernBottomNav extends StatelessWidget {
     IconData icon,
     String label,
     bool isActive,
+    int? badgeCount,
   ) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -109,10 +114,36 @@ class ModernBottomNav extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isActive ? Colors.blue : Colors.grey.shade600,
-            size: 24,
+          Stack(
+            children: [
+              Icon(
+                icon,
+                color: isActive ? Colors.blue : Colors.grey.shade600,
+                size: 24,
+              ),
+              if (badgeCount != null && badgeCount > 0)
+                Positioned(
+                  right: -4,
+                  top: -4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                    child: Text(
+                      badgeCount > 99 ? '99+' : badgeCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 4),
           AnimatedOpacity(
