@@ -11,7 +11,6 @@ import '../../blocs/auth/auth_state.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/favorite/favorite_event.dart';
 import '../../blocs/favorite/favorite_state.dart';
-import '../../widgets/shimmer_loading.dart';
 
 /// 🎯 ULTRA MODERN HOME PAGE V3 - PREMIUM EDITION
 /// Categories: Perfect circles, horizontal scroll, modern icons
@@ -748,27 +747,28 @@ class _ModernHomePageV3State extends State<ModernHomePageV3>
                               ),
                             ),
                             const SizedBox(height: 3),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on_outlined,
-                                  size: 10,
-                                  color: Colors.grey.shade500,
-                                ),
-                                const SizedBox(width: 2),
-                                Expanded(
-                                  child: Text(
-                                    item.location,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 10,
+                            if (item.location.isNotEmpty)
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 10,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Expanded(
+                                    child: Text(
+                                      item.location,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 10,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
                           ],
                         ),
                       ],
@@ -830,13 +830,11 @@ class _ModernHomePageV3State extends State<ModernHomePageV3>
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: ShimmerLoading(
-              child: Container(
-                width: 160,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+            child: Container(
+              width: 160,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
           );
