@@ -9,6 +9,7 @@ import '../../blocs/item/item_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
+import '../../blocs/favorite/favorite_event.dart';
 import '../../blocs/favorite/favorite_state.dart';
 
 /// Modern, Trendy Home Page
@@ -171,7 +172,7 @@ class _ModernHomePageState extends State<ModernHomePage>
                   child: IconButton(
                     icon: const Icon(Icons.notifications_outlined),
                     onPressed: () {
-                      context.pushNamed(AppRouter.notifications);
+                      Navigator.of(context).pushNamed(AppRouter.notifications);
                     },
                     color: Colors.white,
                   ),
@@ -325,7 +326,7 @@ class _ModernHomePageState extends State<ModernHomePage>
           ],
         ),
         child: TextField(
-          onTap: () => context.pushNamed(AppRouter.search),
+          onTap: () => Navigator.of(context).pushNamed(AppRouter.explore),
           readOnly: true,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search, color: Colors.grey),
@@ -358,7 +359,7 @@ class _ModernHomePageState extends State<ModernHomePage>
                     ),
               ),
               TextButton(
-                onPressed: () => context.pushNamed(AppRouter.explore),
+                onPressed: () => Navigator.of(context).pushNamed(AppRouter.explore),
                 child: const Text('Tümü →'),
               ),
             ],
@@ -540,7 +541,7 @@ class _ModernHomePageState extends State<ModernHomePage>
   Widget _buildProductCard(BuildContext context, ItemEntity item) {
     return GestureDetector(
       onTap: () {
-        context.pushNamed(AppRouter.itemDetail, extra: item.id);
+        Navigator.of(context).pushNamed(AppRouter.itemDetail, arguments: item.id);
       },
       child: Container(
         width: 140,
@@ -619,15 +620,9 @@ class _ModernHomePageState extends State<ModernHomePage>
 
                   return GestureDetector(
                     onTap: () {
-                      if (isFavorited) {
-                        context.read<FavoriteBloc>().add(
-                          RemoveFavorite(item.id),
-                        );
-                      } else {
-                        context.read<FavoriteBloc>().add(
-                          AddFavorite(item.id),
-                        );
-                      }
+                      context.read<FavoriteBloc>().add(
+                        ToggleFavorite(item.id),
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(6),
