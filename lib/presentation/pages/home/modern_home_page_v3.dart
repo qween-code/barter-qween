@@ -747,7 +747,7 @@ class _ModernHomePageV3State extends State<ModernHomePageV3>
                               ),
                             ),
                             const SizedBox(height: 3),
-                            if (item.location.isNotEmpty)
+                            if ((item.location ?? '').isNotEmpty)
                               Row(
                                 children: [
                                   Icon(
@@ -758,7 +758,7 @@ class _ModernHomePageV3State extends State<ModernHomePageV3>
                                   const SizedBox(width: 2),
                                   Expanded(
                                     child: Text(
-                                      item.location,
+                                      item.location ?? '',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
