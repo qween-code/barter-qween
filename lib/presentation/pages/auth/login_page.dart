@@ -4,7 +4,7 @@ import '../../../core/theme/world_class_design_system.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_event.dart';
 import '../../blocs/auth/auth_state.dart';
-import '../main/modern_main_dashboard.dart';
+import '../main/main_dashboard.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
 
@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage>
               Navigator.of(context).pushReplacement(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                      const ModernMainDashboard(),
+                      const MainDashboard(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                         return FadeTransition(opacity: animation, child: child);

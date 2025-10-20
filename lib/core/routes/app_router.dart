@@ -7,7 +7,7 @@ import '../../core/di/injection.dart';
 import '../../presentation/blocs/item/item_bloc.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../presentation/pages/onboarding/onboarding_page.dart';
-import '../../presentation/pages/main/modern_main_dashboard.dart';
+import '../../presentation/pages/main/main_dashboard.dart';
 import '../../presentation/pages/items/enhanced_item_detail_page_v2.dart';
 import '../../presentation/pages/auth/login_page.dart';
 import '../../presentation/pages/auth/register_page.dart';
@@ -58,7 +58,7 @@ class AppRouter {
 
       case home:
       case dashboard:
-        return MaterialPageRoute(builder: (_) => const ModernMainDashboard());
+        return MaterialPageRoute(builder: (_) => const MainDashboard());
 
       case explore:
         final initialCategory = settings.arguments as String?;
