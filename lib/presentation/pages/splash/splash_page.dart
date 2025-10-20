@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/world_class_design_system.dart';
 import '../onboarding/onboarding_page.dart';
 import '../auth/login_page.dart';
-import '../main/main_dashboard.dart';
+import '../main/modern_main_dashboard.dart';
 
 /// 🌟 WORLD-CLASS SPLASH SCREEN
 ///
@@ -131,7 +131,7 @@ class _SplashPageState extends State<SplashPage>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const MainDashboard(),
+            const ModernMainDashboard(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
