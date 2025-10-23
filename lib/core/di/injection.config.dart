@@ -13,6 +13,8 @@ import 'package:barter_qween/core/di/injection.dart' as _i328;
 import 'package:barter_qween/core/services/admin_service.dart' as _i384;
 import 'package:barter_qween/core/services/analytics_service.dart' as _i628;
 import 'package:barter_qween/core/services/data_service.dart' as _i450;
+import 'package:barter_qween/core/services/enhanced_payment_service.dart'
+    as _i7;
 import 'package:barter_qween/core/services/fcm_service.dart' as _i1066;
 import 'package:barter_qween/core/services/gamification_service.dart' as _i754;
 import 'package:barter_qween/core/services/image_service.dart' as _i89;
@@ -154,6 +156,8 @@ import 'package:barter_qween/domain/usecases/items/update_item_usecase.dart'
     as _i768;
 import 'package:barter_qween/domain/usecases/notifications/get_notifications_usecase.dart'
     as _i983;
+import 'package:barter_qween/domain/usecases/process_barter_payment_usecase.dart'
+    as _i800;
 import 'package:barter_qween/domain/usecases/profile/check_follow_status_usecase.dart'
     as _i137;
 import 'package:barter_qween/domain/usecases/profile/follow_user_usecase.dart'
@@ -294,6 +298,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i548.FavoriteRemoteDataSource>(
       () => _i548.FavoriteRemoteDataSourceImpl(gh<_i974.FirebaseFirestore>()),
+    );
+    gh.lazySingleton<_i800.ProcessBarterPaymentUsecase>(
+      () => _i800.ProcessBarterPaymentUsecase(gh<_i7.EnhancedPaymentService>()),
     );
     gh.lazySingleton<_i512.ProfileRemoteDataSource>(
       () => _i512.ProfileRemoteDataSourceImpl(

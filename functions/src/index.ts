@@ -25,6 +25,9 @@ import {
   onCounterOfferReceivedNotification,
 } from './notification/notificationTriggers';
 
+// Import payment triggers
+import { onPaymentStatusUpdated } from './payment/paymentTriggers';
+
 // Import scheduled functions
 import {
   processDeadLetterQueue,
@@ -62,6 +65,13 @@ export {
   onSystemNotificationCreated,
   onCounterOfferReceivedNotification,
 };
+
+// Export payment triggers and functions
+export {
+  onPaymentStatusUpdated,
+  verifyPayment,
+  validatePayment
+} from './payment/paymentTriggers';
 
 // Export scheduled functions
 export {

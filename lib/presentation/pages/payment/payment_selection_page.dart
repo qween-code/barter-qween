@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/services/enhanced_payment_service.dart';
 import '../../../domain/entities/payment_entity.dart';
 import '../../../domain/entities/subscription_entity.dart';
 
@@ -516,23 +518,60 @@ class _PaymentSelectionPageState extends State<PaymentSelectionPage> {
     setState(() => _isProcessing = true);
 
     try {
-      // TODO: Implement actual payment processing
-      // await paymentService.processPayment(...)
+      // Google Pay seçildiğinde gerçek ödeme işlemini başlat
+      if (_selectedMethod == PaymentMethod.googlePay) {
+        final paymentService = EnhancedPaymentService();
 
-      // Simulate payment processing
-      await Future.delayed(const Duration(seconds: 2));
+        // Barter sistemi için gerekli bilgileri al
+        final barterData = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        final recipientId = barterData?['recipientId'] as String?;
+        final tradeId = barterData?['tradeId'] as String?;
+        final itemId = barterData?['itemId'] as String?;
 
-      if (mounted) {
-        // Navigate to success page
-        Navigator.pushReplacementNamed(
-          context,
-          '/payment-success',
-          arguments: {
-            'amount': widget.amount,
-            'method': _selectedMethod,
-            'type': widget.paymentType,
-          },
+        if (recipientId == null || tradeId == null) {
+          throw Exception('Barter bilgileri eksik');
+        }
+
+        final result = await paymentService.processBarterPayment(
+          amount: widget.amount,
+          recipientId: recipientId,
+          description: 'Barter para farkı ödemesi',
+          tradeId: tradeId,
+          itemId: itemId,
         );
+
+        if (result.success) {
+          if (mounted) {
+            Navigator.pushReplacementNamed(
+              context,
+              '/payment-success',
+              arguments: {
+                'amount': widget.amount,
+                'method': _selectedMethod,
+                'type': widget.paymentType,
+                'paymentId': result.paymentId,
+                'tradeId': tradeId,
+              },
+            );
+          }
+        } else {
+          throw Exception(result.errorMessage ?? 'Ödeme işlemi başarısız');
+        }
+      } else {
+        // Diğer ödeme yöntemleri için simülasyon
+        await Future.delayed(const Duration(seconds: 2));
+
+        if (mounted) {
+          Navigator.pushReplacementNamed(
+            context,
+            '/payment-success',
+            arguments: {
+              'amount': widget.amount,
+              'method': _selectedMethod,
+              'type': widget.paymentType,
+            },
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

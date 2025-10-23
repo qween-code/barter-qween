@@ -17,4 +17,7 @@ class RouteNames {
   // Sprint 7: Monetization routes
   static const String premiumPlans = '/premium-plans';
   static const String paymentSelection = '/payment-selection';
+  static const String paymentSuccess = '/payment-success';
+  static const String paymentError = '/payment-error';
+  static const String paymentHistory = '/payment-history';
 }

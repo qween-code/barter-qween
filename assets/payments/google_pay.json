@@ -1,7 +1,7 @@
 {
   "provider": "google_pay",
   "data": {
-    "environment": "TEST",
+    "environment": "PRODUCTION",
     "apiVersion": 2,
     "apiVersionMinor": 0,
     "allowedPaymentMethods": [
@@ -9,7 +9,7 @@
         "type": "CARD",
         "parameters": {
           "allowedAuthMethods": ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-          "allowedCardNetworks": ["MASTERCARD", "VISA"],
+          "allowedCardNetworks": ["MASTERCARD", "VISA", "AMEX", "DISCOVER"],
           "billingAddressRequired": true,
           "billingAddressParameters": {
             "format": "FULL"
@@ -18,19 +18,26 @@
         "tokenizationSpecification": {
           "type": "PAYMENT_GATEWAY",
           "parameters": {
-            "gateway": "example",
-            "gatewayMerchantId": "exampleGatewayMerchantId"
+            "gateway": "stripe",
+            "gatewayMerchantId": "pk_test_iBa8Lm4ReIKWMyVoCggcZEQY"
           }
         }
       }
     ],
     "merchantInfo": {
       "merchantId": "01234567890123456789",
-      "merchantName": "BarterQween"
+      "merchantName": "BarterQween - Güvenli Takas Platformu",
+      "merchantOrigin": "https://bogazici-barter.web.app"
     },
     "transactionInfo": {
       "countryCode": "TR",
-      "currencyCode": "TRY"
+      "currencyCode": "TRY",
+      "checkoutOption": "COMPLETE_IMMEDIATE_PURCHASE"
+    },
+    "shippingAddressRequired": false,
+    "shippingAddressParameters": {
+      "allowedCountryCodes": ["TR"],
+      "phoneNumberRequired": true
     }
   }
 }

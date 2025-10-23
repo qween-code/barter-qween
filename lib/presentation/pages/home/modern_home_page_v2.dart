@@ -160,7 +160,9 @@ class _ModernHomePageV2State extends State<ModernHomePageV2>
                         ),
                       ],
                     ),
-                    _buildHeaderActionButtons(context),
+                                         _buildHeaderActionButtons(context),
+                   ],</search>
+</search_and_replace>
                   ],
                 ),
               ],

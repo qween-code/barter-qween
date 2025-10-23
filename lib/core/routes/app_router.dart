@@ -20,6 +20,11 @@ import '../../presentation/pages/profile/user_profile_page.dart';
 import '../../presentation/pages/favorites/favorites_page.dart';
 import '../../presentation/pages/barter/barter_matches_page.dart';
 import '../../presentation/pages/notifications/notifications_page.dart';
+import '../../presentation/pages/payment/payment_selection_page.dart';
+import '../../presentation/pages/payment/payment_success_page.dart';
+import '../../presentation/pages/payment/payment_error_page.dart';
+import '../../presentation/pages/payment/payment_history_page.dart';
+import '../../domain/entities/payment_entity.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -38,6 +43,10 @@ class AppRouter {
   static const String favorites = '/favorites';
   static const String barterMatches = '/barter-matches';
   static const String notifications = '/notifications';
+  static const String paymentSelection = '/payment-selection';
+  static const String paymentSuccess = '/payment-success';
+  static const String paymentError = '/payment-error';
+  static const String paymentHistory = '/payment-history';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -101,6 +110,47 @@ class AppRouter {
 
       case notifications:
         return MaterialPageRoute(builder: (_) => const NotificationsPage());
+
+      case paymentSelection:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => PaymentSelectionPage(
+            amount: args?['amount'] as double? ?? 0.0,
+            description: args?['description'] as String?,
+            paymentType: args?['paymentType'] as PaymentType? ?? PaymentType.cashDifferential,
+            subscriptionPlan: args?['subscriptionPlan'] as dynamic,
+            isYearly: args?['isYearly'] as bool?,
+          ),
+        );
+
+      case paymentSuccess:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => PaymentSuccessPage(
+            amount: args?['amount'] as double? ?? 0.0,
+            method: args?['method'] as PaymentMethod?,
+            type: args?['type'] as PaymentType? ?? PaymentType.cashDifferential,
+            paymentId: args?['paymentId'] as String?,
+            tradeId: args?['tradeId'] as String?,
+          ),
+        );
+
+      case paymentError:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => PaymentErrorPage(
+            error: args?['error'] as String? ?? 'Bilinmeyen hata',
+            errorCode: args?['errorCode'] as String?,
+            amount: args?['amount'] as double?,
+            type: args?['type'] as PaymentType?,
+            onRetry: args?['onRetry'] as VoidCallback?,
+          ),
+        );
+
+      case paymentHistory:
+        return MaterialPageRoute(
+          builder: (_) => const PaymentHistoryPage(),
+        );
 
       default:
         return MaterialPageRoute(builder: (_) => const LoginPage());
