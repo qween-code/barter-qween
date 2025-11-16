@@ -53,16 +53,26 @@ class _ExplorePageState extends State<ExplorePage> with TickerProviderStateMixin
     super.dispose();
   }
 
+  Future<void> _handleRefresh() async {
+    context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
-        slivers: [
-          _buildModernAppBar(),
-          _buildInteractiveCategoryGrid(),
-          _buildItemsSection(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        color: AppColors.primary,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            _buildModernAppBar(),
+            _buildInteractiveCategoryGrid(),
+            _buildItemsSection(),
+          ],
+        ),
       ),
     );
   }

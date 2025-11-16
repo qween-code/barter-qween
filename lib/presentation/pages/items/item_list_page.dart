@@ -53,19 +53,31 @@ class _ItemListPageState extends State<ItemListPage> {
     super.dispose();
   }
 
+  Future<void> _handleRefresh() async {
+    // Clear cache and reload items
+    context.read<ItemBloc>().add(LoadAllItems(category: _selectedCategory));
+    // Wait for bloc to complete
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          _buildModernAppBar(context),
-          _buildSearchBar(),
-          _buildHeroSection(),
-          _buildCategoryFilter(),
-          _buildItemsList(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        color: Theme.of(context).primaryColor,
+        child: CustomScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            _buildModernAppBar(context),
+            _buildSearchBar(),
+            _buildHeroSection(),
+            _buildCategoryFilter(),
+            _buildItemsList(),
+          ],
+        ),
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
