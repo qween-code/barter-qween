@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import '../../../core/cache/cache_manager.dart';
 import '../../../domain/usecases/profile/get_user_profile_usecase.dart';
 import '../../../domain/usecases/profile/get_user_stats_usecase.dart';
 import '../../../domain/usecases/profile/update_profile_usecase.dart';
@@ -13,6 +14,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetUserStatsUseCase getUserStatsUseCase;
   final UpdateProfileUseCase updateProfileUseCase;
   final UploadAvatarUseCase uploadAvatarUseCase;
+  final CacheManager _cacheManager = CacheManager();
 
   ProfileBloc({
     required this.getUserProfileUseCase,
@@ -31,8 +33,24 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     LoadProfile event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(const ProfileLoading());
     print('🔄 Loading profile for user: ${event.userId}');
+
+    // Check cache first (cache-first strategy)
+    final cachedUser = _cacheManager.getCachedUser(event.userId);
+    if (cachedUser != null) {
+      print('✅ Profile loaded from cache: ${cachedUser.displayName}');
+      emit(ProfileLoaded(cachedUser));
+
+      // Load stats in background
+      add(LoadUserStats(event.userId));
+
+      // Refresh data in background for next time
+      _refreshProfileInBackground(event.userId);
+      return;
+    }
+
+    // No cache, show loading
+    emit(const ProfileLoading());
 
     final result = await getUserProfileUseCase(event.userId);
 
@@ -43,7 +61,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       },
       (user) {
         print('✅ Profile loaded successfully: ${user.displayName}');
+        // Cache the user data
+        _cacheManager.cacheUser(event.userId, user);
         emit(ProfileLoaded(user));
+      },
+    );
+  }
+
+  /// Refresh profile data in background without showing loading state
+  Future<void> _refreshProfileInBackground(String userId) async {
+    final result = await getUserProfileUseCase(userId);
+    result.fold(
+      (failure) => print('⚠️ Background refresh failed: ${failure.message}'),
+      (user) {
+        print('🔄 Profile refreshed in background');
+        _cacheManager.cacheUser(userId, user);
       },
     );
   }
@@ -87,6 +119,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ResetProfile event,
     Emitter<ProfileState> emit,
   ) {
+    // Clear cache when resetting
+    if (event.userId != null) {
+      _cacheManager.clearUserCache(event.userId!);
+    }
     emit(const ProfileInitial());
   }
 
@@ -94,8 +130,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     LoadUserStats event,
     Emitter<ProfileState> emit,
   ) async {
-    // Don't emit ProfileLoading here to avoid overriding ProfileLoaded state
     print('📊 Loading user stats for: ${event.userId}');
+
+    // Check cache first
+    final cachedStats = _cacheManager.getCachedProfileStats(event.userId);
+    if (cachedStats != null) {
+      print('✅ Stats loaded from cache');
+      _emitStatsState(cachedStats, emit);
+
+      // Refresh in background
+      _refreshStatsInBackground(event.userId, emit);
+      return;
+    }
 
     final result = await getUserStatsUseCase(event.userId);
 
@@ -105,30 +151,48 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         // Don't emit error for stats, just log it
       },
       (stats) {
-        final itemCount = stats['itemCount'] as int? ?? 0;
-        final tradeCount = stats['tradeCount'] as int? ?? 0;
-        final averageRating = stats['averageRating'] as double? ?? 0.0;
-        final ratingCount = stats['ratingCount'] as int? ?? 0;
+        // Cache the stats
+        _cacheManager.cacheProfileStats(event.userId, stats);
+        _emitStatsState(stats, emit);
+      },
+    );
+  }
 
-        print('✅ Stats loaded: items=$itemCount, trades=$tradeCount');
-        
-        // Update the current ProfileLoaded state with stats
-        if (state is ProfileLoaded) {
-          emit((state as ProfileLoaded).copyWithStats(
-            itemCount: itemCount,
-            tradeCount: tradeCount,
-            averageRating: averageRating,
-            ratingCount: ratingCount,
-          ));
-        } else {
-          // Fallback: emit deprecated UserStatsLoaded for compatibility
-          emit(UserStatsLoaded(
-            itemCount: itemCount,
-            tradeCount: tradeCount,
-            averageRating: averageRating,
-            ratingCount: ratingCount,
-          ));
-        }
+  void _emitStatsState(Map<String, dynamic> stats, Emitter<ProfileState> emit) {
+    final itemCount = stats['itemCount'] as int? ?? 0;
+    final tradeCount = stats['tradeCount'] as int? ?? 0;
+    final averageRating = stats['averageRating'] as double? ?? 0.0;
+    final ratingCount = stats['ratingCount'] as int? ?? 0;
+
+    print('✅ Stats loaded: items=$itemCount, trades=$tradeCount');
+
+    // Update the current ProfileLoaded state with stats
+    if (state is ProfileLoaded) {
+      emit((state as ProfileLoaded).copyWithStats(
+        itemCount: itemCount,
+        tradeCount: tradeCount,
+        averageRating: averageRating,
+        ratingCount: ratingCount,
+      ));
+    } else {
+      // Fallback: emit deprecated UserStatsLoaded for compatibility
+      emit(UserStatsLoaded(
+        itemCount: itemCount,
+        tradeCount: tradeCount,
+        averageRating: averageRating,
+        ratingCount: ratingCount,
+      ));
+    }
+  }
+
+  Future<void> _refreshStatsInBackground(String userId, Emitter<ProfileState> emit) async {
+    final result = await getUserStatsUseCase(userId);
+    result.fold(
+      (failure) => print('⚠️ Background stats refresh failed: ${failure.message}'),
+      (stats) {
+        print('🔄 Stats refreshed in background');
+        _cacheManager.cacheProfileStats(userId, stats);
+        _emitStatsState(stats, emit);
       },
     );
   }

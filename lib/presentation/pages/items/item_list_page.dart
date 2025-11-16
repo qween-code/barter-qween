@@ -12,6 +12,7 @@ import '../../blocs/favorite/favorite_state.dart';
 import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
+import '../../widgets/loading/skeleton_loader.dart';
 import 'create_item_page.dart';
 import 'item_detail_page.dart';
 
@@ -365,9 +366,32 @@ class _ItemListPageState extends State<ItemListPage> {
     return BlocBuilder<ItemBloc, ItemState>(
       builder: (context, state) {
         if (state is ItemLoading) {
-          return const SliverFillRemaining(
-            child: Center(child: CircularProgressIndicator()),
-          );
+          // Modern skeleton loading instead of circular progress
+          return _isGridView
+              ? SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => const SkeletonItemCard(),
+                      childCount: 6,
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => const SkeletonItemListCard(),
+                      childCount: 5,
+                    ),
+                  ),
+                );
         }
 
         if (state is ItemError) {

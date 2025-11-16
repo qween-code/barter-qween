@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import '../../../core/cache/cache_manager.dart';
 import '../../../domain/usecases/item/item_usecases.dart';
 import 'item_event.dart';
 import 'item_state.dart';
@@ -14,6 +15,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
   final DeleteItemUseCase deleteItemUseCase;
   final SearchItemsUseCase searchItemsUseCase;
   final GetFeaturedItemsUseCase getFeaturedItemsUseCase;
+  final CacheManager _cacheManager = CacheManager();
 
   ItemBloc({
     required this.getAllItemsUseCase,
@@ -40,6 +42,17 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     LoadAllItems event,
     Emitter<ItemState> emit,
   ) async {
+    // Check cache first
+    final cachedItems = _cacheManager.getCachedItems(category: event.category);
+    if (cachedItems != null && cachedItems.isNotEmpty) {
+      print('✅ Items loaded from cache (${cachedItems.length} items)');
+      emit(ItemsLoaded(cachedItems));
+
+      // Refresh in background
+      _refreshItemsInBackground(event.category, event.city, emit);
+      return;
+    }
+
     emit(const ItemLoading());
     final result = await getAllItemsUseCase(
       category: event.category,
@@ -47,7 +60,27 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     );
     result.fold(
       (failure) => emit(ItemError(failure.message)),
-      (items) => emit(ItemsLoaded(items)),
+      (items) {
+        // Cache the items
+        _cacheManager.cacheItems(items, category: event.category);
+        emit(ItemsLoaded(items));
+      },
+    );
+  }
+
+  Future<void> _refreshItemsInBackground(
+    String? category,
+    String? city,
+    Emitter<ItemState> emit,
+  ) async {
+    final result = await getAllItemsUseCase(category: category, city: city);
+    result.fold(
+      (failure) => print('⚠️ Background items refresh failed: ${failure.message}'),
+      (items) {
+        print('🔄 Items refreshed in background (${items.length} items)');
+        _cacheManager.cacheItems(items, category: category);
+        emit(ItemsLoaded(items));
+      },
     );
   }
 
@@ -83,7 +116,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     final result = await createItemUseCase(event.item, event.images);
     result.fold(
       (failure) => emit(ItemError(failure.message)),
-      (item) => emit(ItemCreated(item)),
+      (item) {
+        // Clear cache when new item is created
+        _cacheManager.clearItemsCache();
+        emit(ItemCreated(item));
+      },
     );
   }
 
@@ -95,7 +132,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     final result = await updateItemUseCase(event.item, event.newImages);
     result.fold(
       (failure) => emit(ItemError(failure.message)),
-      (item) => emit(ItemUpdated(item)),
+      (item) {
+        // Clear cache when item is updated
+        _cacheManager.clearItemsCache();
+        emit(ItemUpdated(item));
+      },
     );
   }
 
@@ -107,7 +148,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     final result = await deleteItemUseCase(event.itemId);
     result.fold(
       (failure) => emit(ItemError(failure.message)),
-      (_) => emit(const ItemDeleted()),
+      (_) {
+        // Clear cache when item is deleted
+        _cacheManager.clearItemsCache();
+        emit(const ItemDeleted());
+      },
     );
   }
 

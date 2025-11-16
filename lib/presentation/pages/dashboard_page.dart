@@ -103,30 +103,82 @@ class _DashboardViewState extends State<DashboardView> {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) => setState(() => _currentIndex = index),
-        destinations: [
-          const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          const NavigationDestination(icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explore'),
-          NavigationDestination(
-            icon: _pendingTradeCount > 0
-                ? Badge(
-                    label: Text('$_pendingTradeCount'),
-                    child: const Icon(Icons.swap_horiz_outlined),
-                  )
-                : const Icon(Icons.swap_horiz_outlined),
-            selectedIcon: _pendingTradeCount > 0
-                ? Badge(
-                    label: Text('$_pendingTradeCount'),
-                    child: const Icon(Icons.swap_horiz),
-                  )
-                : const Icon(Icons.swap_horiz),
-            label: 'Trades',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-          const NavigationDestination(icon: Icon(Icons.message_outlined), selectedIcon: Icon(Icons.message), label: 'Messages'),
-          const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() => _currentIndex = index);
+              // Haptic feedback for better UX
+              //HapticFeedback.selectionClick();
+            },
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            height: 72,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            indicatorColor: Theme.of(context).primaryColor.withOpacity(0.15),
+            animationDuration: const Duration(milliseconds: 400),
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Home',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.explore_outlined),
+                selectedIcon: Icon(Icons.explore_rounded),
+                label: 'Explore',
+              ),
+              NavigationDestination(
+                icon: _pendingTradeCount > 0
+                    ? Badge(
+                        label: Text('$_pendingTradeCount'),
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        child: const Icon(Icons.swap_horiz_outlined),
+                      )
+                    : const Icon(Icons.swap_horiz_outlined),
+                selectedIcon: _pendingTradeCount > 0
+                    ? Badge(
+                        label: Text('$_pendingTradeCount'),
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        child: const Icon(Icons.swap_horiz_rounded),
+                      )
+                    : const Icon(Icons.swap_horiz_rounded),
+                label: 'Trades',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.chat_bubble_outline_rounded),
+                selectedIcon: Icon(Icons.chat_bubble_rounded),
+                label: 'Messages',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.person_outline_rounded),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: 'Profile',
+              ),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: null, // FAB moved to ItemListPage
       ),

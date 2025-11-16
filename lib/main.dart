@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'core/cache/cache_manager.dart';
 import 'core/di/injection.dart';
 import 'core/providers/global_bloc_providers.dart';
 import 'core/routes/route_names.dart';
@@ -25,8 +26,16 @@ import 'presentation/blocs/item/item_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Cache Manager
+  await CacheManager().init();
+
+  // Initialize Dependency Injection
   await configureDependencies();
+
   runApp(const BarterQweenApp());
 }
 

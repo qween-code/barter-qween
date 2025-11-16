@@ -9,6 +9,7 @@ import '../../blocs/auth/auth_state.dart';
 import '../../blocs/profile/profile_bloc.dart';
 import '../../blocs/profile/profile_event.dart';
 import '../../blocs/profile/profile_state.dart';
+import '../../widgets/loading/skeleton_loader.dart';
 import '../../widgets/user_avatar_widget.dart';
 import '../favorites/favorites_page.dart';
 import '../items/user_items_page.dart';
@@ -59,8 +60,8 @@ class _ProfileViewState extends State<ProfileView> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       print('🔄 Resetting and loading profile for: ${authState.user.uid}');
-      // Reset profile state first
-      context.read<ProfileBloc>().add(ResetProfile());
+      // Reset profile state first (with userId to clear cache)
+      context.read<ProfileBloc>().add(ResetProfile(userId: authState.user.uid));
       // Then load new profile
       context.read<ProfileBloc>().add(LoadProfile(authState.user.uid));
       // Also load user stats
@@ -130,7 +131,15 @@ class _ProfileViewState extends State<ProfileView> {
         },
         builder: (context, state) {
           if (state is ProfileLoading) {
-            return const Center(child: CircularProgressIndicator());
+            // Modern skeleton loading
+            return const CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(child: SkeletonProfileHeader()),
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 400), // Placeholder for content
+                ),
+              ],
+            );
           }
 
           if (state is ProfileLoaded || state is ProfileUpdated || state is AvatarUploaded) {
