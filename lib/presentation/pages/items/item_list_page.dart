@@ -13,6 +13,7 @@ import '../../blocs/item/item_bloc.dart';
 import '../../blocs/item/item_event.dart';
 import '../../blocs/item/item_state.dart';
 import '../../widgets/loading/skeleton_loader.dart';
+import '../../widgets/home/hero_section.dart';
 import 'create_item_page.dart';
 import 'item_detail_page.dart';
 
@@ -61,6 +62,7 @@ class _ItemListPageState extends State<ItemListPage> {
         slivers: [
           _buildModernAppBar(context),
           _buildSearchBar(),
+          _buildHeroSection(),
           _buildCategoryFilter(),
           _buildItemsList(),
         ],
@@ -292,6 +294,35 @@ class _ItemListPageState extends State<ItemListPage> {
                   );
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroSection() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
+        child: Column(
+          children: [
+            HeroSection(
+              onLightningDealsTap: () {
+                // TODO: Navigate to lightning deals page
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Lightning Deals coming soon! 🔥')),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            GamificationTeaser(
+              onTap: () {
+                // TODO: Navigate to daily rewards
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Daily Rewards coming soon! 🎁')),
+                );
+              },
             ),
           ],
         ),
