@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../entities/message_entity.dart';
 import '../../repositories/chat_repository.dart';
-import '../../../core/error/failures.dart';
+import '../../../core/errors/failures.dart';
 
 /// Parameters for getting messages
 class GetMessagesParams {

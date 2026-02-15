@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import '../../../core/errors/exceptions.dart';
 import '../../models/user_model.dart';
@@ -26,21 +27,21 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<UserModel> getUserProfile(String userId) async {
     try {
-      print('📖 Fetching profile from Firestore for user: $userId');
+      debugPrint('📖 Fetching profile from Firestore for user: $userId');
       final doc = await firestore.collection('users').doc(userId).get();
       
       if (!doc.exists) {
-        print('⚠️ User profile not found in Firestore: $userId');
+        debugPrint('⚠️ User profile not found in Firestore: $userId');
         throw ServerException('User profile not found in Firestore');
       }
       
-      print('✅ Profile found in Firestore');
+      debugPrint('✅ Profile found in Firestore');
       return UserModel.fromFirestore(doc);
     } on FirebaseException catch (e) {
-      print('❌ Firebase error getting profile: ${e.message}');
+      debugPrint('❌ Firebase error getting profile: ${e.message}');
       throw ServerException(e.message ?? 'Failed to get user profile');
     } catch (e) {
-      print('❌ Error getting profile: $e');
+      debugPrint('❌ Error getting profile: $e');
       throw ServerException('Failed to get user profile: $e');
     }
   }

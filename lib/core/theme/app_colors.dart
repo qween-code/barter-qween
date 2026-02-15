@@ -72,9 +72,9 @@ class AppColors {
   // ============================================
   // OVERLAY COLORS
   // ============================================
-  static Color overlay = const Color(0xFF000000).withOpacity(0.5);
-  static Color overlayLight = const Color(0xFF000000).withOpacity(0.3);
-  static Color overlayHeavy = const Color(0xFF000000).withOpacity(0.7);
+  static Color overlay = const Color(0xFF000000).withValues(alpha: 0.5);
+  static Color overlayLight = const Color(0xFF000000).withValues(alpha: 0.3);
+  static Color overlayHeavy = const Color(0xFF000000).withValues(alpha: 0.7);
   
   // ============================================
   // GRADIENTS - Premium Effects
@@ -104,8 +104,8 @@ class AppColors {
   /// Glass gradient - Glassmorphism effect
   static LinearGradient get glassGradient => LinearGradient(
     colors: [
-      surface.withOpacity(0.8),
-      surface.withOpacity(0.4),
+      surface.withValues(alpha: 0.8),
+      surface.withValues(alpha: 0.4),
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -136,7 +136,7 @@ class AppColors {
   // ============================================
   // SHADOW COLORS
   // ============================================
-  static Color get shadowColor => const Color(0xFF000000).withOpacity(0.08);
-  static Color get shadowColorLight => const Color(0xFF000000).withOpacity(0.04);
-  static Color get shadowColorDark => const Color(0xFF000000).withOpacity(0.12);
+  static Color get shadowColor => const Color(0xFF000000).withValues(alpha: 0.08);
+  static Color get shadowColorLight => const Color(0xFF000000).withValues(alpha: 0.04);
+  static Color get shadowColorDark => const Color(0xFF000000).withValues(alpha: 0.12);
 }

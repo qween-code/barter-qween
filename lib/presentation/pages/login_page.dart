@@ -38,7 +38,6 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -312,7 +311,7 @@ class _LoginViewState extends State<LoginView> {
             gradient: AppColors.glassGradient,
             borderRadius: BorderRadius.circular(AppDimensions.radiusXLarge),
             border: Border.all(
-              color: AppColors.surface.withOpacity(0.3),
+              color: AppColors.surface.withValues(alpha: 0.3),
               width: 1.5,
             ),
             boxShadow: AppShadows.shadowXl,

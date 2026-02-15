@@ -18,13 +18,13 @@ class NotificationService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       if (kDebugMode) {
-        print('User granted permission for notifications');
+        debugPrint('User granted permission for notifications');
       }
       
       // Get FCM token
       String? token = await _firebaseMessaging.getToken();
       if (kDebugMode) {
-        print('FCM Token: $token');
+        debugPrint('FCM Token: $token');
       }
       
       // Save token to Firestore for this user
@@ -33,13 +33,13 @@ class NotificationService {
       // Handle foreground messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         if (kDebugMode) {
-          print('Got a message whilst in the foreground!');
-          print('Message data: ${message.data}');
+          debugPrint('Got a message whilst in the foreground!');
+          debugPrint('Message data: ${message.data}');
         }
 
         if (message.notification != null) {
           if (kDebugMode) {
-            print('Message also contained a notification: ${message.notification}');
+            debugPrint('Message also contained a notification: ${message.notification}');
           }
           // TODO: Show local notification
         }
@@ -48,7 +48,7 @@ class NotificationService {
       // Handle notification tap when app is in background
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         if (kDebugMode) {
-          print('Notification tapped!');
+          debugPrint('Notification tapped!');
         }
         // TODO: Navigate to appropriate screen
         _handleNotificationTap(message);
@@ -63,7 +63,7 @@ class NotificationService {
       }
     } else {
       if (kDebugMode) {
-        print('User declined or has not accepted permission');
+        debugPrint('User declined or has not accepted permission');
       }
     }
   }
@@ -106,6 +106,6 @@ class NotificationService {
 // This must be a top-level function
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
-    print('Handling a background message: ${message.messageId}');
+    debugPrint('Handling a background message: ${message.messageId}');
   }
 }

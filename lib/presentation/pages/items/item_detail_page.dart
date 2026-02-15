@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/di/injection.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
@@ -115,7 +114,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         icon: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha:0.3),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
@@ -127,7 +126,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha:0.3),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.share, color: Colors.white, size: 20),
@@ -143,7 +142,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha:0.3),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -161,7 +160,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha:0.3),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.edit, color: Colors.white, size: 20),
@@ -227,7 +226,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                               shape: BoxShape.circle,
                               color: _currentImageIndex == index
                                   ? Colors.white
-                                  : Colors.white.withOpacity(0.4),
+                                  : Colors.white.withValues(alpha:0.4),
                             ),
                           ),
                         ),
@@ -477,9 +476,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha:0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -641,7 +640,7 @@ ${item.description}
       return;
     }
 
-    print('💬 Starting conversation about item: ${item.title}');
+    debugPrint('💬 Starting conversation about item: ${item.title}');
     
     // Create ChatBloc and get or create conversation
     final chatBloc = getIt<ChatBloc>();
@@ -650,8 +649,8 @@ ${item.description}
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => WillPopScope(
-        onWillPop: () async => false,
+      builder: (dialogContext) => PopScope(
+        canPop: false,
         child: const Center(
           child: Card(
             child: Padding(
@@ -672,7 +671,7 @@ ${item.description}
 
     // Listen to ChatBloc stream
     chatBloc.stream.listen((state) {
-      print('💬 Chat state: ${state.runtimeType}');
+      debugPrint('💬 Chat state: ${state.runtimeType}');
       
       if (state is ConversationRetrieved) {
         // Close loading dialog

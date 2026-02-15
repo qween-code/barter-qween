@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../entities/trade_offer_entity.dart';
-import '../../core/error/failures.dart';
+import '../../core/errors/failures.dart';
 
 /// Repository interface for Trade operations
 abstract class TradeRepository {

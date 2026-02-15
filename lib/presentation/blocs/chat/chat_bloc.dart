@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/failures.dart';
+import '../../../core/errors/failures.dart';
 import '../../../domain/entities/conversation_entity.dart';
 import '../../../domain/entities/message_entity.dart';
 import '../../../domain/usecases/chat/get_conversations_usecase.dart';
@@ -51,7 +52,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadConversations event,
     Emitter<ChatState> emit,
   ) async {
-    print('💬 ChatBloc: LoadConversations event received for user: ${event.userId}');
+    debugPrint('💬 ChatBloc: LoadConversations event received for user: ${event.userId}');
     // Cancel previous subscription if exists
     await _conversationsSubscription?.cancel();
 
@@ -59,14 +60,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     await emit.forEach<Either<Failure, List<ConversationEntity>>>(
       getConversationsUseCase(event.userId),
       onData: (result) {
-        print('💬 ChatBloc: Conversations stream update received');
+        debugPrint('💬 ChatBloc: Conversations stream update received');
         return result.fold(
           (failure) {
-            print('❌ ChatBloc: Failed to load conversations - ${failure.message}');
+            debugPrint('❌ ChatBloc: Failed to load conversations - ${failure.message}');
             return ChatError(failure.message);
           },
           (conversations) {
-            print('✅ ChatBloc: Loaded ${conversations.length} conversations');
+            debugPrint('✅ ChatBloc: Loaded ${conversations.length} conversations');
             // Calculate total unread count
             int totalUnread = 0;
             for (final conv in conversations) {
@@ -81,7 +82,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
       },
       onError: (error, stackTrace) {
-        print('❌ ChatBloc: Conversations stream error - $error');
+        debugPrint('❌ ChatBloc: Conversations stream error - $error');
         return ChatError('Failed to load conversations: $error');
       },
     );
@@ -92,7 +93,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     LoadMessages event,
     Emitter<ChatState> emit,
   ) async {
-    print('📥 ChatBloc: Loading messages for conversation: ${event.conversationId}');
+    debugPrint('📥 ChatBloc: Loading messages for conversation: ${event.conversationId}');
     
     // Cancel previous subscription if exists
     await _messagesSubscription?.cancel();
@@ -105,11 +106,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       onData: (result) {
         return result.fold(
           (failure) {
-            print('❌ ChatBloc: Failed to load messages - ${failure.message}');
+            debugPrint('❌ ChatBloc: Failed to load messages - ${failure.message}');
             return ChatError(failure.message);
           },
           (messages) {
-            print('✅ ChatBloc: Loaded ${messages.length} messages from stream');
+            debugPrint('✅ ChatBloc: Loaded ${messages.length} messages from stream');
             // Sort messages by date (newest first)
             final sortedMessages = List.of(messages)
               ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -122,7 +123,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         );
       },
       onError: (error, stackTrace) {
-        print('❌ ChatBloc: Stream error - $error');
+        debugPrint('❌ ChatBloc: Stream error - $error');
         return ChatError('Failed to load messages: $error');
       },
     );
@@ -133,7 +134,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     SendMessage event,
     Emitter<ChatState> emit,
   ) async {
-    print('💬 ChatBloc: Sending message - Conv: ${event.conversationId}, Sender: ${event.senderId}');
+    debugPrint('💬 ChatBloc: Sending message - Conv: ${event.conversationId}, Sender: ${event.senderId}');
     
     // Show optimistic update
     emit(SendingMessage(
@@ -152,11 +153,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     result.fold(
       (failure) {
-        print('❌ ChatBloc: Failed to send message - ${failure.message}');
+        debugPrint('❌ ChatBloc: Failed to send message - ${failure.message}');
         emit(ChatError(failure.message));
       },
       (message) {
-        print('✅ ChatBloc: Message sent successfully - ${message.id}');
+        debugPrint('✅ ChatBloc: Message sent successfully - ${message.id}');
         emit(MessageSent(message));
         // Don't reload - the stream will automatically emit new messages
       },

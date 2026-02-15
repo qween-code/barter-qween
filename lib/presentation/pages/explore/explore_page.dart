@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/item_entity.dart';
 import '../../blocs/favorite/favorite_bloc.dart';
@@ -153,7 +152,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
   Widget _buildCategoryCard(Map<String, dynamic> category) {
     return Card(
       elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.1),
+      shadowColor: Colors.black.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -173,8 +172,8 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                (category['color'] as Color).withOpacity(0.15),
-                (category['color'] as Color).withOpacity(0.05),
+                (category['color'] as Color).withValues(alpha: 0.15),
+                (category['color'] as Color).withValues(alpha: 0.05),
               ],
             ),
           ),
@@ -188,7 +187,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -344,7 +343,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -372,7 +371,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 80, color: AppColors.textSecondary.withOpacity(0.5)),
+          Icon(icon, size: 80, color: AppColors.textSecondary.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
           Text(
             message,
@@ -460,7 +459,7 @@ class _ExplorePageState extends State<ExplorePage> with SingleTickerProviderStat
   }
 
   void _performSearch(String query) {
-    print('🔍 Searching for: $query');
+    debugPrint('🔍 Searching for: $query');
     // Switch to trending tab to show results
     _tabController.animateTo(1);
     // Trigger search with actual query
@@ -521,7 +520,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   String? _selectedCondition;
   RangeValues _priceRange = const RangeValues(0, 1000);
   String _sortBy = 'newest';
-  List<String> _selectedCategories = [];
+  final List<String> _selectedCategories = [];
 
   final List<String> _allCategories = [
     'Electronics',
@@ -649,7 +648,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                     max: 1000,
                     divisions: 20,
                     activeColor: AppColors.primary,
-                    inactiveColor: AppColors.primary.withOpacity(0.2),
+                    inactiveColor: AppColors.primary.withValues(alpha: 0.2),
                     labels: RangeLabels(
                       '\$${_priceRange.start.toInt()}',
                       '\$${_priceRange.end.toInt()}',
@@ -681,7 +680,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   offset: const Offset(0, -2),
                   blurRadius: 8,
                 ),
@@ -850,7 +849,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.grey[50],
+                  color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.grey[50],
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected ? AppColors.primary : Colors.grey[200]!,

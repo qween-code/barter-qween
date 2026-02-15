@@ -21,19 +21,19 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   @override
   void initState() {
     super.initState();
-    print('💬 ConversationsListPage: initState called');
+    debugPrint('💬 ConversationsListPage: initState called');
     _loadConversations();
   }
 
   void _loadConversations() {
-    print('💬 ConversationsListPage: _loadConversations called');
+    debugPrint('💬 ConversationsListPage: _loadConversations called');
     final authState = context.read<AuthBloc>().state;
-    print('💬 ConversationsListPage: authState = ${authState.runtimeType}');
+    debugPrint('💬 ConversationsListPage: authState = ${authState.runtimeType}');
     if (authState is AuthAuthenticated) {
-      print('💬 ConversationsListPage: Loading conversations for user: ${authState.user.uid}');
+      debugPrint('💬 ConversationsListPage: Loading conversations for user: ${authState.user.uid}');
       context.read<ChatBloc>().add(LoadConversations(authState.user.uid));
     } else {
-      print('❌ ConversationsListPage: User not authenticated!');
+      debugPrint('❌ ConversationsListPage: User not authenticated!');
     }
   }
 
@@ -42,7 +42,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          print('✅ ConversationsListPage: Auth state changed to authenticated, loading conversations');
+          debugPrint('✅ ConversationsListPage: Auth state changed to authenticated, loading conversations');
           _loadConversations();
         }
       },

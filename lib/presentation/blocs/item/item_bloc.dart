@@ -183,7 +183,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
               filteredItems.sort((a, b) => a.createdAt.compareTo(b.createdAt));
               break;
             case 'popular':
-              filteredItems.sort((a, b) => (b.viewCount ?? 0).compareTo(a.viewCount ?? 0));
+              filteredItems.sort((a, b) => b.viewCount.compareTo(a.viewCount));
               break;
             case 'nearest':
               // For nearest, we'd need user location - for now just keep order

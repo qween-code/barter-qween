@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AppLocalizations {
   final Locale locale;
@@ -54,7 +53,7 @@ class AppLocalizations {
       'all': 'All',
       'electronics': 'Electronics',
       'fashion': 'Fashion',
-      'home': 'Home',
+      'home_garden': 'Home & Garden',
       'books': 'Books',
       'sports': 'Sports',
       'toys': 'Toys',
@@ -161,7 +160,7 @@ class AppLocalizations {
       'all': 'Tümü',
       'electronics': 'Elektronik',
       'fashion': 'Moda',
-      'home': 'Ev',
+      'home_garden': 'Ev & Bahçe',
       'books': 'Kitap',
       'sports': 'Spor',
       'toys': 'Oyuncak',

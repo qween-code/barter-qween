@@ -1,6 +1,7 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/exceptions.dart';
+import '../../../core/errors/exceptions.dart';
 import '../../../domain/entities/trade_offer_entity.dart';
 import '../../models/trade_offer_model.dart';
 
@@ -133,7 +134,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
   @override
   Future<List<TradeOfferModel>> getUserTradeOffers(String userId) async {
     try {
-      print('💻 Fetching trade offers for user: $userId');
+      debugPrint('💻 Fetching trade offers for user: $userId');
       
       // Get offers where user is sender (without orderBy to avoid index)
       final sentSnapshot = await firestore
@@ -141,7 +142,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
           .where('fromUserId', isEqualTo: userId)
           .get();
 
-      print('📤 Sent offers: ${sentSnapshot.docs.length}');
+      debugPrint('📤 Sent offers: ${sentSnapshot.docs.length}');
 
       // Get offers where user is receiver (without orderBy to avoid index)
       final receivedSnapshot = await firestore
@@ -149,7 +150,7 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
           .where('toUserId', isEqualTo: userId)
           .get();
 
-      print('📥 Received offers: ${receivedSnapshot.docs.length}');
+      debugPrint('📥 Received offers: ${receivedSnapshot.docs.length}');
 
       final allDocs = [...sentSnapshot.docs, ...receivedSnapshot.docs];
       
@@ -166,11 +167,11 @@ class TradeRemoteDataSourceImpl implements TradeRemoteDataSource {
       // Sort in memory instead of Firestore
       offers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       
-      print('✅ Total unique offers: ${offers.length}');
+      debugPrint('✅ Total unique offers: ${offers.length}');
       
       return offers;
     } catch (e) {
-      print('❌ Failed to get user trade offers: $e');
+      debugPrint('❌ Failed to get user trade offers: $e');
       throw ServerException('Failed to get user trade offers: ${e.toString()}');
     }
   }

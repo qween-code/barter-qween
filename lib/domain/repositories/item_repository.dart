@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import '../entities/item_entity.dart';
-import '../../core/error/failures.dart';
+import '../../core/errors/failures.dart';
 
 abstract class ItemRepository {
   /// Create a new item

@@ -69,7 +69,7 @@ class _ItemListPageState extends State<ItemListPage> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              color: Theme.of(context).primaryColor.withValues(alpha:0.3),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -108,7 +108,7 @@ class _ItemListPageState extends State<ItemListPage> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha:0.03),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -258,7 +258,7 @@ class _ItemListPageState extends State<ItemListPage> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Colors.black.withValues(alpha:0.08),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -316,7 +316,7 @@ class _ItemListPageState extends State<ItemListPage> {
             _debounce = Timer(const Duration(milliseconds: 500), () {
               // Only search if query is not empty and has at least 2 characters
               if (value.trim().isNotEmpty && value.trim().length >= 2) {
-                print('🔍 Performing search: ${value.trim()}');
+                debugPrint('🔍 Performing search: ${value.trim()}');
                 context.read<ItemBloc>().add(SearchItems(value.trim()));
               } else if (value.trim().isEmpty) {
                 // Reload all items if search is cleared
@@ -475,7 +475,7 @@ class _ItemListPageState extends State<ItemListPage> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha:0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -532,7 +532,7 @@ class _ItemListPageState extends State<ItemListPage> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.15),
+                                  color: Colors.black.withValues(alpha:0.15),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -557,7 +557,7 @@ class _ItemListPageState extends State<ItemListPage> {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha:0.6),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
@@ -600,7 +600,7 @@ class _ItemListPageState extends State<ItemListPage> {
                           decoration: BoxDecoration(
                             color: Theme.of(context)
                                 .primaryColor
-                                .withOpacity(0.1),
+                                .withValues(alpha:0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -673,7 +673,7 @@ class _ItemListPageState extends State<ItemListPage> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha:0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -749,7 +749,7 @@ class _ItemListPageState extends State<ItemListPage> {
                           decoration: BoxDecoration(
                             color: Theme.of(context)
                                 .primaryColor
-                                .withOpacity(0.1),
+                                .withValues(alpha:0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -858,7 +858,7 @@ class _ItemListPageState extends State<ItemListPage> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor.withOpacity(0.1),
+                              color: Theme.of(context).primaryColor.withValues(alpha:0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -983,7 +983,7 @@ class _ItemListPageState extends State<ItemListPage> {
                           _selectedCondition = selected ? condition : null;
                         });
                       },
-                      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                      selectedColor: Theme.of(context).primaryColor.withValues(alpha:0.2),
                       checkmarkColor: Theme.of(context).primaryColor,
                     );
                   }).toList(),
@@ -1130,7 +1130,7 @@ class _ItemListPageState extends State<ItemListPage> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: isSelected 
-                  ? Theme.of(context).primaryColor.withOpacity(0.1) 
+                  ? Theme.of(context).primaryColor.withValues(alpha:0.1) 
                   : Colors.grey[50],
               borderRadius: BorderRadius.circular(12),
               border: Border.all(

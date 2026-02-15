@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/di/injection.dart';
 import '../../core/routes/route_names.dart';
 import '../blocs/auth/auth_bloc.dart';
-import '../blocs/auth/auth_event.dart';
 import '../blocs/auth/auth_state.dart';
 import '../blocs/chat/chat_bloc.dart';
 import '../blocs/favorite/favorite_bloc.dart';
@@ -15,7 +14,6 @@ import '../blocs/trade/trade_state.dart';
 import '../blocs/search/search_bloc.dart';
 import 'chat/conversations_list_page.dart';
 import 'explore/explore_page.dart';
-import 'items/create_item_page.dart';
 import 'items/item_list_page.dart';
 import 'profile/profile_page.dart';
 import 'search/search_page.dart';
@@ -241,8 +239,8 @@ class ExploreTab extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Theme.of(context).primaryColor.withOpacity(0.1),
-                    Theme.of(context).primaryColor.withOpacity(0.05),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.05),
                   ],
                 ),
               ),
@@ -284,8 +282,8 @@ class ExploreTab extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            (category['color'] as Color).withOpacity(0.1),
-                            (category['color'] as Color).withOpacity(0.05),
+                            (category['color'] as Color).withValues(alpha: 0.1),
+                            (category['color'] as Color).withValues(alpha: 0.05),
                           ],
                         ),
                       ),
@@ -299,7 +297,7 @@ class ExploreTab extends StatelessWidget {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),

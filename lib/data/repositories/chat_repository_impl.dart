@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../core/error/exceptions.dart';
-import '../../core/error/failures.dart';
+import '../../core/errors/exceptions.dart';
+import '../../core/errors/failures.dart';
 import '../../domain/entities/conversation_entity.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/repositories/chat_repository.dart';

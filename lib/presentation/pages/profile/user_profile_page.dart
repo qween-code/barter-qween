@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../blocs/auth/auth_state.dart';
 import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/auth/auth_state.dart' show AuthAuthenticated;
 import '../../blocs/favorite/favorite_bloc.dart';
 import '../../blocs/favorite/favorite_event.dart';
 import '../../blocs/favorite/favorite_state.dart';
@@ -186,17 +183,17 @@ class UserProfileView extends StatelessWidget {
   }
 
   void _startConversation(BuildContext context, String targetUserId, String currentUserId, {String? listingId}) {
-    print('🗨️ Starting conversation with user: $targetUserId, listing: $listingId');
-    
+    debugPrint('Starting conversation with user: $targetUserId, listing: $listingId');
+
     // Create ChatBloc and get or create conversation
     final chatBloc = getIt<ChatBloc>();
-    
+
     // Show loading dialog first
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => WillPopScope(
-        onWillPop: () async => false,
+      builder: (dialogContext) => PopScope(
+        canPop: false,
         child: Center(
           child: Card(
             child: Padding(
@@ -217,7 +214,7 @@ class UserProfileView extends StatelessWidget {
 
     // Listen to ChatBloc stream
     chatBloc.stream.listen((state) {
-      print('💬 Chat state: ${state.runtimeType}');
+      debugPrint('Chat state: ${state.runtimeType}');
       
       if (state is ConversationRetrieved) {
         // Close loading dialog
@@ -267,7 +264,7 @@ class UserProfileView extends StatelessWidget {
         int tradeCount = 0;
         double rating = 0.0;
 
-        if (state is UserStatsLoaded) {
+        if (state is ProfileLoaded) {
           itemCount = state.itemCount;
           tradeCount = state.tradeCount;
           rating = state.averageRating;
@@ -363,7 +360,7 @@ class UserProfileView extends StatelessWidget {
                     Icon(
                       Icons.inventory_2_outlined,
                       size: 64,
-                      color: AppColors.textSecondary.withOpacity(0.5),
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -460,7 +457,7 @@ class UserProfileView extends StatelessWidget {
                                       final isFavorited = favoriteBloc.isFavorited(item.id);
                                       
                                       return Material(
-                                        color: Colors.white.withOpacity(0.9),
+                                        color: Colors.white.withValues(alpha: 0.9),
                                         shape: const CircleBorder(),
                                         child: InkWell(
                                           onTap: () {

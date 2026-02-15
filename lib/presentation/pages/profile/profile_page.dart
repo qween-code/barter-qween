@@ -48,7 +48,7 @@ class _ProfileViewState extends State<ProfileView> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       if (_currentUserId != authState.user.uid) {
-        print('👤 User changed from $_currentUserId to ${authState.user.uid}');
+        debugPrint('User changed from $_currentUserId to ${authState.user.uid}');
         _currentUserId = authState.user.uid;
         _resetAndLoadProfile();
       }
@@ -58,7 +58,7 @@ class _ProfileViewState extends State<ProfileView> {
   void _resetAndLoadProfile() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      print('🔄 Resetting and loading profile for: ${authState.user.uid}');
+      debugPrint('Resetting and loading profile for: ${authState.user.uid}');
       // Reset profile state first
       context.read<ProfileBloc>().add(ResetProfile());
       // Then load new profile
@@ -75,7 +75,7 @@ class _ProfileViewState extends State<ProfileView> {
         // When auth state changes, reload profile
         if (authState is AuthAuthenticated) {
           if (_currentUserId != authState.user.uid) {
-            print('🔄 Auth state changed, reloading profile: ${authState.user.uid}');
+            debugPrint('Auth state changed, reloading profile: ${authState.user.uid}');
             _currentUserId = authState.user.uid;
             _resetAndLoadProfile();
           }
@@ -135,35 +135,40 @@ class _ProfileViewState extends State<ProfileView> {
 
           if (state is ProfileLoaded || state is ProfileUpdated || state is AvatarUploaded) {
             // Extract user and stats from state
-            final user = state is ProfileLoaded 
-                ? state.user 
-                : state is ProfileUpdated
-                    ? (state as ProfileUpdated).user
-                    : (state as AvatarUploaded).user;
-            
-            final itemCount = state is ProfileLoaded 
-                ? state.itemCount
-                : state is ProfileUpdated
-                    ? (state as ProfileUpdated).itemCount
-                    : (state as AvatarUploaded).itemCount;
-            
-            final tradeCount = state is ProfileLoaded 
-                ? state.tradeCount
-                : state is ProfileUpdated
-                    ? (state as ProfileUpdated).tradeCount
-                    : (state as AvatarUploaded).tradeCount;
-            
-            final averageRating = state is ProfileLoaded 
-                ? state.averageRating
-                : state is ProfileUpdated
-                    ? (state as ProfileUpdated).averageRating
-                    : (state as AvatarUploaded).averageRating;
-            
-            final ratingCount = state is ProfileLoaded 
-                ? state.ratingCount
-                : state is ProfileUpdated
-                    ? (state as ProfileUpdated).ratingCount
-                    : (state as AvatarUploaded).ratingCount;
+            final user = switch (state) {
+              ProfileLoaded s => s.user,
+              ProfileUpdated s => s.user,
+              AvatarUploaded s => s.user,
+              _ => throw StateError('Unexpected state'),
+            };
+
+            final itemCount = switch (state) {
+              ProfileLoaded s => s.itemCount,
+              ProfileUpdated s => s.itemCount,
+              AvatarUploaded s => s.itemCount,
+              _ => 0,
+            };
+
+            final tradeCount = switch (state) {
+              ProfileLoaded s => s.tradeCount,
+              ProfileUpdated s => s.tradeCount,
+              AvatarUploaded s => s.tradeCount,
+              _ => 0,
+            };
+
+            final averageRating = switch (state) {
+              ProfileLoaded s => s.averageRating,
+              ProfileUpdated s => s.averageRating,
+              AvatarUploaded s => s.averageRating,
+              _ => 0.0,
+            };
+
+            final ratingCount = switch (state) {
+              ProfileLoaded s => s.ratingCount,
+              ProfileUpdated s => s.ratingCount,
+              AvatarUploaded s => s.ratingCount,
+              _ => 0,
+            };
             
             return CustomScrollView(
               slivers: [
@@ -228,7 +233,7 @@ class _ProfileViewState extends State<ProfileView> {
                           Text(
                             user.email,
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.textOnPrimary.withOpacity(0.8),
+                              color: AppColors.textOnPrimary.withValues(alpha: 0.8),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -450,7 +455,7 @@ class _ProfileViewState extends State<ProfileView> {
             decoration: BoxDecoration(
               color: isEmpty 
                   ? AppColors.surfaceVariant 
-                  : AppColors.primaryLight.withOpacity(0.1),
+                  : AppColors.primaryLight.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -540,7 +545,7 @@ class _ProfileViewState extends State<ProfileView> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight.withOpacity(0.1),
+                color: AppColors.primaryLight.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: AppColors.primary, size: 24),

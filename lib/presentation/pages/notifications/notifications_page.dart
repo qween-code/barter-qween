@@ -92,7 +92,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       elevation: notification.isRead ? 0 : 2,
-      color: notification.isRead ? Colors.white : AppColors.primary.withOpacity(0.05),
+      color: notification.isRead ? Colors.white : AppColors.primary.withValues(alpha: 0.05),
       child: InkWell(
         onTap: () => _handleNotificationTap(notification),
         borderRadius: BorderRadius.circular(12),
@@ -106,7 +106,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: _getNotificationColor(notification.type).withOpacity(0.1),
+                  color: _getNotificationColor(notification.type).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -244,7 +244,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
     // Navigate based on type
     // TODO: Implement navigation
-    print('Navigate to ${notification.type} - ${notification.relatedEntityId}');
+    debugPrint('Navigate to ${notification.type} - ${notification.relatedEntityId}');
   }
 
   void _markAsRead(String notificationId) {

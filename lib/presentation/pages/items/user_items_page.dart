@@ -91,7 +91,7 @@ class _UserItemsViewState extends State<UserItemsView> {
                     Icon(
                       Icons.inventory_2_outlined,
                       size: 80,
-                      color: AppColors.textSecondary.withOpacity(0.5),
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: AppDimensions.spacing16),
                     Text(
@@ -137,7 +137,7 @@ class _UserItemsViewState extends State<UserItemsView> {
                           Container(
                             width: 1,
                             height: 40,
-                            color: AppColors.textOnPrimary.withOpacity(0.3),
+                            color: AppColors.textOnPrimary.withValues(alpha: 0.3),
                           ),
                           _buildStatItem(
                             icon: Icons.visibility_outlined,
@@ -147,7 +147,7 @@ class _UserItemsViewState extends State<UserItemsView> {
                           Container(
                             width: 1,
                             height: 40,
-                            color: AppColors.textOnPrimary.withOpacity(0.3),
+                            color: AppColors.textOnPrimary.withValues(alpha: 0.3),
                           ),
                           _buildStatItem(
                             icon: Icons.pause_circle_outline,
@@ -299,8 +299,8 @@ class _UserItemsViewState extends State<UserItemsView> {
                         ),
                         decoration: BoxDecoration(
                           color: item.status == ItemStatus.active
-                              ? AppColors.success.withOpacity(0.1)
-                              : AppColors.warning.withOpacity(0.1),
+                              ? AppColors.success.withValues(alpha: 0.1)
+                              : AppColors.warning.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
                         ),
                         child: Text(
@@ -350,7 +350,7 @@ class _UserItemsViewState extends State<UserItemsView> {
         Text(
           label,
           style: AppTextStyles.labelSmall.copyWith(
-            color: AppColors.textOnPrimary.withOpacity(0.8),
+            color: AppColors.textOnPrimary.withValues(alpha: 0.8),
           ),
         ),
       ],

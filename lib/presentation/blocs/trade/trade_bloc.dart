@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../domain/usecases/trade/trade_usecases.dart';
@@ -125,16 +126,16 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
     Emitter<TradeState> emit,
   ) async {
     emit(const TradeLoading());
-    print('🔄 Loading trade offers for user: ${event.userId}');
+    debugPrint('🔄 Loading trade offers for user: ${event.userId}');
     
     final result = await getUserTradeOffersUseCase(event.userId);
     result.fold(
       (failure) {
-        print('❌ Trade offers load failed: ${failure.message}');
+        debugPrint('❌ Trade offers load failed: ${failure.message}');
         emit(TradeError(failure.message));
       },
       (offers) {
-        print('✅ Trade offers loaded: ${offers.length} offers');
+        debugPrint('✅ Trade offers loaded: ${offers.length} offers');
         emit(TradeOffersLoaded(offers));
       },
     );

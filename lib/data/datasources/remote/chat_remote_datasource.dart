@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/exceptions.dart';
+import '../../../core/errors/exceptions.dart';
 import '../../models/conversation_model.dart';
 import '../../models/message_model.dart';
 
@@ -99,7 +100,7 @@ class ChatRemoteDataSource {
     String conversationId, {
     int limit = 50,
   }) {
-    print('📥 Firestore: Creating messages stream for conversation: $conversationId');
+    debugPrint('📥 Firestore: Creating messages stream for conversation: $conversationId');
     try {
       // Temporarily remove orderBy to test if that's causing the issue
       return _messagesRef
@@ -107,23 +108,23 @@ class ChatRemoteDataSource {
           .limit(limit)
           .snapshots()
           .map((snapshot) {
-        print('📥 Firestore: Received ${snapshot.docs.length} messages from stream');
+        debugPrint('📥 Firestore: Received ${snapshot.docs.length} messages from stream');
         return snapshot.docs
             .map((doc) {
               try {
                 return MessageModel.fromFirestore(doc);
               } catch (e) {
-                print('❌ Firestore: Error parsing message ${doc.id}: $e');
+                debugPrint('❌ Firestore: Error parsing message ${doc.id}: $e');
                 rethrow;
               }
             })
             .toList();
       }).handleError((error) {
-        print('❌ Firestore: Stream error - $error');
+        debugPrint('❌ Firestore: Stream error - $error');
         throw ServerException('Failed to get messages: $error');
       });
     } catch (e) {
-      print('❌ Firestore: Exception creating stream - $e');
+      debugPrint('❌ Firestore: Exception creating stream - $e');
       throw ServerException('Failed to get messages: $e');
     }
   }

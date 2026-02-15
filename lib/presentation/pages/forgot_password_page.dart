@@ -216,7 +216,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             gradient: AppColors.glassGradient,
             borderRadius: BorderRadius.circular(AppDimensions.radiusXLarge),
             border: Border.all(
-              color: AppColors.surface.withOpacity(0.3),
+              color: AppColors.surface.withValues(alpha: 0.3),
               width: 1.5,
             ),
             boxShadow: AppShadows.shadowXl,

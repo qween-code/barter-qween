@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/failures.dart';
+import '../../../core/errors/failures.dart';
 import '../../entities/trade_offer_entity.dart';
 import '../../repositories/trade_repository.dart';
 

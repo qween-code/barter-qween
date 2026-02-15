@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../core/error/failures.dart';
+import '../../../core/errors/failures.dart';
 import '../../repositories/item_repository.dart';
 
 /// Use case for deleting an item (soft delete - status update)

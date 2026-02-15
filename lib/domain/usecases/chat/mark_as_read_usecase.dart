@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import '../../repositories/chat_repository.dart';
-import '../../../core/error/failures.dart';
+import '../../../core/errors/failures.dart';
 
 /// Parameters for marking messages as read
 class MarkAsReadParams {

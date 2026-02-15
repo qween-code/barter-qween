@@ -109,7 +109,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
                           Icon(
                             Icons.history,
                             size: 80,
-                            color: AppColors.textSecondary.withOpacity(0.5),
+                            color: AppColors.textSecondary.withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: AppDimensions.spacing16),
                           Text(
@@ -311,7 +311,7 @@ class _TradeHistoryViewState extends State<TradeHistoryView> {
         vertical: AppDimensions.spacing4,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
       ),
       child: Text(

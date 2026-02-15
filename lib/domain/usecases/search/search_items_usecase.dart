@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/failures.dart';
+import '../../../core/errors/failures.dart';
 import '../../entities/search/search_filter_entity.dart';
 import '../../entities/search/search_result_entity.dart';
 import '../../repositories/search_repository.dart';

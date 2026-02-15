@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import '../../core/errors/exceptions.dart';
@@ -62,7 +63,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           return UserModel.fromFirestore(doc);
         } else {
           // Profile doesn't exist in Firestore, create it
-          print('📝 Creating Firestore profile for existing user: ${userCredential.user!.uid}');
+          debugPrint('📝 Creating Firestore profile for existing user: ${userCredential.user!.uid}');
           final userModel = UserModel.fromFirebaseUser(userCredential.user!);
           await firestore
               .collection('users')
@@ -72,7 +73,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }
       } catch (e) {
         // If Firestore operation fails, still return Firebase Auth user
-        print('⚠️ Failed to load/create Firestore profile: $e');
+        debugPrint('⚠️ Failed to load/create Firestore profile: $e');
         return UserModel.fromFirebaseUser(userCredential.user!);
       }
     } on FirebaseAuthException catch (e) {
@@ -145,7 +146,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           return UserModel.fromFirestore(doc);
         } else {
           // Profile doesn't exist in Firestore, create it
-          print('📝 Creating Firestore profile for current user: ${user.uid}');
+          debugPrint('📝 Creating Firestore profile for current user: ${user.uid}');
           final userModel = UserModel.fromFirebaseUser(user);
           await firestore
               .collection('users')
@@ -155,7 +156,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }
       } catch (e) {
         // If Firestore operation fails, still return Firebase Auth user
-        print('⚠️ Failed to load/create Firestore profile: $e');
+        debugPrint('⚠️ Failed to load/create Firestore profile: $e');
         return UserModel.fromFirebaseUser(user);
       }
     } catch (e) {

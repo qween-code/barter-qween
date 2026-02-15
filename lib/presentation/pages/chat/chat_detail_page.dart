@@ -8,7 +8,7 @@ import '../../blocs/chat/chat_bloc.dart';
 import '../../blocs/chat/chat_event.dart';
 import '../../blocs/chat/chat_state.dart';
 import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/auth/auth_state.dart' show AuthState, AuthAuthenticated;
+import '../../blocs/auth/auth_state.dart' show AuthAuthenticated;
 
 /// Chat detail page - real-time messaging interface
 class ChatDetailPage extends StatefulWidget {
@@ -465,7 +465,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.primaryLight.withOpacity(0.1),
+        color: AppColors.primaryLight.withValues(alpha: 0.1),
         border: Border(
           bottom: BorderSide(
             color: AppColors.borderDefault,

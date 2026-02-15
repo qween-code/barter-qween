@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../entities/conversation_entity.dart';
 import '../entities/message_entity.dart';
-import '../../core/error/failures.dart';
+import '../../core/errors/failures.dart';
 
 /// Repository interface for chat functionality
 abstract class ChatRepository {

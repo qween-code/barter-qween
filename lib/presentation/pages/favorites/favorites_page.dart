@@ -78,7 +78,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                     Icon(
                       Icons.favorite_border,
                       size: 80,
-                      color: AppColors.textSecondary.withOpacity(0.5),
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: AppDimensions.spacing16),
                     Text(

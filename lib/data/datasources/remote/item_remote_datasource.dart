@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:injectable/injectable.dart';
-import '../../../core/error/exceptions.dart';
+import '../../../core/errors/exceptions.dart';
 import '../../models/item_model.dart';
 
 abstract class ItemRemoteDataSource {

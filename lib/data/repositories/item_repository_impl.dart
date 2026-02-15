@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import '../../core/error/exceptions.dart';
-import '../../core/error/failures.dart';
+import '../../core/errors/exceptions.dart';
+import '../../core/errors/failures.dart';
 import '../../domain/entities/item_entity.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../datasources/remote/item_remote_datasource.dart';

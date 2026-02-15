@@ -2,7 +2,7 @@
 class AppException implements Exception {
   final String message;
   const AppException(this.message);
-  
+
   @override
   String toString() => message;
 }
@@ -34,14 +34,34 @@ class InvalidOtpException extends AuthException {
 
 // Network Exceptions
 class NetworkException extends AppException {
-  const NetworkException() : super('Network error');
+  const NetworkException([super.message = 'Network error']);
 }
 
 class ServerException extends AppException {
-  const ServerException([String message = 'Server error']) : super(message);
+  const ServerException([super.message = 'Server error']);
 }
 
 // Cache Exceptions
 class CacheException extends AppException {
-  const CacheException() : super('Cache error');
+  const CacheException([super.message = 'Cache error']);
+}
+
+// Validation Exceptions
+class ValidationException extends AppException {
+  const ValidationException(super.message);
+}
+
+// Not Found Exceptions
+class NotFoundException extends AppException {
+  const NotFoundException([super.message = 'Resource not found']);
+}
+
+// Authorization Exceptions
+class UnauthorizedException extends AppException {
+  const UnauthorizedException([super.message = 'Unauthorized']);
+}
+
+// Unknown Exceptions
+class UnknownException extends AppException {
+  const UnknownException([super.message = 'Unknown error']);
 }

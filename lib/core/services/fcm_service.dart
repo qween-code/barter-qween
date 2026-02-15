@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 import 'dart:io' show Platform;
@@ -27,12 +28,12 @@ class FCMService {
 
     // Get FCM token
     _fcmToken = await _firebaseMessaging.getToken();
-    print('📱 FCM Token: $_fcmToken');
+    debugPrint('📱 FCM Token: $_fcmToken');
 
     // Listen to token refresh
     _firebaseMessaging.onTokenRefresh.listen((newToken) {
       _fcmToken = newToken;
-      print('📱 FCM Token refreshed: $newToken');
+      debugPrint('📱 FCM Token refreshed: $newToken');
       // TODO: Update token in Firestore
     });
 
@@ -64,7 +65,7 @@ class FCMService {
       provisional: false,
     );
 
-    print('📱 Permission status: ${settings.authorizationStatus}');
+    debugPrint('📱 Permission status: ${settings.authorizationStatus}');
   }
 
   /// Initialize local notifications for foreground display
@@ -104,7 +105,7 @@ class FCMService {
 
   /// Handle foreground messages
   void _handleForegroundMessage(RemoteMessage message) {
-    print('📬 Foreground message received: ${message.notification?.title}');
+    debugPrint('📬 Foreground message received: ${message.notification?.title}');
 
     final notification = message.notification;
     if (notification != null) {
@@ -153,7 +154,7 @@ class FCMService {
 
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
-    print('📲 Notification tapped: ${message.data}');
+    debugPrint('📲 Notification tapped: ${message.data}');
     
     final data = message.data;
     final type = data['type'] as String?;
@@ -166,50 +167,50 @@ class FCMService {
       case 'trade_accepted':
       case 'trade_rejected':
         // Navigate to trade detail
-        print('Navigate to trade: $entityId');
+        debugPrint('Navigate to trade: $entityId');
         break;
       case 'new_message':
         // Navigate to chat
-        print('Navigate to chat: $entityId');
+        debugPrint('Navigate to chat: $entityId');
         break;
       case 'item_liked':
       case 'item_sold':
         // Navigate to item detail
-        print('Navigate to item: $entityId');
+        debugPrint('Navigate to item: $entityId');
         break;
     }
   }
 
   /// Handle local notification tap
   void _onNotificationTap(NotificationResponse response) {
-    print('📲 Local notification tapped: ${response.payload}');
+    debugPrint('📲 Local notification tapped: ${response.payload}');
     // TODO: Parse payload and navigate
   }
 
   /// Subscribe to topic
   Future<void> subscribeToTopic(String topic) async {
     await _firebaseMessaging.subscribeToTopic(topic);
-    print('📬 Subscribed to topic: $topic');
+    debugPrint('📬 Subscribed to topic: $topic');
   }
 
   /// Unsubscribe from topic
   Future<void> unsubscribeFromTopic(String topic) async {
     await _firebaseMessaging.unsubscribeFromTopic(topic);
-    print('📬 Unsubscribed from topic: $topic');
+    debugPrint('📬 Unsubscribed from topic: $topic');
   }
 
   /// Delete FCM token
   Future<void> deleteToken() async {
     await _firebaseMessaging.deleteToken();
     _fcmToken = null;
-    print('📱 FCM Token deleted');
+    debugPrint('📱 FCM Token deleted');
   }
 }
 
 /// Background message handler (must be top-level function)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('📬 Background message received: ${message.notification?.title}');
+  debugPrint('📬 Background message received: ${message.notification?.title}');
   // Handle background message
   // Note: Cannot show UI or access context here
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../domain/usecases/profile/get_user_profile_usecase.dart';
@@ -32,17 +33,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(const ProfileLoading());
-    print('🔄 Loading profile for user: ${event.userId}');
+    debugPrint('🔄 Loading profile for user: ${event.userId}');
 
     final result = await getUserProfileUseCase(event.userId);
 
     result.fold(
       (failure) {
-        print('❌ Profile load failed: ${failure.message}');
+        debugPrint('❌ Profile load failed: ${failure.message}');
         emit(ProfileError(failure.message));
       },
       (user) {
-        print('✅ Profile loaded successfully: ${user.displayName}');
+        debugPrint('✅ Profile loaded successfully: ${user.displayName}');
         emit(ProfileLoaded(user));
       },
     );
@@ -95,13 +96,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     // Don't emit ProfileLoading here to avoid overriding ProfileLoaded state
-    print('📊 Loading user stats for: ${event.userId}');
+    debugPrint('📊 Loading user stats for: ${event.userId}');
 
     final result = await getUserStatsUseCase(event.userId);
 
     result.fold(
       (failure) {
-        print('❌ Stats load failed: ${failure.message}');
+        debugPrint('❌ Stats load failed: ${failure.message}');
         // Don't emit error for stats, just log it
       },
       (stats) {
@@ -110,7 +111,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         final averageRating = stats['averageRating'] as double? ?? 0.0;
         final ratingCount = stats['ratingCount'] as int? ?? 0;
 
-        print('✅ Stats loaded: items=$itemCount, trades=$tradeCount');
+        debugPrint('✅ Stats loaded: items=$itemCount, trades=$tradeCount');
         
         // Update the current ProfileLoaded state with stats
         if (state is ProfileLoaded) {
